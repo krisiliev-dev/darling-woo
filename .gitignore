@@ -21,3 +21,7 @@ node_modules/
 nap/cj.txt
 nap/page.html
 nap/*.zip
+
+node_modules
+tests/*.png
+tests/_diag*.js
