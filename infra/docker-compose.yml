@@ -58,6 +58,13 @@ services:
         }
       WP_HOME: ${WP_HOME}
       WP_SITEURL: ${WP_SITEURL}
+      # SMTP. The image has no MTA, so without these WordPress sends nothing at
+      # all — and fails quietly, as an order note rather than an error.
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-Дарлинг}
       DARLING_PANEL_URL: ${DARLING_PANEL_URL}
       DARLING_PANEL_TOKEN: ${DARLING_PANEL_TOKEN}
     volumes:

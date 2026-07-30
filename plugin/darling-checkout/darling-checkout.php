@@ -50,7 +50,7 @@ add_action( 'plugins_loaded', function () {
 	}
 
 	// carriers must load before panel-api/shipping — both read the registry.
-	foreach ( array( 'carriers', 'panel-api', 'currency', 'invoice-fields', 'gpsr', 'shipping', 'office-field', 'cart-capture', 'carrier-status', 'borica' ) as $m ) {
+	foreach ( array( 'carriers', 'panel-api', 'currency', 'invoice-fields', 'gpsr', 'shipping', 'office-field', 'cart-capture', 'carrier-status', 'borica', 'mail' ) as $m ) {
 		require_once DARLING_CHECKOUT_PATH . "includes/class-$m.php";
 	}
 
@@ -62,6 +62,7 @@ add_action( 'plugins_loaded', function () {
 	Darling_Cart_Capture::init();
 	Darling_Carrier_Status::init();
 	Darling_Borica::init();
+	Darling_Mail::init();
 
 	// Surface a missing panel configuration rather than silently losing live rates.
 	if ( ! Darling_Panel_API::configured() ) {

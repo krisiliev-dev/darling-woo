@@ -22,6 +22,8 @@ class Darling_Office_Field {
 
 	public static function init(): void {
 		add_action( 'woocommerce_init', array( __CLASS__, 'register' ) );
+		add_action( 'woocommerce_blocks_validate_location_order_fields', array( __CLASS__, 'validate' ), 10, 2 );
+		add_action( 'woocommerce_checkout_process', array( __CLASS__, 'validate_classic' ) );
 		add_action( 'rest_api_init', array( __CLASS__, 'rest_routes' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( __CLASS__, 'mirror' ), 20, 2 );
@@ -41,6 +43,50 @@ class Darling_Office_Field {
 			'required'   => false, // conditional: only when an office rate is chosen
 			'attributes' => array( 'autocomplete' => 'off', 'data-darling-office' => '1' ),
 		) );
+	}
+
+	/** Is the customer paying for delivery to an office/locker rather than an address? */
+	private static function office_rate_chosen(): bool {
+		$chosen = WC()->session ? (array) WC()->session->get( 'chosen_shipping_methods', array() ) : array();
+		foreach ( $chosen as $rate ) {
+			if ( preg_match( '/^darling_[a-z]+:office$/', (string) $rate ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Refuse an office delivery with no office chosen.
+	 *
+	 * The field is registered `required => false` because it is only needed for
+	 * office rates — but "not always required" was implemented as "never enforced",
+	 * so an order could be placed for delivery to an office with no office named.
+	 * A real card payment went through that way in testing (order 13).
+	 *
+	 * The connector cannot build a waybill from that, so every such order becomes a
+	 * phone call — and it fails at fulfilment, after the customer has already paid,
+	 * which is the most expensive place to discover it.
+	 */
+	public static function validate( $errors, $fields ): void {
+		if ( ! $errors instanceof WP_Error || ! self::office_rate_chosen() ) {
+			return;
+		}
+		if ( '' === trim( (string) ( $fields[ self::FIELD ] ?? '' ) ) ) {
+			$errors->add( 'darling_office_required', 'Моля, изберете офис на куриера, за да продължите.' );
+		}
+	}
+
+	/** Classic checkout carries none of the block validation, so it needs its own. */
+	public static function validate_classic(): void {
+		if ( ! self::office_rate_chosen() ) {
+			return;
+		}
+		$key = 'darling/office-id';
+		$val = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification -- WooCommerce verifies the checkout nonce
+		if ( '' === trim( $val ) ) {
+			wc_add_notice( 'Моля, изберете офис на куриера, за да продължите.', 'error' );
+		}
 	}
 
 	/**
