@@ -30,33 +30,39 @@
 	}
 
 	function findCity() {
-		var el = document.querySelector( '#shipping-city, input[name="shipping-city"], #billing-city, input[name="billing-city"]' );
+		var el = document.querySelector( '#shipping-city, input[name="shipping_city"], input[name="shipping-city"], #billing-city, input[name="billing_city"], input[name="billing-city"]' );
 		return el ? el.value.trim() : '';
 	}
 
-	/** Which carrier did the customer actually select a rate for? */
-	function findCarrier() {
-		var checked = document.querySelector( 'input[type="radio"][name*="shipping"]:checked, .wc-block-components-shipping-rates-control input:checked' );
-		var hay = '';
-		if ( checked ) {
-			hay = ( checked.value || '' ) + ' ' + ( checked.id || '' );
-			var label = checked.closest( 'label' ) || ( checked.parentElement || document.body );
-			hay += ' ' + ( label.textContent || '' );
-		} else {
-			hay = document.body.textContent || '';
+	/**
+	 * Find the chosen shipping rate.
+	 *
+	 * Keyed on the rate VALUE, not the input name: WooCommerce's block checkout
+	 * names its radios `radio-control-N`, so an earlier `[name*="shipping"]`
+	 * selector matched nothing and the picker silently never appeared. The value
+	 * is ours (`darling_econt:office`) and therefore stable.
+	 */
+	function chosenRate() {
+		var radios = document.querySelectorAll( 'input[type="radio"]' );
+		for ( var i = 0; i < radios.length; i++ ) {
+			var v = radios[ i ].value || '';
+			if ( radios[ i ].checked && /^darling_(econt|speedy):(office|door)$/.test( v ) ) {
+				var m = v.split( ':' );
+				return { carrier: m[ 0 ].replace( 'darling_', '' ), mode: m[ 1 ] };
+			}
 		}
-		if ( /econt|еконт/i.test( hay ) ) { return 'econt'; }
-		if ( /speedy|спиди/i.test( hay ) ) { return 'speedy'; }
-		return '';
+		return null;
+	}
+
+	function findCarrier() {
+		var r = chosenRate();
+		return r ? r.carrier : '';
 	}
 
 	/** Only offer the picker when an office rate is selected. */
 	function officeModeChosen() {
-		var checked = document.querySelector( 'input[type="radio"][name*="shipping"]:checked' );
-		if ( ! checked ) { return false; }
-		var label = checked.closest( 'label' ) || checked.parentElement;
-		var txt = ( ( checked.value || '' ) + ' ' + ( label ? label.textContent : '' ) );
-		return /office|офис/i.test( txt );
+		var r = chosenRate();
+		return !! r && 'office' === r.mode;
 	}
 
 	function ensureSelect( input ) {
