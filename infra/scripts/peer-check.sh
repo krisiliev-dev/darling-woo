@@ -10,7 +10,6 @@ mkdir -p "$APP/logs"
 
 PEER_NAME="admin panel"
 PEER_URL="https://panel.darlinghome.bg/api/health"
-PEER_OK_CODES="200"
 FAIL_THRESHOLD=3          # consecutive failures before shouting (avoids flapping)
 
 # Optional push notification. Set NOTIFY_URL in $APP/.notify to enable, e.g.
@@ -25,21 +24,35 @@ notify() {
   [ -n "$NOTIFY_URL" ] && curl -s --max-time 10 -d "$msg" "$NOTIFY_URL" >/dev/null 2>&1 || true
 }
 
-CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$PEER_URL" 2>/dev/null) || CODE=000
+# Assert the BODY, not just the status. The panel is a SPA: an unknown path —
+# or a dead API with the frontend still served — returns 200 with index.html.
+# A status-only check would call that healthy. Verified: /definitely-not-real -> 200.
+# `|| RESP=` and not `|| echo`: curl prints AND exits non-zero on failure, so the
+# echo form concatenates (this is the 000000 bug, found independently on both boxes).
+RESP=$(curl -s --max-time 15 -w '
+%{http_code}' "$PEER_URL" 2>/dev/null) || RESP=$'
+000'
+CODE=$(printf '%s' "$RESP" | tail -n1)
+BODY=$(printf '%s' "$RESP" | sed '$d')
+HEALTHY=no
+if [ "$CODE" = "200" ] && printf '%s' "$BODY" | grep -q '"db"[[:space:]]*:[[:space:]]*"ok"'; then
+  HEALTHY=yes
+fi
+
 FAILS=$(cat "$STATE" 2>/dev/null || echo 0)
-case " $PEER_OK_CODES " in
-  *" $CODE "*)
+case "$HEALTHY" in
+  yes)
       if [ "$FAILS" -ge "$FAIL_THRESHOLD" ]; then
         notify "✅ RECOVERED: $PEER_NAME is responding again ($CODE)"
       fi
       echo 0 > "$STATE"
-      echo "$(ts) ok $CODE" >> "$LOG"
+      echo "$(ts) ok http=$CODE db:ok" >> "$LOG"
       ;;
   *)
       FAILS=$((FAILS + 1)); echo "$FAILS" > "$STATE"
-      echo "$(ts) FAIL $CODE (consecutive: $FAILS)" >> "$LOG"
+      echo "$(ts) FAIL http=$CODE db_ok=no (consecutive: $FAILS)" >> "$LOG"
       # notify exactly on crossing the threshold, not every run afterwards
       [ "$FAILS" -eq "$FAIL_THRESHOLD" ] && \
-        notify "🔴 $PEER_NAME DOWN — $PEER_URL returned $CODE, $FAILS checks in a row"
+        notify "🔴 $PEER_NAME UNHEALTHY — $PEER_URL http=$CODE, db:ok absent, $FAILS checks in a row"
       ;;
 esac
