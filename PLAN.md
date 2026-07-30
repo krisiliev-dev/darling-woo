@@ -138,6 +138,22 @@ Nothing about Barsy, the panel, the pipeline or the search Worker changes shape.
       Barsy `sale_below_zero` (mirrors today's DENY/CONTINUE mapping).
 
 ### Phase 3 — `darling-checkout` plugin ← the reason we're migrating
+
+**Build-vs-adopt evaluated on staging, 2026-07-30 — verdict: BUILD.**
+*Bulgarisation for WooCommerce* (5.0★/43, actively maintained, WC-tested 10.9) was
+installed and inspected, not judged from its listing. Findings:
+- ❌ **Zero block-checkout support** — 0 files referencing `IntegrationInterface`/
+  `StoreApi`/`ExtendSchema`, no `cart_checkout_blocks` declaration, no block JS.
+  It hooks `woocommerce_checkout_fields`, `woocommerce_after_checkout_validation`,
+  `woocommerce_checkout_update_order_review` — all **classic-checkout only**.
+  Adopting it would mean running the shortcode checkout WooCommerce is deprecating.
+- 🔁 **Its two biggest features duplicate things we already own**: PDF invoices
+  (we issue фактури through Barsy `Invoices_save`) and courier labels/waybills
+  (the panel's Speedy/Econt adapters already create them, credentials server-side).
+  Adopting it would put courier credentials and invoice generation in two places.
+⇒ The only piece we'd actually use is the checkout office picker — which our own
+`/api/public/couriers/*` endpoints already back. So we build: block-native, thin,
+panel-driven. Bulgarisation remains a useful GPL reference implementation.
 Everything that was a cart-page workaround becomes a first-class checkout integration:
 - [ ] **Courier office picker in checkout** (Store API / block checkout), fed by the panel's
       `/api/public/couriers/{carrier}/offices`. Econt + Speedy now; BOX NOW/Sameday later.
