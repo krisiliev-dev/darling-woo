@@ -28,6 +28,16 @@ rsync -a "$REPO_DIR/infra/scripts/" "$APP_DIR/scripts/"
 sudo -n mkdir -p "$APP_DIR/wordpress/wp-content/themes/darling"
 sudo -n rsync -a --delete "$REPO_DIR/theme/darling/" "$APP_DIR/wordpress/wp-content/themes/darling/"
 sudo -n chown -R 33:33 "$APP_DIR/wordpress/wp-content/themes/darling"
+
+# Our own plugin, versioned the same way.
+# Syntax-check BEFORE installing it: a PHP fatal in an active plugin white-screens
+# the whole site, and the deploy would have "succeeded".
+for f in $(find "$REPO_DIR/plugin" -name '*.php'); do
+  docker run --rm -v "$REPO_DIR/plugin:/p:ro" --entrypoint php wordpress:cli     -l "/p/${f#$REPO_DIR/plugin/}" >/dev/null </dev/null || { echo "[deploy] PHP SYNTAX ERROR in $f"; exit 1; }
+done
+sudo -n mkdir -p "$APP_DIR/wordpress/wp-content/plugins/darling-checkout"
+sudo -n rsync -a --delete "$REPO_DIR/plugin/darling-checkout/" "$APP_DIR/wordpress/wp-content/plugins/darling-checkout/"
+sudo -n chown -R 33:33 "$APP_DIR/wordpress/wp-content/plugins/darling-checkout"
 chmod +x "$APP_DIR"/scripts/*.sh
 
 echo "[deploy] validating before applying…"
