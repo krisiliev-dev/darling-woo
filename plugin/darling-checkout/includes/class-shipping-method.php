@@ -58,8 +58,17 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 		if ( 'yes' !== $this->get_option( 'enabled', 'yes' ) ) {
 			return;
 		}
-		$city     = (string) ( $package['destination']['city'] ?? '' );
+		$city     = trim( (string) ( $package['destination']['city'] ?? '' ) );
 		$postcode = (string) ( $package['destination']['postcode'] ?? '' );
+
+		// No destination yet (empty cart page, before the address is filled in).
+		// Offer NO rate rather than the fallback: "we don't know where you live" is
+		// not "the courier API is down", and conflating them would both show an
+		// invented price as if it were real AND fill the log with false warnings —
+		// which is how genuine panel outages end up ignored.
+		if ( '' === $city ) {
+			return;
+		}
 		$weight_g = Darling_Shipping::cart_weight_g();
 		$cod      = Darling_Shipping::is_cod();
 		$subtotal = (float) WC()->cart->get_displayed_subtotal();
