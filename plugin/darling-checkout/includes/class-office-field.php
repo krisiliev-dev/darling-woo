@@ -87,8 +87,18 @@ class Darling_Office_Field {
 			file_exists( $f ) ? (string) filemtime( $f ) : DARLING_CHECKOUT_VERSION,
 			true
 		);
+		$labels = array();
+		foreach ( Darling_Carriers::all() as $id => $cfg ) {
+			$labels[ $id ] = $cfg['office_label'];
+		}
+
 		wp_localize_script( 'darling-office-picker', 'DarlingOffice', array(
 			'endpoint' => esc_url_raw( rest_url( 'darling/v1/offices' ) ),
+			// The carrier list is handed to the browser rather than hard-coded in the
+			// JS, so adding a courier cannot leave the picker silently not recognising
+			// its shipping rate - which would look exactly like "the picker is broken".
+			'carriers' => array_keys( Darling_Carriers::all() ),
+			'labels'   => $labels,
 			'i18n'     => array(
 				'choose'  => '— избери офис —',
 				'loading' => 'зареждане…',
@@ -163,9 +173,12 @@ class Darling_Office_Field {
 		if ( ! $order instanceof WC_Order || ! $order->get_meta( 'darling_dest' ) ) {
 			return;
 		}
+		$carrier = (string) $order->get_meta( 'darling_carrier' );
 		$rows = array(
-			'Куриер'  => $order->get_meta( 'darling_carrier' ),
-			'Доставка' => 'office' === $order->get_meta( 'darling_dest' ) ? 'до офис' : 'до адрес',
+			'Куриер'  => Darling_Carriers::label( $carrier ),
+			'Доставка' => 'office' === $order->get_meta( 'darling_dest' )
+				? Darling_Carriers::office_label( $carrier )
+				: 'до адрес',
 			'Офис'    => trim( $order->get_meta( 'darling_office_name' ) . ' (' . $order->get_meta( 'darling_office_id' ) . ')', ' ()' ),
 		);
 		echo '<div class="address"><p><strong>Куриер</strong></p><p>';

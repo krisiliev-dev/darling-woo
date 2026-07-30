@@ -23,6 +23,16 @@
 	var cache = {};
 	var lastKey = '';
 
+	/**
+	 * Built from the server's carrier list, not hard-coded. A hard-coded
+	 * `(econt|speedy)` would mean every new courier contract needs a JS change that
+	 * is easy to forget - and forgetting it looks like "the office picker is broken
+	 * for BOX NOW" rather than "someone missed a regex".
+	 */
+	var RATE_RE = new RegExp(
+		'^darling_(' + ( CFG.carriers || [ 'econt', 'speedy' ] ).join( '|' ) + '):(office|door)$'
+	);
+
 	function findOfficeInput() {
 		return document.querySelector( '[data-darling-office="1"]' ) ||
 			document.querySelector( 'input[id*="office" i][id*="darling" i]' ) ||
@@ -46,7 +56,7 @@
 		var radios = document.querySelectorAll( 'input[type="radio"]' );
 		for ( var i = 0; i < radios.length; i++ ) {
 			var v = radios[ i ].value || '';
-			if ( radios[ i ].checked && /^darling_(econt|speedy):(office|door)$/.test( v ) ) {
+			if ( radios[ i ].checked && RATE_RE.test( v ) ) {
 				var m = v.split( ':' );
 				return { carrier: m[ 0 ].replace( 'darling_', '' ), mode: m[ 1 ] };
 			}
@@ -84,11 +94,23 @@
 		return sel;
 	}
 
-	function fill( sel, offices, current ) {
+	/**
+	 * "офис" is wrong for BOX NOW and Sameday - those are unstaffed parcel lockers.
+	 * Sending someone to look for an office that does not exist is a real support
+	 * call, so the noun follows the carrier.
+	 */
+	function noun( carrier ) {
+		var l = ( CFG.labels && CFG.labels[ carrier ] ) || 'до офис';
+		return l.replace( /^до\s+/, '' );
+	}
+
+	function fill( sel, offices, current, carrier ) {
 		sel.innerHTML = '';
 		var o0 = document.createElement( 'option' );
 		o0.value = '';
-		o0.textContent = offices.length ? CFG.i18n.choose + ' (' + offices.length + ')' : CFG.i18n.none;
+		o0.textContent = offices.length
+			? '— избери ' + noun( carrier ) + ' — (' + offices.length + ')'
+			: CFG.i18n.none;
 		sel.appendChild( o0 );
 		offices.forEach( function ( o ) {
 			var opt = document.createElement( 'option' );
@@ -120,7 +142,7 @@
 		var sel = ensureSelect( input );
 
 		if ( cache[ key ] ) {
-			fill( sel, cache[ key ], input.value.trim() );
+			fill( sel, cache[ key ], input.value.trim(), carrier );
 			return;
 		}
 
@@ -130,7 +152,7 @@
 			.then( function ( d ) {
 				var offices = ( d && d.offices ) || [];
 				cache[ key ] = offices;
-				fill( sel, offices, input.value.trim() );
+				fill( sel, offices, input.value.trim(), carrier );
 			} )
 			.catch( function () {
 				// Fail visibly, and leave the typed input usable.

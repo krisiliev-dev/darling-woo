@@ -4,6 +4,10 @@
  *
  * Loaded on woocommerce_shipping_init, which is why it is a separate file —
  * WC_Shipping_Method does not exist before then.
+ *
+ * Everything carrier-specific comes from Darling_Carriers; the subclasses at the
+ * bottom exist only because WooCommerce shipping zones instantiate methods by
+ * class name and cannot take a config array.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -14,10 +18,14 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 	protected string $carrier_label = '';
 
 	public function __construct( $instance_id = 0 ) {
+		$this->carrier_label      = Darling_Carriers::label( $this->carrier );
 		$this->instance_id        = absint( $instance_id );
 		$this->supports           = array( 'shipping-zones', 'instance-settings', 'settings' );
 		$this->method_title       = $this->carrier_label;
-		$this->method_description = 'Живи цени за доставка от ' . $this->carrier_label . ', изчислени по тегло и получател.';
+		$this->method_description = 'Живи цени за доставка от ' . $this->carrier_label . ', изчислени по тегло и получател.'
+			. ( Darling_Panel_API::supports( $this->carrier )
+				? ''
+				: ' ⚠ Панелът все още няма достъп до този куриер — методът няма да се показва на клиентите, докато не бъдат въведени данните за достъп.' );
 		$this->enabled            = 'yes';
 		$this->title              = $this->carrier_label;
 		$this->init_form_fields();
@@ -26,7 +34,9 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 	}
 
 	public function init_form_fields(): void {
-		$this->instance_form_fields = array(
+		$office_label = Darling_Carriers::office_label( $this->carrier );
+
+		$fields = array(
 			'enabled' => array(
 				'title'   => 'Активна',
 				'type'    => 'checkbox',
@@ -34,24 +44,32 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 				'default' => 'yes',
 			),
 			'office' => array(
-				'title'   => 'До офис',
+				'title'   => ucfirst( $office_label ),
 				'type'    => 'checkbox',
-				'label'   => 'Предлагай доставка до офис',
+				'label'   => 'Предлагай доставка ' . $office_label,
 				'default' => 'yes',
 			),
-			'door' => array(
+		);
+
+		// BOX NOW has no courier-to-door product at all; offering the switch would
+		// invite someone to turn on a service that cannot be booked.
+		if ( Darling_Carriers::supports_door( $this->carrier ) ) {
+			$fields['door'] = array(
 				'title'   => 'До адрес',
 				'type'    => 'checkbox',
 				'label'   => 'Предлагай доставка до адрес',
 				'default' => 'yes',
-			),
-			'free_over' => array(
-				'title'       => 'Безплатна доставка над (EUR)',
-				'type'        => 'text',
-				'description' => 'Остави празно, за да няма безплатна доставка.',
-				'default'     => '',
-			),
+			);
+		}
+
+		$fields['free_over'] = array(
+			'title'       => 'Безплатна доставка над (EUR)',
+			'type'        => 'text',
+			'description' => 'Остави празно, за да няма безплатна доставка.',
+			'default'     => '',
 		);
+
+		$this->instance_form_fields = $fields;
 	}
 
 	public function calculate_shipping( $package = array() ) {
@@ -69,6 +87,16 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 		if ( '' === $city ) {
 			return;
 		}
+
+		// A carrier we are contracted with but the panel cannot yet book must stay
+		// invisible. Note this is checked BEFORE the quote, so an unprovisioned
+		// carrier can never fall through to the fallback price — otherwise signing a
+		// contract would immediately start quoting an invented rate for a courier
+		// nobody can actually dispatch.
+		if ( ! Darling_Panel_API::supports( $this->carrier ) ) {
+			return;
+		}
+
 		$weight_g = Darling_Shipping::cart_weight_g();
 		$cod      = Darling_Shipping::is_cod();
 		$subtotal = (float) WC()->cart->get_displayed_subtotal();
@@ -79,14 +107,14 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 		if ( 'yes' === $this->get_option( 'office', 'yes' ) ) {
 			$this->add_rate_for( 'office', $city, $postcode, $weight_g, $cod, $subtotal, $is_free );
 		}
-		if ( 'yes' === $this->get_option( 'door', 'yes' ) ) {
+		if ( Darling_Carriers::supports_door( $this->carrier ) && 'yes' === $this->get_option( 'door', 'yes' ) ) {
 			$this->add_rate_for( 'door', $city, $postcode, $weight_g, $cod, $subtotal, $is_free );
 		}
 	}
 
 	private function add_rate_for( string $mode, string $city, string $postcode, int $weight_g, bool $cod, float $subtotal, bool $is_free ): void {
 		$label = 'office' === $mode
-			? $this->carrier_label . ' — до офис'
+			? $this->carrier_label . ' — ' . Darling_Carriers::office_label( $this->carrier )
 			: $this->carrier_label . ' — до адрес';
 
 		if ( $is_free ) {
@@ -154,20 +182,50 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 	}
 }
 
+/*
+ * One thin subclass per registry entry. Adding a courier means adding a registry
+ * entry plus four lines here — and nothing else: no quoting logic, no picker
+ * change, no front-end change.
+ */
+
 class Darling_Shipping_Econt extends Darling_Shipping_Base {
 	public function __construct( $instance_id = 0 ) {
-		$this->id            = 'darling_econt';
-		$this->carrier       = 'econt';
-		$this->carrier_label = 'Еконт';
+		$this->id = 'darling_econt'; $this->carrier = 'econt';
 		parent::__construct( $instance_id );
 	}
 }
 
 class Darling_Shipping_Speedy extends Darling_Shipping_Base {
 	public function __construct( $instance_id = 0 ) {
-		$this->id            = 'darling_speedy';
-		$this->carrier       = 'speedy';
-		$this->carrier_label = 'Спиди';
+		$this->id = 'darling_speedy'; $this->carrier = 'speedy';
+		parent::__construct( $instance_id );
+	}
+}
+
+class Darling_Shipping_Boxnow extends Darling_Shipping_Base {
+	public function __construct( $instance_id = 0 ) {
+		$this->id = 'darling_boxnow'; $this->carrier = 'boxnow';
+		parent::__construct( $instance_id );
+	}
+}
+
+class Darling_Shipping_Sameday extends Darling_Shipping_Base {
+	public function __construct( $instance_id = 0 ) {
+		$this->id = 'darling_sameday'; $this->carrier = 'sameday';
+		parent::__construct( $instance_id );
+	}
+}
+
+class Darling_Shipping_Pigeon extends Darling_Shipping_Base {
+	public function __construct( $instance_id = 0 ) {
+		$this->id = 'darling_pigeon'; $this->carrier = 'pigeon';
+		parent::__construct( $instance_id );
+	}
+}
+
+class Darling_Shipping_Evropat extends Darling_Shipping_Base {
+	public function __construct( $instance_id = 0 ) {
+		$this->id = 'darling_evropat'; $this->carrier = 'evropat';
 		parent::__construct( $instance_id );
 	}
 }

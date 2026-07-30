@@ -15,6 +15,10 @@ class Darling_Panel_API {
 	private const CACHE_QUOTE   = 10 * MINUTE_IN_SECONDS;
 	private const TIMEOUT       = 8;
 
+	private const CACHE_PROBE_OK      = 12 * HOUR_IN_SECONDS;
+	private const CACHE_PROBE_ABSENT  = HOUR_IN_SECONDS;
+	private const CACHE_PROBE_UNKNOWN = 5 * MINUTE_IN_SECONDS;
+
 	public static function configured(): bool {
 		return (bool) self::token() && (bool) self::base();
 	}
@@ -110,7 +114,70 @@ class Darling_Panel_API {
 
 	private static function carrier( string $c ): string {
 		$c = strtolower( trim( $c ) );
-		return in_array( $c, array( 'econt', 'speedy' ), true ) ? $c : '';
+		return null !== Darling_Carriers::get( $c ) ? $c : '';
+	}
+
+	/**
+	 * Can the panel actually serve this carrier right now?
+	 *
+	 * The registry lists every courier we know how to speak to; this asks which of
+	 * them the panel has credentials for. A carrier under contract but not yet
+	 * provisioned answers 404, and must NOT be offered at checkout — quoting a
+	 * courier we cannot book is worse than not offering it, because the customer
+	 * pays for a delivery that then has to be renegotiated by phone.
+	 *
+	 * Deliberately three-valued in its caching:
+	 *   200      -> supported, cache long (stable state)
+	 *   404/501  -> not provisioned, cache 1h so a new contract goes live by itself
+	 *   timeout  -> UNKNOWN, cache 5min only; a flaky network must never latch a
+	 *               working carrier off for an hour.
+	 */
+	public static function supports( string $carrier ): bool {
+		$carrier = self::carrier( $carrier );
+		if ( ! $carrier || ! self::configured() ) {
+			return false;
+		}
+		$key = 'darling_papi_sup_' . $carrier;
+		$hit = get_transient( $key );
+		if ( false !== $hit ) {
+			return '1' === $hit;
+		}
+
+		$url = self::base() . "/api/public/couriers/$carrier/offices?" . http_build_query( array( 'city' => 'София' ) );
+		$res = wp_remote_get( $url, array(
+			'timeout' => self::TIMEOUT,
+			'headers' => array( 'X-Office-Token' => self::token(), 'Accept' => 'application/json' ),
+		) );
+
+		if ( is_wp_error( $res ) ) {
+			set_transient( $key, '0', self::CACHE_PROBE_UNKNOWN );
+			return false;
+		}
+		$code = (int) wp_remote_retrieve_response_code( $res );
+
+		if ( 200 === $code ) {
+			set_transient( $key, '1', self::CACHE_PROBE_OK );
+			return true;
+		}
+		if ( in_array( $code, array( 404, 501 ), true ) ) {
+			set_transient( $key, '0', self::CACHE_PROBE_ABSENT );
+			return false;
+		}
+		// 5xx, 401, anything else: a real problem, but not evidence about provisioning.
+		self::log( "carrier probe $carrier returned HTTP $code" );
+		set_transient( $key, '0', self::CACHE_PROBE_UNKNOWN );
+		return false;
+	}
+
+	/** Carriers the panel can serve right now, in registry order. */
+	public static function live_carriers(): array {
+		$live = array();
+		foreach ( array_keys( Darling_Carriers::all() ) as $id ) {
+			if ( self::supports( $id ) ) {
+				$live[] = $id;
+			}
+		}
+		return $live;
 	}
 
 	private static function log( string $msg ): void {

@@ -36,9 +36,19 @@ class Darling_Shipping {
 		require_once __DIR__ . '/class-shipping-method.php';
 	}
 
+	/**
+	 * Register every carrier in the registry, including ones the panel cannot serve
+	 * yet. They are registered but produce no rates (see calculate_shipping), so a
+	 * courier can be added to the shipping zone in advance and simply starts working
+	 * the moment its credentials land on the panel — no deploy, no code change.
+	 */
 	public static function register( array $methods ): array {
-		$methods['darling_econt']  = 'Darling_Shipping_Econt';
-		$methods['darling_speedy'] = 'Darling_Shipping_Speedy';
+		foreach ( array_keys( Darling_Carriers::all() ) as $id ) {
+			$class = 'Darling_Shipping_' . ucfirst( $id );
+			if ( class_exists( $class ) ) {
+				$methods[ 'darling_' . $id ] = $class;
+			}
+		}
 		return $methods;
 	}
 
