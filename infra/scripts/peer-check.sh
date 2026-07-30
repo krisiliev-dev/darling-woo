@@ -43,7 +43,7 @@ FAILS=$(cat "$STATE" 2>/dev/null || echo 0)
 case "$HEALTHY" in
   yes)
       if [ "$FAILS" -ge "$FAIL_THRESHOLD" ]; then
-        notify "✅ RECOVERED: $PEER_NAME is responding again ($CODE)"
+        notify "✅ peer RECOVERED"
       fi
       echo 0 > "$STATE"
       echo "$(ts) ok http=$CODE db:ok" >> "$LOG"
@@ -53,6 +53,9 @@ case "$HEALTHY" in
       echo "$(ts) FAIL http=$CODE db_ok=no (consecutive: $FAILS)" >> "$LOG"
       # notify exactly on crossing the threshold, not every run afterwards
       [ "$FAILS" -eq "$FAIL_THRESHOLD" ] && \
-        notify "🔴 $PEER_NAME UNHEALTHY — $PEER_URL http=$CODE, db:ok absent, $FAILS checks in a row"
+        # Alert bodies are deliberately NON-IDENTIFYING: an ntfy.sh public topic is
+        # readable by anyone who learns the topic name, so no hostnames, URLs or
+        # counts of anything. Detail stays in the local log.
+        notify "🔴 peer UNHEALTHY (http=$CODE) — $FAILS checks in a row. See peer-check.log"
       ;;
 esac
