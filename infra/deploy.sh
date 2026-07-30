@@ -30,7 +30,25 @@ docker compose exec -T nginx nginx -t </dev/null
 docker compose exec -T nginx nginx -s reload </dev/null
 
 echo "[deploy] health check…"
-code=$(curl -s -o /dev/null -w '%{http_code}' -u "darling:$(cat "$APP_DIR/.staging-password")" https://staging.darlinghome.bg/ || echo 000)
+# Retry: nginx -s reload has a brief window where the listener is not yet ready,
+# and a health check that fails intermittently is worse than none — people learn
+# to re-run it instead of believing it.
+# Note: `code=$(curl -w '%{http_code}') || code=000` and NOT `... || echo 000`:
+# curl prints 000 *and* exits non-zero on connection failure, so the echo form
+# concatenates into "000000".
+URL="${WP_HOME:-https://staging.darlinghome.bg}/"
+PW_FILE="$APP_DIR/.staging-password"
+AUTH=()
+[ -r "$PW_FILE" ] && AUTH=(-u "darling:$(cat "$PW_FILE")")
+code=000
+for attempt in 1 2 3 4 5; do
+  sleep 2
+  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${AUTH[@]}" "$URL" 2>/dev/null) || code=000
+  case "$code" in 200|302) break ;; esac
+  echo "[deploy]   attempt $attempt: $code"
+done
 echo "[deploy] site returned $code"
-[ "$code" = "200" ] || [ "$code" = "302" ] || { echo "[deploy] FAILED health check"; exit 1; }
-echo "[deploy] ok"
+case "$code" in
+  200|302) echo "[deploy] ok" ;;
+  *) echo "[deploy] FAILED health check after 5 attempts"; exit 1 ;;
+esac
