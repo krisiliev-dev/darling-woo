@@ -20,8 +20,14 @@ docker compose exec -T db mariadb-dump -u root -p"$MYSQL_ROOT_PASSWORD" \
 # integrity gates — refuse to keep something we cannot restore
 [ -s "$DEST/db-$TS.sql.gz" ] || { echo "[backup] FAIL: dump is empty"; rm -f "$DEST/db-$TS.sql.gz"; exit 1; }
 gzip -t "$DEST/db-$TS.sql.gz" || { echo "[backup] FAIL: dump is corrupt"; rm -f "$DEST/db-$TS.sql.gz"; exit 1; }
-gunzip -c "$DEST/db-$TS.sql.gz" | head -5 | grep -qi 'mariadb\|mysql dump' \
-  || { echo "[backup] FAIL: dump header not recognised"; rm -f "$DEST/db-$TS.sql.gz"; exit 1; }
+# NOTE: `set -o pipefail` + `head` is a trap. head exits after N lines, gunzip
+# gets SIGPIPE, and pipefail reports the whole pipeline as failed. This passed
+# while the database was empty (the dump finished before head closed the pipe)
+# and would have rejected EVERY dump once there was real data - a guard that
+# only breaks once it matters. Run the check with pipefail disabled.
+if ! ( set +o pipefail; gunzip -c "$DEST/db-$TS.sql.gz" 2>/dev/null | head -c 4096 | grep -qi "mariadb dump\|mysql dump" ); then
+  echo "[backup] FAIL: dump header not recognised"; rm -f "$DEST/db-$TS.sql.gz"; exit 1
+fi
 
 # --- uploads (irreplaceable: product imagery) ---
 if [ -d "$APP/wordpress/wp-content/uploads" ]; then
