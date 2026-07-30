@@ -42,8 +42,14 @@ const PRODUCT_ID = process.env.PRODUCT_ID || '11';
     await page.waitForTimeout(6000);
     out.url = page.url();
 
-    out.assets = await page.evaluate(() => ({
-      pickerScript: !!document.querySelector('script[src*="office-picker.js"]'),
+    out.assets = await page.evaluate(async () => ({
+      // Assert the script RESOLVES, not merely that a tag exists - a 404'd script
+      // still leaves a perfectly good <script> element in the DOM.
+      pickerScript: await (async () => {
+        const el = document.querySelector('script[src*="office-picker.js"]');
+        if (!el) return false;
+        try { return (await fetch(el.src)).ok; } catch (e) { return false; }
+      })(),
       configPresent: typeof window.DarlingOffice !== 'undefined',
       endpoint: window.DarlingOffice ? window.DarlingOffice.endpoint : null,
       tokenLeaked: /98bbd7/.test(document.documentElement.innerHTML),

@@ -77,9 +77,12 @@ class Darling_Office_Field {
 			return;
 		}
 		$f = DARLING_CHECKOUT_PATH . 'assets/office-picker.js';
+		// Resolve against the PLUGIN ROOT. `dirname(__FILE__)` from inside includes/
+		// resolved to includes/assets/... and 404'd - and the script tag still
+		// rendered, so a test that only checked for the tag reported success.
 		wp_enqueue_script(
 			'darling-office-picker',
-			plugins_url( 'assets/office-picker.js', dirname( __FILE__ ) . '/darling-checkout.php' ),
+			plugins_url( 'assets/office-picker.js', DARLING_CHECKOUT_PATH . 'darling-checkout.php' ),
 			array(),
 			file_exists( $f ) ? (string) filemtime( $f ) : DARLING_CHECKOUT_VERSION,
 			true
