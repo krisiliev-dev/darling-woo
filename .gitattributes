@@ -1,0 +1,11 @@
+# This project deploys shell scripts and configs to Linux.
+# A CRLF line ending in a .sh file causes: bad interpreter: /bin/bash^M
+# It has already bitten this project twice (a \r in a .env secret silently broke
+# webhook HMAC; an sshd drop-in that never applied). Force LF everywhere.
+* text=auto eol=lf
+*.sh   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.conf text eol=lf
+*.ini  text eol=lf
+*.md   text eol=lf
