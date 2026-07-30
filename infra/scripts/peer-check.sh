@@ -18,18 +18,28 @@ NOTIFY_URL=""
 [ -r "$APP/.notify" ] && . "$APP/.notify"
 
 ts() { date -u +%FT%TZ; }
-# EMAIL_TO (optional) uses ntfy's built-in email forwarding, so there is no SMTP
-# credential to store and no local MTA (which would land in spam from a VPS IP).
+# Delivery must NEVER fail silently: a notifier that swallows its own errors is
+# the one thing in the system that cannot afford to.
+# EMAIL_TO uses ntfy email forwarding, which REQUIRES an ntfy account —
+# anonymous email sending returns HTTP 400 and the message is not delivered at
+# all. So email is attempted first and ALWAYS falls back to a plain push.
 notify() {
-  local msg="$1"
+  local msg="$1" code
   echo "$(ts) NOTIFY: $msg" >> "$LOG"
   [ -n "$NOTIFY_URL" ] || return 0
+
   if [ -n "${EMAIL_TO:-}" ]; then
-    # Title stays ASCII: non-ASCII in an HTTP header gets mangled.
-    curl -s --max-time 15 -H "Title: Darling infrastructure alert"          -H "Email: $EMAIL_TO" -d "$msg" "$NOTIFY_URL" >/dev/null 2>&1 || true
-  else
-    curl -s --max-time 15 -d "$msg" "$NOTIFY_URL" >/dev/null 2>&1 || true
+    # Title stays ASCII: non-ASCII in an HTTP header is mangled.
+    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15              -H "Title: Darling infrastructure alert" -H "Email: $EMAIL_TO"              -d "$msg" "$NOTIFY_URL") || code=000
+    case "$code" in 2*) return 0 ;; esac
+    echo "$(ts) WARN: email notify failed (http=$code) - falling back to push" >> "$LOG"
   fi
+
+  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 -d "$msg" "$NOTIFY_URL") || code=000
+  case "$code" in
+    2*) ;;
+    *) echo "$(ts) ERROR: NOTIFY DELIVERY FAILED (http=$code)" >> "$LOG" ;;
+  esac
 }
 
 # Assert the BODY, not just the status. The panel is a SPA: an unknown path —
