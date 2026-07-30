@@ -164,6 +164,32 @@ class Darling_Office_Field {
 		self::copy( $order );
 	}
 
+	/**
+	 * Read the submitted office id off the order.
+	 *
+	 * WooCommerce stores `order`-location additional fields as order meta under
+	 * `_wc_other/{field id}`. There is also a helper function for this — but it
+	 * DOES NOT EXIST in every WooCommerce version, and the previous code called it
+	 * behind `function_exists()`, so on this install it silently produced an empty
+	 * string and every order recorded a blank office. The office was collected,
+	 * shown, and validated correctly; it just never reached the meta the connector
+	 * reads. Nothing errored, because the guard turned a missing API into a
+	 * plausible-looking empty value.
+	 *
+	 * So: read the meta directly, and treat the helper as an optional shortcut
+	 * rather than the source of truth.
+	 */
+	private static function read_office_id( WC_Order $order ): string {
+		$id = trim( (string) $order->get_meta( '_wc_other/' . self::FIELD ) );
+		if ( '' !== $id ) {
+			return $id;
+		}
+		if ( function_exists( 'woocommerce_get_order_additional_field_value' ) ) {
+			return trim( (string) woocommerce_get_order_additional_field_value( $order, self::FIELD ) );
+		}
+		return '';
+	}
+
 	private static function copy( $order ): void {
 		if ( ! $order instanceof WC_Order ) {
 			return;
@@ -180,10 +206,7 @@ class Darling_Office_Field {
 		}
 
 		$city      = (string) $order->get_shipping_city();
-		$office_id = '';
-		if ( function_exists( 'woocommerce_get_order_additional_field_value' ) ) {
-			$office_id = trim( (string) woocommerce_get_order_additional_field_value( $order, self::FIELD ) );
-		}
+		$office_id = self::read_office_id( $order );
 
 		// Validate the office against the city server-side. A stale or hand-typed id
 		// that does not exist in the destination settlement must not be recorded as
@@ -205,6 +228,15 @@ class Darling_Office_Field {
 					array( 'source' => 'darling-office' )
 				);
 			}
+		} elseif ( 'office' === $mode ) {
+			// Office delivery with no id reaching us at all. Validation should have
+			// stopped this, so if it happens the plumbing is broken, not the customer
+			// — and it must be loud, because the order cannot be dispatched.
+			wc_get_logger()->error(
+				sprintf( 'order %d: office delivery but NO office id found on the order - cannot build a waybill',
+					$order->get_id() ),
+				array( 'source' => 'darling-office' )
+			);
 		}
 
 		$order->update_meta_data( 'darling_dest',        'office' === $mode ? 'office' : ( $mode ? 'door' : '' ) );
