@@ -20,6 +20,9 @@ cp "$REPO_DIR/infra/php/uploads.ini"     php/uploads.ini
 cp "$REPO_DIR/infra/renew-certs.sh"      renew-certs.sh && chmod +x renew-certs.sh
 # --delete would remove .htpasswd, which is server-side only
 rsync -a --exclude '.htpasswd' "$REPO_DIR/infra/nginx/conf.d/" nginx/conf.d/
+mkdir -p "$APP_DIR/scripts"
+rsync -a "$REPO_DIR/infra/scripts/" "$APP_DIR/scripts/"
+chmod +x "$APP_DIR"/scripts/*.sh
 
 echo "[deploy] validating before applying…"
 docker compose config -q </dev/null

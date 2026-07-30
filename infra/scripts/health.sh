@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Component health for this box. Emits JSON for the panel to consume later.
+# NOTE: this can never report that the box itself is down — liveness must come
+# from an external pinger. This covers only what the box can see about itself.
+set -uo pipefail
+APP=/srv/darling/prod
+cd "$APP" || exit 1
+set -a; . ./.env 2>/dev/null; set +a
+
+age_days() { [ -f "$1" ] && echo $(( ( $(date +%s) - $(date -d "$(cat "$1")" +%s) ) / 86400 )) || echo -1; }
+
+CONTAINERS=$(docker compose ps --format '{{.Service}}:{{.State}}' </dev/null 2>/dev/null | paste -sd, -)
+UP=$(docker compose ps --status running -q </dev/null 2>/dev/null | wc -l)
+DB_OK=$(docker compose exec -T db mariadb -u root -p"${MYSQL_ROOT_PASSWORD:-}" -N -B -e "SELECT 1;" </dev/null 2>/dev/null | tr -d '\n' || echo 0)
+HTTP=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 -H "Host: staging.darlinghome.bg" https://127.0.0.1/ 2>/dev/null || echo 000)
+CERT_END=$(echo | openssl s_client -connect 127.0.0.1:443 -servername staging.darlinghome.bg 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+CERT_DAYS=$([ -n "$CERT_END" ] && echo $(( ( $(date -d "$CERT_END" +%s) - $(date +%s) ) / 86400 )) || echo -1)
+DISK=$(df -P / | awk 'NR==2{gsub("%","",$5); print $5}')
+MEM=$(free -m | awk '/^Mem:/{printf "%d", $3*100/$2}')
+
+cat > "$APP/health.json" <<JSON
+{
+  "generated": "$(date -u +%FT%TZ)",
+  "containers": "$CONTAINERS",
+  "containers_running": $UP,
+  "db_ok": ${DB_OK:-0},
+  "http_code": $HTTP,
+  "cert_days_remaining": $CERT_DAYS,
+  "disk_used_pct": $DISK,
+  "mem_used_pct": $MEM,
+  "backup_age_days": $(age_days "$APP/.last-backup"),
+  "restore_test_age_days": $(age_days "$APP/.last-restore-test")
+}
+JSON
+cat "$APP/health.json"
+
+# non-zero exit if anything is actually wrong, so cron mail / monitoring notices
+FAIL=0
+[ "$UP" -ge 4 ]            || { echo "ALERT: only $UP containers running"; FAIL=1; }
+[ "${DB_OK:-0}" = "1" ]    || { echo "ALERT: database not responding"; FAIL=1; }
+case "$HTTP" in 200|302|401) ;; *) echo "ALERT: site returned $HTTP"; FAIL=1;; esac
+[ "$CERT_DAYS" -gt 14 ]    || { echo "ALERT: cert expires in $CERT_DAYS days"; FAIL=1; }
+[ "$DISK" -lt 85 ]         || { echo "ALERT: disk ${DISK}% full"; FAIL=1; }
+exit $FAIL
