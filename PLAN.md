@@ -258,7 +258,9 @@ Measured: ~2,100 lines Shopify-coupled; **55–60% survives untouched** (all Bar
 - [ ] Кошници rewired to the plugin's cart-capture events.
 
 ### Phase 6 — Payments, SEO, feeds
-- [ ] ✅ **Stripe registered (owner, 2026-07-27) — primary gateway.** 1.5% + €0.25 EEA cards.
+- [x] ✅ **Stripe registered (owner, 2026-07-27) — primary gateway.** Official plugin
+      `woocommerce-gateway-stripe` 10.8.4 installed + active (2026-07-31); keys pending owner.
+      NOT hand-built — Woo's own gateway is maintained and correctly PCI-scoped. 1.5% + €0.25 EEA cards.
       Chosen for Apple/Google Pay and **payout straight to the company bank account** (unlike myPOS,
       whose e-money balance must be swept). Also brings: block-checkout-compatible official plugin,
       built-in SCA/3DS handling, Radar fraud screening, programmatic refunds (useful for the storno
@@ -267,14 +269,20 @@ Measured: ~2,100 lines Shopify-coupled; **55–60% survives untouched** (all Bar
       automated end-to-end card checkouts** in CI — the exact thing we could not do on Shopify
       without asking the owner to toggle test mode. This materially improves how well we can prove
       the pipeline before launch.
+- [x] ⏳ **Borica BUILT (2026-07-31)** — owner signing the contract. In-house APGW gateway
+      (`class-borica-gateway.php`): no maintained official plugin exists and the third-party ones
+      skip response-signature verification. Credentials live in server env, never the DB; the
+      gateway hides itself until complete. ⚠ MAC field order still unverified — needs their doc
+      pack + test terminal. Original evaluation note follows.
 - [ ] ⏳ **Borica to evaluate as a second gateway** (~1.2%, €0 fixed → ~€0.48/order at €40 AOV vs
       Stripe's ~€0.85). Natural split: **wallets → Stripe** (Express Checkout buttons render
       separately), **manual card entry → Borica**. Woo runs both cleanly, so the cheap path takes the
       volume and Stripe covers the wallets Borica generally can't. Owner is checking with the bank.
       Only worth it if the quoted rate is genuinely ≤~1.3%; otherwise Stripe alone is simpler.
-- [ ] COD via Woo's built-in gateway; real logic stays in our plugin/panel exactly as today.
+- [x] COD via Woo's built-in gateway — enabled 2026-07-31 („Наложен платеж"); real logic stays
+      in our plugin/panel exactly as today.
 - [ ] PCI: use redirect/iframe flows only → **SAQ A**. Never self-host card fields.
-- [ ] SEO: RankMath or SEOPress (free tiers are ample), Product/Offer/Breadcrumb schema,
+- [ ] 🔨 SEO: RankMath or SEOPress (free tiers are ample), Product/Offer/Breadcrumb schema,
       hreflang, sitemaps.
 - [ ] **301 map**: legacy `darling7.com/product-name-<id>.html` (~4,590 URLs) → new slugs.
       Server-level rules, not a DB-backed redirect plugin, at this volume.
