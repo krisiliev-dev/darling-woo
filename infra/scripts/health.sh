@@ -16,6 +16,14 @@ HTTP=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 -H "Host: staging.d
 CERT_END=$(echo | openssl s_client -connect 127.0.0.1:443 -servername staging.darlinghome.bg 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
 CERT_DAYS=$([ -n "$CERT_END" ] && echo $(( ( $(date -d "$CERT_END" +%s) - $(date +%s) ) / 86400 )) || echo -1)
 DISK=$(df -P / | awk 'NR==2{gsub("%","",$5); print $5}')
+
+# The MAIL certificate renews on the same cron but is NOT served by nginx, so the
+# check above cannot see it. A silent renewal failure there stops mail rather than
+# the website — a quieter failure, and therefore one worth watching explicitly.
+MAIL_CERT=/srv/darling/prod/nginx/certbot/conf/live/mail.darlinghome.bg/fullchain.pem
+MAIL_CERT_END=$([ -r "$MAIL_CERT" ] && openssl x509 -in "$MAIL_CERT" -noout -enddate 2>/dev/null | cut -d= -f2)
+MAIL_CERT_DAYS=$([ -n "$MAIL_CERT_END" ] && echo $(( ( $(date -d "$MAIL_CERT_END" +%s) - $(date +%s) ) / 86400 )) || echo -1)
+MAIL_UP=$(docker compose ps --status running -q mailserver </dev/null 2>/dev/null | wc -l)
 MEM=$(free -m | awk '/^Mem:/{printf "%d", $3*100/$2}')
 
 cat > "$APP/health.json" <<JSON
@@ -26,6 +34,8 @@ cat > "$APP/health.json" <<JSON
   "db_ok": ${DB_OK:-0},
   "http_code": $HTTP,
   "cert_days_remaining": $CERT_DAYS,
+  "mail_cert_days_remaining": $MAIL_CERT_DAYS,
+  "mailserver_running": $MAIL_UP,
   "disk_used_pct": $DISK,
   "mem_used_pct": $MEM,
   "backup_age_days": $(age_days "$APP/.last-backup"),
