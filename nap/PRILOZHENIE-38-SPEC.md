@@ -133,10 +133,42 @@ So a fully unattended monthly filing is **not** achievable as things stand. The 
 If a machine-to-machine channel does exist, it would need confirming with НАП; worth asking in the
 same conversation as the УИН.
 
+## 5a. Implementation constraints (panel session — adopted)
+
+**1. 🔴 Confirm the current XSD *version* before trusting our own validator.**
+The published schema is dated **06.06.2022** and predates euro adoption. If НАП has since revised
+it, our generator validates **green against a stale copy** and НАП rejects the upload anyway — a
+false green in the worst possible place, discovered at the filing deadline. *Trusting our validator
+requires first knowing the schema is current.* Chase this before the currency question; it may
+answer it.
+
+**2. 🔴 The cp1251 transcode must FAIL LOUDLY — never `errors="replace"`.**
+Product names come from the AI enrichment pipeline and routinely contain em-dashes and curly
+quotes. `encode("cp1251", errors="replace")` would put literal `?` characters into a **legal
+filing** and exit zero. Required order:
+1. **Deliberately** normalise typographic characters to ASCII equivalents (— → -, " " → ", … → ...).
+2. **Error** on anything still un-encodable, naming the product.
+Same discipline for the **200-char `art_name` cap**: truncate **on purpose and log it**, rather
+than letting the XSD reject the file at upload time.
+
+**3. The arithmetic self-check must reconcile against BARSY's booked totals**, not merely against
+itself. A file whose lines sum correctly to its own totals is **self-confirming** — it can be
+internally perfect and built entirely from wrong numbers. Barsy is the system of record, so that is
+what the totals must agree with.
+
+**4. Escalation keys on the FILING, not the file.**
+- A human **"mark as filed"** action, with a date.
+- An issue raised if the **15th** passes without it.
+- 🚫 **No auto-resolve on generation.** If generating the file closes the alert, we have built a
+  generator that congratulates itself while nothing reaches НАП.
+
 ## 6. Blocking prerequisites
 
-- [ ] **УИН** — file чл. 52т, ал. 2 with НАП (this is the e-shop declaration already on the
-      checklist). Until then `e_shop_n` cannot be populated and no genuine file can be produced.
+- [ ] **УИН** — file чл. 52т, ал. 2 with НАП (the e-shop declaration already on the checklist).
+      Until then `e_shop_n` cannot be populated and no genuine file can be produced.
+      🚨 **The УИН is ONE PER DOMAIN — declare the FINAL PRODUCTION domain (`darlinghome.bg`), NOT
+      `staging.darlinghome.bg`.** With the Woo migration in flight this is a live risk, not a
+      theoretical one: declaring against a staging hostname means correcting it with НАП later.
 - [ ] **Currency question** (§1) resolved.
 - [ ] **`paym` mapping** for Stripe vs Borica vs COD confirmed by the accountant.
 - [ ] Confirm whether a **post-2022 XSD** exists (euro + the 2025 returned-orders amendment).
