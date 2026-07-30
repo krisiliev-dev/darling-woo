@@ -32,6 +32,31 @@ class Darling_Currency {
 
 	public static function init(): void {
 		add_filter( 'wc_price', array( __CLASS__, 'append_bgn' ), 10, 5 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'assets' ) );
+	}
+
+	/**
+	 * The block cart/checkout render prices client-side from Store API values and
+	 * never pass through `wc_price`, so dual display was missing on exactly the two
+	 * pages where it matters most. The server still owns the RATE and the on/off
+	 * switch; the browser only formats.
+	 */
+	public static function assets(): void {
+		if ( ! function_exists( 'is_cart' ) || ! ( is_cart() || is_checkout() ) ) {
+			return;
+		}
+		$f = DARLING_CHECKOUT_PATH . 'assets/dual-currency.js';
+		wp_enqueue_script(
+			'darling-dual-currency',
+			plugins_url( 'assets/dual-currency.js', DARLING_CHECKOUT_PATH . 'darling-checkout.php' ),
+			array(),
+			file_exists( $f ) ? (string) filemtime( $f ) : DARLING_CHECKOUT_VERSION,
+			true
+		);
+		wp_localize_script( 'darling-dual-currency', 'DarlingDual', array(
+			'rate'   => self::RATE,
+			'active' => self::dual_display_active() && 'EUR' === get_woocommerce_currency(),
+		) );
 	}
 
 	public static function dual_display_active(): bool {
