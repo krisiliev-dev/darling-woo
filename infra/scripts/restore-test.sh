@@ -27,5 +27,6 @@ if [ "$SRC_TABLES" = "0" ]; then
   echo "[restore-test] WARNING: database is empty (WordPress not installed yet) —"
   echo "[restore-test] this proves the mechanism, not the data. Re-check after install."
 fi
+echo "$SRC_TABLES" > "$APP/.restore-test-tables"
 date -u +%FT%TZ > "$APP/.last-restore-test"
 echo "[restore-test] ok"
