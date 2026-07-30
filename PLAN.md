@@ -466,3 +466,21 @@ Small, cheap-now/awkward-later items. Owner column = who does it.
 | WordPress attack surface | Minimal plugin count (we build our own), 2FA, WAF, auto-updates, staging |
 | Storno still unproven | Unchanged by platform — waits on the fiscal device |
 | Catalogue (9,385 products, no categories) | The actual blocker; proceeds in parallel, platform-agnostic |
+
+---
+
+## 8. COD pricing — the package-hash trap (2026-07-31)
+
+WooCommerce caches shipping rates against a hash of the package: cart contents and
+destination. **The payment method is not in that hash.** Any rate that varies with
+the payment method is therefore stale whenever the customer chooses it *after*
+entering an address — which is the normal order of a checkout.
+
+For us that meant the наложен платеж surcharge was never charged, while the panel
+booked the shipment with COD attached and we paid the courier for it. Silent, and
+on the majority of orders.
+
+Fixed by adding a key to the package in `woocommerce_cart_shipping_packages`, which
+changes the hash. **Any future rate input that is not cart contents or destination
+must be added there too** — otherwise it will be quietly ignored after the first
+calculation.
