@@ -30,6 +30,32 @@ class Darling_Shipping {
 	public static function init(): void {
 		add_filter( 'woocommerce_shipping_methods', array( __CLASS__, 'register' ) );
 		add_action( 'woocommerce_shipping_init', array( __CLASS__, 'load' ) );
+		add_filter( 'woocommerce_cart_shipping_packages', array( __CLASS__, 'tag_package_with_cod' ) );
+	}
+
+	/**
+	 * Put the COD flag INTO the shipping package, so it lands in the package hash.
+	 *
+	 * WooCommerce caches calculated rates against a hash of the package — cart
+	 * contents and destination. The payment method is not in it. But our rates
+	 * depend on it, because the courier charges a наложен платеж surcharge.
+	 *
+	 * Without this the price depends on the ORDER THE CUSTOMER DOES THINGS:
+	 *   picks COD, then enters address  -> 4.88  (correct)
+	 *   enters address, then picks COD  -> 4.48  (stale, 0.40 short)
+	 * and the second is the normal path, because the address comes first. So the
+	 * surcharge was effectively never charged — while the panel books the shipment
+	 * WITH cash-on-delivery attached and we pay the courier for it. A silent loss on
+	 * every COD order, and COD is most of them.
+	 *
+	 * Adding a key to the package changes the hash, which is exactly the point:
+	 * switching payment method now invalidates the cached rates.
+	 */
+	public static function tag_package_with_cod( array $packages ): array {
+		foreach ( $packages as $i => $package ) {
+			$packages[ $i ]['darling_cod'] = self::is_cod() ? 'cod' : 'prepaid';
+		}
+		return $packages;
 	}
 
 	public static function load(): void {
