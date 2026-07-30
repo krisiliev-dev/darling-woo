@@ -84,3 +84,48 @@ services:
       - ./nginx/certbot/www:/var/www/certbot:ro
       - ./nginx/certbot/conf:/etc/letsencrypt:ro
       - ./public:/var/www/public:ro
+
+  # ---------------------------------------------------------------------------
+  # Mail server for @darlinghome.bg.
+  #
+  # docker-mailserver rather than hand-rolled Postfix/Dovecot: it bundles Postfix,
+  # Dovecot, OpenDKIM, Rspamd and fail2ban with sane defaults. Hand-assembling
+  # those is where self-hosted mail usually goes wrong — an accidental open relay
+  # gets the IP blocklisted within hours, and then nothing this domain sends
+  # reaches anyone.
+  #
+  # RECEIVING works as soon as DNS points here. SENDING additionally requires
+  # Contabo to unblock outbound port 25 — see infra/MAIL.md.
+  mailserver:
+    image: mailserver/docker-mailserver:14.0
+    container_name: darling-mailserver
+    hostname: mail.darlinghome.bg
+    restart: unless-stopped
+    # NET_ADMIN is for fail2ban's iptables rules; SYS_PTRACE for its log parsing.
+    cap_add: [NET_ADMIN, SYS_PTRACE]
+    ports:
+      - "25:25"     # inbound mail from other servers
+      - "587:587"   # submission (STARTTLS) - what WordPress will use
+      - "465:465"   # submission (implicit TLS)
+      - "993:993"   # IMAPS, for reading the mailbox
+    environment:
+      OVERRIDE_HOSTNAME: mail.darlinghome.bg
+      # Reuse the certbot certificates nginx already renews on this box.
+      SSL_TYPE: letsencrypt
+      ENABLE_OPENDKIM: 1
+      ENABLE_OPENDMARC: 1
+      ENABLE_RSPAMD: 1
+      ENABLE_CLAMAV: 0          # ~1GB RAM; not worth it at this volume
+      ENABLE_FAIL2BAN: 1
+      # A mail server that accepts mail for anyone is a spam relay. Explicitly off.
+      PERMIT_DOCKER: none
+      SPOOF_PROTECTION: 1
+      POSTMASTER_ADDRESS: orders@darlinghome.bg
+      LOG_LEVEL: info
+    volumes:
+      - ./mail/data:/var/mail
+      - ./mail/state:/var/mail-state
+      - ./mail/logs:/var/log/mail
+      - ./mail/config:/tmp/docker-mailserver
+      - ./nginx/certbot/conf:/etc/letsencrypt:ro
+      - /etc/localtime:/etc/localtime:ro
