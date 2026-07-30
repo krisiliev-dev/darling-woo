@@ -43,7 +43,7 @@ MECH_ONLY=$([ "${TABLES:-0}" -eq 0 ] && echo true || echo false)
 OK=$([ "$UP" -ge 4 ] && [ "${DB_OK:-0}" = "1" ] && echo true || echo false)
 mkdir -p "$APP/public"
 cat > "$APP/public/peer-health.json" <<JSON
-{"ok":$OK,"db":"$([ "${DB_OK:-0}" = "1" ] && echo ok || echo down)","restore_test_age_h":$(age_h "$APP/.last-restore-test"),"backup_age_h":$(age_h "$APP/.last-backup"),"proves_mechanism_only":$MECH_ONLY}
+{"ok":$OK,"db":"$([ "${DB_OK:-0}" = "1" ] && echo ok || echo down)","restore_test_age_h":$(age_h "$APP/.last-restore-test"),"backup_age_h":$(age_h "$APP/.last-backup"),"offsite_age_h":$(age_h "$APP/.last-offsite"),"proves_mechanism_only":$MECH_ONLY}
 JSON
 
 # non-zero exit if anything is actually wrong, so cron mail / monitoring notices

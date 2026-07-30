@@ -36,5 +36,20 @@ find "$DEST" -name 'db-*.sql.gz'      -mtime +7  -delete
 find "$DEST" -name 'uploads-*.tar.gz' -mtime +7  -delete
 find "$DEST" -name 'config-*.tar.gz'  -mtime +30 -delete
 
+# --- off-site copy to Cloudflare R2 ---
+# Different provider on purpose: cross-copying to the other Contabo box would
+# share a failure domain (account suspension, DC incident) with the original.
+# Deliberately NOT `|| true`: a silently-failing off-site copy is the failure
+# you only discover when you need it.
+R2="r2:darling-woocommerce-website-backups"
+if "$HOME/bin/rclone" copy "$DEST" "$R2/"       --include 'db-*.sql.gz' --include 'uploads-*.tar.gz' --include 'config-*.tar.gz'       --transfers 2 --retries 3 2>&1; then
+  date -u +%FT%TZ > "$APP/.last-offsite"
+  rm -f "$APP/.offsite-failed"
+  echo "[backup] off-site ok"
+else
+  echo "[backup] WARN: R2 UPLOAD FAILED — local backup kept, OFF-SITE COPY IS NOW STALE" >&2
+  date -u +%FT%TZ > "$APP/.offsite-failed"
+fi
+
 date -u +%FT%TZ > "$APP/.last-backup"
 echo "[backup] ok — $(du -sh "$DEST" | cut -f1) total, db dump $(du -h "$DEST/db-$TS.sql.gz" | cut -f1)"
