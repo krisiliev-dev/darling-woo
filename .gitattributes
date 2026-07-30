@@ -9,3 +9,8 @@
 *.conf text eol=lf
 *.ini  text eol=lf
 *.md   text eol=lf
+
+# The NAP schema is the authoritative artefact and is WINDOWS-1251.
+# Never let line-ending normalisation touch it - keep the bytes exactly as published.
+nap/spec/** -text -diff
+nap/*.zip binary

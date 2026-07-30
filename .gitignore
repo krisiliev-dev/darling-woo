@@ -16,3 +16,8 @@ renew.log
 
 node_modules/
 .DS_Store
+
+# scraping scratch
+nap/cj.txt
+nap/page.html
+nap/*.zip
