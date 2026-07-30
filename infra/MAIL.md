@@ -24,11 +24,11 @@ against that name, and the MX record has to point at a name that resolves.
 
 Both are account-level and cannot be done from inside the server.
 
-- **Unblock outbound port 25.** Contabo blocks it by default on new VPSs to limit
-  spam. Open a support ticket asking for it to be lifted for `169.58.89.40`; they
-  usually ask what you intend to send. "Transactional order confirmations for our
-  own e-commerce domain" is the honest answer and the one they are looking for.
-  **Until this is done the server can receive mail but cannot send any.**
+- ~~Unblock outbound port 25~~ — **NOT needed.** Verified working on this box over
+  both IPv4 and IPv6, with Gmail returning a live SMTP banner:
+  `220 mx.google.com ESMTP …`. An earlier claim that it was blocked came from a
+  bash `/dev/tcp` probe, which gives false negatives; always confirm a port with
+  `curl -v telnet://host:25` or by reading the banner, never with `/dev/tcp`.
 - **Set reverse DNS (PTR)** for `169.58.89.40` to `mail.darlinghome.bg`, in the
   Contabo panel. Most large receivers reject mail from an IP whose PTR does not
   match its HELO name. This is not optional; it is one of the first things Gmail

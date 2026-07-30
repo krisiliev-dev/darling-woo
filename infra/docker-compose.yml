@@ -94,8 +94,8 @@ services:
   # gets the IP blocklisted within hours, and then nothing this domain sends
   # reaches anyone.
   #
-  # RECEIVING works as soon as DNS points here. SENDING additionally requires
-  # Contabo to unblock outbound port 25 — see infra/MAIL.md.
+  # Outbound :25 is confirmed open on this box (Gmail answers with a banner), so
+  # sending is possible once DNS and the PTR record are in place — see infra/MAIL.md.
   mailserver:
     image: mailserver/docker-mailserver:14.0
     container_name: darling-mailserver
