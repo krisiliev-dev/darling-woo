@@ -18,10 +18,18 @@ NOTIFY_URL=""
 [ -r "$APP/.notify" ] && . "$APP/.notify"
 
 ts() { date -u +%FT%TZ; }
+# EMAIL_TO (optional) uses ntfy's built-in email forwarding, so there is no SMTP
+# credential to store and no local MTA (which would land in spam from a VPS IP).
 notify() {
   local msg="$1"
   echo "$(ts) NOTIFY: $msg" >> "$LOG"
-  [ -n "$NOTIFY_URL" ] && curl -s --max-time 10 -d "$msg" "$NOTIFY_URL" >/dev/null 2>&1 || true
+  [ -n "$NOTIFY_URL" ] || return 0
+  if [ -n "${EMAIL_TO:-}" ]; then
+    # Title stays ASCII: non-ASCII in an HTTP header gets mangled.
+    curl -s --max-time 15 -H "Title: Darling infrastructure alert"          -H "Email: $EMAIL_TO" -d "$msg" "$NOTIFY_URL" >/dev/null 2>&1 || true
+  else
+    curl -s --max-time 15 -d "$msg" "$NOTIFY_URL" >/dev/null 2>&1 || true
+  fi
 }
 
 # Assert the BODY, not just the status. The panel is a SPA: an unknown path —
