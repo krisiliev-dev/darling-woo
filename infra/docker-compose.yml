@@ -58,6 +58,8 @@ services:
         }
       WP_HOME: ${WP_HOME}
       WP_SITEURL: ${WP_SITEURL}
+      DARLING_PANEL_URL: ${DARLING_PANEL_URL}
+      DARLING_PANEL_TOKEN: ${DARLING_PANEL_TOKEN}
     volumes:
       - ./wordpress:/var/www/html
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/zz-darling.ini:ro

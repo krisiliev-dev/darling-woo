@@ -21,6 +21,12 @@ defined( 'ABSPATH' ) || exit;
 define( 'DARLING_CHECKOUT_VERSION', '1.0.0' );
 define( 'DARLING_CHECKOUT_PATH', plugin_dir_path( __FILE__ ) );
 
+// Cart-capture needs its table before anything writes to it.
+register_activation_hook( __FILE__, function () {
+	require_once DARLING_CHECKOUT_PATH . 'includes/class-cart-capture.php';
+	Darling_Cart_Capture::install();
+} );
+
 /**
  * Declare compatibility BEFORE WooCommerce boots its feature checks.
  * Without these, WooCommerce flags the plugin as incompatible and can disable
@@ -43,11 +49,23 @@ add_action( 'plugins_loaded', function () {
 		return;
 	}
 
-	require_once DARLING_CHECKOUT_PATH . 'includes/class-currency.php';
-	require_once DARLING_CHECKOUT_PATH . 'includes/class-invoice-fields.php';
-	require_once DARLING_CHECKOUT_PATH . 'includes/class-gpsr.php';
+	foreach ( array( 'panel-api', 'currency', 'invoice-fields', 'gpsr', 'shipping', 'office-field', 'cart-capture' ) as $m ) {
+		require_once DARLING_CHECKOUT_PATH . "includes/class-$m.php";
+	}
 
 	Darling_Currency::init();
 	Darling_Invoice_Fields::init();
 	Darling_GPSR::init();
+	Darling_Shipping::init();
+	Darling_Office_Field::init();
+	Darling_Cart_Capture::init();
+
+	// Surface a missing panel configuration rather than silently losing live rates.
+	if ( ! Darling_Panel_API::configured() ) {
+		add_action( 'admin_notices', function () {
+			echo '<div class="notice notice-warning"><p><strong>Дарлинг — Checkout</strong>: '
+			   . 'липсва DARLING_PANEL_URL / DARLING_PANEL_TOKEN — живите цени за доставка са изключени '
+			   . 'и се начислява резервна тарифа.</p></div>';
+		} );
+	}
 } );
