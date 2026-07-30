@@ -74,3 +74,4 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/certbot/www:/var/www/certbot:ro
       - ./nginx/certbot/conf:/etc/letsencrypt:ro
+      - ./public:/var/www/public:ro
