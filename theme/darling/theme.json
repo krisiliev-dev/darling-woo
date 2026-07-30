@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "defaultPalette": false,
+      "palette": [
+        { "slug": "cherry",      "color": "#D42A3C", "name": "Череша" },
+        { "slug": "cherry-deep", "color": "#B01F30", "name": "Тъмна череша" },
+        { "slug": "honey",       "color": "#E8A61B", "name": "Мед" },
+        { "slug": "honey-dark",  "color": "#C9891B", "name": "Тъмен мед" },
+        { "slug": "cocoa",       "color": "#3A1D20", "name": "Какао" },
+        { "slug": "cream",       "color": "#FFF6E9", "name": "Крем" },
+        { "slug": "vanilla",     "color": "#FFE9C9", "name": "Ванилия" },
+        { "slug": "sand",        "color": "#F2E3CC", "name": "Пясък" },
+        { "slug": "white",       "color": "#FFFFFF", "name": "Бяло" }
+      ]
+    },
+    "typography": {
+      "fluid": true,
+      "defaultFontSizes": false,
+      "fontSizes": [
+        { "slug": "small",   "size": "0.875rem", "name": "Малък" },
+        { "slug": "medium",  "size": "1rem",     "name": "Среден" },
+        { "slug": "large",   "size": "1.375rem", "name": "Голям" },
+        { "slug": "x-large", "size": "2rem",     "name": "Много голям" }
+      ]
+    },
+    "layout": { "contentSize": "820px", "wideSize": "1280px" }
+  },
+  "styles": {
+    "color": { "background": "var(--wp--preset--color--cream)", "text": "var(--wp--preset--color--cocoa)" },
+    "elements": {
+      "link":   { "color": { "text": "var(--wp--preset--color--cherry-deep)" } },
+      "h1":     { "color": { "text": "var(--wp--preset--color--honey-dark)" } },
+      "h2":     { "color": { "text": "var(--wp--preset--color--honey-dark)" } },
+      "h3":     { "color": { "text": "var(--wp--preset--color--honey-dark)" } },
+      "button": {
+        "color":  { "background": "var(--wp--preset--color--cherry)", "text": "#FFF6EE" },
+        "border": { "radius": "999px" }
+      }
+    }
+  }
+}

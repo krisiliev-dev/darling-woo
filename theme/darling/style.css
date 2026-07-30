@@ -1,0 +1,89 @@
+/*
+Theme Name: Дарлинг
+Theme URI: https://darlinghome.bg
+Description: Дарлинг storefront theme — warm, paper-textured Bulgarian home-goods design. Child of Twenty Twenty-Five.
+Author: Дарлинг 7 ООД
+Template: twentytwentyfive
+Version: 1.0.0
+Text Domain: darling
+Requires at least: 6.7
+Tested up to: 7.0
+License: GPL-2.0-or-later
+*/
+
+/* ------------------------------------------------------------------
+   Design tokens — ported verbatim from the Shopify build.
+   These are plain CSS custom properties, so they carried across
+   untouched; only the templating language changed.
+   ------------------------------------------------------------------ */
+:root {
+  --d-cherry:      #D42A3C;
+  --d-cherry-deep: #B01F30;
+  --d-honey:       #E8A61B;
+  --d-honey-light: #F6C95C;
+  --d-honey-dark:  #C9891B;  /* headings on cream */
+  --d-honey-nav:   #A6771A;  /* small gold text — AA contrast */
+  --d-cocoa:       #3A1D20;
+  --d-cream:       #FFF6E9;
+  --d-cream-text:  #FFF6EE;
+  --d-vanilla:     #FFE9C9;
+  --d-soft:        #FFE3DA;
+  --d-sand:        #F2E3CC;  /* card borders */
+  --d-sand-deep:   #EFDCC3;
+  --d-shadow:      58, 29, 32;
+}
+
+body {
+  background-color: var(--d-cream);
+  color: var(--d-cocoa);
+}
+
+/* Headings carry the honey tone, darkened for contrast on cream (AA). */
+h1, h2, h3, .wp-block-heading { color: var(--d-honey-dark); }
+
+a { color: var(--d-cherry-deep); }
+a:hover { color: var(--d-cherry); }
+
+/* Cards / panels — the "paper" feel */
+.darling-card,
+.wc-block-grid__product,
+ul.products li.product {
+  background: #fff;
+  border: 1px solid var(--d-sand);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(var(--d-shadow), .04);
+}
+
+/* Primary action */
+.wp-element-button,
+.wc-block-components-button,
+button.button.alt,
+a.button.alt {
+  background-color: var(--d-cherry);
+  border-color: var(--d-cherry);
+  color: var(--d-cream-text);
+  border-radius: 999px;
+}
+.wp-element-button:hover,
+.wc-block-components-button:hover,
+button.button.alt:hover,
+a.button.alt:hover {
+  background-color: var(--d-cherry-deep);
+  border-color: var(--d-cherry-deep);
+}
+
+/* Sale / price */
+.woocommerce span.onsale { background: var(--d-honey); color: var(--d-cocoa); }
+.woocommerce div.product p.price { color: var(--d-cherry-deep); font-weight: 700; }
+
+/* Accessibility: never remove focus outlines, only restyle them. */
+:focus-visible { outline: 3px solid var(--d-honey); outline-offset: 2px; }
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

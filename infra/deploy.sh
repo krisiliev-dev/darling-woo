@@ -22,6 +22,9 @@ cp "$REPO_DIR/infra/renew-certs.sh"      renew-certs.sh && chmod +x renew-certs.
 rsync -a --exclude '.htpasswd' "$REPO_DIR/infra/nginx/conf.d/" nginx/conf.d/
 mkdir -p "$APP_DIR/scripts" "$APP_DIR/public"
 rsync -a "$REPO_DIR/infra/scripts/" "$APP_DIR/scripts/"
+# theme is versioned too, so a redeploy restores it exactly
+mkdir -p "$APP_DIR/wordpress/wp-content/themes/darling"
+rsync -a --delete "$REPO_DIR/theme/darling/" "$APP_DIR/wordpress/wp-content/themes/darling/"
 chmod +x "$APP_DIR"/scripts/*.sh
 
 echo "[deploy] validating before applying…"
