@@ -24,16 +24,30 @@ ts() { date -u +%FT%TZ; }
 # anonymous email sending returns HTTP 400 and the message is not delivered at
 # all. So email is attempted first and ALWAYS falls back to a plain push.
 notify() {
-  local msg="$1" code
+  local msg="$1" code sent=0
   echo "$(ts) NOTIFY: $msg" >> "$LOG"
-  [ -n "$NOTIFY_URL" ] || return 0
 
-  if [ -n "${EMAIL_TO:-}" ]; then
-    # Title stays ASCII: non-ASCII in an HTTP header is mangled.
-    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15              -H "Title: Darling infrastructure alert" -H "Email: $EMAIL_TO"              -d "$msg" "$NOTIFY_URL") || code=000
-    case "$code" in 2*) return 0 ;; esac
-    echo "$(ts) WARN: email notify failed (http=$code) - falling back to push" >> "$LOG"
+  # --- private channel: email relayed through an authenticated SMTP (msmtp) ---
+  # Not a local mail server: a VPS IP would be spam-filtered SILENTLY, and an
+  # alert channel that fails quietly is worse than none.
+  if [ -n "${EMAIL_TO:-}" ] && command -v msmtp >/dev/null 2>&1 && [ -r "$HOME/.msmtprc" ]; then
+    if printf 'To: %s
+Subject: [Darling] infrastructure alert
+Content-Type: text/plain; charset=UTF-8
+
+%s
+
+Host: %s
+Time: %s
+'          "$EMAIL_TO" "$msg" "$(hostname)" "$(ts)" | msmtp "$EMAIL_TO" 2>>"$LOG"; then
+      sent=1
+    else
+      echo "$(ts) ERROR: EMAIL DELIVERY FAILED" >> "$LOG"
+    fi
   fi
+
+  [ -n "$NOTIFY_URL" ] || { [ "$sent" = 1 ] || echo "$(ts) ERROR: no channel delivered" >> "$LOG"; return 0; }
+
 
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 -d "$msg" "$NOTIFY_URL") || code=000
   case "$code" in
