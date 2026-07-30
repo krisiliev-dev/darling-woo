@@ -1,0 +1,18 @@
+# secrets — never commit
+.env
+.env.local
+.staging-password
+.htpasswd
+*.pem
+*.key
+
+# runtime data / state (lives on the server, restored from backups)
+wordpress/
+mariadb/
+redis/
+backups/
+nginx/certbot/
+renew.log
+
+node_modules/
+.DS_Store

@@ -1,0 +1,33 @@
+name: Deploy infra
+
+on:
+  push:
+    branches: [main]
+    paths: ['infra/**', '.github/workflows/deploy.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-woo
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # workflow_dispatch must reach the deploy too — a manual run that silently
+    # skips deployment is a green tick that proves nothing.
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # Host key is PINNED, not scanned. ssh-keyscan would be trust-on-first-use
+          # on every run, so a MITM at deploy time would go undetected.
+          # If the box is rebuilt this WILL fail with a host-key mismatch — that is
+          # CORRECT. Do not "fix" it by restoring ssh-keyscan. Get the new key from
+          # /etc/ssh/ssh_host_ed25519_key.pub on the server and update the secret.
+          printf '%s\n' "${{ secrets.SERVER_SSH_HOST_KEY }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          # The key carries a forced command server-side, so what we send is ignored.
+          ssh -i ~/.ssh/id_ed25519 "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" true
