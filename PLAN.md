@@ -540,6 +540,35 @@ waiting and what unblocks it.
 - [ ] **GPSR fields populated.** Already built into the plugin; increasingly
       required for EU product listings, so it gates the feeds, not just compliance.
 
+### 🚨 Blocks the new couriers going live (raised by Hermes, 2026-07-31)
+- [ ] **Register BOX NOW, Sameday, Pigeon Express and Европът as speditors in the
+      Barsy UI.** OWNER ACTION — `Speditors_*` is read-only, there is no API.
+      Barsy currently lists four: Еконт, Speedy, Поща, От офис. The storefront now
+      registers six carriers, so an order on any of the new four cannot carry a
+      `speditor_id`: the connector stamps the waybill onto the Barsy account with
+      **no courier attached**, silently, which degrades exactly the Barsy↔courier
+      reconciliation the waybill stamp exists for.
+      Not urgent *today* — the panel only serves econt/speedy, so the other four
+      cannot produce a rate — but it lands the moment the panel adapters (#96) ship.
+      Do this BEFORE those carriers go live, not after.
+
+### A rule both sessions arrived at independently
+**A defensive construct that degrades to a falsy value is not a guard.**
+
+Two bugs the same week, structurally identical: `function_exists()` around a
+WooCommerce helper that does not exist in WC 10.9, silently returning "" and
+writing blank office ids while the UI looked healthy; and a bare `except` in the
+connector that skipped a money invariant on failure, making the guard look like it
+had passed. Both are "be safe if this isn't available", and both produce silent
+wrong data instead of a stop.
+
+Required question for any such construct: **what does this do when the thing is
+missing?** If the answer is "returns empty and carries on", it is not a guard —
+it is a way of not noticing. See also `darling_fallback`: an order charged the
+invented €5.99 is *internally consistent*, so a totals invariant passes while the
+customer was charged a rate no courier quoted. Internal consistency and external
+truth are different properties and need different checks.
+
 ### SEO — audited 2026-07-31, needs an owner decision
 - [ ] 🚩 **`darling7.com` and `darlinghome.bg` are BOTH live and BOTH indexable.**
       The old site serves `robots.txt: Allow: /`, a full sitemap, and
