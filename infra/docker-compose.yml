@@ -84,6 +84,7 @@ services:
       - ./nginx/certbot/www:/var/www/certbot:ro
       - ./nginx/certbot/conf:/etc/letsencrypt:ro
       - ./public:/var/www/public:ro
+      - ./nginx/logs:/var/log/nginx-host
 
   # ---------------------------------------------------------------------------
   # Mail server for @darlinghome.bg.
