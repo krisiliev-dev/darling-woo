@@ -1,0 +1,70 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"darling-archive","layout":{"type":"constrained"}} -->
+<main class="wp-block-group darling-archive">
+
+	<!-- wp:woocommerce/breadcrumbs {"className":"darling-crumbs"} /-->
+
+	<!-- wp:query-title {"type":"archive","level":1,"className":"darling-archive__title","showPrefix":false} /-->
+	<!-- wp:term-description {"className":"darling-archive__desc"} /-->
+
+	<!-- wp:columns {"className":"darling-archive__body"} -->
+	<div class="wp-block-columns darling-archive__body">
+
+		<!-- Filters in a sidebar rather than a drawer: on a category page the
+		     customer is browsing, and hiding the controls behind a tap costs more
+		     than the space they take. On narrow screens it stacks above the grid. -->
+		<!-- wp:column {"width":"250px","className":"darling-archive__side"} -->
+		<div class="wp-block-column darling-archive__side" style="flex-basis:250px">
+			<!-- wp:woocommerce/product-filters -->
+			<div class="wp-block-woocommerce-product-filters">
+				<!-- wp:woocommerce/product-filter-price /-->
+				<!-- wp:woocommerce/product-filter-stock-status /-->
+			</div>
+			<!-- /wp:woocommerce/product-filters -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"className":"darling-archive__main"} -->
+		<div class="wp-block-column darling-archive__main">
+
+			<!-- wp:group {"className":"darling-archive__bar","layout":{"type":"flex","justifyContent":"space-between"}} -->
+			<div class="wp-block-group darling-archive__bar">
+				<!-- wp:woocommerce/product-results-count /-->
+				<!-- wp:woocommerce/catalog-sorting /-->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:query {"query":{"perPage":24,"postType":"product","inherit":true},"className":"darling-grid"} -->
+			<div class="wp-block-query darling-grid">
+				<!-- wp:post-template -->
+					<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
+					<!-- wp:post-title {"level":2,"isLink":true,"fontSize":"small"} /-->
+					<!-- wp:woocommerce/product-price /-->
+					<!-- wp:woocommerce/product-button /-->
+				<!-- /wp:post-template -->
+
+				<!-- wp:query-pagination {"className":"darling-pagination"} -->
+					<!-- wp:query-pagination-previous /-->
+					<!-- wp:query-pagination-numbers /-->
+					<!-- wp:query-pagination-next /-->
+				<!-- /wp:query-pagination -->
+
+				<!-- wp:query-no-results -->
+					<!-- wp:paragraph {"className":"darling-empty"} -->
+					<p class="darling-empty">В тази категория още няма продукти. Разгледайте
+					<a href="/shop/">всички продукти</a> или се върнете скоро.</p>
+					<!-- /wp:paragraph -->
+				<!-- /wp:query-no-results -->
+			</div>
+			<!-- /wp:query -->
+
+		</div>
+		<!-- /wp:column -->
+	</div>
+	<!-- /wp:columns -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

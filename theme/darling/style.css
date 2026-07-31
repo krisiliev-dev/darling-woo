@@ -278,3 +278,43 @@ a.button.alt:hover {
 	.darling-product__title{font-size:1.45rem}
 	.darling-product__price{font-size:1.35rem}
 }
+
+/* ---------------------------------------------------------------------------
+   Category / shop listing.
+   --------------------------------------------------------------------------- */
+
+.darling-archive{max-width:var(--d-content,1280px);margin:0 auto;padding:1.5rem 1rem 3rem}
+.darling-archive__title{margin:.3rem 0 .4rem;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--d-cocoa)}
+.darling-archive__desc{margin:0 0 1.5rem;max-width:46rem;opacity:.85;line-height:1.6}
+.darling-archive__body{gap:2rem;align-items:flex-start}
+.darling-archive__side{position:sticky;top:5rem}
+.darling-archive__bar{margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--d-sand);
+	font-size:.9rem;gap:1rem;flex-wrap:wrap}
+.darling-archive__bar select{padding:.45rem .6rem;border:1.5px solid var(--d-sand);
+	border-radius:.6rem;background:#fff;color:var(--d-cocoa)}
+
+/* Product cards share the homepage grid, so a change to card styling reaches
+   every listing rather than only the one being looked at. */
+.darling-grid .wp-block-post-template{display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1.6rem;list-style:none;padding:0;margin:0}
+.darling-grid li{display:flex;flex-direction:column;gap:.4rem}
+.darling-grid img{border-radius:.9rem;background:var(--d-vanilla,var(--d-cream));aspect-ratio:1;object-fit:cover}
+.darling-grid h2,.darling-grid h3{margin:.2rem 0 0;font-size:.98rem;line-height:1.35}
+.darling-grid h2 a,.darling-grid h3 a{color:var(--d-cocoa);text-decoration:none}
+.darling-grid h2 a:hover,.darling-grid h3 a:hover{color:var(--d-cherry-deep)}
+.darling-grid .wp-block-woocommerce-product-price{font-weight:700;color:var(--d-cherry-deep)}
+.darling-grid .wp-block-woocommerce-product-button a,
+.darling-grid .wc-block-components-product-button a{display:inline-block;margin-top:auto;
+	padding:.55rem 1rem;border-radius:999px;background:var(--d-honey);color:var(--d-cocoa);
+	text-decoration:none;font-weight:600;font-size:.9rem;text-align:center}
+.darling-grid .wp-block-woocommerce-product-button a:hover{background:var(--d-honey-dark)}
+
+.darling-pagination{display:flex;gap:.4rem;justify-content:center;margin:2.5rem 0 0;flex-wrap:wrap}
+.darling-pagination a,.darling-pagination span{padding:.5rem .85rem;border-radius:.6rem;
+	border:1px solid var(--d-sand);color:var(--d-cocoa);text-decoration:none}
+.darling-pagination a:hover{background:var(--d-honey-light);border-color:var(--d-honey)}
+
+@media (max-width:820px){
+	.darling-archive__body{flex-direction:column}
+	.darling-archive__side{position:static;width:100%!important;flex-basis:auto!important}
+}
