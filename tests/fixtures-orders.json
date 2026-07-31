@@ -1,0 +1,196 @@
+{
+    "13": {
+        "id": 13,
+        "status": "processing",
+        "currency": "EUR",
+        "total": "17.98",
+        "shipping_total": "4.48",
+        "payment_method": "stripe",
+        "transaction_id": "ch_3Tz2cCLMGgqYFBoy0ZgkrfSU",
+        "is_paid": true,
+        "date_created": "2026-07-31T01:39:47+00:00",
+        "billing": {
+            "first_name": "Тест",
+            "last_name": "Поръчка",
+            "company": "",
+            "address_1": "ул. Цар Освободител 1",
+            "address_2": "",
+            "city": "Свищов",
+            "state": "BG-04",
+            "postcode": "5250",
+            "country": "BG",
+            "email": "darling7.sv+wootest@gmail.com",
+            "phone": "0888123456"
+        },
+        "shipping": {
+            "first_name": "Тест",
+            "last_name": "Поръчка",
+            "company": "",
+            "address_1": "ул. Цар Освободител 1",
+            "address_2": "",
+            "city": "Свищов",
+            "state": "BG-04",
+            "postcode": "5250",
+            "country": "BG",
+            "phone": "0888123456"
+        },
+        "darling_meta": {
+            "darling_dest": "office",
+            "darling_carrier": "econt",
+            "darling_city": "Свищов",
+            "darling_office_id": "",
+            "darling_office_name": "",
+            "darling_validated": ""
+        },
+        "shipping_lines": [
+            {
+                "name": "Еконт — до офис",
+                "total": "4.48",
+                "meta": {
+                    "darling_carrier": "econt",
+                    "darling_mode": "office",
+                    "darling_fee_shipping": "4.48",
+                    "darling_fee_cod": "0"
+                }
+            }
+        ],
+        "line_items": [
+            {
+                "name": "Тестова табуретка",
+                "qty": 1,
+                "sku": "TEST-WOO-001",
+                "total": "13.5"
+            }
+        ]
+    },
+    "15": {
+        "id": 15,
+        "status": "processing",
+        "currency": "EUR",
+        "total": "18.38",
+        "shipping_total": "4.88",
+        "payment_method": "cod",
+        "transaction_id": "",
+        "is_paid": true,
+        "date_created": "2026-07-31T01:51:31+00:00",
+        "billing": {
+            "first_name": "Тест",
+            "last_name": "Поръчка",
+            "company": "",
+            "address_1": "ул. Цар Освободител 1",
+            "address_2": "",
+            "city": "Свищов",
+            "state": "BG-04",
+            "postcode": "5250",
+            "country": "BG",
+            "email": "wootest@example.com",
+            "phone": "0888123456"
+        },
+        "shipping": {
+            "first_name": "Тест",
+            "last_name": "Поръчка",
+            "company": "",
+            "address_1": "ул. Цар Освободител 1",
+            "address_2": "",
+            "city": "Свищов",
+            "state": "BG-04",
+            "postcode": "5250",
+            "country": "BG",
+            "phone": "0888123456"
+        },
+        "darling_meta": {
+            "_wc_other/darling/office-id": "5250",
+            "darling_carrier": "econt",
+            "darling_city": "Свищов",
+            "darling_dest": "office",
+            "darling_office_id": "5250",
+            "darling_office_name": "Свищов",
+            "darling_validated": "true"
+        },
+        "shipping_lines": [
+            {
+                "name": "Еконт — до офис",
+                "total": "4.88",
+                "meta": {
+                    "darling_carrier": "econt",
+                    "darling_mode": "office",
+                    "darling_fee_shipping": "4.48",
+                    "darling_fee_cod": "0.4"
+                }
+            }
+        ],
+        "line_items": [
+            {
+                "name": "Тестова табуретка",
+                "qty": 1,
+                "sku": "TEST-WOO-001",
+                "total": "13.5"
+            }
+        ]
+    },
+    "16": {
+        "id": 16,
+        "status": "processing",
+        "currency": "EUR",
+        "total": "18.38",
+        "shipping_total": "4.88",
+        "payment_method": "cod",
+        "transaction_id": "",
+        "is_paid": true,
+        "date_created": "2026-07-31T03:16:01+00:00",
+        "billing": {
+            "first_name": "Тест",
+            "last_name": "Поръчка",
+            "company": "",
+            "address_1": "ул. Цар Освободител 1",
+            "address_2": "",
+            "city": "Свищов",
+            "state": "BG-04",
+            "postcode": "5250",
+            "country": "BG",
+            "email": "wootest@example.com",
+            "phone": "0888123456"
+        },
+        "shipping": {
+            "first_name": "Тест",
+            "last_name": "Поръчка",
+            "company": "",
+            "address_1": "ул. Цар Освободител 1",
+            "address_2": "",
+            "city": "Свищов",
+            "state": "BG-04",
+            "postcode": "5250",
+            "country": "BG",
+            "phone": "0888123456"
+        },
+        "darling_meta": {
+            "_wc_other/darling/office-id": "5250",
+            "darling_carrier": "econt",
+            "darling_city": "Свищов",
+            "darling_dest": "office",
+            "darling_office_id": "5250",
+            "darling_office_name": "Свищов",
+            "darling_validated": "true"
+        },
+        "shipping_lines": [
+            {
+                "name": "Еконт — до офис",
+                "total": "4.88",
+                "meta": {
+                    "darling_carrier": "econt",
+                    "darling_mode": "office",
+                    "darling_fee_shipping": "4.48",
+                    "darling_fee_cod": "0.4"
+                }
+            }
+        ],
+        "line_items": [
+            {
+                "name": "Тестова табуретка",
+                "qty": 1,
+                "sku": "TEST-WOO-001",
+                "total": "13.5"
+            }
+        ]
+    }
+}
