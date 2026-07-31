@@ -570,6 +570,16 @@ customer was charged a rate no courier quoted. Internal consistency and external
 truth are different properties and need different checks.
 
 ### SEO — audited 2026-07-31, needs an owner decision
+- [ ] 🚩 **OWNER DECISION REQUIRED — which domain is the destination?**
+      The 301 map cannot be built until this is answered, because the map's target
+      is whatever this decision names. Three sub-questions:
+      1. Is `darlinghome.bg` the permanent home? (Assumed yes — it is where staging,
+         panel and mail already live.)
+      2. What happens to `darling7.com` — 301 everything to the new domain (keeps
+         the accumulated ranking), or retire it? Redirecting is almost always right;
+         de-indexing throws the authority away.
+      3. Does `darling7.com` stay registered afterwards? It must, if it is
+         redirecting — a redirect only works while the domain resolves.
 - [ ] 🚩 **`darling7.com` and `darlinghome.bg` are BOTH live and BOTH indexable.**
       The old site serves `robots.txt: Allow: /`, a full sitemap, and
       **self-referencing canonicals** — it is actively telling Google it is the
