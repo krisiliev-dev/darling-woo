@@ -23,6 +23,16 @@ cp "$REPO_DIR/infra/renew-certs.sh"      renew-certs.sh && chmod +x renew-certs.
 rsync -a --exclude '.htpasswd' "$REPO_DIR/infra/nginx/conf.d/" nginx/conf.d/
 mkdir -p "$APP_DIR/scripts" "$APP_DIR/public"
 rsync -a "$REPO_DIR/infra/scripts/" "$APP_DIR/scripts/"
+
+# fail2ban lives outside APP_DIR, so it is easy to forget — and it was: these were
+# installed by hand over SSH, leaving the repo copy and the box copy free to drift
+# with nothing to notice. That is the same shape as the panel's stale-core bug:
+# CI green, deploy green, and the change simply not present.
+if [ -d "$REPO_DIR/infra/fail2ban" ]; then
+  sudo -n rsync -a "$REPO_DIR/infra/fail2ban/filter.d/" /etc/fail2ban/filter.d/ 2>/dev/null || true
+  sudo -n rsync -a "$REPO_DIR/infra/fail2ban/jail.d/"   /etc/fail2ban/jail.d/   2>/dev/null || true
+  sudo -n fail2ban-client reload >/dev/null 2>&1 || echo "[deploy] WARNING: fail2ban reload failed"
+fi
 # Theme is versioned too, so a redeploy restores it exactly.
 # wp-content is owned by the php-fpm user (uid 33), not by us — hence sudo,
 # and hence chown afterwards so WordPress can still manage the files.
