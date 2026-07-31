@@ -18,7 +18,48 @@ add_action( 'wp_enqueue_scripts', function () {
 		array( 'twentytwentyfive-style' ),
 		file_exists( $style ) ? filemtime( $style ) : null // cache-bust on deploy
 	);
+
+	// The Shopify theme's stylesheet, ported verbatim rather than rewritten. It
+	// carries the --d-* tokens AND the bespoke animations (ambient stars, star
+	// twinkle, bow float, gradient drift, shimmer). Reimplementing those by eye
+	// would drift from the original; keeping the file intact means the storefront
+	// matches, and a future diff against a fresh capture shows exactly what moved.
+	$ported = get_stylesheet_directory() . '/assets/darling.css';
+	if ( file_exists( $ported ) ) {
+		wp_enqueue_style(
+			'darling-ported',
+			get_stylesheet_directory_uri() . '/assets/darling.css',
+			array( 'darling' ),
+			filemtime( $ported )
+		);
+	}
+
+	$amb = get_stylesheet_directory() . '/assets/ambient.js';
+	if ( file_exists( $amb ) ) {
+		wp_enqueue_script(
+			'darling-ambient',
+			get_stylesheet_directory_uri() . '/assets/ambient.js',
+			array(),
+			filemtime( $amb ),
+			true
+		);
+	}
 }, 20 );
+
+/**
+ * Remove the stock theme's "Designed with WordPress" credit.
+ *
+ * Twenty Twenty-Five puts it in a footer template part, so there is no filter to
+ * unhook — it has to be hidden. Doing it in CSS rather than by overriding the
+ * whole footer template keeps us on the parent theme's markup, so parent updates
+ * still reach us.
+ */
+add_action( 'wp_head', function () {
+	echo '<style id="darling-inline">'
+	   . '.wp-block-site-tagline + .wp-block-paragraph a[href*="wordpress.org"],'
+	   . 'footer .wp-block-paragraph a[href*="wordpress.org"]{display:none}'
+	   . '</style>';
+}, 100 );
 
 add_action( 'after_setup_theme', function () {
 	add_theme_support( 'woocommerce' );
