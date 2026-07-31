@@ -597,7 +597,14 @@ truth are different properties and need different checks.
 - Scope confirmed from the live sitemap: **4,589 product URLs + 72 categories.**
 
 ### Performance (measured 2026-07-31)
-- [ ] **Full-page caching (nginx FastCGI micro-cache).** MEASURED: uncached
+- [x] **Full-page caching (nginx FastCGI micro-cache) — DONE 2026-07-31.**
+      RESULT: **15.2 → 266 rps**, 17.5x, zero failed requests. Verified safe:
+      cart/checkout/my-account/wp-admin/wp-json and any query string BYPASS, as does
+      any request carrying a login, cart or WooCommerce session cookie. Cart
+      isolation proven end to end — session A with one item shows badge "1" and
+      items_count 1, a fresh session B shows "0" and 0. `X-Darling-Cache` exposes
+      HIT/MISS/BYPASS so this stays checkable rather than assumed.
+      ORIGINAL NOTE:  MEASURED: uncached
       WooCommerce serves ~15 rps; static files on the same box serve 3,224 rps;
       disabling WooCommerce doubles it to 30 rps. So ~15 rps is what WooCommerce
       costs, not a misconfiguration — and it is the number that matters on a
