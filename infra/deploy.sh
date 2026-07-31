@@ -17,6 +17,7 @@ echo "[deploy] syncing infra config…"
 cd "$APP_DIR"
 cp "$REPO_DIR/infra/docker-compose.yml" docker-compose.yml
 cp "$REPO_DIR/infra/php/uploads.ini"     php/uploads.ini
+cp "$REPO_DIR/infra/php/fpm-pool.conf"  php/fpm-pool.conf
 cp "$REPO_DIR/infra/renew-certs.sh"      renew-certs.sh && chmod +x renew-certs.sh
 # --delete would remove .htpasswd, which is server-side only
 rsync -a --exclude '.htpasswd' "$REPO_DIR/infra/nginx/conf.d/" nginx/conf.d/
