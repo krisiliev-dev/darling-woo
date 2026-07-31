@@ -58,19 +58,11 @@ add_action( 'wp_enqueue_scripts', function () {
 }, 20 );
 
 /**
- * Remove the stock theme's "Designed with WordPress" credit.
- *
- * Twenty Twenty-Five puts it in a footer template part, so there is no filter to
- * unhook — it has to be hidden. Doing it in CSS rather than by overriding the
- * whole footer template keeps us on the parent theme's markup, so parent updates
- * still reach us.
+ * The stock "Designed with WordPress" credit is gone because we now ship our own
+ * parts/footer.html, which replaces the parent theme's footer entirely. The
+ * earlier CSS patch only hid the LINK and left the words "Designed with" behind —
+ * a reminder that hiding part of something is not removing it.
  */
-add_action( 'wp_head', function () {
-	echo '<style id="darling-inline">'
-	   . '.wp-block-site-tagline + .wp-block-paragraph a[href*="wordpress.org"],'
-	   . 'footer .wp-block-paragraph a[href*="wordpress.org"]{display:none}'
-	   . '</style>';
-}, 100 );
 
 add_action( 'after_setup_theme', function () {
 	add_theme_support( 'woocommerce' );
