@@ -25,3 +25,4 @@ nap/*.zip
 node_modules
 tests/*.png
 tests/_diag*.js
+.shopify-capture/
