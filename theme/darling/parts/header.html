@@ -48,7 +48,8 @@
 			</a>
 			<!-- The count is filled in by header-cart.js from the Store API, so a
 			     cached page never ships a stale number baked into the HTML. -->
-			<a class="darling-header__icon darling-header__cart" href="/cart/" aria-label="Количка">
+			<a class="darling-header__icon darling-header__cart" href="/cart/" aria-label="Количка"
+			   data-darling-cart-open aria-haspopup="dialog">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
 					<path d="M4 6h16l-1.6 10.5a2 2 0 0 1-2 1.7H7.6a2 2 0 0 1-2-1.7Z"/>
 					<path d="M9 6a3 3 0 0 1 6 0"/>
@@ -89,4 +90,28 @@
 		</ul>
 	</nav>
 </dialog>
+
+<!-- Cart drawer. Opened from the header; the link still points at /cart/ so it
+     works with JS disabled and stays a real link for middle-click and crawlers.
+     Contents are fetched per visitor — never rendered server-side — because pages
+     come from a 60s micro-cache and a baked-in cart would leak between visitors. -->
+<dialog id="darling-cart-drawer" class="darling-drawer darling-drawer--cart" aria-label="Количка">
+	<div class="darling-drawer__head">
+		<span>Количка</span>
+		<button type="button" class="darling-drawer__close" data-darling-cart-close aria-label="Затвори">✕</button>
+	</div>
+	<div class="darling-cart__body" data-darling-cart-body>
+		<p class="darling-cart__loading">Зареждане…</p>
+	</div>
+	<div class="darling-cart__foot" data-darling-cart-foot hidden>
+		<div class="darling-cart__total">
+			<span>Междинна сума</span>
+			<strong data-darling-cart-total></strong>
+		</div>
+		<p class="darling-cart__note">Доставката се изчислява при плащане.</p>
+		<a class="d-btn d-btn--primary darling-cart__cta" href="/checkout/">Към плащане</a>
+		<a class="darling-cart__link" href="/cart/">Виж количката</a>
+	</div>
+</dialog>
+
 <!-- /wp:html -->
