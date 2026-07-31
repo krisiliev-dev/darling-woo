@@ -27,7 +27,14 @@ class Darling_Shipping {
 	 */
 	public const FALLBACK_RATE_EUR = 5.99;
 
+	/**
+	 * Payment method carried by the CURRENT Store API request, if any.
+	 * Null means "no such request in flight", which is different from "not COD".
+	 */
+	private static ?string $request_payment_method = null;
+
 	public static function init(): void {
+		add_filter( 'rest_request_before_callbacks', array( __CLASS__, 'capture_payment_method' ), 10, 3 );
 		add_filter( 'woocommerce_shipping_methods', array( __CLASS__, 'register' ) );
 		add_action( 'woocommerce_shipping_init', array( __CLASS__, 'load' ) );
 		add_filter( 'woocommerce_cart_shipping_packages', array( __CLASS__, 'tag_package_with_cod' ) );
@@ -94,6 +101,32 @@ class Darling_Shipping {
 	}
 
 	/**
+	 * Capture the payment method out of the Store API request body.
+	 *
+	 * When a customer switches payment method, the block checkout sends
+	 *   POST /wc/store/v1/checkout?__experimental_calc_totals=true
+	 *   {"payment_method":"stripe"}
+	 * and expects the totals back with shipping re-priced. But that request does
+	 * NOT write chosen_payment_method to the session before shipping is
+	 * recalculated — so reading only the session priced every recalculation with
+	 * the PREVIOUS method, and the courier fee never changed when the customer
+	 * switched.
+	 *
+	 * Confirmed by capturing the request rather than reasoning about it: the
+	 * browser sends the method correctly; we were looking in the wrong place.
+	 */
+	public static function capture_payment_method( $response, $handler, $request ) {
+		if ( $request instanceof WP_REST_Request
+			&& false !== strpos( (string) $request->get_route(), '/wc/store/' ) ) {
+			$pm = $request->get_param( 'payment_method' );
+			if ( is_string( $pm ) && '' !== $pm ) {
+				self::$request_payment_method = $pm;
+			}
+		}
+		return $response;
+	}
+
+	/**
 	 * Is the order going to be paid cash-on-delivery? Affects the courier fee.
 	 *
 	 * Reads ONLY the session. An attempt to also fall back to WooCommerce's
@@ -114,6 +147,11 @@ class Darling_Shipping {
 	 * tests/cod-repricing.spec.js, which is what caught it.
 	 */
 	public static function is_cod(): bool {
+		// The in-flight request is the most current truth: it is the customer's
+		// choice arriving, before the session has caught up.
+		if ( null !== self::$request_payment_method ) {
+			return 'cod' === self::$request_payment_method;
+		}
 		$chosen = WC()->session ? WC()->session->get( 'chosen_payment_method' ) : '';
 		return 'cod' === $chosen;
 	}
