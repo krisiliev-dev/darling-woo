@@ -95,13 +95,31 @@ const econtOffice = (pkgs) => {
       return (await r.isChecked().catch(() => false)) ? value : `${value} (click did not stick)`;
     };
 
+    // Wait for the RATE to change rather than a fixed sleep. The block checkout
+    // pushes the payment method to the server asynchronously, and a fixed wait
+    // either flakes or hides a genuine failure to update.
+    const waitForRate = async (differentFrom, ms = 20000) => {
+      const t0 = Date.now();
+      let last = null;
+      while (Date.now() - t0 < ms) {
+        last = await readRate();
+        if (last !== null && last !== differentFrom) return last;
+        await page.waitForTimeout(1000);
+      }
+      return last;
+    };
+
+    // Give the blocks time to hydrate before touching them at all.
+    await page.waitForSelector('input[type="radio"][value="cod"]', { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(3000);
+
     out.picked_cod = await pick('cod');
-    await page.waitForTimeout(6000);
+    await page.waitForTimeout(5000);
     out.cod = { api: await readRate(), shown: await readShown() };
 
     out.picked_card = await pick('stripe');
-    await page.waitForTimeout(6000);
-    out.card = { api: await readRate(), shown: await readShown() };
+    const cardRate = await waitForRate(out.cod.api);
+    out.card = { api: cardRate, shown: await readShown() };
 
     await page.screenshot({ path: 'tests/cod-repricing.png' }).catch(() => {});
 
