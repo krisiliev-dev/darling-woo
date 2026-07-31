@@ -519,6 +519,40 @@ waiting and what unblocks it.
 - [ ] **Load test, then decide the VPS upgrade.** This box now runs the shop AND
       the mail server on 8 GB. Trigger points in Phase 7.
 
+### Phase 6 — blocked on the catalogue (Phase 2)
+- [ ] **301 redirect map (~4,590 legacy URLs).** WHY: old product URLs are indexed
+      and linked; if they 404 on cutover, Google drops the accumulated ranking
+      instead of transferring it, and search traffic collapses for months. A 301
+      moves the ranking to the new URL. BLOCKED ON: the new slugs, which do not
+      exist until the catalogue is imported. NOTE: server-level nginx map, not a
+      redirect plugin — at this volume a DB-backed plugin does a lookup on every
+      404, including bot noise. OPEN QUESTION: there are TWO URL histories
+      (darling7.com and the current Shopify URLs); confirm which still receive
+      traffic before building the map.
+- [ ] **Google Merchant Center feed.** WHY: powers Shopping results and Shopping
+      ads — for home goods, often a large share of e-commerce traffic, because
+      people search for objects and Google shows objects. BLOCKED ON: the feed IS
+      the catalogue. DEPENDS ON: the GTIN/EAN work — Merchant Center limits reach
+      for products without real GTINs.
+- [ ] **Meta catalog feed.** WHY: shoppable tags on Instagram/Facebook, Instagram
+      Shop, retargeting. Commercially significant in Bulgaria. Accepts
+      `google_product_category`, so the taxonomy work serves both feeds.
+- [ ] **GPSR fields populated.** Already built into the plugin; increasingly
+      required for EU product listings, so it gates the feeds, not just compliance.
+
+### Performance (measured 2026-07-31)
+- [ ] **Full-page caching (nginx FastCGI micro-cache).** MEASURED: uncached
+      WooCommerce serves ~15 rps; static files on the same box serve 3,224 rps;
+      disabling WooCommerce doubles it to 30 rps. So ~15 rps is what WooCommerce
+      costs, not a misconfiguration — and it is the number that matters on a
+      launch-day traffic spike. NOT done hastily: caching a cart or checkout page,
+      or serving one customer's cart to another, is far worse than a slow page.
+      Needs explicit bypass for cart, checkout, my-account, logged-in users and
+      anything with a WooCommerce session cookie.
+- [x] PHP-FPM raised from the image default of 5 children to 40. Note this did NOT
+      change throughput — it was never the limiter. It still matters for
+      concurrent checkouts, where workers block on the panel API for up to 8s.
+
 ### Storefront
 - [ ] **Rotate credentials before launch** (owner already committed): R2 token,
       Stripe live secret key, staging password, mailbox password.
