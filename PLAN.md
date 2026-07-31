@@ -1,5 +1,9 @@
 # Дарлинг 7 — Shopify → WooCommerce migration plan
 
+> **Start with [HANDOFF.md](HANDOFF.md)** — role, current state, open bugs with
+> evidence, what is blocked on whom, and the mistakes worth not repeating.
+
+
 **Decision:** 2026-07-27, owner. Migrate the storefront from Shopify Basic to self-hosted WooCommerce.
 **Rationale:** stop paying for workarounds. Checkout customisation (courier office picker, VAT invoice
 fields) is Plus-gated on Shopify (€2,100/mo); on Woo it is ours to build. We already own the courier
