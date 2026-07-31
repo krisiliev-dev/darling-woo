@@ -1,0 +1,79 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:html -->
+<main class="darling-home">
+
+	<section class="darling-hero">
+		<div class="darling-hero__copy">
+			<p class="darling-hero__eyebrow">Тайната на една домакиня</p>
+			<h1 class="darling-hero__title">Домът ти го заслужава, darling.</h1>
+			<p class="darling-hero__sub">
+				Качество за цял живот или изгодно решение за момента — при нас има и двете,
+				подбрани с грижа за всяко ъгълче от дома.
+			</p>
+			<p class="darling-hero__actions">
+				<a class="d-btn d-btn--primary" href="/shop/">Разгледай всичко</a>
+				<a class="d-btn d-btn--ghost" href="/product-category/promocii/">Промоции</a>
+			</p>
+		</div>
+
+		<!-- The same element the Shopify hero uses: glow layer, floating bow and
+		     twinkling stars all animate from the ported stylesheet. -->
+		<div class="darling-hero-visual dhv-red" aria-hidden="true">
+			<span class="dhv-glow"></span>
+			<svg class="dhv-bow" viewBox="0 0 24 12" fill="currentColor">
+				<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
+				<circle cx="12" cy="6" r="2.4"/>
+			</svg>
+			<i class="dhv-s s1">✦</i><i class="dhv-s s2">✧</i><i class="dhv-s s3">✦</i>
+			<i class="dhv-s s4">✧</i><i class="dhv-s s5">✦</i>
+		</div>
+	</section>
+
+	<section class="darling-cats" aria-label="Категории">
+		<a href="/product-category/za-kuhnyata/"><span>За кухнята</span></a>
+		<a href="/product-category/za-banyata/"><span>За банята</span></a>
+		<a href="/product-category/dekoraciya-za-doma/"><span>Декорация за дома</span></a>
+		<a href="/product-category/za-gradinata/"><span>За градината</span></a>
+		<a href="/product-category/pochistvane/"><span>Почистване</span></a>
+		<a href="/product-category/parti/"><span>Парти и празници</span></a>
+		<a href="/product-category/za-decata/"><span>За децата</span></a>
+		<a href="/product-category/podaraci/"><span>Подаръци</span></a>
+	</section>
+
+	<!-- .darling-season carries darling-drift: the gradient moves slowly across
+	     the band. Copy is seasonal and meant to be edited. -->
+	<div class="darling-season">
+		<div>
+			<p class="ds-eyebrow">Сезонно, darling</p>
+			<h3>Лято в двора</h3>
+			<p>Фенери, мебели и всичко за градината — защото дворът също е стая на дома.</p>
+		</div>
+		<a href="/product-category/za-gradinata/">Към градината</a>
+	</div>
+</main>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
+<h2 class="wp-block-heading darling-section-title">Ново при нас</h2>
+<!-- /wp:heading -->
+
+<!-- Real product grid, so it fills in by itself the moment the catalogue lands
+     rather than needing another pass. -->
+<!-- wp:query {"query":{"perPage":8,"postType":"product","order":"desc","orderBy":"date"},"className":"darling-grid"} -->
+<div class="wp-block-query darling-grid">
+	<!-- wp:post-template -->
+		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1"} /-->
+		<!-- wp:post-title {"level":3,"isLink":true,"fontSize":"small"} /-->
+		<!-- wp:woocommerce/product-price /-->
+		<!-- wp:woocommerce/product-button /-->
+	<!-- /wp:post-template -->
+	<!-- wp:query-no-results -->
+		<!-- wp:paragraph {"className":"darling-empty"} -->
+		<p class="darling-empty">Продуктите пристигат съвсем скоро.</p>
+		<!-- /wp:paragraph -->
+	<!-- /wp:query-no-results -->
+</div>
+<!-- /wp:query -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
