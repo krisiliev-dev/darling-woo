@@ -80,3 +80,36 @@ stops" — it is **order confirmations silently landing in spam**, which shows u
 customers phoning to ask where their receipt is. If that starts happening, the
 fallback is to keep this server for receiving and send through a relay on port 587,
 which needs no port-25 unblock and inherits an established sending reputation.
+
+---
+
+## Status: live (2026-07-31)
+
+Verified by the receiver, not by us — Gmail reports on mail from
+`orders@darlinghome.bg`:
+
+```
+dkim=pass  header.i=@darlinghome.bg header.s=mail
+spf=pass   designates 169.58.89.40 as permitted sender
+dmarc=pass (p=NONE)
+```
+
+- **Outbound**: WordPress submits authenticated over SASL to the
+  `mail.darlinghome.bg` Docker alias; OpenDKIM signs; Gmail accepts.
+- **Inbound**: MX is `10 mail.darlinghome.bg`, with bgdns demoted to 20/30 as a
+  fallback. Real mail from Gmail delivered.
+- **Not an open relay** — verified: `554 5.7.1 Relay access denied` for outside
+  recipients. This is the check to re-run after ANY Postfix change.
+- **Greylisting** (Postgrey) defers first contact from unknown senders; the major
+  providers are whitelisted, so customer mail from Gmail/Outlook is not delayed.
+- **Webmail**: https://mail.darlinghome.bg (Roundcube), its own login, not behind
+  the staging basic-auth gate.
+
+### Left to do
+
+- **Tighten SPF to `-all`** once DMARC reports have confirmed passes for a while.
+- **Raise TTLs** on the mail records from 300 to 3600 now they are proven.
+- **Move DMARC off `p=none`** to `quarantine` after reviewing reports.
+- **Container is pinned at 14.0; 15.1.0 is available.** Upgrade deliberately, not
+  automatically — re-run the open-relay and DKIM checks after.
+- Remove the bgdns MX fallbacks after a few weeks of clean operation.
