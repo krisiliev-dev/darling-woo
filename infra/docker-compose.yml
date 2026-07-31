@@ -114,7 +114,17 @@ services:
       SSL_TYPE: letsencrypt
       ENABLE_OPENDKIM: 1
       ENABLE_OPENDMARC: 1
-      ENABLE_RSPAMD: 1
+      # Rspamd OFF, deliberately. With both it and OpenDKIM enabled the container
+      # warns about "conflicting DKIM support" and then leaves /etc/opendkim/*
+      # EMPTY — KeyTable, SigningTable and TrustedHosts all zero bytes — so nothing
+      # is ever signed. Outbound mail was leaving unsigned and would have failed
+      # DKIM at every receiver, while the startup log looked like a warning rather
+      # than a breakage. One DKIM stack only; OpenDKIM keeps the key already
+      # published in DNS.
+      ENABLE_RSPAMD: 0
+      ENABLE_AMAVIS: 0
+      ENABLE_SPAMASSASSIN: 0
+      ENABLE_POSTGREY: 1
       ENABLE_CLAMAV: 0          # ~1GB RAM; not worth it at this volume
       ENABLE_FAIL2BAN: 1
       # A mail server that accepts mail for anyone is a spam relay. Explicitly off.
