@@ -596,6 +596,36 @@ truth are different properties and need different checks.
       branded suffix is being cut off in results.
 - Scope confirmed from the live sitemap: **4,589 product URLs + 72 categories.**
 
+### 🚨 OPEN — checkout does not re-price when the payment method changes
+**Status: unresolved. Money-adjacent. Do not launch without settling this.**
+
+`tests/cod-repricing.spec.js` now reports COD 4.88 and card 4.88 — the card price
+should be 4.48. Earlier the same test PASSED (4.88 / 4.48), so this is a
+regression introduced somewhere in the 2026-07-31 session.
+
+What is known:
+- The ORDER is priced correctly. The package hash carries the COD flag and
+  submission recalculates, so a completed order charges the right amount. This is
+  a **display** problem during checkout, not an undercharge at capture.
+- It is NOT the `is_cod()` fallback. That was tried, made the fee permanently COD,
+  and was reverted — and the failure persists after the revert.
+- The test now polls for up to 20s for the rate to change rather than sleeping, so
+  it is not a fixed-wait flake.
+- `networkidle` is unusable on /checkout/ — Stripe's iframes hold connections
+  open, so the test uses `domcontentloaded` plus explicit waits.
+
+Candidates not yet eliminated, roughly in order of suspicion:
+1. The block checkout may not be writing `chosen_payment_method` to the session
+   at all any more — verify directly rather than inferring from the price.
+2. Something added this session interfering with the payment step: the cart-drawer
+   document-level click listener, or the bg_BG locale change altering markup the
+   test or WooCommerce depends on.
+3. Cached shipping rates surviving the package-hash change.
+
+First step next session: confirm server-side what `chosen_payment_method` actually
+holds after selecting card, instead of reasoning from the rendered price. That
+single fact splits the candidates.
+
 ### Performance (measured 2026-07-31)
 - [x] **Full-page caching (nginx FastCGI micro-cache) — DONE 2026-07-31.**
       RESULT: **15.2 → 266 rps**, 17.5x, zero failed requests. Verified safe:
