@@ -1,0 +1,92 @@
+<!-- wp:html -->
+<div class="darling-header" role="banner">
+	<div class="darling-header__inner">
+
+		<button class="darling-header__burger" type="button"
+		        aria-label="Меню" aria-expanded="false" aria-controls="darling-menu-drawer">
+			<span></span><span></span><span></span>
+		</button>
+
+		<a class="darling-header__logo" href="/" aria-label="Дарлинг — начало">
+			<span class="dhl-word">Дарлинг</span>
+			<!-- The bow carries darling-float from the ported stylesheet: the logo's
+			     idle animation is this SVG, not a separate effect. -->
+			<svg class="dhv-bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true">
+				<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
+				<circle cx="12" cy="6" r="2.4"/>
+			</svg>
+			<i class="dhv-s s1" aria-hidden="true">✦</i>
+			<i class="dhv-s s2" aria-hidden="true">✧</i>
+		</a>
+
+		<nav class="darling-nav" aria-label="Основна навигация">
+			<ul>
+				<li><a class="mega-menu__link" href="/shop/">Продукти</a></li>
+				<li><a class="mega-menu__link" href="/product-category/za-kuhnyata/">За кухнята</a></li>
+				<li><a class="mega-menu__link" href="/product-category/za-banyata/">За банята</a></li>
+				<li><a class="mega-menu__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a></li>
+				<li><a class="mega-menu__link" href="/product-category/za-gradinata/">За градината</a></li>
+				<li><a class="mega-menu__link" href="/product-category/pochistvane/">Почистване</a></li>
+				<li><a class="mega-menu__link" href="/product-category/parti/">Парти и празници</a></li>
+				<li><a class="mega-menu__link" href="/product-category/za-decata/">За децата</a></li>
+				<li><a class="mega-menu__link" href="/product-category/podaraci/">Подаръци</a></li>
+				<li><a class="mega-menu__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
+				<li><a class="mega-menu__link" href="/product-category/promocii/">Промоции</a></li>
+			</ul>
+		</nav>
+
+		<div class="darling-header__actions">
+			<a class="darling-header__icon" href="/?s=&post_type=product" aria-label="Търсене">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+					<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+				</svg>
+			</a>
+			<a class="darling-header__icon" href="/my-account/" aria-label="Профил">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+					<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
+				</svg>
+			</a>
+			<!-- The count is filled in by header-cart.js from the Store API, so a
+			     cached page never ships a stale number baked into the HTML. -->
+			<a class="darling-header__icon darling-header__cart" href="/cart/" aria-label="Количка">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+					<path d="M4 6h16l-1.6 10.5a2 2 0 0 1-2 1.7H7.6a2 2 0 0 1-2-1.7Z"/>
+					<path d="M9 6a3 3 0 0 1 6 0"/>
+				</svg>
+				<span class="darling-cart-count" data-darling-cart-count hidden>0</span>
+			</a>
+		</div>
+	</div>
+</div>
+
+<!-- Mobile navigation drawer. A <dialog> rather than a div: the browser gives us
+     focus trapping, Escape-to-close and inertness of the page behind for free, and
+     hand-rolled versions of those are where accessibility bugs live. -->
+<dialog id="darling-menu-drawer" class="darling-drawer darling-drawer--menu" aria-label="Меню">
+	<div class="darling-drawer__head">
+		<span class="dhl-word">Дарлинг</span>
+		<button type="button" class="darling-drawer__close" aria-label="Затвори">✕</button>
+	</div>
+	<nav class="darling-drawer__nav" aria-label="Мобилна навигация">
+		<ul>
+			<li><a href="/shop/">Продукти</a></li>
+			<li><a href="/product-category/za-kuhnyata/">За кухнята</a></li>
+			<li><a href="/product-category/za-banyata/">За банята</a></li>
+			<li><a href="/product-category/dekoraciya-za-doma/">Декорация за дома</a></li>
+			<li><a href="/product-category/za-gradinata/">За градината</a></li>
+			<li><a href="/product-category/pochistvane/">Почистване</a></li>
+			<li><a href="/product-category/parti/">Парти и празници</a></li>
+			<li><a href="/product-category/za-decata/">За децата</a></li>
+			<li><a href="/product-category/podaraci/">Подаръци</a></li>
+			<li><a href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
+			<li><a href="/product-category/promocii/">Промоции</a></li>
+		</ul>
+		<hr>
+		<ul class="darling-drawer__secondary">
+			<li><a href="/za-nas/">За нас</a></li>
+			<li><a href="/pomosht/">Помощ</a></li>
+			<li><a href="/kontakti/">Контакти</a></li>
+		</ul>
+	</nav>
+</dialog>
+<!-- /wp:html -->

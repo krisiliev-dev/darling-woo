@@ -34,6 +34,17 @@ add_action( 'wp_enqueue_scripts', function () {
 		);
 	}
 
+	$hdr = get_stylesheet_directory() . '/assets/header.js';
+	if ( file_exists( $hdr ) ) {
+		wp_enqueue_script(
+			'darling-header',
+			get_stylesheet_directory_uri() . '/assets/header.js',
+			array(),
+			filemtime( $hdr ),
+			true
+		);
+	}
+
 	$amb = get_stylesheet_directory() . '/assets/ambient.js';
 	if ( file_exists( $amb ) ) {
 		wp_enqueue_script(
