@@ -484,3 +484,48 @@ Fixed by adding a key to the package in `woocommerce_cart_shipping_packages`, wh
 changes the hash. **Any future rate input that is not cart contents or destination
 must be added there too** — otherwise it will be quietly ignored after the first
 calculation.
+
+---
+
+## 9. Deferred — decided, not forgotten (as of 2026-07-31)
+
+Everything here is a **conscious deferral**, not an oversight. Each says why it is
+waiting and what unblocks it.
+
+### Mail (see `infra/MAIL.md` for detail)
+- [ ] **Tighten SPF `~all` → `-all`.** Waiting on: a few days of DMARC reports
+      showing consistent passes. `-all` means receivers hard-reject anything not
+      from our server — correct once proven, damaging if a legitimate sender was
+      missed.
+- [ ] **DMARC `p=none` → `quarantine`.** Same gate. `p=none` only asks for reports;
+      it protects nobody from spoofing until it is tightened.
+- [ ] **Raise mail DNS TTLs 300 → 3600.** They are low so mistakes are cheap to
+      correct; now the records are proven, long TTLs are better.
+- [ ] **Remove the bgdns MX fallbacks (20/30).** After a few weeks of clean
+      operation. They exist so a problem on our server delays mail instead of
+      bouncing it.
+- [ ] **Upgrade docker-mailserver 14.0 → 15.1.** Deliberately, not automatically.
+      **Re-run the open-relay check and a signed test send afterwards** — those are
+      the two things that fail silently.
+
+### Security / Phase 7
+- [ ] **Enrol 2FA on `darling_admin`** (owner action — Users → Profile). TOTP
+      preferred; email 2FA also works now that mail is fixed.
+- [ ] **Decide on `DISALLOW_FILE_MODS`.** Blocks plugin/theme installation from the
+      admin UI, closing the most common post-compromise path. Cost: plugins can
+      then only be installed over the CLI. Owner's call.
+- [ ] **A non-admin daily-driver account.** One administrator exists; routine work
+      should not use it.
+- [ ] **Load test, then decide the VPS upgrade.** This box now runs the shop AND
+      the mail server on 8 GB. Trigger points in Phase 7.
+
+### Storefront
+- [ ] **Rotate credentials before launch** (owner already committed): R2 token,
+      Stripe live secret key, staging password, mailbox password.
+- [ ] **Lift `blog_public=0` and the nginx `X-Robots-Tag`** at cutover — indexing
+      is blocked at two layers deliberately, and both must be lifted.
+- [ ] **Drop the apex A record TTL to 300** about a day before cutover, so the
+      switch propagates in minutes and can be reverted quickly.
+- [ ] **Clean up the `www` CNAME + A record clash** at cutover, when `www` moves off
+      Shopify.
+- [ ] **Confirm the BORICA MAC field order** against their doc pack before go-live.
