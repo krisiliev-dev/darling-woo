@@ -148,3 +148,28 @@ services:
           # verification — and the tempting fix (disable cert checking on the
           # internal hop) trains us to ignore exactly the error that matters.
           - mail.darlinghome.bg
+
+  # Webmail at https://mail.darlinghome.bg.
+  #
+  # Talks to the mail container over the network alias so the TLS certificate name
+  # matches, exactly as WordPress does. SQLite for its own state — it stores
+  # preferences and an address book, not mail, so it does not warrant a database
+  # alongside the shop's.
+  roundcube:
+    image: roundcube/roundcubemail:1.6.x-apache
+    container_name: darling-roundcube
+    restart: unless-stopped
+    depends_on: [mailserver]
+    environment:
+      ROUNDCUBEMAIL_DEFAULT_HOST: ssl://mail.darlinghome.bg
+      ROUNDCUBEMAIL_DEFAULT_PORT: 993
+      ROUNDCUBEMAIL_SMTP_SERVER: tls://mail.darlinghome.bg
+      ROUNDCUBEMAIL_SMTP_PORT: 587
+      ROUNDCUBEMAIL_DB_TYPE: sqlite
+      ROUNDCUBEMAIL_PLUGINS: archive,zipdownload,managesieve
+      ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE: 25M
+    volumes:
+      - ./mail/roundcube/db:/var/roundcube/db
+      - ./mail/roundcube/config:/var/roundcube/config
+      # Roundcube must trust the same CA chain to verify the mail server's cert.
+      - ./nginx/certbot/conf:/etc/letsencrypt:ro
