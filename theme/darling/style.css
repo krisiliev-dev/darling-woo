@@ -348,3 +348,70 @@ a.button.alt:hover {
 .darling-cart__note{margin:0;font-size:.82rem;opacity:.7}
 .darling-cart__cta{text-align:center}
 .darling-cart__link{text-align:center;font-size:.9rem;color:var(--d-cocoa);opacity:.8}
+
+/* ---------------------------------------------------------------------------
+   Cart, checkout and account.
+
+   These are WooCommerce BLOCKS, so we style their own class names rather than
+   replacing the markup — the blocks carry validation, the Store API wiring and
+   our office picker, and rebuilding them by hand would mean owning all of that.
+   --------------------------------------------------------------------------- */
+
+.wp-block-woocommerce-cart,
+.wp-block-woocommerce-checkout,
+.woocommerce-account{max-width:var(--d-content,1280px);margin:0 auto;padding:1.5rem 1rem 3rem}
+
+/* Panels — the sidebar totals on cart and checkout. */
+.wc-block-cart__sidebar .wc-block-components-sidebar,
+.wc-block-checkout__sidebar .wc-block-components-sidebar,
+.wc-block-components-order-summary{background:var(--d-vanilla,var(--d-cream));
+	border:1px solid var(--d-sand);border-radius:1rem;padding:1rem}
+
+.wc-block-components-title,
+.wc-block-components-checkout-step__title{color:var(--d-cocoa)}
+.wc-block-components-totals-item__value,
+.wc-block-components-product-price__value{color:var(--d-cherry-deep);font-weight:600}
+/* The BGN half is decoration next to the euro figure, not a second price. */
+.darling-bgn{font-weight:400;opacity:.7;font-size:.9em}
+
+/* Inputs: one shared treatment so checkout, account and search agree. */
+.wc-block-components-text-input input,
+.wc-block-components-select__container,
+.woocommerce-account input[type="text"],
+.woocommerce-account input[type="email"],
+.woocommerce-account input[type="password"]{border:1.5px solid var(--d-sand)!important;
+	border-radius:.6rem!important;background:#fff!important}
+.wc-block-components-text-input input:focus,
+.woocommerce-account input:focus{border-color:var(--d-honey)!important;
+	outline:2px solid var(--d-honey-light);outline-offset:1px}
+
+/* Buttons — same pill as the rest of the site. */
+.wc-block-components-button:not(.is-link),
+.wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button,
+.woocommerce-account button[type="submit"],
+.woocommerce-Button{background:var(--d-honey)!important;color:var(--d-cocoa)!important;
+	border:0!important;border-radius:999px!important;font-weight:700!important;padding:.85rem 1.6rem!important}
+.wc-block-components-button:not(.is-link):hover,
+.wc-block-cart__submit-button:hover{background:var(--d-honey-dark)!important}
+
+/* Shipping rates carry our carrier labels and the star flair on hover, matching
+   the navigation, so the courier choice feels part of the site rather than a form. */
+.wc-block-components-radio-control__option{border-radius:.7rem;padding:.7rem .8rem!important}
+.wc-block-components-radio-control__option:hover{background:var(--d-honey-light)}
+.wc-block-components-radio-control-accordion-option--checked-option-highlighted{
+	border-color:var(--d-honey)!important;background:var(--d-honey-light)}
+
+/* Account: turn the stock link list into a real sidebar nav. */
+.woocommerce-account .woocommerce-MyAccount-navigation ul{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+.woocommerce-account .woocommerce-MyAccount-navigation a{display:block;padding:.6rem .8rem;
+	border-radius:.6rem;color:var(--d-cocoa);text-decoration:none}
+.woocommerce-account .woocommerce-MyAccount-navigation a:hover,
+.woocommerce-account .is-active a{background:var(--d-honey-light);color:var(--d-cherry-deep);font-weight:600}
+.woocommerce-account .woocommerce-MyAccount-content{background:#fff;border:1px solid var(--d-sand);
+	border-radius:1rem;padding:1.2rem}
+
+@media (max-width:820px){
+	.wc-block-cart,.wc-block-checkout{gap:1.2rem}
+	.woocommerce-account .woocommerce-MyAccount-navigation{margin-bottom:1.2rem}
+}
