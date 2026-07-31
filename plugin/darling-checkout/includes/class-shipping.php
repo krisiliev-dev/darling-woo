@@ -93,9 +93,36 @@ class Darling_Shipping {
 		return $g;
 	}
 
-	/** Is the order going to be paid cash-on-delivery? Affects the courier fee. */
+	/**
+	 * Is the order going to be paid cash-on-delivery? Affects the courier fee.
+	 *
+	 * On a FRESH session WooCommerce has not recorded a chosen payment method yet —
+	 * but the checkout still shows one selected, because it pre-selects the first
+	 * available gateway. Reading the session alone therefore reported "not COD" for
+	 * a customer looking at a checkout with Наложен платеж already ticked, and the
+	 * surcharge only appeared if they switched away and back.
+	 *
+	 * That is the default path, not an edge case: COD is the first gateway and most
+	 * Bulgarian orders. So when the session is silent, fall back to what the
+	 * checkout is actually DISPLAYING as chosen.
+	 */
 	public static function is_cod(): bool {
-		$chosen = WC()->session ? WC()->session->get( 'chosen_payment_method' ) : '';
-		return 'cod' === $chosen;
+		$chosen = WC()->session ? (string) WC()->session->get( 'chosen_payment_method' ) : '';
+
+		if ( '' !== $chosen ) {
+			return 'cod' === $chosen;
+		}
+
+		// Nothing chosen yet: mirror WooCommerce's own pre-selection, which is the
+		// first ENABLED and AVAILABLE gateway.
+		if ( ! function_exists( 'WC' ) || ! WC()->payment_gateways() ) {
+			return false;
+		}
+		$available = WC()->payment_gateways()->get_available_payment_gateways();
+		if ( empty( $available ) ) {
+			return false;
+		}
+		$first = array_key_first( $available );
+		return 'cod' === $first;
 	}
 }

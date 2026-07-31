@@ -46,8 +46,8 @@ const econtOffice = (pkgs) => {
   try {
     await page.goto(`${BASE}/?add-to-cart=${PRODUCT_ID}`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
-    await page.goto(`${BASE}/checkout/`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(4000);
+    await page.goto(`${BASE}/checkout/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(8000);
 
     // Establish the destination via the Store API so the test does not depend on
     // guessing which rendered input is which.
@@ -61,8 +61,8 @@ const econtOffice = (pkgs) => {
       return r.status;
     }, ADDRESS);
 
-    await page.reload({ waitUntil: 'networkidle' });
-    await page.waitForTimeout(5000);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(9000);
 
     const readRate = () => page.evaluate(async () => {
       const r = await fetch('/wp-json/wc/store/v1/cart', { headers: { Accept: 'application/json' } });
