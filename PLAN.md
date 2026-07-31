@@ -597,34 +597,37 @@ truth are different properties and need different checks.
 - Scope confirmed from the live sitemap: **4,589 product URLs + 72 categories.**
 
 ### 🚨 OPEN — checkout does not re-price when the payment method changes
-**Status: unresolved. Money-adjacent. Do not launch without settling this.**
+**Status: unresolved after three attempts. Money-adjacent. Settle before launch.**
 
-`tests/cod-repricing.spec.js` now reports COD 4.88 and card 4.88 — the card price
-should be 4.48. Earlier the same test PASSED (4.88 / 4.48), so this is a
-regression introduced somewhere in the 2026-07-31 session.
+`tests/cod-repricing.spec.js`: COD 4.88 and card 4.88; card should be 4.48.
 
-What is known:
-- The ORDER is priced correctly. The package hash carries the COD flag and
-  submission recalculates, so a completed order charges the right amount. This is
-  a **display** problem during checkout, not an undercharge at capture.
-- It is NOT the `is_cod()` fallback. That was tried, made the fee permanently COD,
-  and was reverted — and the failure persists after the revert.
-- The test now polls for up to 20s for the rate to change rather than sleeping, so
-  it is not a fixed-wait flake.
-- `networkidle` is unusable on /checkout/ — Stripe's iframes hold connections
-  open, so the test uses `domcontentloaded` plus explicit waits.
+**What is now KNOWN, not guessed:**
+- The browser DOES send the change. Captured on the wire:
+  `POST /wc/store/v1/checkout?__experimental_calc_totals=true {"payment_method":"stripe"}`
+  So this is not a front-end or hydration problem.
+- Completed ORDERS are priced correctly — the package hash carries the flag and
+  submission recalculates. This is a checkout DISPLAY gap, not an undercharge.
+  Order creation, office validation and cart isolation all still pass.
 
-Candidates not yet eliminated, roughly in order of suspicion:
-1. The block checkout may not be writing `chosen_payment_method` to the session
-   at all any more — verify directly rather than inferring from the price.
-2. Something added this session interfering with the payment step: the cart-drawer
-   document-level click listener, or the bg_BG locale change altering markup the
-   test or WooCommerce depends on.
-3. Cached shipping rates surviving the package-hash change.
+**Eliminated, with evidence:**
+1. Fixed-wait flake — the test now polls up to 20s for the rate to change.
+2. `is_cod()` falling back to the pre-selected gateway — made the fee permanently
+   COD; reverted.
+3. `is_cod()` reading the in-flight request's `payment_method` via
+   `rest_request_before_callbacks` — correct in principle, no effect in practice.
+   **Left in place**: it is more accurate than session-only and broke nothing, but
+   it is not the fix.
 
-First step next session: confirm server-side what `chosen_payment_method` actually
-holds after selecting card, instead of reasoning from the rendered price. That
-single fact splits the candidates.
+**Where to look next**, given the request arrives and the flag still does not move:
+the suspicion should shift from "is_cod() returns the wrong answer" to "the
+recalculation never runs, or runs against cached rates". Specifically: log what
+`is_cod()` actually returns during that request, and whether
+`tag_package_with_cod` runs at all on the calc-totals path. If the package hash
+is not being recomputed there, no amount of correctness in `is_cod()` will show.
+Also check whether the panel QUOTE transient (10 min, keyed on cod=true/false) is
+serving a stale answer.
+
+Do not attempt a fourth fix without first instrumenting that request end to end.
 
 ### Performance (measured 2026-07-31)
 - [x] **Full-page caching (nginx FastCGI micro-cache) — DONE 2026-07-31.**
