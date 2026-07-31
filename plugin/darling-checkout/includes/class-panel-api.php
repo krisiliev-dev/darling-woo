@@ -18,6 +18,8 @@ class Darling_Panel_API {
 	private const CACHE_PROBE_OK      = 12 * HOUR_IN_SECONDS;
 	private const CACHE_PROBE_ABSENT  = HOUR_IN_SECONDS;
 	private const CACHE_PROBE_UNKNOWN = 5 * MINUTE_IN_SECONDS;
+	/** How long a carrier stays 'known good' for outage decisions. */
+	private const CACHE_KNOWN_GOOD    = 30 * DAY_IN_SECONDS;
 
 	public static function configured(): bool {
 		return (bool) self::token() && (bool) self::base();
@@ -150,17 +152,32 @@ class Darling_Panel_API {
 		) );
 
 		if ( is_wp_error( $res ) ) {
+			// The panel is UNREACHABLE, which is not the same as "this carrier is
+			// not provisioned". If we have ever confirmed this carrier, keep
+			// treating it as supported so the quote path still runs and can fall
+			// back to a charged rate.
+			//
+			// Without this the fail-open is defeated by its own guard: a panel
+			// outage made supports() false, the carrier produced NO rate, and
+			// checkout offered no shipping at all — which is the exact outcome
+			// FALLBACK_RATE_EUR exists to prevent. Found by trying to produce a
+			// fallback order and discovering one could not occur.
 			set_transient( $key, '0', self::CACHE_PROBE_UNKNOWN );
-			return false;
+			return (bool) get_transient( self::known_key( $carrier ) );
 		}
 		$code = (int) wp_remote_retrieve_response_code( $res );
 
 		if ( 200 === $code ) {
 			set_transient( $key, '1', self::CACHE_PROBE_OK );
+			// Long-lived "we have seen this work" marker, used only to decide how
+			// to behave during an outage.
+			set_transient( self::known_key( $carrier ), '1', self::CACHE_KNOWN_GOOD );
 			return true;
 		}
 		if ( in_array( $code, array( 404, 501 ), true ) ) {
+			// An explicit "no such carrier" IS authoritative — forget it is good.
 			set_transient( $key, '0', self::CACHE_PROBE_ABSENT );
+			delete_transient( self::known_key( $carrier ) );
 			return false;
 		}
 		// 5xx, 401, anything else: a real problem, but not evidence about provisioning.
@@ -178,6 +195,10 @@ class Darling_Panel_API {
 			}
 		}
 		return $live;
+	}
+
+	private static function known_key( string $carrier ): string {
+		return 'darling_papi_known_' . $carrier;
 	}
 
 	private static function log( string $msg ): void {
