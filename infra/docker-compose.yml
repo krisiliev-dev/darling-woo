@@ -139,3 +139,12 @@ services:
       - ./mail/config:/tmp/docker-mailserver
       - ./nginx/certbot/conf:/etc/letsencrypt:ro
       - /etc/localtime:/etc/localtime:ro
+    networks:
+      default:
+        aliases:
+          # So WordPress can reach it as mail.darlinghome.bg from inside Docker.
+          # Connecting by container name would present a certificate for
+          # mail.darlinghome.bg against a host called "mailserver" and fail
+          # verification — and the tempting fix (disable cert checking on the
+          # internal hop) trains us to ignore exactly the error that matters.
+          - mail.darlinghome.bg
