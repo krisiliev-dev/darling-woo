@@ -1,0 +1,79 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:woocommerce/single-product {"className":"darling-product"} -->
+<div class="wp-block-woocommerce-single-product darling-product">
+
+	<!-- wp:woocommerce/breadcrumbs {"className":"darling-crumbs"} /-->
+
+	<!-- wp:columns {"className":"darling-product__top"} -->
+	<div class="wp-block-columns darling-product__top">
+
+		<!-- wp:column {"width":"52%","className":"darling-product__media"} -->
+		<div class="wp-block-column darling-product__media" style="flex-basis:52%">
+			<!-- wp:woocommerce/product-image-gallery /-->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"width":"48%","className":"darling-product__buy"} -->
+		<div class="wp-block-column darling-product__buy" style="flex-basis:48%">
+
+			<!-- The H1 must stay the product title and stay singular. The old site
+			     ranks partly on clean heading structure; a template that demotes the
+			     title or adds a second H1 quietly gives that away. -->
+			<!-- wp:post-title {"level":1,"className":"darling-product__title"} /-->
+
+			<!-- wp:woocommerce/product-rating /-->
+			<!-- wp:woocommerce/product-price {"className":"darling-product__price"} /-->
+
+			<!-- wp:woocommerce/product-summary {"className":"darling-product__excerpt"} /-->
+
+			<!-- wp:woocommerce/add-to-cart-form {"className":"darling-product__atc"} /-->
+
+			<!-- wp:woocommerce/product-meta -->
+			<div class="wp-block-woocommerce-product-meta">
+				<!-- wp:woocommerce/product-sku /-->
+				<!-- wp:woocommerce/product-stock-indicator /-->
+				<!-- wp:woocommerce/product-details {"className":"darling-product__cats"} /-->
+			</div>
+			<!-- /wp:woocommerce/product-meta -->
+
+			<!-- Trust row. The original carries one here; it is also where the
+			     courier and returns promises belong, because this is the moment a
+			     customer decides. -->
+			<!-- wp:html -->
+			<ul class="darling-trust">
+				<li><span aria-hidden="true">✦</span> Доставка с Еконт и Спиди — до офис или адрес</li>
+				<li><span aria-hidden="true">✦</span> Право на връщане до 14 дни</li>
+				<li><span aria-hidden="true">✦</span> Плащане с карта или наложен платеж</li>
+			</ul>
+			<!-- /wp:html -->
+
+		</div>
+		<!-- /wp:column -->
+	</div>
+	<!-- /wp:columns -->
+
+	<!-- Full description and the GPSR panel the plugin adds. This is where the old
+	     site's 768-853 words live, and it must not be collapsed behind a tab that
+	     search engines de-weight. -->
+	<!-- wp:woocommerce/product-details {"className":"darling-product__details"} /-->
+
+	<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
+	<h2 class="wp-block-heading darling-section-title">Може да ви хареса</h2>
+	<!-- /wp:heading -->
+
+	<!-- wp:woocommerce/related-products {"className":"darling-grid"} -->
+	<div class="wp-block-woocommerce-related-products darling-grid">
+		<!-- wp:woocommerce/product-template -->
+			<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
+			<!-- wp:post-title {"level":3,"isLink":true,"fontSize":"small"} /-->
+			<!-- wp:woocommerce/product-price /-->
+			<!-- wp:woocommerce/product-button /-->
+		<!-- /wp:woocommerce/product-template -->
+	</div>
+	<!-- /wp:woocommerce/related-products -->
+
+</div>
+<!-- /wp:woocommerce/single-product -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -237,3 +237,44 @@ a.button.alt:hover {
 @media (max-width:520px){
 	.darling-footer__cols{grid-template-columns:1fr}
 }
+
+/* ---------------------------------------------------------------------------
+   Single product.
+   --------------------------------------------------------------------------- */
+
+.darling-product{max-width:var(--d-content,1280px);margin:0 auto;padding:1.5rem 1rem 3rem}
+.darling-crumbs{font-size:.85rem;opacity:.75;margin-bottom:1rem}
+.darling-crumbs a{color:var(--d-cocoa)}
+
+.darling-product__top{gap:2.5rem;align-items:flex-start}
+.darling-product__media img{border-radius:1rem;background:var(--d-vanilla,var(--d-cream))}
+
+.darling-product__title{margin:0 0 .5rem;font-size:clamp(1.5rem,3vw,2.3rem);
+	line-height:1.15;color:var(--d-cocoa)}
+.darling-product__price{margin:.4rem 0 1rem;font-size:1.6rem;font-weight:700;color:var(--d-cherry-deep)}
+/* The BGN half of the dual price is injected by the currency module; keep it
+   quieter than the euro figure so the primary price stays unambiguous. */
+.darling-product__price .darling-bgn{font-size:.95rem;font-weight:500;opacity:.75}
+.darling-product__excerpt{margin-bottom:1.2rem;line-height:1.6;opacity:.92}
+
+.darling-product__atc .quantity input{padding:.6rem;border:1.5px solid var(--d-sand);
+	border-radius:.6rem;background:#fff;width:4.5rem}
+.darling-product__atc button,
+.darling-product__atc .single_add_to_cart_button{padding:.85rem 1.6rem;border:0;border-radius:999px;
+	background:var(--d-honey);color:var(--d-cocoa);font-weight:700;cursor:pointer;
+	font-size:1rem;transition:.18s}
+.darling-product__atc button:hover{background:var(--d-honey-dark)}
+
+.darling-trust{list-style:none;margin:1.4rem 0 0;padding:1rem;display:grid;gap:.55rem;
+	border:1px solid var(--d-sand);border-radius:1rem;background:var(--d-vanilla,var(--d-cream));
+	font-size:.92rem}
+.darling-trust span{color:var(--d-honey);margin-right:.4rem}
+
+.darling-product__details{margin-top:2.5rem;line-height:1.7}
+.darling-product__details h2,.darling-product__details h3{color:var(--d-cocoa)}
+
+@media (max-width:820px){
+	.darling-product__top{gap:1.5rem}
+	.darling-product__title{font-size:1.45rem}
+	.darling-product__price{font-size:1.35rem}
+}
