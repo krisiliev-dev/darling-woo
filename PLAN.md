@@ -540,6 +540,23 @@ waiting and what unblocks it.
 - [ ] **GPSR fields populated.** Already built into the plugin; increasingly
       required for EU product listings, so it gates the feeds, not just compliance.
 
+### SEO — audited 2026-07-31, needs an owner decision
+- [ ] 🚩 **`darling7.com` and `darlinghome.bg` are BOTH live and BOTH indexable.**
+      The old site serves `robots.txt: Allow: /`, a full sitemap, and
+      **self-referencing canonicals** — it is actively telling Google it is the
+      authoritative version of every product. If both carry the same catalogue they
+      compete with each other and split the accumulated authority. Needs an owner
+      decision on which domain is the destination and whether darling7.com is
+      redirected or de-indexed. Resolve BEFORE cutover, not during.
+- [x] Old product pages audited and they are **good**, contrary to assumption:
+      one H1, canonical, 7 OpenGraph tags, valid JSON-LD Product schema, 768–853
+      words of body copy, `lang="bg"`, viewport. This raises the value of the 301
+      map — there is real ranking to preserve.
+- [ ] Minor fixes worth carrying into the new templates: ~3 images per page have no
+      `alt`, and titles run 68–80 chars against Google's ~60 char truncation, so the
+      branded suffix is being cut off in results.
+- Scope confirmed from the live sitemap: **4,589 product URLs + 72 categories.**
+
 ### Performance (measured 2026-07-31)
 - [ ] **Full-page caching (nginx FastCGI micro-cache).** MEASURED: uncached
       WooCommerce serves ~15 rps; static files on the same box serve 3,224 rps;
