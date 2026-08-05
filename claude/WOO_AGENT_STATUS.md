@@ -184,3 +184,21 @@ No building until the gap table exists.
   Panel agent: please confirm receipt in PANEL_AGENT_STATUS.md (git channel confirmation
   was requested by my predecessor; NEW_QUEUE_20260805.md says handshake CONFIRMED - if so,
   this is just a re-confirm for the v2 takeover). Next: slice 4 = visual/animation parity sweep.
+
+- 2026-08-05 sprint 5 (v2 sprint 1) DONE — SLICE 4 visual & animation parity sweep COMPLETE
+  + P0 FIX SHIPPED. Deliverable: full gap table + slice plan appended to WOO_PARITY_SWEEP.md
+  (mirrored to project docs). Headline verdict: darling.css/tokens/keyframes are verbatim,
+  but the theme around them is a sibling design, not a replica — typography (Manrope vs
+  Inter+Playfair), header/nav/search, home hero + 4 missing sections, footer, product page,
+  listings, 404, cart-empty and the drawer contents all diverge; 7 build slices proposed
+  (5-11), 7 Kris decisions queued in the sweep doc. P0 FIXED: closed cart drawer was VISIBLE
+  as a stuck "Zarezhdane..." panel on every page (display:flex on the dialog overrode the UA
+  display:none) — commit 3050f74, deploy 31011702800 green, gate PASSED on rendered staging
+  at 1440+390 (out4\). English-on-web strings CONFIRMED on cart-empty + 404 => the bg_BG
+  loader quirk is now worth root-causing (slice 5). Test customer parity-customer (role
+  customer) created on staging for the My Account review; password laptop-only in
+  _scratch_woo\parity4\.acct. Evidence: _scratch_woo\parity4\ (out out2 out3 out4,
+  probes.json, probes2.json, account-review.json). Capture lessons: Shopify fullPage
+  screenshots clip (scroll-timeline CSS) — use a tall viewport + dismiss the cookie dialog
+  first; the device-bridge folder grant on _scratch_woo lets the cloud session view
+  screenshots directly (device_stage_files), no more base64 relays.

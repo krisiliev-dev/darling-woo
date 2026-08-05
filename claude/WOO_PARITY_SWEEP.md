@@ -137,3 +137,105 @@ needed; 301 to `/shop/` in the cutover map.
    the live Shopify pages (Контакти, contact-information, privacy policy) all show
    the gmail — when porting, replace it with `orders@darlinghome.bg` everywhere
    customer-facing. Do not copy the gmail verbatim.
+
+
+---
+
+## Slice 4 — visual & animation parity sweep — DONE 2026-08-05 (woo agent v2, cloud)
+
+Method: Playwright side-by-side captures of live Shopify (darlinghome.bg) vs staging at
+390/768/1280/1440 px, full-page + fold, plus DOM/CSS probes (design tokens, keyframes,
+computed animation, section maps, footer/header structure) and a logged-in My Account walk
+(test customer `parity-customer`, role customer, created via wp-cli; password stashed
+laptop-only in `_scratch_woo\parity4\.acct`). Evidence: `C:\Users\lora_\darling\_scratch_woo\parity4\`
+(out\ = round 1 62 shots + probes.json; out2\ = cookie-dismissed Shopify + probes2.json +
+account-review.json; out3\ = tall-viewport Shopify full pages; out4\ = post-fix gate).
+Shopify fullPage screenshots need a tall viewport — the theme's scroll-timeline CSS clips
+scrollHeight, and the cookie dialog must be dismissed first or it pins every shot.
+`reference/shopify-theme/` untouched; staging `darling.css` verified BYTE-IDENTICAL to the
+reference capture (FileHash 8D978CD4…70 both sides).
+
+### Verdict
+
+The ported `darling.css` is verbatim (tokens 16/16 identical, all 5 keyframes present) — but
+the theme AROUND it is a sibling design, not a replica. Wrong font family site-wide, different
+hero, different header/nav/search, missing home sections, default-Woo 404/cart-empty/listing
+surfaces, and a much thinner cart drawer. Exact-replica requires rebuilding most templates.
+One P0 bug found and FIXED+SHIPPED this sprint (below).
+
+### Shipped in this slice — P0 drawer bug
+
+**Closed cart drawer rendered as a visible, stuck „Зареждане…" panel on EVERY page at EVERY
+viewport.** Root cause: `.darling-drawer--cart{display:flex}` unconditionally — overriding the
+UA rule `dialog:not([open]){display:none}`; the dialog reported `open:false` yet
+`visible:true` (probes.json → woo-drawer-onload). No console errors — pure CSS. Fix: `display:flex`
+moved under `[open]` (commit `3050f74`, deploy 31011702800 green). GATE PASSED on staging
+(`_scratch_woo\parity4\out4\`, gate4.js): closed drawer = `display:none`, zero-size box on
+home/product/cart at 1440+390; opens on click (flex, body populates); closes clean.
+The menu drawer never had the bug (no display override).
+
+### Gap table (live Shopify = target ✕ staging = current)
+
+| # | Surface | Gap | Sev |
+|---|---|---|---|
+| 1 | Typography, global | Shopify: Inter body 16px + Playfair Display serif headings/prices. Staging: Manrope everywhere, body 22px. Every page reads wrong | HIGH |
+| 2 | Header | Shopify: serif „Darling" wordmark (h1 on home), nav = Продукти (mega-menu w/ 11 categories) + За нас/Помощ/Контакти, LARGE always-visible rounded search bar („Какво търсиш, darling?"). Staging: „Дарлинг"+bow sans logo, flat category nav, icon-only search | HIGH |
+| 3 | Home hero | Shopify: full-width CHERRY band, serif „Тайната на една домакиня." (italic „домакиня"), white sub-copy, white bow + glow + 5 twinkling stars. Staging: cream bg, sans honey headline with the TEXT ROLES SWAPPED, pale bow, hero star/bow animations compute `none` (markup context differs), and the sub-copy DIVERGES from live („подбрани с грижа за всяко ъгълче" vs live „честно обозначени") | HIGH |
+| 4 | Home sections | Staging missing: Изборът на Lady D product row (quick-„Добави" cards), trust row (4×: Еконт и Спиди / Наложен платеж / Лесно връщане / Реални магазини), newsletter band („Само хубави неща, обещаваме." + отстъпка copy + socials). „Ново при нас" should be „Ново в Darling". Категории = photo-card carousel on Shopify vs text tiles. Season band ✓ matches | HIGH |
+| 5 | Ambient stars | 71 `.darling-ambient i` on live home vs 10 on staging | MED |
+| 6 | Footer | Shopify: Помощ и информация links ✕ centre dff mark (✦✧✦ bow + serif Darling + tagline + socials) ✕ Информация block (ЕИК 206094211, ул. „Хан Аспарух" 1, тел. 089 336 1670, email→**orders@ swap per Kris rule**, Google Maps link, 4 policy links) + utilities bar (© 2026 Darling · Правила и условия). Staging: 3 generic columns, no address/phone/maps/utilities. dff star/bow animations DO work on staging | MED |
+| 7 | Product page | Duplicate Отзиви block rendered twice (staging bug at normal viewport); wallet buttons (Apple/Google Pay/Link) shown — Shopify has none on product; breadcrumb w/ English „Uncategorized" — Shopify has no breadcrumb; raw „Налични 3" ×2 + SKU shown — Shopify shows neither; missing „По поръчка" badge box, „✦ Наложен платеж" info block, Доставка/Връщане и замяна accordions; related „Може да ви хареса" — Shopify has none; tab/button overlap at 1280 | HIGH |
+| 8 | Listing (/shop/, categories) | Shopify: red banner w/ name+description+photo, filter sidebar (Наличност/Цена €-inputs), toolbar (N артикул(а) · Сортиране · grid/list toggles), white product cards. Staging: bare h1 („Магазин" — should be „Продукти" on shop), default Woo toolbar, no filters/banner/cards. Category empty-state copy differs | HIGH |
+| 9 | Search page | Close-ish; missing product image/card in results, filter chips row, serif heading; red „Търсене" button not in Shopify layout | MED |
+| 10 | Cart drawer content | Missing: free-shipping progress bar (.darling-shipbar + shimmer lives INSIDE the Shopify drawer — „Още €X / Y лв. до безплатна доставка, darling"), ✦ trust line, qty steppers + trash per item, dual currency (shows only „13.50 €"), Обща сума row + tax note, button „Преминаване към плащане" (has „Към плащане"). Shopify auto-opens drawer after add-to-cart; staging stays on page | HIGH |
+| 11 | Cart page (empty) | ENGLISH on staging: „Your cart is currently empty!", „New in store" + sad-face. Shopify: serif „Количката ви е празна" + login prompt + „Продължи пазаруването". (Shopify's on-cart courier picker + фактура fields = old platform workaround — deliberately NOT replicated, superseded by native checkout) | HIGH |
+| 12 | 404 | Staging = default template: stock photo + English „Page not found"/„Search". Shopify: „Хм, тази страница я няма." + witty copy + „Обратно към магазина" + „Открий нещо ново" product row | HIGH |
+| 13 | My Account | Text 100% Bulgarian (account-review.json — zero stray Latin) but layout rough: nav renders as full-width stacked rows, content box floats offset; Изтегляния endpoint pointless for physical goods; registration disabled (Shopify offered register via hosted accounts). Shopify /account redirects to shopify.com hosted login → no visual target, style ours in-theme | MED |
+| 14 | Responsive (768/1280) | Home category tiles overflow/clip at 768; product tabs/buttons overlap at 1280. Both inside templates already being rebuilt — no separate fixes | MED |
+| 15 | Cookie consent | Shopify shows a GDPR cookie dialog; staging has none → owner decision | DECISION |
+| 16 | `<title>`/branding | Staging „Дарлинг – Тайната на една домакиня." vs Shopify „Darling"; align at cutover | LOW |
+| 17 | Accessibility widget (Т/БГ bubbles, 3rd-party app) | Not replicated → owner decision (recommend skip at launch) | DECISION |
+
+### English-on-web strings CONFIRMED (predecessor's watch item now triggered)
+
+Cart empty state („Your cart is currently empty!", „New in store"), 404 („Page not found",
+„Search", „Type here…") render English on web while wp-cli translates them — same loader quirk
+as the query-title prefix. Root-causing is now worthwhile and scheduled as slice 5.
+
+### Decisions needed from Kris (please answer in NEW_QUEUE / chat)
+
+1. **Cookie consent banner** — live site shows one (Shopify's). GDPR: staging sets cookies
+   (session/Stripe). Add a lightweight consent banner, or launch without? (Legal call.)
+2. **Wallet buttons on the product page** (Apple/Google Pay/Link) — remove for exact parity
+   (recommended; wallets stay at checkout) or keep for conversion?
+3. **Related products** („Може да ви хареса") on product page — Shopify has none; remove? (recommended)
+4. **My Account**: hide „Изтегляния"? Enable customer registration (Shopify offered it)?
+5. **Accessibility widget** — skip at launch? (recommended)
+6. Free-shipping drawer bar threshold — component will be built; the VALUE ties into the
+   delivery-fee design §4 answers you already owe the panel agent. Confirm: build the bar,
+   hidden until the threshold is configured?
+7. Newsletter section form — no email-marketing backend exists. Build the section for visual
+   parity; wire „Абонирай ме" to orders@ mailbox delivery (like the contact form) until a real
+   list tool is chosen?
+
+### Proposed build slices (one sprint each, full gates)
+
+- **Slice 5 — typography + i18n foundation**: self-host Inter + Playfair Display woff2, body
+  16px, serif heading scale; root-cause the bg_BG web-render quirk (fixes cart/404/search
+  strings in one move); shop page h1.
+- **Slice 6 — header + home rebuild**: serif wordmark, nav (Продукти mega + pages), big search
+  bar; red hero w/ EXACT live copy + dhv animations wired; Категории photo carousel (needs
+  category images — reuse Shopify's, they're in the crawl captures); Изборът на Lady D; „Ново в
+  Darling"; trust row; newsletter band; ambient density ~70.
+- **Slice 7 — footer + 404** (brand 404 + „Открий нещо ново").
+- **Slice 8 — product page**: dedup reviews, info panels + accordions, hide SKU/stock/breadcrumb,
+  serif styles, wallet/related per decisions, fix 1280 overlap.
+- **Slice 9 — listing + search**: banners, filters, toolbar, cards, empty states.
+- **Slice 10 — cart drawer + cart page**: shipbar component + shimmer, trust line, steppers,
+  dual currency, totals row, „Преминаване към плащане", auto-open on add, Bulgarian empty state.
+- **Slice 11 — My Account layout** + endpoint set per decisions.
+
+### Non-goals (explicit)
+
+- Shopify cart-page courier picker + фактура fields (platform workaround, superseded by native checkout — re-adding would be a regression).
+- `/agents.md`, hosted Shopify accounts, Judge.me/GTStandard fonts (app artifacts).
