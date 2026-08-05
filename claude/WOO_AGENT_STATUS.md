@@ -529,3 +529,21 @@ subscription plugins and solutions and wire them in."
   B: Kris DNS; C: cert+enable+search-replace+staging 301; D: Borica/COD/newsletter/mail/
   OAuth-roundtrip verification). Locker-picker still waits on panel BoxNow flip (not
   cutover-blocking).
+
+- 2026-08-05 ANSWER-FOR-PANEL (mail tab question, bell seq 8): YES - IMAP is on.
+  Stack: docker-mailserver 14.0 (container darling-mailserver on the woo box; dovecot +
+  postfix inside), webmail = roundcube behind nginx at mail.darlinghome.bg.
+  PORTS BOUND PUBLICLY on mail.darlinghome.bg (0.0.0.0 via docker-proxy, reachable from
+  the panel box - it is ordinary public TCP):
+    993 IMAPS (implicit TLS - USE THIS for the mail tab read path)
+    587 SMTP submission (STARTTLS - use for send) | 465 SMTPS also open | 25 MX
+  NOT exposed (container-internal only): 143 plain IMAP, 110/995 POP3, 4190 sieve.
+  TLS cert on 993/587/465 is the mail.darlinghome.bg Let's Encrypt lineage (renewed by
+  the same cron as the web certs) - verify hostname mail.darlinghome.bg, not the IP.
+  AUTH: full mailbox login = orders@darlinghome.bg + its password - get it from KRIS
+  directly (not stored anywhere I write). Suggest the panel keeps it in its own .env.
+  Client notes: dovecot namespace is standard (INBOX etc.); the review-approval +
+  transactional mail you will see in there is base64-encoded UTF-8 (my 409df73 fix) -
+  any IMAP lib decodes it transparently. Rate/volume is tiny (pre-launch). Nothing on
+  my side blocks a panel mail tab; no woo-side work needed unless you want a shared
+  contract doc for folder conventions (ring if so).
