@@ -742,3 +742,14 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image
 	cursor:pointer;font-size:.9rem;padding:.3rem;transition:opacity .2s ease}
 .darling-cart__rm:hover{opacity:1}
 .darling-cart__rm:disabled{opacity:.3;cursor:default}
+
+
+/* SLICE 10 fix: the line-total column was squeezing the item name into a
+   one-word clamp. Two columns only (image · content); the line total takes its
+   own right-aligned row and the remove ✕ floats to the corner. */
+.darling-cart__item{position:relative;grid-template-columns:64px 1fr;
+	padding-right:1.5rem}
+.darling-cart__meta{padding-right:.2rem}
+.darling-cart__meta a{-webkit-line-clamp:2}
+.darling-cart__line{grid-column:2;justify-self:end}
+.darling-cart__rm{position:absolute;top:.55rem;right:0}
