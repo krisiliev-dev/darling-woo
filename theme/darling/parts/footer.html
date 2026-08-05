@@ -1,76 +1,74 @@
 <!-- wp:html -->
-<div class="darling-footer darling-footer--v2">
+<!-- Structure conforms to the PORTED darling.css contract (grid 1fr auto 1fr on
+     .darling-footer expects exactly these three children; .df-* / .dff-* are the
+     live site's own footer classes — feed them, don't fight them). -->
+<div class="darling-footer">
 
-	<div class="darling-footer__cols">
-
-		<nav class="darling-footer__col" aria-label="Помощ и информация">
-			<h2>Помощ и информация</h2>
-			<ul>
-				<li><a href="/shop/">Продукти</a></li>
-				<li><a href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
-				<li><a href="/za-nas/">За нас</a></li>
-				<li><a href="/pomosht/">Помощ и въпроси</a></li>
-				<li><a href="/kontakti/">Контакти</a></li>
-			</ul>
-		</nav>
-
-		<!-- Centre brand mark, verbatim structure from the live footer: stars +
-		     bow (both animate from the ported stylesheet), serif wordmark,
-		     tagline, then the social row. -->
-		<div class="darling-footer__brand">
-			<div class="darling-foot-flair darling-foot-flair--brand" aria-hidden="true"><div class="dff-mark">
-				<i class="dff-s s1">✦</i><i class="dff-s s2">✧</i><i class="dff-s s3">✦</i>
-				<svg class="dff-bow" viewBox="0 0 24 12" fill="currentColor">
-					<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
-					<circle cx="12" cy="6" r="2.4"/>
-				</svg>
-			</div></div>
-			<p class="dff-word darling-wordmark">Darling</p>
-			<p class="darling-footer__tag dff-tag">Тайната на една домакиня.</p>
-			<div class="darling-footer__social dff-social" aria-label="Социални мрежи">
-				<a href="https://facebook.com/darling7sv" target="_blank" rel="noopener" aria-label="Facebook">
-					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.2 0-1-.1-1.9-.1-2 0-3.4 1.2-3.4 3.5V11H8.6v3h2.5v7Z"/></svg>
-				</a>
-				<a href="https://instagram.com/darling7.sv" target="_blank" rel="noopener" aria-label="Instagram">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.6" cy="7.4" r="1" fill="currentColor" stroke="none"/></svg>
-				</a>
-				<a href="https://tiktok.com/@darling7.sv" target="_blank" rel="noopener" aria-label="TikTok">
-					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 4c.3 1.8 1.4 3 3.4 3.2v2.4c-1.3 0-2.4-.4-3.4-1.1v5.1a5.3 5.3 0 1 1-5.3-5.3c.3 0 .6 0 .9.1v2.5a2.8 2.8 0 1 0 1.9 2.7V4Z"/></svg>
-				</a>
-				<a href="mailto:orders@darlinghome.bg" aria-label="Имейл">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>
-				</a>
-			</div>
+	<nav aria-label="Помощ и информация">
+		<h2 class="df-head">Помощ и информация</h2>
+		<div class="df-links">
+			<a href="/shop/">Продукти</a>
+			<a href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a>
+			<a href="/za-nas/">За нас</a>
+			<a href="/pomosht/">Помощ и въпроси</a>
+			<a href="/kontakti/">Контакти</a>
 		</div>
+	</nav>
 
-		<div class="darling-footer__col darling-footer__info">
-			<h2>Информация</h2>
-			<p>
-				„Дарлинг 7“ ООД<br>
-				ЕИК 206094211<br>
-				гр. Свищов, ул. „Хан Аспарух“ 1<br>
-				<a href="tel:+359893361670">тел. 089 336 1670</a><br>
-				<a href="mailto:orders@darlinghome.bg">orders@darlinghome.bg</a>
-			</p>
-			<p class="darling-footer__map">
-				<a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%94%D0%B0%D1%80%D0%BB%D0%B8%D0%BD%D0%B3%207%20%D0%A1%D0%B2%D0%B8%D1%89%D0%BE%D0%B2%20%D1%83%D0%BB.%20%D0%A5%D0%B0%D0%BD%20%D0%90%D1%81%D0%BF%D0%B0%D1%80%D1%83%D1%85%201"
-				   target="_blank" rel="noopener">Виж ни в Google Maps</a>
-			</p>
-			<ul class="darling-footer__policies">
-				<li><a href="/obshti-usloviya/">Общи условия</a></li>
-				<li><a href="/vrashtane/">Политика за връщане</a></li>
-				<li><a href="/dostavka/">Доставка</a></li>
-				<li><a href="/poveritelnost/">Поверителност</a></li>
-			</ul>
+	<div class="darling-foot-flair">
+		<span class="dff-rule" aria-hidden="true"></span>
+		<div class="dff-mark" aria-hidden="true">
+			<i class="dff-s s1">✦</i><i class="dff-s s2">✧</i><i class="dff-s s3">✦</i>
+			<svg class="dff-bow" viewBox="0 0 24 12" fill="currentColor">
+				<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
+				<circle cx="12" cy="6" r="2.4"/>
+			</svg>
+		</div>
+		<p class="dff-word">Darling</p>
+		<p class="dff-tag">Тайната на една домакиня.</p>
+		<div class="dff-social" aria-label="Социални мрежи">
+			<a href="https://facebook.com/darling7sv" target="_blank" rel="noopener" aria-label="Facebook">
+				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.2 0-1-.1-1.9-.1-2 0-3.4 1.2-3.4 3.5V11H8.6v3h2.5v7Z"/></svg>
+			</a>
+			<a href="https://instagram.com/darling7.sv" target="_blank" rel="noopener" aria-label="Instagram">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.6" cy="7.4" r="1" fill="currentColor" stroke="none"/></svg>
+			</a>
+			<a href="https://tiktok.com/@darling7.sv" target="_blank" rel="noopener" aria-label="TikTok">
+				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 4c.3 1.8 1.4 3 3.4 3.2v2.4c-1.3 0-2.4-.4-3.4-1.1v5.1a5.3 5.3 0 1 1-5.3-5.3c.3 0 .6 0 .9.1v2.5a2.8 2.8 0 1 0 1.9 2.7V4Z"/></svg>
+			</a>
+			<a href="mailto:orders@darlinghome.bg" aria-label="Имейл">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>
+			</a>
 		</div>
 	</div>
 
-	<div class="darling-footer__legal">
-		<p>&copy; 2026 Darling · „Дарлинг 7“ ООД. Всички права запазени.</p>
-		<p><a href="/obshti-usloviya/">Правила и условия</a></p>
-		<!-- Required alongside the euro transition: the fixed rate must be stated
-		     wherever prices are shown in both currencies. -->
-		<p class="darling-footer__rate">1 EUR = 1.95583 лв.</p>
+	<div>
+		<h2 class="df-head">Информация</h2>
+		<p class="df-pledge">
+			„Дарлинг 7“ ООД<br>
+			ЕИК 206094211<br>
+			гр. Свищов, ул. „Хан Аспарух“ 1<br>
+			<a href="tel:+359893361670">тел. 089 336 1670</a><br>
+			<a href="mailto:orders@darlinghome.bg">orders@darlinghome.bg</a>
+		</p>
+		<p class="df-map">
+			<a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%94%D0%B0%D1%80%D0%BB%D0%B8%D0%BD%D0%B3%207%20%D0%A1%D0%B2%D0%B8%D1%89%D0%BE%D0%B2%20%D1%83%D0%BB.%20%D0%A5%D0%B0%D0%BD%20%D0%90%D1%81%D0%BF%D0%B0%D1%80%D1%83%D1%85%201"
+			   target="_blank" rel="noopener">Виж ни в Google Maps</a>
+		</p>
+		<p class="df-policies">
+			<a href="/obshti-usloviya/">Общи условия</a><br>
+			<a href="/vrashtane/">Политика за връщане</a><br>
+			<a href="/dostavka/">Доставка</a><br>
+			<a href="/poveritelnost/">Поверителност</a>
+		</p>
 	</div>
+</div>
+
+<div class="df-legal">
+	<p>&copy; 2026 Darling · „Дарлинг 7“ ООД. Всички права запазени.</p>
+	<p><a href="/obshti-usloviya/">Правила и условия</a></p>
+	<!-- Required alongside the euro transition: the fixed rate must be stated
+	     wherever prices are shown in both currencies. -->
+	<p class="darling-footer__rate">1 EUR = 1.95583 лв.</p>
 </div>
 <!-- /wp:html -->

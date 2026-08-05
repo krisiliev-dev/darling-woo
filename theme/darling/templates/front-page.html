@@ -112,16 +112,18 @@
 
 <!-- Newsletter band. The form posts to our own relay (never the panel token in
      the browser); copy verbatim from the live site. -->
-<section class="darling-news" aria-label="Бюлетин">
-	<h2>Само хубави неща, <em>обещаваме.</em></h2>
+<section class="darling-news-band" aria-label="Бюлетин">
+<div class="darling-news">
+	<h3>Само хубави неща, <em>обещаваме.</em></h3>
 	<p>Веднъж седмично: нови попълнения, промоции и по някоя идея за дома. С щипка блясък, разбира се.</p>
-	<form class="darling-news__form" data-darling-newsletter>
+	<form class="dn-row darling-news__form" data-darling-newsletter>
 		<input type="email" name="email" required placeholder="имейл адрес, darling" aria-label="Имейл адрес" autocomplete="email">
 		<input type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="darling-news__hp">
 		<button type="submit" class="d-btn d-btn--primary">Абонирай ме</button>
 	</form>
 	<p class="darling-news__note">Абонираните получават отстъпка за първата поръчка — кодът пристига в имейла ти.</p>
-	<p class="darling-news__result" data-darling-newsletter-result role="status" aria-live="polite" hidden></p>
+	<p class="dn-ok darling-news__result" data-darling-newsletter-result role="status" aria-live="polite" hidden></p>
+</div>
 </section>
 <script>
 (function () {

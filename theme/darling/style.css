@@ -598,3 +598,22 @@ a.button.alt:hover {
 /* container reset: v1 grid on .darling-footer split cols+legal side by side */
 .darling-footer--v2{display:block;grid-template-columns:none;padding:0 var(--d-margin)}
 .darling-footer--v2 .darling-footer__cols{width:100%}
+
+/* ══ SLICE 7 fixes: conform to darling.css component contract + kill overflow ══
+   darling.css loads AFTER style.css and owns .darling-footer/.darling-news —
+   these rules only style what it leaves open, and undo the negative-margin
+   full-bleed trick that overflowed the viewport (wp-site-blocks has no side
+   padding, so full width needs no negative margins at all). */
+:root{--font-heading--family:"Playfair Display",Georgia,serif;--font-body--family:Inter,-apple-system,sans-serif}
+.darling-hero--red{margin-left:0;margin-right:0;padding:3.6rem clamp(1.5rem,4vw,4rem) 4rem}
+.darling-trust{margin-left:0;margin-right:0;padding:2.2rem clamp(1.5rem,4vw,4rem)}
+.darling-news{background:transparent;margin-left:auto;margin-right:auto;padding:0}
+.darling-news-band{background:var(--d-cherry);padding:3.4rem 1rem 3.8rem}
+.darling-news-band .darling-news h3{color:var(--d-vanilla)}
+.darling-news-band .darling-news h3 em{color:var(--d-honey-light)}
+.darling-footer{padding:2.6rem clamp(1.5rem,4vw,4rem) 1rem}
+.df-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;justify-content:space-between;
+	align-items:center;padding:1rem clamp(1.5rem,4vw,4rem) 1.6rem;font-size:.85rem;
+	opacity:.9;border-top:1px solid var(--d-sand-deep);background:var(--d-vanilla)}
+.df-legal p{margin:0}
+@media (max-width: 880px){.df-legal{justify-content:center;text-align:center}}
