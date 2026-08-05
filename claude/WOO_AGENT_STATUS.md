@@ -359,3 +359,44 @@ subscription plugins and solutions and wire them in."
   perfect Cyrillic. All transactional mail readable from now on. Remaining slices:
   10 (cart drawer contents + cart page), 11 (My Account), 12 (social OAuth), 13 (consent
   banner), 14 (accessibility widget), + panel-dependent items.
+
+- 2026-08-05 sprint 12 (v2 sprint 8) DONE - SLICE 10 SHIPPED + GATED (commits cf9989e,
+  12cc3ae, 9307d78; deploys green): cart drawer v2. Free-shipping shipbar between drawer
+  head and body (darling.css .darling-shipbar/.dsb-track vocabulary; markup conforms, math
+  mine): 'Oshte <b>EUR X / Y lv.</b> do bezplatna dostavka, darling' with live remaining
+  amount, fill = eur/77 (min 4%); crossing 77 EUR flips to '<b>Dostavkata e bezplatna</b>,
+  darling' + 100% bar. Dual currency EVERYWHERE in the drawer (comma decimals, 1.95583):
+  unit prices, line totals, Obshta suma. Trust line '~ Nalozhen platezh pri dostavka -
+  Vrashtane do 14 dni'. Per-item qty steppers +/- and trash via Store API update-item/
+  remove-item (nonce POST helper; qty<1 = remove; server re-render from response). Foot:
+  'Obshta suma' label, 'S vklyucheno DDS. Dostavkata se izchislyava pri plashtane.',
+  CTA 'Preminavane kam plashtane'. Auto-open after add-to-cart: Blocks + jQuery events AND
+  the classic PDP path - LESSON: the PDP add-to-cart form is a classic POST + full reload,
+  no JS event survives it; fix = sessionStorage intent flag set on form.cart submit, drawer
+  opens on the page that comes back (12cc3ae). Layout fix 9307d78: line-total column was
+  clamping the item name; item grid is now img+content with the line total on its own row.
+  GATE12 PASS (all rendered-DOM): empty state (bar+foot hidden), auto-open after PDP add,
+  exact dual strings (13,50/26,40; 27,00/52,81; 81,00/158,42), shipbar math incl. the
+  77-crossing both directions (63,50 -> 50,00 -> bezplatna -> 9,50 remaining), server cart
+  agreement per mutation, remove -> empty + badge clears + server_count 0, checkout smoke.
+  Stock raised 3->20 for the crossing test and RESTORED to 3; box helper scripts cleaned.
+  INFRA: System32 ssh.exe broke laptop-side (exit 255 silent, even -V) - Git's
+  'C:\Program Files\Git\usr\bin\ssh.exe' is the working replacement for ALL box ops
+  (matches panel agent's finding; scp likewise). Bridge job registry reset mid-sprint -
+  tracked jobs by log path as panel advised.
+  LOCKER MODE (panel heads-up): verified my shipping method already TOLERATES unknown rate
+  modes - rows are keyed by mode and only 'office'/'door' are offered, so 'locker' rows are
+  ignored safely until the locker-picker slice (BoxNow widget-v5.boxnow.bg?partnerId=17324)
+  exists. Nothing to change now.
+  CUTOVER: Kris decided Woo goes to the MAIN DOMAIN (Shopify retires; NOT taking orders,
+  so timing is free). RUNBOOK WRITTEN: claude/CUTOVER_RUNBOOK.md (this repo + project
+  mirror) - phased A (safe now: TTL down, apex nginx block prepared dark, 301 map
+  Shopify->Woo, DB dry-run = 56 replacements) / B (Kris flips DNS: apex+www A ->
+  169.58.89.40) / C (me: cert via already-listening ACME webroot, enable apex block minus
+  auth minus noindex, search-replace + blog_public 1, staging -> 301) / D (Borica prod
+  card test, COD e2e, newsletter, mail links, 404-map watch) + rollback (DNS back to
+  Shopify, nothing destroyed). Needs from Kris: go signal, DNS edits, test card.
+  Remaining slices: 11 (My Account), 12 (social OAuth - needs owner API credentials),
+  13 (consent banner), 14 (accessibility widget), locker-picker (when panel flips BoxNow),
+  + panel-dependent items. Polish notes standing: hero band edge-to-edge; cart PAGE dual
+  currency.
