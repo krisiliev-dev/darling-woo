@@ -78,3 +78,10 @@ add_filter( 'woocommerce_localisation_address_formats', function ( $formats ) {
 	$formats['BG'] = "{name}\n{company}\n{address_1}\n{address_2}\n{postcode} {city}\n{country}";
 	return $formats;
 } );
+
+/**
+ * A search with exactly one hit shows the results page, as on the Shopify site,
+ * instead of WooCommerce's default redirect straight to the product. The
+ * customer searched — show them what the search found, with the count.
+ */
+add_filter( 'woocommerce_redirect_single_search_result', '__return_false' );
