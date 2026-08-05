@@ -811,3 +811,14 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image
 	var(--d-sand-deep);padding:.7rem .5rem;text-align:left}
 .woocommerce-Addresses .woocommerce-Address{background:var(--d-sand);border-radius:12px;
 	padding:1rem 1.1rem}
+
+
+/* SLICE 11 fix: pin the two auth columns explicitly. A stray first child
+   (notices wrapper) was auto-flowing the login card into column 2 and the
+   register card into row 2 — explicit placement is immune to extra children. */
+.woocommerce-account .u-columns.col2-set .u-column1{grid-column:1;grid-row:1}
+.woocommerce-account .u-columns.col2-set .u-column2{grid-column:2;grid-row:1}
+@media (max-width:820px){
+	.woocommerce-account .u-columns.col2-set .u-column1,
+	.woocommerce-account .u-columns.col2-set .u-column2{grid-column:1;grid-row:auto}
+}
