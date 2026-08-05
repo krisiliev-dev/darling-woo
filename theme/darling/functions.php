@@ -107,3 +107,15 @@ add_filter( 'gettext', function ( $translation, $text, $domain ) {
 	}
 	return $translation;
 }, 10, 3 );
+
+/**
+ * My Account: no „Изтегляния". We sell physical goods only — the tab is noise,
+ * and an empty downloads screen reads as something broken. Menu item removed
+ * here; the endpoint itself is disabled via the option (set to '') so a typed
+ * /my-account/downloads/ URL falls through to the dashboard instead of
+ * rendering an orphaned page.
+ */
+add_filter( 'woocommerce_account_menu_items', function ( $items ) {
+	unset( $items['downloads'] );
+	return $items;
+} );
