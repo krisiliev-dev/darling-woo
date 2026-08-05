@@ -900,3 +900,9 @@ html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underli
    totals render it slightly smaller so the EUR stays the loudest number. */
 .wp-block-woocommerce-cart .wc-block-components-totals-item__value .darling-bgn,
 .wp-block-woocommerce-cart .wc-block-components-totals-footer-item .darling-bgn{font-size:.85em}
+
+
+/* SLICE 15 fix: the wider full-bleed container let the headline fit one line;
+   live breaks „домакиня." onto its own italic line. Cap the copy column at the
+   width it had inside the old constrained wrapper so the wrap comes back. */
+.darling-hero-band .darling-hero__copy{max-width:44rem}
