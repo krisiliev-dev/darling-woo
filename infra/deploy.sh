@@ -66,7 +66,7 @@ echo "[deploy] health check…"
 # Note: `code=$(curl -w '%{http_code}') || code=000` and NOT `... || echo 000`:
 # curl prints 000 *and* exits non-zero on connection failure, so the echo form
 # concatenates into "000000".
-URL="${WP_HOME:-https://staging.darlinghome.bg}/"
+URL="${WP_HOME:-https://darlinghome.bg}/"
 PW_FILE="$APP_DIR/.staging-password"
 AUTH=()
 [ -r "$PW_FILE" ] && AUTH=(-u "darling:$(cat "$PW_FILE")")
