@@ -198,8 +198,10 @@ class Darling_Panel_API {
 		if ( ! self::configured() ) {
 			return 'unavailable';
 		}
+		// 12s, not the shared 8s: panel asks >=10s headroom here (listmonk's SMTP
+		// dial is inline on subscriber create). Checkout-latency paths keep 8s.
 		$res = wp_remote_post( self::base() . '/api/public/newsletter/subscribe', array(
-			'timeout' => self::TIMEOUT,
+			'timeout' => 12,
 			'headers' => array(
 				'X-Office-Token' => self::token(),
 				'Content-Type'   => 'application/json',
