@@ -229,3 +229,18 @@ class Darling_Shipping {
 		return 'cod' === $chosen;
 	}
 }
+
+
+/**
+ * Serve shipping options CHEAPEST-FIRST, matching the panel's sort. Without
+ * this, rates arrive ordered by shipping-method registration (alphabetical:
+ * Econt before Speedy), so the pre-selected default was the pricier courier.
+ * Free rates (over the threshold) naturally sort to the top. Display order
+ * only — pricing is untouched.
+ */
+add_filter( 'woocommerce_package_rates', function ( $rates ) {
+	uasort( $rates, function ( $a, $b ) {
+		return $a->get_cost() <=> $b->get_cost();
+	} );
+	return $rates;
+}, 20 );

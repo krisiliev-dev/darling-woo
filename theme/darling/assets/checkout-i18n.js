@@ -1,0 +1,35 @@
+/**
+ * Bulgarian for the blocks-checkout strings the upstream bg_BG pack misses.
+ *
+ * These are client-side React strings (wp.i18n), so PHP gettext never sees
+ * them — this registers on the JS i18n.gettext hook instead, before hydration
+ * (enqueued in the header with wp-hooks/wp-i18n as dependencies). Keyed by
+ * SOURCE string: where upstream later adds a real translation, ours simply
+ * stops mattering if removed, and until then stays deterministic.
+ */
+( function () {
+	'use strict';
+	if ( ! window.wp || ! wp.hooks || ! wp.i18n ) { return; }
+
+	var map = {
+		'Place Order': 'Поръчай',
+		'Contact information': 'Данни за контакт',
+		'Payment options': 'Начин на плащане',
+		'Express Checkout': 'Бързо плащане',
+		'Or continue below': 'Или продължи по-долу',
+		'You are currently checking out as a guest.': 'Поръчваш като гост.',
+		'Use same address for billing': 'Използвай същия адрес и за фактуриране',
+		'Phone (optional)': 'Телефон (по избор)',
+		'State/County (optional)': 'Област (по избор)',
+		'State/County': 'Област',
+		'State/Region (optional)': 'Област (по избор)',
+		'State/Region': 'Област',
+		'apartment, suite, etc.': 'апартамент, вход, етаж и т.н.',
+		'Add coupons': 'Код за отстъпка',
+		'Add a coupon': 'Добави код за отстъпка',
+	};
+
+	wp.hooks.addFilter( 'i18n.gettext', 'darling/checkout-bg', function ( translation, text ) {
+		return Object.prototype.hasOwnProperty.call( map, text ) ? map[ text ] : translation;
+	} );
+} )();

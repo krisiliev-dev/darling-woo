@@ -155,3 +155,23 @@ add_action( 'woocommerce_login_form_end', function () {
 add_action( 'woocommerce_register_form_end', function () {
 	echo do_shortcode( '[nextend_social_login]' );
 } );
+
+/**
+ * Bulgarian for blocks-checkout strings the upstream pack misses. Header, not
+ * footer: the i18n.gettext filter must exist before React hydrates the blocks.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( ! function_exists( 'is_checkout' ) || ( ! is_checkout() && ! is_cart() ) ) {
+		return;
+	}
+	$src = get_stylesheet_directory() . '/assets/checkout-i18n.js';
+	if ( file_exists( $src ) ) {
+		wp_enqueue_script(
+			'darling-checkout-i18n',
+			get_stylesheet_directory_uri() . '/assets/checkout-i18n.js',
+			array( 'wp-hooks', 'wp-i18n' ),
+			filemtime( $src ),
+			false // header on purpose
+		);
+	}
+}, 20 );
