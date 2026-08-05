@@ -448,3 +448,27 @@ subscription plugins and solutions and wire them in."
   Facebook app ID/secret - reminded in chat this sprint), locker-picker (when panel flips
   BoxNow), polish (hero edge-to-edge - still visible in consent screenshot, cart PAGE dual
   currency).
+
+- 2026-08-05 sprint 15 (v2 sprint 11) DONE - SLICE 14 SHIPPED + GATED (commit 15aac2b,
+  deploy green): accessibility mode. DISCOVERY: the live site's widget is NOT a vendor -
+  it's the theme's OWN component, and the ported darling.css ALREADY CARRIES the full
+  vocabulary (html.darling-a11y mode: body 17px, full-contrast cocoa headings, underlined
+  links, opacity:1 on faded text, *{animation:none!important}, ambient hidden, stronger
+  focus rings; .darling-a11y-btn: 46px round cocoa bottom-left, honey when active). Live
+  probe found it at x=18,y=836 with aria 'Rezhim za dostapnost: po-golyam tekst, visok
+  kontrast, bez animacii' - conformed exactly: button markup in footer part (person icon
+  SVG, aria-pressed), toggle JS, choice in darling_a11y cookie (365d), EARLY apply script
+  at the top of the header part so returning a11y users never see a decorated flash
+  (cache-safe: class client-side only). Woo-only surfaces darling.css doesn't know got
+  mode rules in style.css (product cards border, account nav underline, consent card).
+  Consent card lifted to bottom:78px - shares the corner with the button, no overlap
+  (gated geometrically). NOT ported deliberately: .darling-lang-btn (EN toggle) - Woo has
+  no EN locale; revisit only if Kris wants EN at some point. GATE15 PASS: off state 16px +
+  dhv-tw animation live, on state 17px + animationName none + cookie=1 + aria-pressed,
+  persists across reload BEFORE interaction, toggles clean off (cookie=0), checkout smoke.
+  Gate committed as tests/a11y-gate.spec.js.
+  Frontend queue remaining: POLISH SLICE NEXT (hero band edge-to-edge; cart PAGE dual
+  currency) - after that the queue is drained except slice 12 OAuth (still BLOCKED on
+  Kris: Google client ID/secret + Facebook app ID/secret) and locker-picker (waits on
+  panel BoxNow flip; not cutover-blocking per earlier scope). Cutover runbook remains
+  ready - executes when Kris says go once frontend is done.
