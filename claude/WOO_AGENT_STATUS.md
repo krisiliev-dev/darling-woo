@@ -569,3 +569,42 @@ subscription plugins and solutions and wire them in."
   earlier today; both need test-data setup and nothing touched their paths since).
   AWAITING: Kris's DNS flip -> Phase C (me, ~10min) -> Phase D (Borica card test + COD
   e2e + newsletter + mail links + OAuth round-trips; D1/D7 need Kris).
+
+- 2026-08-05 sprint 19 - *** CUTOVER EXECUTED - darlinghome.bg IS LIVE ON WOO *** (~20:20
+  -20:50 UTC). Sequence as run: Kris flipped DNS (@ A -> 169.58.89.40 TTL 300; www CNAME
+  -> apex; all mail/panel/bulletin records untouched). DNS propagation was staggered
+  between the provider's two authoritative servers - authoritative watcher (dnspython vs
+  redirns1+redirns2) gated Phase C, and the BOX's own resolver needed an authoritative
+  dig override (old 3600 TTL cached; LE resolves authoritatively so issuance unaffected).
+  PHASE C: apex+www cert issued (expires 2026-11-03, joins existing renew cron); apex
+  server block enabled (no auth, no noindex, Shopify 301 map, peer-health moved IN);
+  wp search-replace 56 replacements; blog_public=1; caches flushed.
+  ROOT-CAUSE DETOUR (recorded): apex kept 301ing to staging with DB correct - WP_HOME/
+  WP_SITEURL constants were injected via docker-compose WORDPRESS_CONFIG_EXTRA from
+  /srv/darling/prod/.env (lines 7-8) - INVISIBLE to wp-config.php grep and immune to all
+  cache flushes. Fixed .env, RECREATED the wordpress container (restart is not enough for
+  env changes). LESSON: on this box, domain identity lives in .env, not the DB alone.
+  C5 SMOKE (external): apex 200 + TLS clean; www->apex 301; product URLs 200; Shopify map
+  verified (/products/x, /collections/x, /collections/all all 301 correctly); Store API
+  200; NO X-Robots-Tag; robots.txt normal; peer-health 200 on apex; staging 301'd
+  (transitional). PHASE D: D2 COD ORDER END-TO-END on live - real order #42 placed
+  (guest, BG-04, door rate; office rates correctly DEMAND the office picker - gate
+  switched to door; order-received + dual currency; order cancelled after). Panel rates
+  live with COD pricing (Speedy 4.42/7.17, Econt 7.31/8.55 at 1 item). D3 newsletter
+  PASS ('Proverete poshtata si...'). D4 mail: customer email decoded from its expected
+  bounce (.invalid recipient): subject BG-perfect, base64, apex links, 0 staging refs.
+  Mail stack untouched (roundcube 200, IMAPS 993 cert OK). PHASE E (Kris-approved
+  teardown): staging nginx block REMOVED (default.conf.staging301.bak kept), staging
+  cert lineage DELETED from renewal, panel repointed their peer-check to
+  darlinghome.bg/peer-health (bell-confirmed) BEFORE teardown. Kris still to delete the
+  staging DNS record (cosmetic now).
+  STILL OPEN post-cutover: D7 OAuth round-trips (Kris: one Google + one Facebook login
+  on darlinghome.bg); D1 Borica (waits on Kris's bank contract - NOT wired yet, his
+  note); D5 standing watch (nginx 404s from unmapped Shopify URLs - extend map if real
+  patterns appear). NEW FOLLOW-UP QUEUE from live observation: (1) checkout i18n gaps -
+  'Place Order', 'Contact information', 'Payment options', 'Express Checkout', guest
+  notice, 'Use same address for billing', 'Phone (optional)', 'Shtat/Oblast' label -
+  need BG via gettext/blocks filters; (2) shipping option ORDER: panel serves
+  cheapest-first but checkout lists Econt before Speedy (method registration order wins)
+  - respect the panel sort; (3) locker-picker (panel BoxNow flip). Rollback assets kept:
+  default.conf.precutover.bak + staging301.bak on box.
