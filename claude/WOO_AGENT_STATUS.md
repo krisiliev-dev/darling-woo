@@ -279,3 +279,26 @@ subscription plugins and solutions and wire them in."
   Kris directive noted: TIGHT wakeup cadence from now (minutes, not 45min).
   Remaining home-polish candidates for slice 7 (footer+404 sprint): headline size tuning,
   category card arrow control, socials in newsletter band (live has them near footer).
+
+- 2026-08-05 sprint 9 (v2 sprint 5) DONE - SLICE 7 SHIPPED + GATED (commits def3743, ff53a27,
+  a4970c4, 6341793; deploys green): FOOTER rebuilt to the live three-zone layout - and the
+  right way: darling.css (the ported Shopify stylesheet) already OWNS .darling-footer as
+  grid 1fr auto 1fr plus the whole df-*/dff-* vocabulary (df-head/df-links/df-map/
+  df-policies/df-legal), and it loads AFTER style.css, so the fix was conforming our markup
+  to its contract instead of overriding (two failed override attempts taught this - LESSON:
+  before styling any live-site component, grep darling.css for its class vocabulary FIRST).
+  Footer: help links / flair mark (stars+bow animating in .darling-foot-flair scope) + serif
+  Darling + tagline + fb/ig/tiktok/mailto socials (real profiles found in the capture:
+  facebook.com/darling7sv, instagram.com/darling7.sv, tiktok.com/@darling7.sv) / Informacia
+  block (EIK 206094211, ul. Han Asparuh 1, tel:+359893361670, orders@ ONLY - no gmail,
+  real Google Maps URL, 4 policy links) / df-legal bar (c) 2026 Darling + Pravila i uslovia
+  + EUR rate. BRANDED 404: serif 'Hm, tazi stranica ya nyama.' + witty copy + Obratno kam
+  magazina + Otkrii neshto novo product row, HTTP 404 kept, zero English. Newsletter band
+  restructured to darling.css's .darling-news (640px inner) inside a full-red band wrapper.
+  Also fixed: negative-margin full-bleed overflowed the viewport (wp-site-blocks has no side
+  padding - full-bleed needs NO negative margins); --font-heading/body-family root vars now
+  defined (darling.css references them; Shopify used to supply them). GATE PASS (gate9.js,
+  tests/footer-404-gate.spec.js): 404 all-Bulgarian with product row; footer grid_3col, no
+  horizontal overflow, all facts/links/socials/animations verified computed; checkout intact.
+  POLISH NOTE for later: hero band still inset by main container padding (live is
+  edge-to-edge); minor spacing vs live. Next: slice 8 = product page.
