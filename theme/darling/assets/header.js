@@ -242,6 +242,22 @@
 		if ( window.jQuery ) {
 			window.jQuery( document.body ).on( 'added_to_cart', onAdded );
 		}
+
+		// The product page's add-to-cart is a classic POST + full reload, so no
+		// event survives it. Remember the intent in sessionStorage on submit and
+		// open the drawer on the page that comes back.
+		document.addEventListener( 'submit', function ( e ) {
+			var f = e.target;
+			if ( f && f.classList && f.classList.contains( 'cart' ) ) {
+				try { sessionStorage.setItem( 'darling-cart-open-next', '1' ); } catch ( err ) {}
+			}
+		}, true );
+		try {
+			if ( sessionStorage.getItem( 'darling-cart-open-next' ) === '1' ) {
+				sessionStorage.removeItem( 'darling-cart-open-next' );
+				onAdded();
+			}
+		} catch ( err ) {}
 	}
 
 	// The block cart and checkout emit this when the basket changes.
