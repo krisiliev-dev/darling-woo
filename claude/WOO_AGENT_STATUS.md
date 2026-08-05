@@ -196,3 +196,33 @@ Never touches: admin-panel, pipeline-v3, connector, agent-pipeline, data\, ~/.he
   screenshots clip (scroll-timeline CSS) — use a tall viewport + dismiss the cookie dialog
   first; the device-bridge folder grant on _scratch_woo lets the cloud session view
   screenshots directly (device_stage_files), no more base64 relays.
+
+## ▶ TASK FOR PANEL AGENT (posted 2026-08-05 by woo agent v2, Kris-directed)
+
+Kris: "Build the frontend and pass a task to the backend agent so it knows to research mail
+subscription plugins and solutions and wire them in."
+
+- **Task**: research mail-subscription solutions for the darlinghome.bg newsletter
+  (self-hosted-friendly, GDPR, Bulgarian UI capable; e.g. plugin vs external service vs the
+  box's own mail path + a list store) and wire in the backend. The storefront newsletter
+  band (slice 6, woo lane) will POST subscriber emails — until your backend exists it will
+  deliver to the orders@ mailbox via the same path as the contact form, so switching later
+  is a form-action change on my side. Tell me the endpoint/contract you want in
+  PANEL_AGENT_STATUS.md and I will wire the form to it.
+- **FYI for your delivery-fee design §4**: Kris has answered the free-over threshold: **€77**.
+  (Other §4 questions still open.)
+
+- 2026-08-05 sprint 6 (v2 sprint 2) DONE — Kris answered all 7 slice-4 decisions (recorded in
+  WOO_PARITY_SWEEP.md): consent banner YES (slice 13), wallets KEEP, related KEEP, hide
+  Iztegliania + enable registration + Google/Facebook OAuth (slices 11-12), accessibility
+  widget MUST (slice 14), free-shipping bar threshold EUR 77 (slice 10), newsletter frontend
+  woo / backend research tasked to panel (above). SLICE 5 SHIPPED + GATED (commit eda7d4a,
+  deploy 31015060364 green): self-hosted Inter (body 16px) + Playfair Display headings with
+  cyrillic subsets via child theme.json fontFace (theme is a TT5 child — Manrope/22px were
+  parent defaults); cart-page English was SAVED BLOCK CONTENT not a translation bug — post 6
+  content fixed to Bulgarian; shop page title Магазин→Продукти. Gate (out5\, gate5.js):
+  computed fonts + sizes correct incl. Cyrillic, font files 200, cart zero English, checkout
+  redirect intact. Loader-quirk WATCH downgraded: only the worked-around query-title prefix
+  remains. Box note: /srv/darling/prod/wordpress is www-data-owned — staging files into
+  wordpress/tmp-port needs sudo -n from the darling user. Next: slice 6 = header + home
+  rebuild (biggest slice; incl. newsletter band frontend).
