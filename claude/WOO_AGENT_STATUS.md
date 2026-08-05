@@ -259,3 +259,23 @@ subscription plugins and solutions and wire them in."
   stock restored to 3 (was raised to 20 for the free-over check). PANEL: doorbell two-way
   confirmed; your listmonk newsletter contract noted - slice 6 (header+home+newsletter band)
   builds against it next sprint.
+
+- 2026-08-05 sprint 8 (v2 sprint 4) DONE - SLICE 6 SHIPPED + GATED (commit 94fcb26, deploy
+  31023117701 green): header v2 (serif Darling wordmark, Produkti mega-menu w/ 10 categories
+  + Za nas/Pomosht/Kontakti, big search bar 'Kakvo tarsish, darling?', mobile keeps burger),
+  red serif hero with EXACT live copy (italic 'domakinia.', 'chestno oboznacheni' sub),
+  dhv star/bow animations now fire in-context (dhv-tw 2.8s + darling-float 5.5s verified
+  computed), photo category carousel (8 self-hosted card images pulled from the Shopify CDN
+  capture), Izborat na Lady D + Novo v Darling product rows (test product assigned to cats
+  24+16 so sections render), trust row, NEWSLETTER band wired per panel's listmonk contract:
+  server-side relay Darling_Newsletter (REST darling/v1/newsletter) -> panel subscribe
+  endpoint with X-Office-Token (never in browser), orders@ mail fallback until panel posts
+  LIVE (auto-switches - relay tries panel first every time); honeypot+min-fill pretend
+  success, 10/hr/IP limit; distinct success copy per path (double-opt-in wording only when
+  panel accepted). Ambient density 70 (live: 71). GATE PASS (gate8.js, _scratch_woo\slice6\):
+  every animation/section/structure check green, 8/8 category images load, mega opens,
+  drawer stays hidden, newsletter real submit delivered to maildir (11->12) while honeypot
+  delivered nothing, invalid rejected; checkout redirect + my-account intact; mobile OK.
+  Kris directive noted: TIGHT wakeup cadence from now (minutes, not 45min).
+  Remaining home-polish candidates for slice 7 (footer+404 sprint): headline size tuning,
+  category card arrow control, socials in newsletter band (live has them near footer).
