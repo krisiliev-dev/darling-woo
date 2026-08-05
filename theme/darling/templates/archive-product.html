@@ -65,9 +65,11 @@
 					</div>
 					<script>
 					(function () {
-						var g = document.querySelector('.darling-archive .darling-grid');
+						// The grid renders AFTER this bar in document order, so it
+						// must be looked up at click time, not at parse time.
 						document.querySelectorAll('[data-darling-view]').forEach(function (b) {
 							b.addEventListener('click', function () {
+								var g = document.querySelector('.darling-archive .darling-grid');
 								if (!g) { return; }
 								g.classList.toggle('darling-grid--list', b.dataset.darlingView === 'list');
 								document.querySelectorAll('[data-darling-view]').forEach(function (x) { x.classList.toggle('is-active', x === b); });
