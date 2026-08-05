@@ -43,6 +43,7 @@ class Darling_Shipping {
 		add_filter( 'woocommerce_shipping_methods', array( __CLASS__, 'register' ) );
 		add_action( 'woocommerce_shipping_init', array( __CLASS__, 'load' ) );
 		add_filter( 'woocommerce_cart_shipping_packages', array( __CLASS__, 'tag_package_with_cod' ) );
+		add_action( 'woocommerce_cart_loaded_from_session', array( __CLASS__, 'sync_captured_pm_to_session' ) );
 	}
 
 	/**
@@ -78,17 +79,39 @@ class Darling_Shipping {
 	 * Adding a key to the package changes the hash, which is exactly the point:
 	 * switching payment method now invalidates the cached rates.
 	 */
+	/**
+	 * Persist the captured payment method once the session actually EXISTS.
+	 *
+	 * Trace evidence (2026-08-05): at rest_request_before_callbacks time
+	 * WC()->session is NULL on Store API POSTs, so writing it there never fired
+	 * ("no-session" in the trace). Blocks persisted cod to the session by its own
+	 * path but NOT the switch back to stripe â€” which is exactly the asymmetry the
+	 * customer sees. This hook runs after the cart+session are loaded in the SAME
+	 * request, so the write is guaranteed a session to write to.
+	 */
+	public static function sync_captured_pm_to_session(): void {
+		if ( null !== self::$request_payment_method && WC()->session ) {
+			$cur = (string) WC()->session->get( 'chosen_payment_method' );
+			if ( $cur !== self::$request_payment_method ) {
+				WC()->session->set( 'chosen_payment_method', self::$request_payment_method );
+				self::trace( 'sync_captured_pm_to_session: ' . $cur . ' -> ' . self::$request_payment_method );
+			}
+		}
+	}
+
 	public static function tag_package_with_cod( array $packages ): array {
+
 		$flag = self::is_cod() ? 'cod' : 'prepaid';
 		foreach ( $packages as $i => $package ) {
 			$packages[ $i ]['darling_cod'] = $flag;
 		}
 		self::trace( sprintf(
-			'tag_package_with_cod: flag=%s packages=%d request_pm=%s session_pm=%s',
+			'tag_package_with_cod: flag=%s packages=%d request_pm=%s session_pm=%s uri=%s',
 			$flag,
 			count( $packages ),
 			self::$request_payment_method ?? '(null)',
-			WC()->session ? (string) WC()->session->get( 'chosen_payment_method' ) : '(no session)'
+			WC()->session ? (string) WC()->session->get( 'chosen_payment_method' ) : '(no session)',
+			(string) ( $_SERVER['REQUEST_URI'] ?? '?' )
 		) );
 		return $packages;
 	}
