@@ -204,3 +204,12 @@ add_filter( 'gettext', function ( $translation, $text, $domain ) {
 	}
 	return $translation;
 }, 10, 3 );
+
+/**
+ * „Express Checkout" comes from the Stripe gateway's own text domain, not
+ * woocommerce's. Exact-string match, domain-agnostic — the phrase doesn't
+ * appear anywhere it shouldn't be Bulgarian.
+ */
+add_filter( 'gettext', function ( $translation, $text ) {
+	return 'Express Checkout' === $text ? 'Бързо плащане' : $translation;
+}, 10, 2 );
