@@ -441,3 +441,25 @@ a.button.alt:hover {
 .darling-blog__date{color:var(--d-honey-nav);font-size:.85rem;margin:0 0 .5rem}
 .darling-blog__excerpt{margin:0;color:var(--d-cocoa)}
 .darling-blog__excerpt .wp-block-post-excerpt__more-link{color:var(--d-cherry-deep);font-weight:600}
+
+/* ------------------------------------------------------------------
+   Contact form ([darling_contact_form] on /kontakti/) — mirrors the
+   Shopify contact page: name+email row, phone, comment, Изпрати.
+   ------------------------------------------------------------------ */
+.darling-contact-form{max-width:34rem;margin:2rem auto 0}
+.darling-contact-form p{margin:0 0 .8rem}
+.darling-contact-form input,
+.darling-contact-form textarea{width:100%;border:1px solid var(--d-sand);border-radius:.7rem;
+	background:#fff;color:var(--d-cocoa);padding:.65rem .9rem;font:inherit}
+.darling-contact-form input:focus,
+.darling-contact-form textarea:focus{outline:2px solid var(--d-honey);outline-offset:1px}
+.darling-contact-form__row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media (max-width:600px){.darling-contact-form__row{grid-template-columns:1fr}}
+.darling-contact-form .visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;
+	padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* Honeypot: moved off-canvas rather than display:none — some bots skip
+   display:none fields, and a human never sees it either way. */
+.darling-contact-form .darling-hp{position:absolute;left:-9999px;top:auto}
+.darling-form-notice{max-width:34rem;margin:1.2rem auto 0;padding:.8rem 1rem;border-radius:.7rem}
+.darling-form-notice--ok{background:#eaf7ea;border:1px solid #bfe3bf;color:#1e5c1e}
+.darling-form-notice--err{background:var(--d-soft);border:1px solid var(--d-cherry);color:var(--d-cherry-deep)}
