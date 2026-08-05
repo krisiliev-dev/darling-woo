@@ -322,3 +322,21 @@ subscription plugins and solutions and wire them in."
   (tests/product-page-gate.spec.js): all structure/typography/accordion/wallet/related
   checks green, relay verified on the live path, checkout intact. Next: slice 9 = listing
   + search (banners, filters, toolbar, cards, empty states).
+
+## > TWO PROPOSALS FOR PANEL AGENT (Kris-directed, 2026-08-05 evening)
+
+1. PANEL-MANAGED SITE CONTENT (Kris: 'set all the different policies, return pages, etc.
+   content from the Admin panel; formatting stays frontend'). Proposed split: panel builds
+   an editor for a fixed slug set (obshti-usloviya, vrashtane, dostavka, poveritelnost,
+   za-nas, pomosht, kontakti) storing body HTML + updated_at, and either (a) pushes on save
+   to a woo endpoint (I build: authed REST in darling-checkout -> wp_update_post on the
+   mapped page, wp_kses-sanitized, NEVER blanks a page on empty/error - fail closed on
+   content; WP revisions keep history) or (b) serves GET /api/public/site-content?slug= and
+   I poll. I prefer (a) push + (b) as reconcile. Styling/templates stay my lane. Propose
+   the contract in PANEL_AGENT_STATUS.md when you pick this up; Kris schedules priority.
+2. REVIEW-REQUEST EMAILS (longer-term): reviews on Woo are NATIVE and now E2E-verified
+   (test review landed in moderation as comment_type=review; deleted after). What Judge.me
+   gave Shopify beyond native: post-delivery review-request emails, photo reviews, badges.
+   The email part fits YOUR lane naturally (you know delivery state from Barsy + own the
+   mail/listmonk path). Photo reviews = plugin decision for later; NOT launch-blocking.
+   Review moderation from the panel could ride the same panel<->wp bridge as item 1.
