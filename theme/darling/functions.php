@@ -85,3 +85,25 @@ add_filter( 'woocommerce_localisation_address_formats', function ( $formats ) {
  * customer searched — show them what the search found, with the count.
  */
 add_filter( 'woocommerce_redirect_single_search_result', '__return_false' );
+
+/**
+ * Result-count phrasing to match the live site: „1 артикул" / „N артикула"
+ * instead of core's verbose „Показване на единствения резултат". Scoped to the
+ * woocommerce text domain and exactly these source strings, so nothing else
+ * shifts meaning.
+ */
+add_filter( 'gettext', function ( $translation, $text, $domain ) {
+	if ( 'woocommerce' !== $domain ) {
+		return $translation;
+	}
+	if ( 'Showing the single result' === $text ) {
+		return '1 артикул';
+	}
+	if ( 'Showing all %d results' === $text ) {
+		return '%d артикула';
+	}
+	if ( 'Showing %1$d–%2$d of %3$d results' === $text ) {
+		return '%1$d–%2$d от %3$d артикула';
+	}
+	return $translation;
+}, 10, 3 );

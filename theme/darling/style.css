@@ -649,3 +649,48 @@ a.button.alt:hover {
 	.darling-product__top{flex-wrap:wrap}
 	.darling-product__top .wp-block-column{flex-basis:100% !important}
 }
+
+
+/* ═══════════════ SLICE 9 — listing + search (2026-08-05) ═══════════════
+   The banner layout itself belongs to the ported darling.css
+   (.darling-cat-banner / dcb-*); here: per-term banner images, white product
+   cards, toolbar polish, and the grid/list view toggle. */
+
+.darling-cat-banner--woo .dcb-img{min-height:220px;background-size:cover;background-position:center}
+body.post-type-archive-product .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/all.jpg)}
+body.tax-product_cat.term-za-kuhnyata .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata.jpg)}
+body.tax-product_cat.term-za-banyata .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/za-banyata.jpg)}
+body.tax-product_cat.term-dekoraciya-za-doma .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma.jpg)}
+body.tax-product_cat.term-za-gradinata .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/za-gradinata.jpg)}
+body.tax-product_cat.term-pochistvane .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/pochistvane.jpg)}
+body.tax-product_cat.term-parti .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/parti.jpg)}
+body.tax-product_cat.term-za-decata .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/za-decata.jpg)}
+body.tax-product_cat.term-podaraci .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/podaraci.jpg)}
+body.tax-product_cat.term-izborat-na-lady-d .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/izborat-na-lady-d.png)}
+body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/promocii.webp)}
+
+/* White product cards with hover, matching the live grid. */
+.darling-grid .wp-block-post-template > li,
+.darling-grid .wp-block-post-template > .wp-block-post{background:#fff;border-radius:14px;
+	padding:.9rem;box-shadow:0 2px 10px rgb(var(--d-shadow)/.06);
+	transition:box-shadow .25s ease,transform .25s ease}
+.darling-grid .wp-block-post-template > li:hover,
+.darling-grid .wp-block-post-template > .wp-block-post:hover{box-shadow:0 10px 26px rgb(var(--d-shadow)/.14);transform:translateY(-2px)}
+
+/* Toolbar */
+.darling-archive__bar{align-items:center;margin:0 0 1rem}
+.darling-archive__bar-right{align-items:center;gap:.6rem}
+.darling-view-toggle{display:flex;gap:.3rem}
+.darling-view-toggle button{display:inline-flex;align-items:center;justify-content:center;
+	width:2.1rem;height:2.1rem;border:1px solid var(--d-sand-deep);border-radius:.55rem;
+	background:#fff;color:var(--d-cocoa);cursor:pointer;opacity:.6}
+.darling-view-toggle button.is-active{opacity:1;border-color:var(--d-honey-dark);color:var(--d-honey-dark)}
+.darling-view-toggle svg{width:1.05rem;height:1.05rem}
+
+/* List view */
+.darling-grid--list .wp-block-post-template{grid-template-columns:1fr !important}
+.darling-grid--list .wp-block-post-template > li,
+.darling-grid--list .wp-block-post-template > .wp-block-post{display:grid;
+	grid-template-columns:9rem 1fr auto;gap:1rem;align-items:center}
+
+.darling-archive__filters-title{margin:0 0 .6rem}

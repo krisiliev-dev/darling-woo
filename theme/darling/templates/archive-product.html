@@ -3,10 +3,27 @@
 <!-- wp:group {"tagName":"main","className":"darling-archive","layout":{"type":"constrained"}} -->
 <main class="wp-block-group darling-archive">
 
-	<!-- wp:woocommerce/breadcrumbs {"className":"darling-crumbs"} /-->
-
-	<!-- wp:query-title {"type":"archive","level":1,"className":"darling-archive__title","showPrefix":false} /-->
-	<!-- wp:term-description {"className":"darling-archive__desc"} /-->
+	<!-- Red category banner — the live site's .darling-cat-banner component from
+	     the ported darling.css: title + term description + the shared „идваме с
+	     пълни ръце" line, photo on the right (per-term image via body-class CSS;
+	     term descriptions live as product_cat term data, set from the live site).
+	     Breadcrumbs deliberately absent, as on the live site. -->
+	<!-- wp:group {"className":"darling-cat-banner darling-cat-banner--woo","layout":{"type":"default"}} -->
+	<div class="wp-block-group darling-cat-banner darling-cat-banner--woo">
+		<!-- wp:group {"className":"dcb-text","layout":{"type":"default"}} -->
+		<div class="wp-block-group dcb-text">
+			<!-- wp:query-title {"type":"archive","level":1,"showPrefix":false} /-->
+			<!-- wp:term-description {"className":"dcb-desc"} /-->
+			<!-- wp:html -->
+			<p class="dcb-coming"><em>Още 4 590 неща пътуват от магазина в Свищов, darling — идваме с пълни ръце.</em></p>
+			<!-- /wp:html -->
+		</div>
+		<!-- /wp:group -->
+		<!-- wp:html -->
+		<div class="dcb-img" aria-hidden="true"></div>
+		<!-- /wp:html -->
+	</div>
+	<!-- /wp:group -->
 
 	<!-- wp:columns {"className":"darling-archive__body"} -->
 	<div class="wp-block-columns darling-archive__body">
@@ -16,10 +33,13 @@
 		     than the space they take. On narrow screens it stacks above the grid. -->
 		<!-- wp:column {"width":"250px","className":"darling-archive__side"} -->
 		<div class="wp-block-column darling-archive__side" style="flex-basis:250px">
+			<!-- wp:heading {"level":2,"className":"darling-archive__filters-title","fontSize":"medium"} -->
+			<h2 class="wp-block-heading darling-archive__filters-title has-medium-font-size">Филтри</h2>
+			<!-- /wp:heading -->
 			<!-- wp:woocommerce/product-filters -->
 			<div class="wp-block-woocommerce-product-filters">
-				<!-- wp:woocommerce/product-filter-price /-->
 				<!-- wp:woocommerce/product-filter-stock-status /-->
+				<!-- wp:woocommerce/product-filter-price /-->
 			</div>
 			<!-- /wp:woocommerce/product-filters -->
 		</div>
@@ -31,7 +51,33 @@
 			<!-- wp:group {"className":"darling-archive__bar","layout":{"type":"flex","justifyContent":"space-between"}} -->
 			<div class="wp-block-group darling-archive__bar">
 				<!-- wp:woocommerce/product-results-count /-->
-				<!-- wp:woocommerce/catalog-sorting /-->
+				<!-- wp:group {"className":"darling-archive__bar-right","layout":{"type":"flex"}} -->
+				<div class="wp-block-group darling-archive__bar-right">
+					<!-- wp:woocommerce/catalog-sorting /-->
+					<!-- wp:html -->
+					<div class="darling-view-toggle" role="group" aria-label="Изглед">
+						<button type="button" class="is-active" data-darling-view="grid" aria-label="Мрежа">
+							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+						</button>
+						<button type="button" data-darling-view="list" aria-label="Списък">
+							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="5" width="16" height="3" rx="1.5"/><rect x="4" y="10.5" width="16" height="3" rx="1.5"/><rect x="4" y="16" width="16" height="3" rx="1.5"/></svg>
+						</button>
+					</div>
+					<script>
+					(function () {
+						var g = document.querySelector('.darling-archive .darling-grid');
+						document.querySelectorAll('[data-darling-view]').forEach(function (b) {
+							b.addEventListener('click', function () {
+								if (!g) { return; }
+								g.classList.toggle('darling-grid--list', b.dataset.darlingView === 'list');
+								document.querySelectorAll('[data-darling-view]').forEach(function (x) { x.classList.toggle('is-active', x === b); });
+							});
+						});
+					})();
+					</script>
+					<!-- /wp:html -->
+				</div>
+				<!-- /wp:group -->
 			</div>
 			<!-- /wp:group -->
 
