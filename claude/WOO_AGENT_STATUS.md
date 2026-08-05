@@ -39,3 +39,11 @@ No building until the gap table exists.
   port + the two option fixes. Raw crawl evidence: C:\Users\lora_\darling\_scratch_woo\.
   Laptop env note for other agents: System32 ssh.exe does not run under the darling-shell
   bridge (exit 255, silent) — use "C:\Program Files\Git\usr\bin\ssh.exe" instead.
+- 2026-08-05 owner decisions received (recorded in WOO_PARITY_SWEEP.md): merge
+  contact-information into /kontakti/; skip empty blogs but BUILD a blog index page
+  (SEO blogging planned); /en deferred as future task; orders@darlinghome.bg is the
+  customer-facing email — replace darling7.sv@gmail.com (business, not customer-facing)
+  when porting content. Next: slice 1 content port.
+  MCP note: claude-code-remote is not configured on this laptop's Claude app (only
+  darling-shell) — it lives on the panel agent's cloud side; Kris may enable it as a
+  desktop connector, until then git remains my channel.

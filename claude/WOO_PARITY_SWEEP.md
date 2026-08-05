@@ -71,11 +71,14 @@ needed; 301 to `/shop/` in the cutover map.
 ## Proposed Phase 2 slices (one sprint each, full gates)
 
 - **Slice 1 — content port (biggest gap, zero design risk):** port the 7 real content
-  pages verbatim from the live Shopify HTML (already captured in
-  `_scratch_woo\shopify_inventory\html\`), fix findings 1–3. Gate: rendered page text on
-  staging matches Shopify text (diff of extracted text, location attached).
-- **Slice 2 — search results page** styled to theme + decide/build
-  `/policies/contact-information` equivalent.
+  pages from the live Shopify HTML (already captured in
+  `_scratch_woo\shopify_inventory\html\`), merging contact-information into Контакти
+  and substituting `orders@darlinghome.bg` for the gmail (decisions 1+4); fix findings
+  1–3. Gate: rendered page text on staging matches Shopify text modulo those two
+  deliberate deltas (diff of extracted text, location attached).
+- **Slice 2 — search results page** styled to theme + **blog posts index page**
+  (decision 2: needed for planned SEO blogging; no articles ported — both Shopify
+  blogs are empty).
 - **Slice 3 — visual/animation parity sweep**: home, collection, product, cart, 404
   against `reference/shopify-theme/` inventory + live site; responsive sweep beyond
   390px/desktop. My Account review.
@@ -83,10 +86,17 @@ needed; 301 to `/shop/` in the cutover map.
   `/policies/*`→BG slugs, `/collections/*`→`/product-category/*`, `/collections/all`+
   `frontpage`→`/shop/`, `/blogs/*`→TBD, `/en/*`→BG.
 
-## Open decisions for Kris
+## Open decisions — ANSWERED by Kris, 2026-08-05
 
-1. `/policies/contact-information` — separate page or fold into Контакти?
-2. Empty blogs — replicate now, defer, or drop (301 to home at cutover)?
-3. `/en/` mirror — confirm 301-to-BG at cutover (BG-only launch stands)?
-4. Canonical storefront contact email: `darling7.sv@gmail.com` (Shopify live) vs
-   `orders@darlinghome.bg` (Woo placeholder)?
+1. `/policies/contact-information` → **MERGE into Контакти** (`/kontakti/`). One contact
+   page carrying the legal identity block (trade name, ЕИК/ДДС, address, phone); 301
+   both Shopify contact URLs to `/kontakti/` at cutover.
+2. Empty blogs → **ignore the two empty Shopify blogs, but BUILD a blog page** — a
+   styled posts index is needed because SEO blog writing is planned. Added to slice 2.
+3. `/en/` → **not at launch, confirmed**; it exists as a future task. Cutover 301
+   `/en/*` → BG stands.
+4. Emails: **`darling7.sv@gmail.com` is the business email, NOT customer-facing.
+   `orders@darlinghome.bg` is the customer-facing address.** ⚠ Slice-1 port rule:
+   the live Shopify pages (Контакти, contact-information, privacy policy) all show
+   the gmail — when porting, replace it with `orders@darlinghome.bg` everywhere
+   customer-facing. Do not copy the gmail verbatim.
