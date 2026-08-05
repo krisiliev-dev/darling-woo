@@ -239,3 +239,56 @@ as the query-title prefix. Root-causing is now worthwhile and scheduled as slice
 
 - Shopify cart-page courier picker + фактура fields (platform workaround, superseded by native checkout — re-adding would be a regression).
 - `/agents.md`, hosted Shopify accounts, Judge.me/GTStandard fonts (app artifacts).
+
+### Slice-4 decisions — ANSWERED by Kris, 2026-08-05 (evening)
+
+1. Cookie consent → **YES, add a lightweight consent banner** (new slice 13).
+2. Wallets on product page → **KEEP for conversion** (parity deviation, owner-approved).
+3. Related products → **KEEP** („Може да ви хареса" stays; parity deviation, owner-approved).
+4. My Account → **hide „Изтегляния"** (Downloads tab is for digital files — irrelevant for
+   physical goods; explained to Kris). **Enable customer registration**, and add **Google +
+   Facebook OAuth login** (new slice 12; will need OAuth app credentials created owner-side
+   in Google Cloud Console / Meta for Developers when the slice lands).
+5. Accessibility widget → **MUST HAVE** (new slice 14; identify what the live site uses first).
+6. Free-shipping drawer bar → **YES, threshold €77** — bar ships in slice 10 and can show the
+   real number immediately. NOTE for the delivery-fee work (panel §4): free-over threshold
+   is hereby answered as **€77**; the actual free-shipping pricing rule lands with the
+   delivery-fee calculator build, the drawer bar is display.
+7. Newsletter → **build the frontend** (slice 6 home band); **panel agent tasked** to research
+   mail-subscription plugins/solutions and wire the backend (see WOO_AGENT_STATUS.md task).
+
+### Slice 5 — typography + i18n foundation — ✅ DONE 2026-08-05 (commit eda7d4a, deploy 31015060364 green)
+
+- **Root-cause found for most "untranslated" strings: they were never translations at all.**
+  The cart page's English („Your cart is currently empty!", „New in store", „You may be
+  interested in…") is literal saved block content written into the page post_content at
+  install time (en_US). Fixed by editing the content (post 6): now „Количката ви е празна." /
+  „Ново в Darling" / „Може да ви хареса". The 404's English is core's fallback template —
+  replaced by our branded 404 in slice 7. The only true loader quirk left is the worked-around
+  query-title prefix — WATCH stays, priority dropped.
+- **Fonts**: theme is a Twenty Twenty-Five CHILD theme — Manrope + 22px body were the parent's
+  defaults. Child theme.json now declares self-hosted **Inter** (variable 400–700; latin +
+  cyrillic + cyrillic-ext) and **Playfair Display** (variable 400–900 normal + italic; latin +
+  cyrillic) via settings.typography.fontFamilies/fontFace (woff2 in theme/darling/assets/fonts/,
+  served by the box); body = Inter 1rem/1.6, all headings = Playfair 500, buttons stay Inter.
+- **Shop page title** (page 5) renamed „Магазин" → „Продукти" (query-title now matches Shopify).
+- **GATE PASSED** (rendered staging, `_scratch_woo\parity4\out5\` + gate5.js): computed
+  body font Inter 16px; h1 „Продукти"/hero render Playfair incl. Cyrillic (fonts API reports
+  both families loaded; woff2 URLs return 200); cart page zero English, Bulgarian strings
+  render in serif; /checkout/ still redirects when empty (money path untouched); my-account
+  h1 serif. Screenshots: home-typo.png, cart-bg.png, shop-h1.png.
+
+### Updated slice plan after decisions
+
+6. Header + home rebuild (incl. newsletter band frontend — form delivers to orders@ via the
+   contact-form path until the panel's subscription backend lands).
+7. Footer + 404.
+8. Product page: dedup reviews render, „По поръчка"/„Наложен платеж" panels, accordions,
+   hide SKU + raw stock + breadcrumb, 1280 overlap — wallets and related STAY per Kris.
+9. Listing + search: banners, filters, toolbar, cards, empty states.
+10. Cart drawer + cart page: shipbar with **€77** + shimmer, trust line, steppers, dual
+    currency, totals row, „Преминаване към плащане", auto-open on add.
+11. My Account: two-column layout, hide Изтегляния, enable registration.
+12. Social login: Google + Facebook OAuth (plugin selection; owner-side API credentials).
+13. Cookie consent banner (lightweight, styled like the live site's).
+14. Accessibility widget (identify live site's vendor, replicate or equivalent).
