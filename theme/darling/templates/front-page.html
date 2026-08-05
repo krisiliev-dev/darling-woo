@@ -1,24 +1,23 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
 <!-- wp:html -->
-<main class="darling-home">
+<main class="darling-home darling-home--v2">
 
-	<section class="darling-hero">
+	<!-- Red hero band, exact live copy: serif headline with the italic word,
+	     white sub-paragraph. The visual (glow + bow + stars) animates from the
+	     ported stylesheet — markup identical to the Shopify capture. -->
+	<section class="darling-hero darling-hero--red">
 		<div class="darling-hero__copy">
-			<p class="darling-hero__eyebrow">Тайната на една домакиня</p>
-			<h1 class="darling-hero__title">Домът ти го заслужава, darling.</h1>
+			<h1 class="darling-hero__title">Тайната на една <em>домакиня.</em></h1>
 			<p class="darling-hero__sub">
-				Качество за цял живот или изгодно решение за момента — при нас има и двете,
-				подбрани с грижа за всяко ъгълче от дома.
+				Домът ти го заслужава, darling. Качество за цял живот или изгодно решение
+				за момента — при нас има и двете, честно обозначени.
 			</p>
 			<p class="darling-hero__actions">
 				<a class="d-btn d-btn--primary" href="/shop/">Разгледай всичко</a>
-				<a class="d-btn d-btn--ghost" href="/product-category/promocii/">Промоции</a>
+				<a class="d-btn d-btn--ghost d-btn--on-red" href="/product-category/promocii/">Промоции</a>
 			</p>
 		</div>
-
-		<!-- The same element the Shopify hero uses: glow layer, floating bow and
-		     twinkling stars all animate from the ported stylesheet. -->
 		<div class="darling-hero-visual dhv-red" aria-hidden="true">
 			<span class="dhv-glow"></span>
 			<svg class="dhv-bow" viewBox="0 0 24 12" fill="currentColor">
@@ -30,32 +29,58 @@
 		</div>
 	</section>
 
-	<section class="darling-cats" aria-label="Категории">
-		<a href="/product-category/za-kuhnyata/"><span>За кухнята</span></a>
-		<a href="/product-category/za-banyata/"><span>За банята</span></a>
-		<a href="/product-category/dekoraciya-za-doma/"><span>Декорация за дома</span></a>
-		<a href="/product-category/za-gradinata/"><span>За градината</span></a>
-		<a href="/product-category/pochistvane/"><span>Почистване</span></a>
-		<a href="/product-category/parti/"><span>Парти и празници</span></a>
-		<a href="/product-category/za-decata/"><span>За децата</span></a>
-		<a href="/product-category/podaraci/"><span>Подаръци</span></a>
-	</section>
-
-	<!-- .darling-season carries darling-drift: the gradient moves slowly across
-	     the band. Copy is seasonal and meant to be edited. -->
-	<div class="darling-season">
-		<div>
-			<p class="ds-eyebrow">Сезонно, darling</p>
-			<h3>Лято в двора</h3>
-			<p>Фенери, мебели и всичко за градината — защото дворът също е стая на дома.</p>
+	<!-- Photo category cards, scroll-snap carousel like the live site. -->
+	<section class="darling-catsv2" aria-label="Категории">
+		<h2 class="darling-section-title">Категории</h2>
+		<div class="darling-catsv2__row">
+			<a href="/product-category/za-kuhnyata/"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy"><span>За кухнята</span></a>
+			<a href="/product-category/za-banyata/"><img src="/wp-content/themes/darling/assets/img/categories/za-banyata.jpg" alt="" loading="lazy"><span>За банята</span></a>
+			<a href="/product-category/dekoraciya-za-doma/"><img src="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma.jpg" alt="" loading="lazy"><span>Декорация за дома</span></a>
+			<a href="/product-category/za-gradinata/"><img src="/wp-content/themes/darling/assets/img/categories/za-gradinata.jpg" alt="" loading="lazy"><span>За градината</span></a>
+			<a href="/product-category/pochistvane/"><img src="/wp-content/themes/darling/assets/img/categories/pochistvane.jpg" alt="" loading="lazy"><span>Почистване</span></a>
+			<a href="/product-category/parti/"><img src="/wp-content/themes/darling/assets/img/categories/parti.jpg" alt="" loading="lazy"><span>Парти и празници</span></a>
+			<a href="/product-category/za-decata/"><img src="/wp-content/themes/darling/assets/img/categories/za-decata.jpg" alt="" loading="lazy"><span>За децата</span></a>
+			<a href="/product-category/podaraci/"><img src="/wp-content/themes/darling/assets/img/categories/podaraci.jpg" alt="" loading="lazy"><span>Подаръци</span></a>
 		</div>
-		<a href="/product-category/za-gradinata/">Към градината</a>
-	</div>
+	</section>
 </main>
 <!-- /wp:html -->
 
 <!-- wp:heading {"level":2,"className":"darling-section-title"} -->
-<h2 class="wp-block-heading darling-section-title">Ново при нас</h2>
+<h2 class="wp-block-heading darling-section-title">Изборът на Lady D</h2>
+<!-- /wp:heading -->
+
+<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date","taxQuery":{"product_cat":[24]}},"className":"darling-grid"} -->
+<div class="wp-block-query darling-grid">
+	<!-- wp:post-template -->
+		<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1"} /-->
+		<!-- wp:post-title {"level":3,"isLink":true,"fontSize":"small"} /-->
+		<!-- wp:woocommerce/product-price /-->
+		<!-- wp:woocommerce/product-button /-->
+	<!-- /wp:post-template -->
+	<!-- wp:query-no-results -->
+		<!-- wp:paragraph {"className":"darling-empty"} -->
+		<p class="darling-empty">Изборът на Lady D пристига съвсем скоро.</p>
+		<!-- /wp:paragraph -->
+	<!-- /wp:query-no-results -->
+</div>
+<!-- /wp:query -->
+
+<!-- wp:html -->
+<!-- .darling-season carries darling-drift: the gradient moves slowly across
+     the band. Copy is seasonal and meant to be edited. -->
+<div class="darling-season">
+	<div>
+		<p class="ds-eyebrow">Сезонно, darling</p>
+		<h3>Лято в двора</h3>
+		<p>Фенери, мебели и всичко за градината — защото дворът също е стая на дома.</p>
+	</div>
+	<a href="/product-category/za-gradinata/">Към градината</a>
+</div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
+<h2 class="wp-block-heading darling-section-title">Ново в Darling</h2>
 <!-- /wp:heading -->
 
 <!-- Real product grid, so it fills in by itself the moment the catalogue lands
@@ -75,5 +100,58 @@
 	<!-- /wp:query-no-results -->
 </div>
 <!-- /wp:query -->
+
+<!-- wp:html -->
+<!-- Trust row: four promises, verbatim from the live site. -->
+<section class="darling-trust" aria-label="Защо Darling">
+	<div><i>✦</i><h3>Еконт и Спиди</h3><p>До адрес или до офис — ти избираш.</p></div>
+	<div><i>✦</i><h3>Наложен платеж</h3><p>Плати при получаване или с карта.</p></div>
+	<div><i>✦</i><h3>Лесно връщане</h3><p>14 дни, без излишни въпроси.</p></div>
+	<div><i>✦</i><h3>Реални магазини</h3><p>Посети ни в Свищов, darling.</p></div>
+</section>
+
+<!-- Newsletter band. The form posts to our own relay (never the panel token in
+     the browser); copy verbatim from the live site. -->
+<section class="darling-news" aria-label="Бюлетин">
+	<h2>Само хубави неща, <em>обещаваме.</em></h2>
+	<p>Веднъж седмично: нови попълнения, промоции и по някоя идея за дома. С щипка блясък, разбира се.</p>
+	<form class="darling-news__form" data-darling-newsletter>
+		<input type="email" name="email" required placeholder="имейл адрес, darling" aria-label="Имейл адрес" autocomplete="email">
+		<input type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="darling-news__hp">
+		<button type="submit" class="d-btn d-btn--primary">Абонирай ме</button>
+	</form>
+	<p class="darling-news__note">Абонираните получават отстъпка за първата поръчка — кодът пристига в имейла ти.</p>
+	<p class="darling-news__result" data-darling-newsletter-result role="status" aria-live="polite" hidden></p>
+</section>
+<script>
+(function () {
+	var f = document.querySelector('[data-darling-newsletter]');
+	if (!f) { return; }
+	var out = document.querySelector('[data-darling-newsletter-result]');
+	var t0 = Date.now();
+	f.addEventListener('submit', function (e) {
+		e.preventDefault();
+		var btn = f.querySelector('button');
+		btn.disabled = true;
+		fetch('/wp-json/darling/v1/newsletter', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				email: (f.querySelector('input[name="email"]').value || '').trim(),
+				website: f.querySelector('input[name="website"]').value || '',
+				elapsed_ms: Date.now() - t0
+			})
+		}).then(function (r) { return r.json(); }).then(function (d) {
+			out.textContent = (d && d.message) ? d.message : 'Нещо се обърка — опитай пак.';
+			out.hidden = false;
+			if (d && d.ok) { f.querySelector('input[name="email"]').value = ''; }
+		}).catch(function () {
+			out.textContent = 'Нещо се обърка — опитай пак, darling.';
+			out.hidden = false;
+		}).finally(function () { btn.disabled = false; });
+	});
+})();
+</script>
+<!-- /wp:html -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

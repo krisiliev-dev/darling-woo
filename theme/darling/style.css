@@ -463,3 +463,94 @@ a.button.alt:hover {
 .darling-form-notice{max-width:34rem;margin:1.2rem auto 0;padding:.8rem 1rem;border-radius:.7rem}
 .darling-form-notice--ok{background:#eaf7ea;border:1px solid #bfe3bf;color:#1e5c1e}
 .darling-form-notice--err{background:var(--d-soft);border:1px solid var(--d-cherry);color:var(--d-cherry-deep)}
+
+
+/* ═══════════════ SLICE 6 — header v2 + home rebuild (2026-08-05) ═══════════════
+   Parity layer over the ported darling.css: red hero band, serif wordmark,
+   mega-menu + big search, photo category cards, trust row, newsletter band.
+   Appended (not interleaved) so the diff against the ported stylesheet stays
+   readable; these rules deliberately override the v1 layout above. */
+
+.darling-wordmark{font-family:"Playfair Display",Georgia,serif;font-weight:500;
+	font-size:1.75rem;letter-spacing:.01em;color:var(--d-cocoa);text-decoration:none}
+
+.darling-header--v2 .darling-header__inner{display:flex;align-items:center;gap:1.4rem}
+.darling-header--v2 .darling-nav--pages>ul{display:flex;gap:1.1rem;list-style:none;margin:0;padding:0}
+.darling-header--v2 .mega-menu__link{white-space:nowrap}
+
+/* Продукти mega dropdown */
+.darling-nav__mega{position:relative}
+.darling-mega{position:absolute;left:0;top:100%;z-index:60;min-width:15rem;
+	display:none;flex-direction:column;padding:.6rem;margin-top:.4rem;
+	background:#fff;border-radius:1rem;box-shadow:0 14px 40px rgb(var(--d-shadow)/.18)}
+.darling-mega a{padding:.5rem .8rem;border-radius:.6rem;text-decoration:none;color:var(--d-cocoa)}
+.darling-mega a:hover{background:var(--d-vanilla);color:var(--d-cherry-deep)}
+.darling-nav__mega:hover .darling-mega,
+.darling-nav__mega:focus-within .darling-mega{display:flex}
+
+/* Big search bar */
+.darling-search{flex:1 1 auto;display:flex;align-items:center;gap:.6rem;
+	background:#fff;border-radius:999px;padding:.65rem 1.1rem;min-width:0;
+	box-shadow:0 2px 10px rgb(var(--d-shadow)/.07)}
+.darling-search svg{width:1.1rem;height:1.1rem;flex:none;color:var(--d-honey-nav)}
+.darling-search input[type="search"]{flex:1 1 auto;min-width:0;border:0;outline:0;
+	background:none;font:inherit;color:var(--d-cocoa)}
+.darling-search input[type="search"]::placeholder{color:var(--d-honey-nav);opacity:.85}
+.darling-header__icon--search-sm{display:none}
+@media (max-width: 900px){
+	.darling-search{display:none}
+	.darling-header__icon--search-sm{display:inline-flex}
+	.darling-header--v2 .darling-nav--pages{display:none}
+}
+
+/* Red hero band */
+.darling-hero--red{background:var(--d-cherry);color:var(--d-cream-text);
+	border-radius:0;margin-left:calc(-1 * var(--d-margin));margin-right:calc(-1 * var(--d-margin));
+	padding:3.6rem var(--d-margin) 4rem}
+.darling-hero--red .darling-hero__title{font-family:"Playfair Display",Georgia,serif;
+	font-weight:500;color:var(--d-vanilla);font-size:clamp(2.1rem,4.6vw,3.5rem)}
+.darling-hero--red .darling-hero__title em{font-style:italic;color:var(--d-honey-light)}
+.darling-hero--red .darling-hero__sub{color:var(--d-cream-text);opacity:.96;font-size:1rem}
+.d-btn--on-red{border-color:var(--d-cream-text);color:var(--d-cream-text)}
+.d-btn--on-red:hover{background:rgb(255 255 255/.12)}
+.darling-hero--red .dhv-bow{color:#fff}
+.darling-hero--red .darling-hero__eyebrow{display:none}
+
+/* Photo category cards */
+.darling-catsv2{margin:2.6rem 0 1rem}
+.darling-catsv2__row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
+	padding-bottom:.8rem;scrollbar-width:thin}
+.darling-catsv2__row a{position:relative;flex:0 0 clamp(160px,17vw,210px);aspect-ratio:4/5;
+	border-radius:14px;overflow:hidden;scroll-snap-align:start;text-decoration:none}
+.darling-catsv2__row img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+	transition:transform .35s ease}
+.darling-catsv2__row a:hover img{transform:scale(1.05)}
+.darling-catsv2__row span{position:absolute;left:10px;bottom:10px;z-index:2;
+	background:rgb(38 22 24/.72);color:#fff;font-size:.85rem;font-weight:600;
+	padding:.35rem .7rem;border-radius:999px}
+
+/* Section titles (serif via theme.json headings; size + rhythm here) */
+.darling-section-title{font-size:clamp(1.5rem,2.6vw,2rem);margin:2.6rem 0 1.1rem}
+
+/* Trust row */
+.darling-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;
+	background:var(--d-sand);border-radius:0;margin-left:calc(-1 * var(--d-margin));
+	margin-right:calc(-1 * var(--d-margin));padding:2.2rem var(--d-margin)}
+.darling-trust i{font-style:normal;color:var(--d-honey);font-size:1rem}
+.darling-trust h3{margin:.25rem 0 .2rem;font-size:1.05rem}
+.darling-trust p{margin:0;font-size:.92rem;opacity:.85}
+@media (max-width: 820px){.darling-trust{grid-template-columns:repeat(2,1fr)}}
+
+/* Newsletter band */
+.darling-news{background:var(--d-cherry);color:var(--d-cream-text);text-align:center;
+	margin-left:calc(-1 * var(--d-margin));margin-right:calc(-1 * var(--d-margin));
+	padding:3.2rem var(--d-margin) 3.4rem}
+.darling-news h2{color:var(--d-vanilla);font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 .7rem}
+.darling-news h2 em{color:var(--d-honey-light)}
+.darling-news p{max-width:38rem;margin:.2rem auto;opacity:.95;font-size:.98rem}
+.darling-news__form{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin:1.3rem 0 .6rem}
+.darling-news__form input[type="email"]{width:min(22rem,80vw);border:0;border-radius:999px;
+	padding:.8rem 1.2rem;font:inherit;color:var(--d-cocoa);background:var(--d-cream)}
+.darling-news__hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.darling-news__note{font-size:.85rem;opacity:.85}
+.darling-news__result{font-weight:600;color:var(--d-vanilla);margin-top:.6rem}

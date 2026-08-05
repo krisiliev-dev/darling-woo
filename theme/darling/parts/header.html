@@ -1,5 +1,5 @@
 <!-- wp:html -->
-<div class="darling-header" role="banner">
+<div class="darling-header darling-header--v2" role="banner">
 	<div class="darling-header__inner">
 
 		<button class="darling-header__burger" type="button"
@@ -7,36 +7,45 @@
 			<span></span><span></span><span></span>
 		</button>
 
-		<a class="darling-header__logo" href="/" aria-label="Дарлинг — начало">
-			<span class="dhl-word">Дарлинг</span>
-			<!-- The bow carries darling-float from the ported stylesheet: the logo's
-			     idle animation is this SVG, not a separate effect. -->
-			<svg class="dhv-bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true">
-				<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
-				<circle cx="12" cy="6" r="2.4"/>
-			</svg>
-			<i class="dhv-s s1" aria-hidden="true">✦</i>
-			<i class="dhv-s s2" aria-hidden="true">✧</i>
-		</a>
+		<!-- Serif wordmark, exactly as the live site: Latin "Darling" in Playfair.
+		     The old Cyrillic logo + bow moved out per the slice-4 parity sweep. -->
+		<a class="darling-header__logo darling-wordmark" href="/" aria-label="Darling — начало">Darling</a>
 
-		<nav class="darling-nav" aria-label="Основна навигация">
+		<nav class="darling-nav darling-nav--pages" aria-label="Основна навигация">
 			<ul>
-				<li><a class="mega-menu__link" href="/shop/">Продукти</a></li>
-				<li><a class="mega-menu__link" href="/product-category/za-kuhnyata/">За кухнята</a></li>
-				<li><a class="mega-menu__link" href="/product-category/za-banyata/">За банята</a></li>
-				<li><a class="mega-menu__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a></li>
-				<li><a class="mega-menu__link" href="/product-category/za-gradinata/">За градината</a></li>
-				<li><a class="mega-menu__link" href="/product-category/pochistvane/">Почистване</a></li>
-				<li><a class="mega-menu__link" href="/product-category/parti/">Парти и празници</a></li>
-				<li><a class="mega-menu__link" href="/product-category/za-decata/">За децата</a></li>
-				<li><a class="mega-menu__link" href="/product-category/podaraci/">Подаръци</a></li>
-				<li><a class="mega-menu__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
-				<li><a class="mega-menu__link" href="/product-category/promocii/">Промоции</a></li>
+				<li class="darling-nav__mega">
+					<a class="mega-menu__link" href="/shop/" aria-haspopup="true" aria-expanded="false">Продукти</a>
+					<div class="darling-mega" role="menu" aria-label="Категории">
+						<a class="mega-menu__link" href="/product-category/za-kuhnyata/">За кухнята</a>
+						<a class="mega-menu__link" href="/product-category/za-banyata/">За банята</a>
+						<a class="mega-menu__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a>
+						<a class="mega-menu__link" href="/product-category/za-gradinata/">За градината</a>
+						<a class="mega-menu__link" href="/product-category/pochistvane/">Почистване</a>
+						<a class="mega-menu__link" href="/product-category/parti/">Парти и празници</a>
+						<a class="mega-menu__link" href="/product-category/za-decata/">За децата</a>
+						<a class="mega-menu__link" href="/product-category/podaraci/">Подаръци</a>
+						<a class="mega-menu__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a>
+						<a class="mega-menu__link" href="/product-category/promocii/">Промоции</a>
+					</div>
+				</li>
+				<li><a class="mega-menu__link" href="/za-nas/">За нас</a></li>
+				<li><a class="mega-menu__link" href="/pomosht/">Помощ</a></li>
+				<li><a class="mega-menu__link" href="/kontakti/">Контакти</a></li>
 			</ul>
 		</nav>
 
+		<!-- The always-visible search bar from the live header. GET keeps it
+		     cache-safe and crawlable; post_type pins product results. -->
+		<form class="darling-search" role="search" action="/" method="get">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+				<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+			</svg>
+			<input type="search" name="s" placeholder="Какво търсиш, darling?" aria-label="Търсене" autocomplete="off">
+			<input type="hidden" name="post_type" value="product">
+		</form>
+
 		<div class="darling-header__actions">
-			<a class="darling-header__icon" href="/?s=&post_type=product" aria-label="Търсене">
+			<a class="darling-header__icon darling-header__icon--search-sm" href="/?s=&post_type=product" aria-label="Търсене">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
 					<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
 				</svg>
@@ -65,7 +74,7 @@
      hand-rolled versions of those are where accessibility bugs live. -->
 <dialog id="darling-menu-drawer" class="darling-drawer darling-drawer--menu" aria-label="Меню">
 	<div class="darling-drawer__head">
-		<span class="dhl-word">Дарлинг</span>
+		<span class="darling-wordmark">Darling</span>
 		<button type="button" class="darling-drawer__close" aria-label="Затвори">✕</button>
 	</div>
 	<nav class="darling-drawer__nav" aria-label="Мобилна навигация">

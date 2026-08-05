@@ -21,7 +21,7 @@
 	'use strict';
 
 	var GLYPHS = [ '✦', '✧' ];
-	var MAX    = 14;          // concurrent stars; enough to read as ambient, cheap to animate
+	var MAX    = 72;          // concurrent stars - matched to the live site (~70 at steady state)
 	var layer;
 
 	// Honour the OS-level motion preference. Decoration is exactly the thing that
@@ -65,14 +65,14 @@
 		layer.setAttribute( 'aria-hidden', 'true' );
 		document.body.appendChild( layer );
 
-		for ( var n = 0; n < 6; n++ ) { spawn(); }
+		for ( var n = 0; n < 24; n++ ) { spawn(); }
 
 		setInterval( function () {
 			// Pause while the tab is hidden: animating an invisible page is pure
 			// battery cost on a phone.
 			if ( document.hidden ) { return; }
 			spawn();
-		}, 900 );
+		}, 160 );
 	}
 
 	if ( document.readyState === 'loading' ) {

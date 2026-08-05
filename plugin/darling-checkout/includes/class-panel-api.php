@@ -188,6 +188,48 @@ class Darling_Panel_API {
 		return null;
 	}
 
+	/**
+	 * Relay a newsletter signup to the panel's listmonk endpoint.
+	 *
+	 * Returns 'pending' | 'invalid' | 'ratelimited' | 'unavailable'. The caller
+	 * owns the fallback — this method never invents a success.
+	 */
+	public static function newsletter_subscribe( string $email, string $source ): string {
+		if ( ! self::configured() ) {
+			return 'unavailable';
+		}
+		$res = wp_remote_post( self::base() . '/api/public/newsletter/subscribe', array(
+			'timeout' => self::TIMEOUT,
+			'headers' => array(
+				'X-Office-Token' => self::token(),
+				'Content-Type'   => 'application/json',
+				'Accept'         => 'application/json',
+			),
+			'body'    => wp_json_encode( array(
+				'email'      => $email,
+				'source'     => $source,
+				'consent'    => true,
+				'consent_ts' => gmdate( 'c' ),
+			) ),
+		) );
+		if ( is_wp_error( $res ) ) {
+			self::log( 'newsletter relay failed: ' . $res->get_error_message() );
+			return 'unavailable';
+		}
+		$code = (int) wp_remote_retrieve_response_code( $res );
+		if ( 200 === $code ) {
+			return 'pending';
+		}
+		if ( 400 === $code ) {
+			return 'invalid';
+		}
+		if ( 429 === $code ) {
+			return 'ratelimited';
+		}
+		self::log( "newsletter relay returned HTTP $code" );
+		return 'unavailable';
+	}
+
 	private static function carrier( string $c ): string {
 		$c = strtolower( trim( $c ) );
 		return null !== Darling_Carriers::get( $c ) ? $c : '';
