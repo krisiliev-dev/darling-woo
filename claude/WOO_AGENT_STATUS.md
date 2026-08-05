@@ -427,3 +427,24 @@ subscription plugins and solutions and wire them in."
   client ID/secret + Facebook app ID/secret from Kris), slice 14 accessibility widget,
   locker-picker (when panel flips BoxNow), polish (hero edge-to-edge, cart PAGE dual
   currency). Gate committed as tests/my-account-gate.spec.js.
+
+- 2026-08-05 sprint 14 (v2 sprint 10) DONE - SLICE 13 SHIPPED + GATED (commit 6a9ab2c,
+  deploy green): cookie consent banner. Lightweight, no plugin: bottom-left white card in
+  the footer part (darling.css has NO consent vocabulary - checked first - so .darling-
+  consent/dc-* are ours), text 'Izpolzvame biskvitki...' + Poveritelnost link + 'Priemam'
+  (d-btn primary) + 'Samo neobhodimite' (text button). Choice = FIRST-PARTY COOKIE
+  darling_consent=all|essential, 180d, SameSite=Lax, Secure - NOT localStorage. CACHE-SAFE:
+  served HTML always has the banner hidden; JS reveals only when no choice cookie exists
+  (60s micro-cache can never bake visibility). Nothing tracking-related loads at all yet,
+  so nothing needs pre-consent blocking - the cookie is the key future analytics tags gate
+  on. Reduced-motion respected; mobile full-width. NOTE: the live Shopify cookie dialog is
+  runtime-injected (absent from the static reference capture) - ours is a design-language
+  match, not a markup port. GATE14 PASS: fresh visitor sees it, Priemam hides+persists
+  across reload (cookie=all), Samo neobhodimite -> cookie=essential, pre-set cookie ->
+  never shows, checkout smoke. Gate committed as tests/consent-gate.spec.js.
+  Frontend queue remaining (cutover waits, per Kris): slice 14 accessibility widget NEXT
+  (vendor NOT identifiable from static capture - runtime-injected; probe the LIVE site
+  from the laptop first), slice 12 OAuth (still BLOCKED on Kris: Google client ID/secret +
+  Facebook app ID/secret - reminded in chat this sprint), locker-picker (when panel flips
+  BoxNow), polish (hero edge-to-edge - still visible in consent screenshot, cart PAGE dual
+  currency).
