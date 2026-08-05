@@ -3,7 +3,14 @@
 <!-- wp:group {"tagName":"main","className":"darling-archive darling-search-page","layout":{"type":"constrained"}} -->
 <main class="wp-block-group darling-archive darling-search-page">
 
-	<!-- wp:query-title {"type":"search","level":1,"className":"darling-archive__title"} /-->
+	<!-- Static Bulgarian heading, matching the Shopify search page's h1 exactly.
+	     The core query-title block's "Search results for:" prefix renders
+	     untranslated on the web despite bg_BG packs (translates fine via wp-cli —
+	     loader quirk, logged in the status doc), and Shopify's h1 carries no term
+	     anyway — the results-count line below shows it. -->
+	<!-- wp:heading {"level":1,"className":"darling-archive__title"} -->
+	<h1 class="wp-block-heading darling-archive__title">Резултати от търсенето</h1>
+	<!-- /wp:heading -->
 
 	<!-- The search block pre-fills the current query (get_search_query), which a
 	     static form cannot. Submitting it drops post_type=product, so results may
