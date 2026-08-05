@@ -109,16 +109,23 @@
 		<span>Количка</span>
 		<button type="button" class="darling-drawer__close" data-darling-cart-close aria-label="Затвори">✕</button>
 	</div>
+	<!-- Free-shipping progress. Card + shimmer come from the ported darling.css
+	     (.darling-shipbar / .dsb-track); the math is painted by header.js from the
+	     live cart, threshold €77 — same free_over the checkout charges by. -->
+	<div class="darling-shipbar" data-darling-shipbar hidden>
+		<p data-darling-shipbar-msg></p>
+		<div class="dsb-track"><i data-darling-shipbar-fill></i></div>
+	</div>
 	<div class="darling-cart__body" data-darling-cart-body>
 		<p class="darling-cart__loading">Зареждане…</p>
 	</div>
 	<div class="darling-cart__foot" data-darling-cart-foot hidden>
 		<div class="darling-cart__total">
-			<span>Междинна сума</span>
+			<span>Обща сума</span>
 			<strong data-darling-cart-total></strong>
 		</div>
-		<p class="darling-cart__note">Доставката се изчислява при плащане.</p>
-		<a class="d-btn d-btn--primary darling-cart__cta" href="/checkout/">Към плащане</a>
+		<p class="darling-cart__note">С включено ДДС. Доставката се изчислява при плащане.</p>
+		<a class="d-btn d-btn--primary darling-cart__cta" href="/checkout/">Преминаване към плащане</a>
 		<a class="darling-cart__link" href="/cart/">Виж количката</a>
 	</div>
 </dialog>
