@@ -3,7 +3,8 @@
 <!-- wp:woocommerce/single-product {"className":"darling-product"} -->
 <div class="wp-block-woocommerce-single-product darling-product">
 
-	<!-- wp:woocommerce/breadcrumbs {"className":"darling-crumbs"} /-->
+	<!-- Breadcrumbs removed deliberately: the live site has none, and the one we
+	     rendered exposed the English "Uncategorized" term. -->
 
 	<!-- wp:columns {"className":"darling-product__top"} -->
 	<div class="wp-block-columns darling-product__top">
@@ -27,25 +28,21 @@
 
 			<!-- wp:woocommerce/product-summary {"className":"darling-product__excerpt"} /-->
 
+			<!-- SKU and the raw stock count are hidden on the live site; the stock
+			     STATE still speaks through Woo's availability line (styled as the
+			     live „По поръчка" badge when a product is on backorder). -->
 			<!-- wp:woocommerce/add-to-cart-form {"className":"darling-product__atc"} /-->
 
-			<!-- wp:woocommerce/product-meta -->
-			<div class="wp-block-woocommerce-product-meta">
-				<!-- wp:woocommerce/product-sku /-->
-				<!-- wp:woocommerce/product-stock-indicator /-->
-				<!-- wp:woocommerce/product-details {"className":"darling-product__cats"} /-->
-			</div>
-			<!-- /wp:woocommerce/product-meta -->
-
-			<!-- Trust row. The original carries one here; it is also where the
-			     courier and returns promises belong, because this is the moment a
-			     customer decides. -->
+			<!-- Live pdp-trust block, verbatim copy from the storefront capture
+			     (_scratch_woo/slice8/live_product.html). Classes belong to the
+			     ported darling.css — feed its contract. -->
 			<!-- wp:html -->
-			<ul class="darling-trust">
-				<li><span aria-hidden="true">✦</span> Доставка с Еконт и Спиди — до офис или адрес</li>
-				<li><span aria-hidden="true">✦</span> Право на връщане до 14 дни</li>
-				<li><span aria-hidden="true">✦</span> Плащане с карта или наложен платеж</li>
-			</ul>
+			<div class="darling-pdp-trust">
+				<p class="dpt-cod">✦ <strong>Наложен платеж</strong> — плати при получаване. Отвори и виж, преди да платиш, darling.</p>
+				<p class="dpt-ship">Еконт и Спиди · до адрес или до офис · Поръчай до 15:00 и изпращаме още същия работен ден.</p>
+				<details><summary>Доставка</summary><div><p>Изпращаме с Еконт или Спиди — ти избираш при поръчка. Поръчки над €77 / 150,60 лв. пътуват безплатно. Плащане при получаване (наложен платеж) или с карта.</p></div></details>
+				<details><summary>Връщане и замяна</summary><div><p>14 дни право на връщане, без излишни въпроси. Подробности на страницата <a href="/pomosht/">Помощ</a>.</p></div></details>
+			</div>
 			<!-- /wp:html -->
 
 		</div>
@@ -53,9 +50,9 @@
 	</div>
 	<!-- /wp:columns -->
 
-	<!-- Full description and the GPSR panel the plugin adds. This is where the old
-	     site's 768-853 words live, and it must not be collapsed behind a tab that
-	     search engines de-weight. -->
+	<!-- Full description, reviews and the GPSR panel — rendered ONCE. (The old
+	     template also nested a second product-details block inside product-meta,
+	     which is why „Отзиви" appeared twice on the page.) -->
 	<!-- wp:woocommerce/product-details {"className":"darling-product__details"} /-->
 
 	<!-- wp:heading {"level":2,"className":"darling-section-title"} -->

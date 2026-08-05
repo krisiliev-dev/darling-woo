@@ -617,3 +617,35 @@ a.button.alt:hover {
 	opacity:.9;border-top:1px solid var(--d-sand-deep);background:var(--d-vanilla)}
 .df-legal p{margin:0}
 @media (max-width: 880px){.df-legal{justify-content:center;text-align:center}}
+
+
+/* ═══════════════ SLICE 8 — product page (2026-08-05) ═══════════════ */
+
+.darling-product__title{font-size:clamp(1.7rem,3vw,2.4rem);margin:.2rem 0 .4rem}
+.darling-product__price{font-family:"Playfair Display",Georgia,serif;font-weight:500;
+	font-size:1.35rem;color:var(--d-cocoa)}
+
+/* The live pdp-trust panel: warm bordered card under the buy button. */
+.darling-pdp-trust{margin:1.4rem 0 0;padding:1rem 1.1rem;border:1px solid var(--d-sand-deep);
+	border-radius:1rem;background:var(--d-cream);font-size:.93rem}
+.darling-pdp-trust .dpt-cod{margin:.2rem 0}
+.darling-pdp-trust .dpt-cod strong{color:var(--d-cherry-deep)}
+.darling-pdp-trust .dpt-ship{margin:.2rem 0 .8rem;opacity:.85;font-size:.88rem}
+.darling-pdp-trust details{border-top:1px solid var(--d-sand);padding:.55rem 0}
+.darling-pdp-trust summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.darling-pdp-trust details p{margin:.5rem 0 0;font-size:.9rem;opacity:.92}
+
+/* Woo's availability line carries the stock STATE. On backorder it becomes the
+   live site's „По поръчка" badge; the raw in-stock count stays hidden (the live
+   site never shows a number). */
+.darling-product .stock.in-stock{display:none}
+.darling-product .stock.available-on-backorder{display:block;margin:.8rem 0 0;
+	padding:.7rem .9rem;border:1px solid var(--d-honey-light);border-radius:.8rem;
+	background:var(--d-vanilla);font-size:.92rem}
+
+/* 1280px regression guard: the buy column stacks cleanly under the gallery
+   before things get tight. */
+@media (max-width: 1320px){
+	.darling-product__top{flex-wrap:wrap}
+	.darling-product__top .wp-block-column{flex-basis:100% !important}
+}

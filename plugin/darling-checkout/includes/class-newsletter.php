@@ -4,11 +4,10 @@
  *
  * The storefront form posts here; this relays to the panel's listmonk endpoint
  * SERVER-SIDE (the office token never reaches the browser — same model as the
- * office lookup and shipping rates). Until the panel posts that the endpoint is
- * LIVE, and whenever it is unreachable, the address is delivered to the
- * orders@ mailbox instead (same mail path as the contact form) so no signup is
- * ever lost. The two paths return DIFFERENT success copy: double opt-in wording
- * only when the panel accepted (a confirmation email really will arrive).
+ * office lookup and shipping rates). The panel endpoint went LIVE 2026-08-05
+ * (night): the orders@ mail fallback is retired — listmonk is the system of record, and
+ * an unreachable panel surfaces an honest "опитай пак по-късно" (contract rule:
+ * never queue-and-fake).
  *
  * Contract (PANEL_AGENT_STATUS.md, 2026-08-05):
  *   POST {panel}/api/public/newsletter/subscribe  X-Office-Token: …
@@ -23,7 +22,6 @@ class Darling_Newsletter {
 	private const RATE_LIMIT     = 10;            // per IP
 	private const RATE_WINDOW    = HOUR_IN_SECONDS;
 	private const MIN_FILL_MS    = 2500;          // faster than a human types an email
-	private const RECIPIENT      = 'orders@darlinghome.bg';
 
 	public static function init(): void {
 		add_action( 'rest_api_init', function () {
@@ -70,25 +68,18 @@ class Darling_Newsletter {
 			return self::err( 'Твърде много опити — опитай пак по-късно.' );
 		}
 
-		// Panel unavailable (endpoint not live yet, or outage): deliver to the
-		// mailbox so the signup is kept. Honest copy — no confirmation email is
-		// coming on this path.
-		$sent = wp_mail(
-			self::RECIPIENT,
-			'Абонамент за бюлетина (fallback)',
-			"Нов абонат за бюлетина:\n\n{$email}\n\nЗаписан на: " . gmdate( 'c' )
-			. "\nИзточник: начална страница (panel endpoint unavailable — да се добави в listmonk при пускането)."
-		);
+		// Panel says try later (503 = listmonk down or disabled), or the relay
+		// could not reach it. Per the panel contract (2026-08-05 night entry):
+		// show an honest "try later" — never queue-and-fake, never a mailbox
+		// side-channel that would double-handle signups now that listmonk is
+		// the system of record for the list.
 		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->info(
-				'newsletter fallback to mailbox (panel status: unavailable, mail ' . ( $sent ? 'sent' : 'FAILED' ) . ')',
+			wc_get_logger()->warning(
+				'newsletter subscribe unavailable (panel/listmonk down?) - customer told to retry',
 				array( 'source' => 'darling-newsletter' )
 			);
 		}
-		if ( $sent ) {
-			return self::ok( 'Благодарим! Записахме те, darling.' );
-		}
-		return self::err( 'Нещо се обърка — опитай пак малко по-късно.' );
+		return self::err( 'Нещо се обърка — опитай пак малко по-късно, darling.' );
 	}
 
 	private static function ok( string $msg ): WP_REST_Response {
