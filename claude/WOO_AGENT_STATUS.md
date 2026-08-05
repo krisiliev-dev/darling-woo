@@ -400,3 +400,30 @@ subscription plugins and solutions and wire them in."
   13 (consent banner), 14 (accessibility widget), locker-picker (when panel flips BoxNow),
   + panel-dependent items. Polish notes standing: hero band edge-to-edge; cart PAGE dual
   currency.
+
+- 2026-08-05 sprint 13 (v2 sprint 9) DONE - SLICE 11 SHIPPED + GATED (commits 1226c87,
+  ff44a1a, 8d46a86; deploys green): My Account. Registration ENABLED on /my-account/
+  (woocommerce_enable_myaccount_registration=yes; generate_password=no so the customer
+  sets a password and lands logged-in immediately); guest view = two side-by-side cards
+  „Влизане" / „Регистриране" (BG core strings), Darling-styled inputs/buttons; logged-in
+  view = two-column dashboard (240px nav card + content card, active item cherry-red,
+  1080px wrapper via zero-specificity :where() override); „Изтегляния" GONE (menu filter
+  + endpoint option blanked - direct /my-account/downloads/ no longer renders a downloads
+  screen); orders/addresses/logout verified rendered. GATE13 PASS end-to-end incl. a real
+  registration with a throwaway email (user created + dashboard rendered + deleted after).
+  KRIS DIRECTIVE (mid-sprint): complete ALL outstanding frontend work BEFORE cutover -
+  cutover runbook stays ready but waits for the frontend queue to drain.
+  LESSONS (recorded): (1) Woo's notices wrapper is a stray first grid child - NEVER rely
+  on grid auto-flow for Woo template wrappers, pin grid-column/row explicitly (bit me twice
+  in one slice: auth columns AND dashboard). (2) Headless-Chromium TRUSTED clicks on the
+  register submit do not activate the form while native .click()/requestSubmit()/trusted
+  Enter all do (server-verified each way; no isTrusted/preventDefault anywhere in our JS -
+  environment artifact, not a product bug; gate submits via trusted Enter and the click
+  anomaly is documented, not gated on). (3) device_stage_files stale-cache ALSO applies to
+  re-staged screenshots - copy to a FRESH filename laptop-side before staging, every time.
+  PANEL: cutover confirmed panel-indifferent (zero staging.darlinghome.bg refs their side).
+  Remaining frontend queue (cutover blocks on these per Kris): slice 13 consent banner
+  (NEXT - no external deps), slice 12 social OAuth (BLOCKED on owner: need Google OAuth
+  client ID/secret + Facebook app ID/secret from Kris), slice 14 accessibility widget,
+  locker-picker (when panel flips BoxNow), polish (hero edge-to-edge, cart PAGE dual
+  currency). Gate committed as tests/my-account-gate.spec.js.
