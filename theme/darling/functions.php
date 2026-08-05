@@ -186,3 +186,21 @@ add_filter( 'woocommerce_get_country_locale', function ( $locale ) {
 	$locale['BG']['state']['required'] = false;
 	return $locale;
 } );
+
+/**
+ * Last two checkout strings: these reach the blocks as SERVER-rendered
+ * settings JSON (asset data registry), so the JS i18n hook never sees them —
+ * PHP gettext does. Scoped to the exact source strings.
+ */
+add_filter( 'gettext', function ( $translation, $text, $domain ) {
+	if ( 'woocommerce' !== $domain ) {
+		return $translation;
+	}
+	if ( 'Phone (optional)' === $text ) {
+		return 'Телефон (по избор)';
+	}
+	if ( 'Express Checkout' === $text ) {
+		return 'Бързо плащане';
+	}
+	return $translation;
+}, 10, 3 );
