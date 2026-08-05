@@ -1,6 +1,6 @@
 <?php
 /**
- * Base shipping method: asks the panel for the real courier fee.
+ * Base shipping method: prices from the panel's shipping-rates table.
  *
  * Loaded on woocommerce_shipping_init, which is why it is a separate file —
  * WC_Shipping_Method does not exist before then.
@@ -8,6 +8,21 @@
  * Everything carrier-specific comes from Darling_Carriers; the subclasses at the
  * bottom exist only because WooCommerce shipping zones instantiate methods by
  * class name and cannot take a config array.
+ *
+ * v2 (2026-08-05): live per-destination quotes replaced by the panel's
+ * pre-computed table (GET /api/public/shipping-rates — one call per
+ * (weight, cod), cached 15 min, shared by every carrier instance in the same
+ * calculation). Rate IDS and META are unchanged (`darling_<courier>:<mode>`,
+ * darling_carrier / darling_mode) — the office picker and order booking key on
+ * them. Panel serves labels (label_bg), prices with the buffer and the COD fee
+ * already inside (Kris rule: no separate COD line), and free_over_eur=77.
+ *
+ * Ordering caveat, recorded: the panel pre-sorts cheapest-first, but with one
+ * method instance per carrier the cross-carrier display order follows the
+ * shipping-zone configuration, not the payload. Zone is configured
+ * Speedy-before-Econt, which matches cheapest-first at every bracket today
+ * (Speedy ≪ Econt from 3kg). If a new courier breaks that, either reorder the
+ * zone or collapse to a single aggregate method — noted in the status doc.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -22,10 +37,8 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 		$this->instance_id        = absint( $instance_id );
 		$this->supports           = array( 'shipping-zones', 'instance-settings', 'settings' );
 		$this->method_title       = $this->carrier_label;
-		$this->method_description = 'Живи цени за доставка от ' . $this->carrier_label . ', изчислени по тегло и получател.'
-			. ( Darling_Panel_API::supports( $this->carrier )
-				? ''
-				: ' ⚠ Панелът все още няма достъп до този куриер — методът няма да се показва на клиентите, докато не бъдат въведени данните за достъп.' );
+		$this->method_description = 'Цени за доставка от ' . $this->carrier_label . ' по тарифната таблица на панела (тегло + наложен платеж).'
+			. ' Куриер без данни в панела не се показва на клиентите.';
 		$this->enabled            = 'yes';
 		$this->title              = $this->carrier_label;
 		$this->init_form_fields();
@@ -65,7 +78,7 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 		$fields['free_over'] = array(
 			'title'       => 'Безплатна доставка над (EUR)',
 			'type'        => 'text',
-			'description' => 'Остави празно, за да няма безплатна доставка.',
+			'description' => 'Резервен праг. Панелът е меродавен (free_over_eur в тарифната таблица); това поле важи само ако панелът не подаде праг.',
 			'default'     => '',
 		);
 
@@ -80,112 +93,101 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 		$postcode = (string) ( $package['destination']['postcode'] ?? '' );
 
 		// No destination yet (empty cart page, before the address is filled in).
-		// Offer NO rate rather than the fallback: "we don't know where you live" is
-		// not "the courier API is down", and conflating them would both show an
-		// invented price as if it were real AND fill the log with false warnings —
-		// which is how genuine panel outages end up ignored.
+		// Offer NO rate: "we don't know where you live" must not price anything.
 		if ( '' === $city ) {
 			return;
 		}
 
-		// A carrier we are contracted with but the panel cannot yet book must stay
-		// invisible. Note this is checked BEFORE the quote, so an unprovisioned
-		// carrier can never fall through to the fallback price — otherwise signing a
-		// contract would immediately start quoting an invented rate for a courier
-		// nobody can actually dispatch.
-		if ( ! Darling_Panel_API::supports( $this->carrier ) ) {
+		$weight_g  = Darling_Shipping::cart_weight_g();
+		$weight_kg = max( 0.001, $weight_g / 1000 );
+		$cod       = Darling_Shipping::is_cod();
+		$subtotal  = (float) WC()->cart->get_displayed_subtotal();
+
+		$payload = Darling_Panel_API::shipping_rates( $weight_kg, $cod );
+
+		Darling_Shipping::trace( sprintf(
+			'calculate_shipping: carrier=%s weight_kg=%.3f cod=%s package_flag=%s payload=%s',
+			$this->carrier,
+			$weight_kg,
+			$cod ? '1' : '0',
+			(string) ( $package['darling_cod'] ?? '(missing)' ),
+			null === $payload ? 'NULL' : ( count( (array) ( $payload['rates'] ?? array() ) ) . ' rates' . ( ! empty( $payload['darling_stale'] ) ? ' (STALE-LKG)' : '' ) )
+		) );
+
+		// Panel contract: unavailable table AND no last-known-good => offer no
+		// rates (fail closed on money). An empty rates array from a HEALTHY panel
+		// is authoritative "nothing to sell" (e.g. first hit after a deploy while
+		// the refresh fills) — same outcome, hide.
+		if ( null === $payload ) {
+			wc_get_logger()->warning(
+				sprintf( 'shipping-rates unavailable and no last-known-good (%s) - offering no rates', $this->carrier ),
+				array( 'source' => 'darling-shipping' )
+			);
 			return;
 		}
 
-		$weight_g = Darling_Shipping::cart_weight_g();
-		$cod      = Darling_Shipping::is_cod();
-		$subtotal = (float) WC()->cart->get_displayed_subtotal();
-
-		$free_over = trim( (string) $this->get_option( 'free_over', '' ) );
-		$is_free   = ( '' !== $free_over && is_numeric( $free_over ) && $subtotal >= (float) $free_over );
-
-		if ( 'yes' === $this->get_option( 'office', 'yes' ) ) {
-			$this->add_rate_for( 'office', $city, $postcode, $weight_g, $cod, $subtotal, $is_free );
+		$mine = array();
+		foreach ( (array) ( $payload['rates'] ?? array() ) as $row ) {
+			if ( ( $row['courier'] ?? '' ) === $this->carrier && isset( $row['mode'], $row['price_eur'] ) ) {
+				$mine[ (string) $row['mode'] ] = $row;
+			}
 		}
-		if ( Darling_Carriers::supports_door( $this->carrier ) && 'yes' === $this->get_option( 'door', 'yes' ) ) {
-			$this->add_rate_for( 'door', $city, $postcode, $weight_g, $cod, $subtotal, $is_free );
+		if ( empty( $mine ) ) {
+			return; // panel serves no rates for this carrier -> stays invisible
+		}
+
+		// Free-shipping threshold: the panel value is canonical; the instance
+		// option is only a fallback for a payload without the field.
+		$free_over = isset( $payload['free_over_eur'] ) && is_numeric( $payload['free_over_eur'] )
+			? (float) $payload['free_over_eur']
+			: (float) ( is_numeric( trim( (string) $this->get_option( 'free_over', '' ) ) ) ? trim( (string) $this->get_option( 'free_over', '' ) ) : 0 );
+		$is_free = $free_over > 0 && $subtotal >= $free_over;
+
+		$stale = ! empty( $payload['darling_stale'] );
+
+		if ( isset( $mine['office'] ) && 'yes' === $this->get_option( 'office', 'yes' ) ) {
+			// Availability still depends on the destination: no office in the
+			// customer's settlement -> no office rate, whatever the table says.
+			$offices = Darling_Panel_API::offices( $this->carrier, $city );
+			if ( ! empty( $offices ) ) {
+				$this->add_panel_rate( $mine['office'], 'office', $is_free, $stale );
+			}
+		}
+		if ( isset( $mine['door'] ) && Darling_Carriers::supports_door( $this->carrier )
+			&& 'yes' === $this->get_option( 'door', 'yes' ) ) {
+			$this->add_panel_rate( $mine['door'], 'door', $is_free, $stale );
 		}
 	}
 
-	private function add_rate_for( string $mode, string $city, string $postcode, int $weight_g, bool $cod, float $subtotal, bool $is_free ): void {
-		$label = 'office' === $mode
-			? $this->carrier_label . ' — ' . Darling_Carriers::office_label( $this->carrier )
-			: $this->carrier_label . ' — до адрес';
-
-		if ( $is_free ) {
-			$this->add_rate( array(
-				'id'    => $this->id . ':' . $mode,
-				'label' => $label . ' (безплатна)',
-				'cost'  => 0,
-				'meta_data' => array( 'darling_carrier' => $this->carrier, 'darling_mode' => $mode ),
-			) );
-			return;
+	/** @param array{courier:string,mode:string,label_bg?:string,price_eur:float|int|string} $row */
+	private function add_panel_rate( array $row, string $mode, bool $is_free, bool $stale ): void {
+		$label = trim( (string) ( $row['label_bg'] ?? '' ) );
+		if ( '' === $label ) {
+			$label = 'office' === $mode
+				? $this->carrier_label . ' — ' . Darling_Carriers::office_label( $this->carrier )
+				: $this->carrier_label . ' — до адрес';
 		}
 
-		$dest = array();
-		if ( 'office' === $mode ) {
-			// The quote endpoint prices an office by id. At rate-calculation time the
-			// customer has not picked one yet, so we price the first office in their
-			// city — office pricing within a settlement is uniform in both networks.
-			// If that assumption ever breaks, the fee changes after selection, which
-			// would be visible and wrong; revisit rather than paper over.
-			$offices = Darling_Panel_API::offices( $this->carrier, $city );
-			if ( empty( $offices ) ) {
-				return; // no office in this settlement -> do not offer office delivery
-			}
-			$dest['office_id'] = (string) ( $offices[0]['id'] ?? '' );
-		} else {
-			$dest['city'] = $city;
-			if ( $postcode ) {
-				$dest['postcode'] = $postcode;
-			}
-		}
-
-		$quote = Darling_Panel_API::quote( $this->carrier, $mode, $dest, $weight_g, $cod, $subtotal );
-
-		if ( null === $quote ) {
-			// FAIL-OPEN, loudly. See Darling_Shipping::FALLBACK_RATE_EUR for why.
-			wc_get_logger()->warning(
-				sprintf( 'panel quote unavailable (%s/%s, city=%s) - charging fallback %.2f',
-					$this->carrier, $mode, $city, Darling_Shipping::FALLBACK_RATE_EUR ),
-				array( 'source' => 'darling-shipping' )
-			);
-			$this->add_rate( array(
-				'id'        => $this->id . ':' . $mode,
-				'label'     => $label,
-				'cost'      => Darling_Shipping::FALLBACK_RATE_EUR,
-				'meta_data' => array(
-					'darling_carrier'  => $this->carrier,
-					'darling_mode'     => $mode,
-					'darling_fallback' => 'yes',
-				),
-			) );
-			return;
-		}
+		$meta = array(
+			'darling_carrier'      => $this->carrier,
+			'darling_mode'         => $mode,
+			'darling_price_source' => $stale ? 'panel_rates_stale' : 'panel_rates',
+		);
 
 		$this->add_rate( array(
 			'id'        => $this->id . ':' . $mode,
-			'label'     => $label,
-			'cost'      => $quote['total'],
-			'meta_data' => array(
-				'darling_carrier'      => $this->carrier,
-				'darling_mode'         => $mode,
-				'darling_fee_shipping' => $quote['shipping'],
-				'darling_fee_cod'      => $quote['cod'],
-			),
+			'label'     => $is_free ? $label . ' (безплатна)' : $label,
+			'cost'      => $is_free ? 0 : round( (float) $row['price_eur'], 2 ),
+			'meta_data' => $meta,
 		) );
 	}
 }
 
 /*
  * One thin subclass per registry entry. Adding a courier means adding a registry
- * entry plus four lines here — and nothing else: no quoting logic, no picker
- * change, no front-end change.
+ * entry plus four lines here — and nothing else: no pricing logic, no picker
+ * change, no front-end change. It appears at checkout the moment the panel
+ * starts serving rates for it.
  */
 
 class Darling_Shipping_Econt extends Darling_Shipping_Base {

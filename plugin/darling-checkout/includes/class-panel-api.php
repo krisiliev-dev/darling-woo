@@ -114,6 +114,80 @@ class Darling_Panel_API {
 		);
 	}
 
+	private const CACHE_RATES     = 15 * MINUTE_IN_SECONDS;
+	/**
+	 * How long a last-known-good rates table may substitute during a panel
+	 * outage. Stale-but-true beats both "no checkout" and an invented price:
+	 * tariffs change on contract renegotiation, not hourly.
+	 */
+	private const CACHE_RATES_LKG = DAY_IN_SECONDS;
+
+	/**
+	 * The panel's pre-computed shipping-rates table for (weight, cod).
+	 *
+	 * Contract (PANEL_AGENT_STATUS.md, 2026-08-05):
+	 *   GET /api/public/shipping-rates?weight_kg=<float>&cod=<0|1>
+	 *   -> {"rates":[{courier,mode,label_bg,price_eur,sort},…],"free_over_eur":77.0}
+	 * Rates arrive cheapest-first; price_eur already contains the buffer, and the
+	 * COD fee when cod=1. Cached 15 min per (weight rounded to 0.1kg, cod) — the
+	 * panel brackets weights internally, so the rounding only bounds the number
+	 * of cache keys, not correctness.
+	 *
+	 * Returns the decoded payload; during an outage, the last-known-good payload
+	 * with 'darling_stale' => true (logged); null when there has never been one.
+	 * A HEALTHY response with an empty rates array is returned as-is — it is
+	 * authoritative (panel refresh still filling) and callers hide options.
+	 */
+	public static function shipping_rates( float $weight_kg, bool $cod ): ?array {
+		if ( ! self::configured() ) {
+			return null;
+		}
+		$w   = number_format( max( 0.1, round( $weight_kg, 1 ) ), 1, '.', '' );
+		$key = 'darling_papi_rates_' . $w . '_' . ( $cod ? '1' : '0' );
+		$lkg = 'darling_papi_rates_lkg_' . $w . '_' . ( $cod ? '1' : '0' );
+
+		$hit = get_transient( $key );
+		if ( is_array( $hit ) ) {
+			return $hit;
+		}
+
+		$url = self::base() . '/api/public/shipping-rates?' . http_build_query( array(
+			'weight_kg' => $w,
+			'cod'       => $cod ? '1' : '0',
+		) );
+		$res = wp_remote_get( $url, array(
+			'timeout' => self::TIMEOUT,
+			'headers' => array( 'X-Office-Token' => self::token(), 'Accept' => 'application/json' ),
+		) );
+
+		$data = null;
+		if ( ! is_wp_error( $res ) && 200 === (int) wp_remote_retrieve_response_code( $res ) ) {
+			$decoded = json_decode( wp_remote_retrieve_body( $res ), true );
+			if ( is_array( $decoded ) && array_key_exists( 'rates', $decoded ) ) {
+				$data = $decoded;
+			}
+		}
+
+		if ( null !== $data ) {
+			set_transient( $key, $data, self::CACHE_RATES );
+			if ( ! empty( $data['rates'] ) ) {
+				// Only a table that actually offers something is worth keeping as
+				// the outage substitute — an empty table would hide everything.
+				set_transient( $lkg, $data, self::CACHE_RATES_LKG );
+			}
+			return $data;
+		}
+
+		self::log( 'shipping-rates fetch failed (' . ( is_wp_error( $res ) ? $res->get_error_message() : 'HTTP ' . wp_remote_retrieve_response_code( $res ) ) . ')' );
+		$old = get_transient( $lkg );
+		if ( is_array( $old ) ) {
+			self::log( 'serving LAST-KNOWN-GOOD shipping rates (stale, real prices) for w=' . $w . ' cod=' . ( $cod ? '1' : '0' ) );
+			$old['darling_stale'] = true;
+			return $old;
+		}
+		return null;
+	}
+
 	private static function carrier( string $c ): string {
 		$c = strtolower( trim( $c ) );
 		return null !== Darling_Carriers::get( $c ) ? $c : '';
