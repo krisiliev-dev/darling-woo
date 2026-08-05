@@ -594,3 +594,7 @@ a.button.alt:hover {
 
 .darling-foot-flair--brand{margin:0;padding:0}
 .darling-foot-flair--brand .dff-rule{display:none}
+
+/* container reset: v1 grid on .darling-footer split cols+legal side by side */
+.darling-footer--v2{display:block;grid-template-columns:none;padding:0 var(--d-margin)}
+.darling-footer--v2 .darling-footer__cols{width:100%}
