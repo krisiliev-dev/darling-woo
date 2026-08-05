@@ -44,6 +44,7 @@ class Darling_Shipping {
 		add_action( 'woocommerce_shipping_init', array( __CLASS__, 'load' ) );
 		add_filter( 'woocommerce_cart_shipping_packages', array( __CLASS__, 'tag_package_with_cod' ) );
 		add_action( 'woocommerce_cart_loaded_from_session', array( __CLASS__, 'sync_captured_pm_to_session' ) );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_repricing_sync' ) );
 	}
 
 	/**
@@ -55,6 +56,20 @@ class Darling_Shipping {
 	 * has burned three attempts, and the trace is what makes the fourth
 	 * attempt verifiable. Source: darling-repricing-trace.
 	 */
+	/** Checkout-only display sync for payment-method switches. See assets/repricing-sync.js. */
+	public static function enqueue_repricing_sync(): void {
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+			return;
+		}
+		$f = DARLING_CHECKOUT_PATH . 'assets/repricing-sync.js';
+		wp_enqueue_script(
+			'darling-repricing-sync',
+			plugins_url( 'assets/repricing-sync.js', DARLING_CHECKOUT_PATH . 'darling-checkout.php' ),
+			array( 'wp-data' ),
+			file_exists( $f ) ? (string) filemtime( $f ) : DARLING_CHECKOUT_VERSION,
+			true
+		);
+	}
 	public static function trace( string $msg ): void {
 		if ( function_exists( 'wc_get_logger' ) ) {
 			wc_get_logger()->debug( $msg, array( 'source' => 'darling-repricing-trace' ) );
