@@ -141,3 +141,17 @@ add_action( 'wp_enqueue_scripts', function () {
 		);
 	}
 }, 20 );
+
+/**
+ * Social login buttons on the My Account forms. Nextend FREE only hooks
+ * wp-login.php — its WooCommerce form integration is a Pro feature — but the
+ * [nextend_social_login] shortcode ships in free and renders the same buttons.
+ * It outputs nothing while no provider is enabled, so this stays honest-dark
+ * if providers are ever turned off.
+ */
+add_action( 'woocommerce_login_form_end', function () {
+	echo do_shortcode( '[nextend_social_login]' );
+} );
+add_action( 'woocommerce_register_form_end', function () {
+	echo do_shortcode( '[nextend_social_login]' );
+} );
