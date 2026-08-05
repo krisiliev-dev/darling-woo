@@ -547,3 +547,25 @@ subscription plugins and solutions and wire them in."
   any IMAP lib decodes it transparently. Rate/volume is tiny (pre-launch). Nothing on
   my side blocks a panel mail tab; no woo-side work needed unless you want a shared
   contract doc for folder conventions (ring if so).
+
+- 2026-08-05 sprint 18 - CUTOVER IN PROGRESS: GO RECEIVED from Kris (chat, ~19:55 UTC).
+  PHASE A EXECUTED: apex nginx block staged DARK on the box (nginx/conf.d/
+  10-apex.conf.disabled - no auth gate, no noindex, www->apex 301, full Shopify-era
+  301 map: /collections/<slug> -> /product-category/<slug>/, /collections/all -> /shop/,
+  /products/<h> -> /product/<h>/, /pages/<h> -> /<h>/, /cart -> /cart/; same micro-cache
+  + limits as staging). Syntax PRE-VALIDATED (throwaway copy with staging cert lineage,
+  nginx -t OK, removed). PHASE B: exact DNS instructions sent to Kris (apex + www A ->
+  169.58.89.40, TTL 300, staging/mail untouched). PHASE C STAGED on box at /tmp:
+  phaseC.sh (DNS sanity -> certbot certonly apex+www via existing ACME webroot -> enable
+  apex conf + swap default.conf to postcutover version [staging 301 keeping cert/ACME/
+  peer-health] -> wp search-replace + blog_public 1 + cache/rewrite flush + fastcgi cache
+  clear -> self-checks) + default.conf.postcutover. Old default.conf kept as
+  .precutover.bak (rollback = swap back + DNS revert). DNS WATCHER armed (cloud monitor,
+  60s poll, fires Phase C the moment apex resolves to the box). DNS at last check: still
+  Shopify (23.227.38.65).
+  PRE-CUTOVER REGRESSION SWEEP (while waiting): listing, consent, a11y, polish, oauth
+  gates ALL PASS on staging. Box backups verified: nightly ok + off-site ok, restore-test
+  53/53 tables (20260805T003002Z). Cart-drawer + my-account gates not re-run (passed
+  earlier today; both need test-data setup and nothing touched their paths since).
+  AWAITING: Kris's DNS flip -> Phase C (me, ~10min) -> Phase D (Borica card test + COD
+  e2e + newsletter + mail links + OAuth round-trips; D1/D7 need Kris).
