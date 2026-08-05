@@ -80,12 +80,8 @@ needed; 301 to `/shop/` in the cutover map.
   Evidence: `_scratch_woo\apply_out.txt`, `_scratch_woo\rendered.html`, gate script
   `tests/page-text-parity.py` (run: `python gate_diff.py` → GATE: PASS).
   Content sources committed to `content/pages/` in this repo.
-  ⚠ Two follow-ups: (a) **contact form on Контакти not ported** (Shopify uses a
-  native contact form — Woo needs an equivalent; slice 2/3 item, stated not
-  half-built); (b) **privacy-policy legal delta needs sign-off**: Shopify text names
-  "Shopify (платформата на магазина)" as a data recipient — replaced with
-  "доставчика на хостинг на онлайн магазина"; Kris/accountant should confirm the
-  wording since it's legal text.
+  ⚠ Two follow-ups: (a) contact form — ✅ CLOSED in slice 3, see below;
+  (b) privacy-policy "хостинг" wording — ✅ CONFIRMED by Kris 2026-08-05.
 - **Slice 2 — ✅ DONE 2026-08-05.** Search results page + blog index shipped and
   gated on staging (deploys 31003458027/31003838259/31004036393/31004503913, all
   green). Details:
@@ -111,6 +107,18 @@ needed; 301 to `/shop/` in the cutover map.
 - **Slice 3 — visual/animation parity sweep**: home, collection, product, cart, 404
   against `reference/shopify-theme/` inventory + live site; responsive sweep beyond
   390px/desktop. My Account review.
+- **Slice 3 — ✅ DONE 2026-08-05.** Contact form live on /kontakti/ (commit
+  `6981713`, deploy 31007777832 green). `includes/class-contact-form.php` in
+  darling-checkout (plugin owns the SMTP path; survives theme switch). Email-first
+  per Kris: delivers to orders@darlinghome.bg via the box's own mail path; the
+  panel can read the mailbox over IMAP later — one source of truth. Spam posture:
+  honeypot + min-fill-time (pretend success) + 5/hour/IP rate limit (honest error);
+  fail-open by design (contact is advice, not money). GATE PASSED on staging
+  (`_scratch_woo\gate3_out.txt` + `gate3b_out.txt`): form renders with all Shopify
+  fields; honeypot POST → fake success, no delivery; real POST → 302 izprateno AND
+  maildir 10→11 with correct To/Reply-To/Subject; missing email → greshka=danni;
+  both notices render. Lesson logged: `docker compose exec -T` eats a
+  stdin-piped script — run gate scripts from a file on the box.
 - **Cutover artifacts (later, with 301 map):** `/pages/contact`→`/kontakti/`,
   `/policies/*`→BG slugs, `/collections/*`→`/product-category/*`, `/collections/all`+
   `frontpage`→`/shop/`, `/blogs/*`→TBD, `/en/*`→BG.

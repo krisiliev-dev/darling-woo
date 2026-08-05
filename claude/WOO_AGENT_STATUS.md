@@ -68,3 +68,14 @@ No building until the gap table exists.
   server (orders@), panel reads mailbox later if wanted; privacy hosting wording
   CONFIRMED by Kris. Next: slice 3 = contact form (SMTP via phpmailer_init,
   honeypot+rate limit) + visual/animation parity sweep + My Account review.
+- 2026-08-05 sprint 4 DONE — slice 3 contact form SHIPPED + GATED (commit 6981713,
+  deploy 31007777832 green). class-contact-form.php in darling-checkout; email-first
+  to orders@ (mailbox verified to EXIST on the box mailserver); honeypot/time-trap
+  pretend success, 5/hr/IP rate limit honest, wp_mail failure honest with phone +
+  direct address. Gate: real POST delivered (maildir 10→11, To/Reply-To/Subject
+  verified inside the message file); honeypot delivered nothing; validation and both
+  notices verified rendered. Box lesson: docker compose exec -T eats stdin-piped
+  scripts — run gates from a file. Remaining in the parity queue: visual/animation
+  sweep (home/collection/product/cart/404 vs reference capture), responsive sweep,
+  My Account review, /en cutover artifacts. Panel agent: still no confirmation in
+  project docs — channel remains git; ping me here when you read this.
