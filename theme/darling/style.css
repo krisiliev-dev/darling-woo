@@ -837,3 +837,27 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image
 	.woocommerce-MyAccount-navigation,
 	.woocommerce-MyAccount-content{grid-column:1;grid-row:auto}
 }
+
+
+/* ═══════════════ SLICE 13 — cookie consent (2026-08-05) ═══════════════
+   Small bottom-left card, matching the live site's dismissible banner. Sits
+   under the native <dialog> top layer by nature, above page content. */
+
+.darling-consent{position:fixed;left:1.1rem;bottom:1.1rem;z-index:60;
+	max-width:380px;background:#fff;border-radius:16px;
+	padding:1.1rem 1.2rem;box-shadow:0 10px 34px rgb(var(--d-shadow)/.22);
+	animation:dc-in .35s ease both}
+@keyframes dc-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.darling-consent[hidden]{display:none}
+.dc-text{margin:0 0 .8rem;font-size:.86rem;line-height:1.5;color:var(--d-cocoa)}
+.dc-text a{color:var(--d-cherry);text-decoration:underline}
+.dc-actions{display:flex;align-items:center;gap:.9rem}
+.dc-actions .d-btn{padding:.55rem 1.2rem;font-size:.88rem}
+.dc-min{border:0;background:none;font:inherit;font-size:.82rem;font-weight:600;
+	color:var(--d-cocoa);opacity:.75;cursor:pointer;text-decoration:underline;
+	padding:.3rem 0}
+.dc-min:hover{opacity:1}
+@media (max-width:560px){
+	.darling-consent{left:.7rem;right:.7rem;bottom:.7rem;max-width:none}
+}
+@media (prefers-reduced-motion:reduce){.darling-consent{animation:none}}

@@ -71,4 +71,33 @@
 	     wherever prices are shown in both currencies. -->
 	<p class="darling-footer__rate">1 EUR = 1.95583 лв.</p>
 </div>
+
+<!-- Cookie consent: lightweight, no plugin. HIDDEN in the served HTML and shown
+     by JS only when no choice-cookie exists — pages come from a 60s micro-cache,
+     so visibility must never be baked server-side. The choice is a first-party
+     cookie (darling_consent=all|essential, 180 days) for future analytics tags
+     to key on; nothing tracking-related loads at all yet, so there is nothing
+     to block pre-consent — the banner records the choice honestly for when
+     there is. -->
+<div class="darling-consent" data-darling-consent hidden role="region" aria-label="Бисквитки">
+	<p class="dc-text">Използваме бисквитки, за да работи количката ти и за да
+	правим магазина по-добър. <a href="/poveritelnost/">Научи повече</a></p>
+	<div class="dc-actions">
+		<button type="button" class="d-btn d-btn--primary" data-darling-consent-accept>Приемам</button>
+		<button type="button" class="dc-min" data-darling-consent-essential>Само необходимите</button>
+	</div>
+</div>
+<script>
+(function () {
+	var box = document.querySelector('[data-darling-consent]');
+	if (!box || /(?:^|;\s*)darling_consent=/.test(document.cookie)) { return; }
+	var set = function (v) {
+		document.cookie = 'darling_consent=' + v + ';path=/;max-age=15552000;SameSite=Lax;Secure';
+		box.setAttribute('hidden', '');
+	};
+	box.querySelector('[data-darling-consent-accept]').addEventListener('click', function () { set('all'); });
+	box.querySelector('[data-darling-consent-essential]').addEventListener('click', function () { set('essential'); });
+	box.removeAttribute('hidden');
+})();
+</script>
 <!-- /wp:html -->
