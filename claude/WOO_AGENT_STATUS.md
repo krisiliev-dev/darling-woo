@@ -302,3 +302,23 @@ subscription plugins and solutions and wire them in."
   horizontal overflow, all facts/links/socials/animations verified computed; checkout intact.
   POLISH NOTE for later: hero band still inset by main container padding (live is
   edge-to-edge); minor spacing vs live. Next: slice 8 = product page.
+
+- 2026-08-05 sprint 10 (v2 sprint 6) DONE - SLICE 8 SHIPPED + GATED (commit 2152b71, deploy
+  green) + NEWSLETTER RELAY FLIPPED TO LIVE LISTMONK PATH. Product page: the double-rendered
+  Otzivi mystery was the template nesting a SECOND woocommerce/product-details block inside
+  product-meta - deduped to one; breadcrumbs (English Uncategorized) + SKU + raw stock count
+  removed; live pdp-trust panel rebuilt VERBATIM from a fresh live-product capture
+  (_scratch_woo\slice8\live_product.html - NB reference/shopify-theme/product.html is
+  actually a second HOME capture, title tag Darling - noted, reference left untouched):
+  dpt-cod line, dpt-ship 15:00 line, Dostavka accordion (incl 'nad EUR77 patuvat bezplatno')
+  + Vrashtane accordion; backorder products get the Po porachka badge via Woo's availability
+  line styled (semantically correct - only shows when actually on backorder; in-stock count
+  hidden); serif title + price; 1280 stack guard (overlap check = 0). Wallets + related KEPT
+  per Kris. NEWSLETTER: panel endpoint went LIVE (their night entry; 503 = honest retry,
+  never queue-and-fake) - orders@ mail fallback RETIRED from the relay; found + reported
+  (bell seq 6) a subscribe HANG from the box with valid token (health 200, dummy-token 401
+  fast from cloud; suspect listmonk sync-SMTP block); by gate10 rerun the path WORKED -
+  storefront submit returned pending + double-opt-in message end-to-end. GATE PASS
+  (tests/product-page-gate.spec.js): all structure/typography/accordion/wallet/related
+  checks green, relay verified on the live path, checkout intact. Next: slice 9 = listing
+  + search (banners, filters, toolbar, cards, empty states).
