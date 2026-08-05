@@ -51,6 +51,13 @@ class Darling_Mail {
 		$phpmailer->Password   = self::pass();
 		$phpmailer->Timeout    = 15;
 
+		// PHPMailer's default CharSet is ISO-8859-1: Cyrillic subjects and bodies
+		// arrive as mojibake (only Latin survives - reported by the owner on a
+		// review-moderation mail). UTF-8 + base64 transfer encoding survives every
+		// relay and mailbox on the route.
+		$phpmailer->CharSet  = 'UTF-8';
+		$phpmailer->Encoding = 'base64';
+
 		// Gmail rewrites the envelope sender to the authenticated account anyway, so
 		// a From: that disagrees just looks like spoofing to spam filters. Make the
 		// header match reality and keep the shop name as the display name.
