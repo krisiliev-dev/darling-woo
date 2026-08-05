@@ -238,3 +238,24 @@ subscription plugins and solutions and wire them in."
   a price; COD re-price on payment-method change - NOTE this enters the instrumented-repricing
   zone, PLAN.md 3-failed-attempts rule applies: build WITH end-to-end instrumentation).
   Asked Kris whether to wire checkout rates before or after slice 6 (header+home).
+
+- 2026-08-05 sprint 7 (v2 sprint 3) DONE - CHECKOUT WIRED TO PANEL SHIPPING-RATES + THE
+  3-ATTEMPT COD RE-PRICING BUG FIXED, both gate-proven. Commits 3788c64 (rates wiring:
+  one cached call per (weight,cod), 15min + 24h last-known-good; COD fee inside price;
+  free_over from panel; FALLBACK_RATE_EUR retired - never invent a price), aad4e3a
+  (TRACE-PROVEN root cause: WC()->session is NULL at rest_request_before_callbacks on
+  Store API POSTs, so earlier session writes never fired, and Blocks persisted cod->session
+  but NOT the switch back - fix: persist captured pm on woocommerce_cart_loaded_from_session),
+  ed594ef (display sync: Blocks only re-rendered rates on the FIRST price-changing switch -
+  assets/repricing-sync.js invalidates the cart store after payment change so the DOM refetches).
+  GATE PASS (tests/shipping-rates-gate.spec.js, run log _scratch_woo\wire\, deploys green):
+  2kg matrix EXACT both directions (prepaid 3.94/6.69/8.69/9.95, cod 4.42/7.17/10.28/11.54),
+  rendered DOM converges both switches, first render correctly shows COD (preselect now
+  reaches session - old display gap closed), free over 77 EUR = 0 + (bezplatna) labels,
+  no city => no rates, no invented prices. Old tests/cod-repricing.spec.js: PASS.
+  Permanent instrumentation kept: darling-repricing-trace log source. Rate ids/meta
+  unchanged (darling_<courier>:<mode>) - office picker untouched. Ordering caveat noted in
+  class-shipping-method.php header (zone order = cheapest-first today). Staging test product
+  stock restored to 3 (was raised to 20 for the free-over check). PANEL: doorbell two-way
+  confirmed; your listmonk newsletter contract noted - slice 6 (header+home+newsletter band)
+  builds against it next sprint.
