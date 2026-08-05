@@ -1,4 +1,5 @@
 # WOO AGENT STATUS
+> Woo agent v2 mailbox: **trig_0113s1qcLmJX88Lq52Q7f2ZJ** (note: cross-session fire_trigger is disabled in this org — use the docs channel instead).
 
 ## ═══ HANDOFF TO SUCCESSOR (written 2026-08-05, laptop agent retiring) ═══
 
@@ -36,23 +37,18 @@ _scratch\.
   darling-checkout. Email-first (Kris decision): wp_mail → box SMTP → orders@
   mailbox (exists, verified). Honeypot/time-trap pretend success; 5/hr/IP limit;
   fail-open (advice, not money). Real delivery verified inside the maildir.
+- Slice 4 visual & animation parity sweep — DONE by v2 (cloud), 2026-08-05. Gap
+  table + build slices 5-11 + 7 owner decisions: see WOO_PARITY_SWEEP.md slice-4
+  section. P0 drawer-visible bug fixed (3050f74), gated on staging.
 
-### In flight / next: slice 4 = visual & animation parity sweep (NOT started)
-home, category, product, cart drawer, 404 vs the frozen capture in
-darling-woo\reference/shopify-theme/ (do NOT edit it) + live darlinghome.bg;
-responsive sweep beyond 390px/desktop; My Account proper review. Playwright
-side-by-side screenshots is the plan. Remember: never networkidle on /checkout/;
-tests need STAGING_PASS + BG-04 or shipping reads 0; nginx gate `darling`, WP gate
-`darling_admin`.
+### In flight / next: awaiting Kris's slice-4 decisions; then slice 5 (typography + i18n)
 
 ### Open decisions & watch items
-- No Kris decisions pending right now. All slice 1-3 decisions captured in
-  WOO_PARITY_SWEEP.md (contact merge, orders@ email, blog-yes/articles-no,
-  /en deferred-with-301, privacy "хостинг" wording CONFIRMED).
-- WATCH: core query-title prefix renders untranslated on web (CLI translates it;
-  bg_BG packs installed; <html lang="bg-BG"> correct). Worked around with static
-  h1. If you see OTHER English core strings on the storefront, this loader quirk
-  is the suspect — then it's worth root-causing, not before.
+- 7 NEW Kris decisions queued in WOO_PARITY_SWEEP.md slice-4 section (cookie banner,
+  product-page wallets, related products, My Account endpoints/registration,
+  accessibility widget, free-shipping bar threshold, newsletter backend).
+- WATCH → CONFIRMED: English core strings render on web (cart-empty, 404, search
+  button) while CLI translates them. Root-cause scheduled as slice 5.
 - Pre-existing open bug (NOT mine, do not casually retry): checkout doesn't
   re-price on payment-method change. Three failed attempts documented in PLAN.md;
   no 4th attempt without end-to-end instrumentation of the calc_totals request.
@@ -86,6 +82,15 @@ tests need STAGING_PASS + BG-04 or shipping reads 0; nginx gate `darling`, WP ga
   inventory incl. captured Shopify HTML in shopify_inventory\, gate outputs,
   apply logs). The Shopify text extraction + parity gate script is committed:
   tests/page-text-parity.py, scripts/apply_page_content.sh, content/pages/*.html.
+- V2 (cloud) additions: Playwright runs on the laptop need
+  NODE_PATH=C:\Users\lora_\darling\darling-woo\node_modules (specs require('playwright')
+  from repo node_modules; npx playwright 1.62 exists). STAGING_PASS: fetch from the box
+  (`ssh darling@169.58.89.40 cat /srv/darling/prod/.staging-password`) into env inside
+  the runner — never echo it. Shopify fullPage screenshots clip (scroll-timeline CSS):
+  use a tall viewport + dismiss the cookie dialog first. Cloud sandbox CANNOT reach
+  darlinghome.bg or staging directly (egress blocked) — all browsing runs on the laptop.
+  Device-bridge folder grant on _scratch_woo lets the cloud session view laptop
+  screenshots directly (device_stage_files).
 
 ### Working mode that Kris expects (earned, not aspirational)
 One slice per sprint → gates on the rendered result with a location attached →
@@ -100,22 +105,11 @@ Never touches: admin-panel, pipeline-v3, connector, agent-pipeline, data\, ~/.he
 
 ## Comms channel
 
-- claude-code-remote MCP (send_later / fire_trigger) is NOT mounted in this session —
-  searched the tool registry, tools do not exist here. So: NO mailbox trigger id, and the
-  fire_trigger ping to the panel agent (trig_015qquaY7zQggpPs1vMxWjHD) could not be sent.
-- FALLBACK CHANNEL (active): this file + git in darling-woo\claude\. Panel agent: read
-  C:\Users\lora_\darling\darling-woo\claude\ from the laptop, or the pushed repo.
-  If you can see this file, the channel works — please confirm receipt by noting it in
-  your own status doc; I will poll for it.
-- Kris: if cloud sessions need these docs, they must be added to the claude.ai project
-  docs manually — this session cannot write there (project knowledge is read-only).
-
-## Current task
-
-Queue item 7 — Shopify→Woo frontend parity sweep, Phase 1: crawl the Shopify site
-(password removed), inventory every page incl. /policies/* compliance pages, diff against
-Woo on staging.darlinghome.bg. Deliverable: claude/WOO_PARITY_SWEEP.md gap table.
-No building until the gap table exists.
+- V2 (cloud): mailbox trigger trig_0113s1qcLmJX88Lq52Q7f2ZJ exists, BUT cross-session
+  fire_trigger is disabled for this org — so the DOCS channel is canonical both ways:
+  woo → panel via darling-woo\claude\ (git + these project mirrors);
+  panel → woo via claude-comms\PANEL_AGENT_STATUS.md + project doc claude/PANEL_AGENT_STATUS.md.
+- V2 maintains the project mirrors itself; the panel agent can stop re-mirroring.
 
 ## Session log
 
