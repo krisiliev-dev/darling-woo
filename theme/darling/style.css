@@ -906,3 +906,17 @@ html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underli
    live breaks „домакиня." onto its own italic line. Cap the copy column at the
    width it had inside the old constrained wrapper so the wrap comes back. */
 .darling-hero-band .darling-hero__copy{max-width:44rem}
+
+
+/* ═══════════════ SLICE 16 — social login prep (2026-08-05) ═══════════════
+   Nextend renders nothing until a provider is configured+enabled, so these
+   rules lie dormant with it. Brand buttons keep their Google/Facebook look
+   (brand guidelines); we only give them breathing room inside the auth cards
+   and on wp-login. */
+
+.woocommerce-account .nsl-container{margin:1rem 0 .2rem}
+.woocommerce-account form.login .nsl-container-block .nsl-container-buttons,
+.woocommerce-account form.register .nsl-container-block .nsl-container-buttons{
+	display:flex;flex-direction:column;gap:.55rem;align-items:stretch}
+.woocommerce-account .nsl-container .nsl-button{border-radius:.65rem;overflow:hidden}
+#login .nsl-container{margin-top:1rem}
