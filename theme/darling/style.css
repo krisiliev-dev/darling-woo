@@ -591,3 +591,6 @@ a.button.alt:hover {
 .darling-404__sub{max-width:34rem;margin:0 auto 1.6rem;opacity:.9}
 .darling-404__actions{margin:0 0 2rem}
 .darling-404__discover{text-align:left}
+
+.darling-foot-flair--brand{margin:0;padding:0}
+.darling-foot-flair--brand .dff-rule{display:none}
