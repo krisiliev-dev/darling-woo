@@ -121,6 +121,12 @@ watch `docker compose logs nginx` for 404 spikes from unmapped Shopify URLs and
 extend the A4 map if any real pattern shows up.
 **D6. Search Console (Kris, non-blocking):** add the apex property, submit
 `https://darlinghome.bg/wp-sitemap.xml`.
+**D7. Social login round-trip (me + Kris's test account).** The Google and
+Facebook OAuth apps are registered against the APEX ONLY (Kris's call — staging
+retires), so the full login flow is untestable before the flip. Post-cutover:
+log in via Google and via Facebook once each on darlinghome.bg; verify a WP
+user is created/linked and lands on the dashboard. Config is done pre-cutover;
+this is the only OAuth step that must wait.
 
 ## Rollback (any point after B1)
 
