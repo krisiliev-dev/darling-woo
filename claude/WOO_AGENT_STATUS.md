@@ -1,5 +1,100 @@
 # WOO AGENT STATUS
 
+## ═══ HANDOFF TO SUCCESSOR (written 2026-08-05, laptop agent retiring) ═══
+
+You are the new darling-woo frontend agent, running in the cloud so you can talk to
+the panel agent directly. Read in this order: C:\Users\lora_\darling\CLAUDE.md →
+darling-woo\HANDOFF.md → darling-woo\PLAN.md → claude/NEW_QUEUE_20260805.md →
+claude/WOO_PARITY_SWEEP.md (the queue item 7 deliverable + slice log) → this file.
+Lane rules are unchanged and hard: you own darling-woo + the woo box
+(169.58.89.40, staging.darlinghome.bg); you never touch admin-panel, pipeline-v3,
+connector, agent-pipeline, data\, or ~/.hermes/.env. Scratch: _scratch_woo\, never
+_scratch\.
+
+### Your first acts (I could not do these — no claude-code-remote MCP on the laptop)
+1. Create your mailbox: send_later far-future (e.g. 2026-12-31T10:00:00Z), note the
+   trigger_id, record it HERE and in the project docs.
+2. fire_trigger "trig_015qquaY7zQggpPs1vMxWjHD" → tell the panel agent the woo lane
+   has a new cloud agent + your mailbox id. It has NEVER confirmed the git channel —
+   ask for confirmation in claude/WOO_AGENT_STATUS.md explicitly.
+3. Mirror this file and WOO_PARITY_SWEEP.md into the claude.ai project docs (I could
+   only write them into git: darling-woo\claude\ — the laptop session cannot write
+   project docs). Keep BOTH in sync; git is the fallback channel and the audit trail.
+
+### Slice state (all pushed to origin/main, all gates passed on the RENDERED result)
+- Phase 1 sweep — DONE (a50cb99+1ac6b62). Gap table: claude/WOO_PARITY_SWEEP.md.
+- Slice 1 content port — DONE (e2872fb). 7 pages carry live Shopify copy, email
+  swapped to orders@darlinghome.bg, contact-information merged into /kontakti/,
+  woocommerce_terms_page_id=20, wp_page_for_privacy_policy=21, draft 9 deleted.
+- Slice 2 search + blog — DONE (a42142d, 77034ae, a508edd, 9ce6237, 5b5b903).
+  KEY FACT: WooCommerce routes post_type=product searches to the
+  product-search-results template slug, NOT search.html — both exist, keep in sync.
+  Single-result redirect disabled (Shopify parity). /blog/ = page 37 posts-page,
+  page 38 "Начало" front placeholder, show_on_front=page. bg_BG core packs
+  installed this sprint (were entirely missing).
+- Slice 3 contact form — DONE (6981713, cbac4e1). class-contact-form.php in
+  darling-checkout. Email-first (Kris decision): wp_mail → box SMTP → orders@
+  mailbox (exists, verified). Honeypot/time-trap pretend success; 5/hr/IP limit;
+  fail-open (advice, not money). Real delivery verified inside the maildir.
+
+### In flight / next: slice 4 = visual & animation parity sweep (NOT started)
+home, category, product, cart drawer, 404 vs the frozen capture in
+darling-woo\reference/shopify-theme/ (do NOT edit it) + live darlinghome.bg;
+responsive sweep beyond 390px/desktop; My Account proper review. Playwright
+side-by-side screenshots is the plan. Remember: never networkidle on /checkout/;
+tests need STAGING_PASS + BG-04 or shipping reads 0; nginx gate `darling`, WP gate
+`darling_admin`.
+
+### Open decisions & watch items
+- No Kris decisions pending right now. All slice 1-3 decisions captured in
+  WOO_PARITY_SWEEP.md (contact merge, orders@ email, blog-yes/articles-no,
+  /en deferred-with-301, privacy "хостинг" wording CONFIRMED).
+- WATCH: core query-title prefix renders untranslated on web (CLI translates it;
+  bg_BG packs installed; <html lang="bg-BG"> correct). Worked around with static
+  h1. If you see OTHER English core strings on the storefront, this loader quirk
+  is the suspect — then it's worth root-causing, not before.
+- Pre-existing open bug (NOT mine, do not casually retry): checkout doesn't
+  re-price on payment-method change. Three failed attempts documented in PLAN.md;
+  no 4th attempt without end-to-end instrumentation of the calc_totals request.
+- PLAN.md has an uncommitted 6-line modification in the working tree that PREDATES
+  my session — I never committed or reverted it. Look at it, decide, don't sweep it
+  into an unrelated commit.
+- Panel lane, mention-only: panel may later want an IMAP-reader tab for the orders@
+  mailbox (Kris liked email-first with panel as a viewer). That is THEIR lane.
+- Cutover artifacts (blocked on catalogue/domain go-live, do not build yet): 301 map
+  incl. /pages/contact→/kontakti/, /policies/*→BG slugs, /collections/*→
+  /product-category/*, frontpage+/collections/all→/shop/, /blogs/*→/blog/, /en/*→BG.
+
+### Box/laptop gotchas that cost me time (all still true via darling-shell MCP)
+- System32 ssh.exe silently fails (exit 255, zero output) under the shell bridge.
+  Use "C:\Program Files\Git\usr\bin\ssh.exe" / scp.exe. scp: cd to the dir and use
+  relative paths — it parses C:\ as a hostname.
+- Bridge kills sync calls at ~50s: anything longer → run_background + poll the log
+  file. wp.sh spins a docker container per call (~4s each) — batch into scripts.
+- Pipe scripts as `ssh host "tr -d '\r' | bash" < script` (CRLF strip), BUT any
+  `docker compose exec -T` inside eats the piped stdin and silently truncates the
+  script — scp the script to the box and run it as a FILE, with </dev/null on execs.
+- wp.sh has no stdin passthrough (docker run without -i). To feed wp-cli a file,
+  stage it under $APP_DIR/wordpress/tmp-port/ (container sees /var/www/html/...),
+  then delete it.
+- Deploy: infra/deploy.sh on the box syncs ONLY theme/darling and
+  plugin/darling-checkout (rsync --delete). A new top-level plugin needs deploy.sh
+  changes — that's why the contact form lives inside darling-checkout.
+- PowerShell -Command mangles Cyrillic: write files with UTF-8 tooling, keep inline
+  commands ASCII, commit messages via git commit -F <file>.
+- Evidence from my gates lives in C:\Users\lora_\darling\_scratch_woo\ (crawl
+  inventory incl. captured Shopify HTML in shopify_inventory\, gate outputs,
+  apply logs). The Shopify text extraction + parity gate script is committed:
+  tests/page-text-parity.py, scripts/apply_page_content.sh, content/pages/*.html.
+
+### Working mode that Kris expects (earned, not aspirational)
+One slice per sprint → gates on the rendered result with a location attached →
+commit (message via file) → push → update status docs → narrative summaries with
+opinions, not action logs. Bulgarian UI, English code. No secrets in chat. State
+blockers plainly instead of half-building.
+
+## ═══ END HANDOFF ═══
+
 Session started 2026-08-05. Lane: darling-woo (theme, plugin, woo box deploys).
 Never touches: admin-panel, pipeline-v3, connector, agent-pipeline, data\, ~/.hermes/.env.
 
