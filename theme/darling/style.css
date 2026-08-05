@@ -861,3 +861,23 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image
 	.darling-consent{left:.7rem;right:.7rem;bottom:.7rem;max-width:none}
 }
 @media (prefers-reduced-motion:reduce){.darling-consent{animation:none}}
+
+
+/* ═══════════════ SLICE 14 — accessibility mode (2026-08-05) ═══════════════
+   The mode itself (html.darling-a11y) and the button (.darling-a11y-btn) are
+   the live site's own components from the ported darling.css — nothing to
+   restyle. Here: only the interplay with pieces darling.css doesn't know. */
+
+/* The consent card shares the bottom-left corner — sit it above the button. */
+.darling-consent{bottom:78px}
+@media (max-width:560px){.darling-consent{bottom:78px}}
+
+/* Woo-side surfaces the live stylesheet has no rules for. */
+html.darling-a11y .darling-grid .wp-block-post-template > li,
+html.darling-a11y .darling-grid .wp-block-post-template > .wp-block-post{border:1px solid var(--d-cocoa)}
+html.darling-a11y .darling-cart__qty,
+html.darling-a11y .dc-text,
+html.darling-a11y .darling-cart-trust{opacity:1}
+html.darling-a11y .dc-min{opacity:1}
+html.darling-a11y .darling-consent a,
+html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underline}

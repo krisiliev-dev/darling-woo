@@ -100,4 +100,32 @@
 	box.removeAttribute('hidden');
 })();
 </script>
+
+<!-- Accessibility mode toggle — the live site's own darling-a11y-btn component
+     (vocabulary from the ported darling.css: html.darling-a11y = bigger text,
+     full-contrast headings, underlined links, no animations, no ambient).
+     The saved choice is applied early in the header part; this is the switch. -->
+<button type="button" class="darling-a11y-btn" data-darling-a11y title="Достъпност"
+        aria-pressed="false"
+        aria-label="Режим за достъпност: по-голям текст, висок контраст, без анимации">
+	<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+		<circle cx="12" cy="4.4" r="2.2"/>
+		<path d="M12 8.1c-2.9 0-5.6-.4-7.9-1.1l-.5 1.9c1.8.5 3.7.9 5.8 1.1v2.7l-2.4 7.4 1.9.6 2.3-7h1.6l2.3 7 1.9-.6-2.4-7.4V10c2.1-.2 4-.6 5.8-1.1l-.5-1.9c-2.3.7-5 1.1-7.9 1.1Z"/>
+	</svg>
+</button>
+<script>
+(function () {
+	var btn = document.querySelector('[data-darling-a11y]');
+	if (!btn) { return; }
+	var root = document.documentElement;
+	btn.setAttribute('aria-pressed', root.classList.contains('darling-a11y') ? 'true' : 'false');
+	btn.addEventListener('click', function () {
+		var on = root.classList.toggle('darling-a11y');
+		btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+		try {
+			document.cookie = 'darling_a11y=' + (on ? '1' : '0') + ';path=/;max-age=31536000;SameSite=Lax;Secure';
+		} catch (e) {}
+	});
+})();
+</script>
 <!-- /wp:html -->

@@ -1,4 +1,8 @@
 <!-- wp:html -->
+<!-- Accessibility mode: apply the saved choice BEFORE the page paints below
+     this point, so returning a11y users never see a flash of the decorated
+     view. Class only — the toggle button itself lives in the footer part. -->
+<script>(function(){try{if(/(?:^|;\s*)darling_a11y=1/.test(document.cookie)){document.documentElement.classList.add('darling-a11y');}}catch(e){}})();</script>
 <div class="darling-header darling-header--v2" role="banner">
 	<div class="darling-header__inner">
 
