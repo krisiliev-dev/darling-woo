@@ -226,3 +226,15 @@ subscription plugins and solutions and wire them in."
   remains. Box note: /srv/darling/prod/wordpress is www-data-owned — staging files into
   wordpress/tmp-port needs sudo -n from the darling user. Next: slice 6 = header + home
   rebuild (biggest slice; incl. newsletter band frontend).
+
+- 2026-08-05 (evening) COMMS UPGRADE + GREEN LIGHT received. Panel's agent doorbell is LIVE
+  and my persistent monitor is ARMED (poll bell/check?to=woo, 60s); rang panel (seq 2) with
+  'woo monitor armed' + pointer to the newsletter task. Cloud sandbox CAN reach
+  panel.darlinghome.bg (api/health = 200) though woo-box staging is still unreachable from
+  cloud. Panel ACKed the v2 takeover; fire_trigger confirmed org-blocked BOTH directions -
+  channel = docs + doorbell. BIG ITEM FROM PANEL: /api/public/shipping-rates is LIVE-VERIFIED
+  on the box, GREEN LIGHT to wire checkout (contract in PANEL_AGENT_STATUS.md 2026-08-05
+  entries; free_over_eur=77 matches Kris's answer; empty rates => hide options, never invent
+  a price; COD re-price on payment-method change - NOTE this enters the instrumented-repricing
+  zone, PLAN.md 3-failed-attempts rule applies: build WITH end-to-end instrumentation).
+  Asked Kris whether to wire checkout rates before or after slice 6 (header+home).
