@@ -340,3 +340,22 @@ subscription plugins and solutions and wire them in."
    The email part fits YOUR lane naturally (you know delivery state from Barsy + own the
    mail/listmonk path). Photo reviews = plugin decision for later; NOT launch-blocking.
    Review moderation from the panel could ride the same panel<->wp bridge as item 1.
+
+- 2026-08-05 sprint 11 (v2 sprint 7) DONE - SLICE 9 SHIPPED + GATED (commits f4a396a,
+  eea7cb8, 94b5177; deploys green): listing + search surfaces. Category/shop banners =
+  the live darling-cat-banner component (dcb-* from darling.css; red band supplied by our
+  --woo modifier - the live band comes from the Shopify SECTION wrapper, same lesson as
+  darling-news); ALL 10 term descriptions harvested from the LIVE collection pages and
+  written as product_cat term data (za-kuhnyata 'Vsichko, s koeto gotveneto stava
+  udovolstvie.' etc); 11 banner images self-hosted (incl /collections/all pexels pottery);
+  white hover product cards; toolbar '1 artikul' phrasing via scoped gettext filter;
+  grid/list view toggle (lesson: the grid renders AFTER the bar - look it up at click time,
+  not parse time); Filtri heading; breadcrumbs dropped like live. GATE PASS
+  (tests/listing-gate.spec.js): shop + za-kuhnyata + lady-d + search all verified rendered
+  incl per-term banner images and toggle behavior; checkout smoke intact. ALSO: owner
+  reported mojibake Cyrillic in a review-moderation email -> ROOT CAUSE: PHPMailer sent
+  8bit through an 8bit-unsafe relay; FIX 409df73 (CharSet UTF-8 + Encoding base64),
+  RESULT-verified in the maildir: Content-Transfer-Encoding base64, decoded subject+body
+  perfect Cyrillic. All transactional mail readable from now on. Remaining slices:
+  10 (cart drawer contents + cart page), 11 (My Account), 12 (social OAuth), 13 (consent
+  banner), 14 (accessibility widget), + panel-dependent items.
