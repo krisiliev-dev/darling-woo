@@ -497,3 +497,35 @@ subscription plugins and solutions and wire them in."
   Login, style the buttons, so creds drop-in is the only remaining step) and locker-picker
   (waits on panel BoxNow flip; NOT cutover-blocking). After OAuth: cutover per
   claude/CUTOVER_RUNBOOK.md on Kris's go.
+
+- 2026-08-05 sprint 17 (v2 sprint 13) DONE - SLICE 12 COMPLETE: SOCIAL OAUTH LIVE TO THE
+  PRE-CUTOVER BOUNDARY (commits 986b471, dbfdb88, 48489a1; deploys green). *** THE
+  FRONTEND QUEUE IS NOW FULLY DRAINED. *** Details:
+  (1) Nextend Social Login 3.1.26 installed+active; redirect URI convention verified in
+  plugin code = wp-login.php?loginSocial=<id> (matches Kris's console entries, apex).
+  (2) Kris dropped creds (Desktop file) mid-sprint -> parsed LAPTOP-SIDE into a
+  placeholder template (secrets never in chat/git/logs), options nsl_google
+  (client_id/client_secret) + nsl_facebook (appid/secret) set with tested=1, both
+  providers enabled in nextend_social_login.enabled. Creds file DELETED from Desktop
+  after verification; temp files wiped box+laptop.
+  (3) LESSON: Nextend FREE only hooks wp-login.php - the Woo my-account form integration
+  is Pro. Fixed theme-side: woocommerce_login_form_end/register_form_end echo the free
+  [nextend_social_login] shortcode (renders nothing when providers disabled - stays
+  honest-dark). Also observed a Redis alloptions lag: first page render after wp-cli
+  option updates served stale options; subsequent requests fine.
+  (4) GATE PASS (gate17b, committed tests/oauth-gate.spec.js): Continue-with-Google +
+  Continue-with-Facebook buttons render in BOTH auth cards (2 nsl containers);
+  wp-login.php?loginSocial=google redirects to accounts.google.com WITH our client_id;
+  facebook flow reaches facebook.com dialog WITH our app_id; checkout smoke. Consent
+  screens reject staging redirect_uri (apex-only apps, Kris's call) -> full round-trip is
+  runbook D7, post-cutover.
+  (5) GDPR defaults set earlier this sprint (see prior entry) + FOLLOW-UP FIX: the
+  [privacy_policy] Woo placeholder is SELF-CLOSING - my wrapped text duplicated the link
+  words in the register card; both blurbs rewritten, rendered output verified clean.
+  Also: oauth-prep gate (honest dark state) passed BEFORE creds arrived - both states
+  verified. Button spacing CSS conforms brand buttons into the cards.
+  CUTOVER: everything Kris asked for pre-cutover is DONE. Asked Kris for GO in chat.
+  On GO: execute claude/CUTOVER_RUNBOOK.md (A: prep dark apex nginx block + 301 map;
+  B: Kris DNS; C: cert+enable+search-replace+staging 301; D: Borica/COD/newsletter/mail/
+  OAuth-roundtrip verification). Locker-picker still waits on panel BoxNow flip (not
+  cutover-blocking).
