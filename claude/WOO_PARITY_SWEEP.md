@@ -86,9 +86,28 @@ needed; 301 to `/shop/` in the cutover map.
   "Shopify (платформата на магазина)" as a data recipient — replaced with
   "доставчика на хостинг на онлайн магазина"; Kris/accountant should confirm the
   wording since it's legal text.
-- **Slice 2 — search results page** styled to theme + **blog posts index page**
-  (decision 2: needed for planned SEO blogging; no articles ported — both Shopify
-  blogs are empty).
+- **Slice 2 — ✅ DONE 2026-08-05.** Search results page + blog index shipped and
+  gated on staging (deploys 31003458027/31003838259/31004036393/31004503913, all
+  green). Details:
+  - `templates/search.html` + `templates/product-search-results.html` — the second
+    one is the key: **WooCommerce routes `post_type=product` searches to its own
+    `product-search-results` template slug**, so `search.html` alone never renders
+    for the header search link (found via body class on staging, not docs).
+  - Single-result searches now stay on the results page like Shopify
+    (`woocommerce_redirect_single_search_result` → false in functions.php).
+  - `templates/home.html` blog index + page Блог (37) as posts page; front
+    placeholder Начало (38); `show_on_front=page` — front page verified unchanged.
+  - Gate (all rendered on staging, `_scratch_woo\gate2final_out.txt`): real-term
+    product search shows styled page + product link; empty state Bulgarian; /blog/
+    styled with empty state; front h1 intact; /checkout/ still 302 (money path
+    untouched).
+  - 🔍 **Open observation (logged, not chased):** core's query-title "Search
+    results for:" prefix renders untranslated on WEB despite bg_BG packs installed
+    and `<html lang="bg-BG">` — the same string translates via wp-cli. Worked
+    around with static Bulgarian h1 (Shopify parity anyway). If other core
+    front-end strings show English, this loader quirk is the suspect. bg_BG packs
+    for core/woocommerce ARE now installed (were missing entirely before this
+    sprint — `wp language core list` showed only en_US).
 - **Slice 3 — visual/animation parity sweep**: home, collection, product, cart, 404
   against `reference/shopify-theme/` inventory + live site; responsive sweep beyond
   390px/desktop. My Account review.

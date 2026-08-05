@@ -56,3 +56,15 @@ No building until the gap table exists.
   (apply_out.txt, rendered.html, gate PASS). Content committed to content/pages/.
   Follow-ups: contact form on /kontakti/ (slice 2/3); privacy "хостинг" legal wording
   needs Kris/accountant sign-off. Next: slice 2 = search results page + blog index.
+- 2026-08-05 sprint 3 DONE — slice 2 SHIPPED + GATED (commits a42142d, 77034ae,
+  a508edd, 9ce6237; 4 green deploys). Search results page (incl. the
+  product-search-results slug WooCommerce actually uses for post_type=product),
+  single-result redirect disabled for Shopify parity, blog index live at /blog/
+  (page 37 posts-page, placeholder Начало 38, front page verified unchanged),
+  bg_BG language packs installed (core pack was MISSING — only en_US). Open
+  observation: core query-title prefix untranslated on web despite packs (CLI
+  translates it) — worked around with static h1; watch for other English core
+  strings. Kris decisions this session: contact form = email-first via our mail
+  server (orders@), panel reads mailbox later if wanted; privacy hosting wording
+  CONFIRMED by Kris. Next: slice 3 = contact form (SMTP via phpmailer_init,
+  honeypot+rate limit) + visual/animation parity sweep + My Account review.
