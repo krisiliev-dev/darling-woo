@@ -47,3 +47,12 @@ No building until the gap table exists.
   MCP note: claude-code-remote is not configured on this laptop's Claude app (only
   darling-shell) — it lives on the panel agent's cloud side; Kris may enable it as a
   desktop connector, until then git remains my channel.
+- 2026-08-05 sprint 2 DONE — slice 1 content port SHIPPED + GATE PASSED. Pages 17-23
+  updated on staging (wp-cli via wp.sh; files staged through wordpress/tmp-port, CRLF
+  stripped); contact-information merged into /kontakti/; orders@darlinghome.bg
+  substituted; woocommerce_terms_page_id=20, wp_page_for_privacy_policy=21, draft
+  page 9 deleted. Gate: rendered-text diff vs Shopify = 100% coverage 6 pages, 92%
+  kontakti (h1+form labels), zero forbidden strings. Evidence in _scratch_woo\
+  (apply_out.txt, rendered.html, gate PASS). Content committed to content/pages/.
+  Follow-ups: contact form on /kontakti/ (slice 2/3); privacy "хостинг" legal wording
+  needs Kris/accountant sign-off. Next: slice 2 = search results page + blog index.

@@ -70,12 +70,22 @@ needed; 301 to `/shop/` in the cutover map.
 
 ## Proposed Phase 2 slices (one sprint each, full gates)
 
-- **Slice 1 — content port (biggest gap, zero design risk):** port the 7 real content
-  pages from the live Shopify HTML (already captured in
-  `_scratch_woo\shopify_inventory\html\`), merging contact-information into Контакти
-  and substituting `orders@darlinghome.bg` for the gmail (decisions 1+4); fix findings
-  1–3. Gate: rendered page text on staging matches Shopify text modulo those two
-  deliberate deltas (diff of extracted text, location attached).
+- **Slice 1 — content port — ✅ DONE 2026-08-05.** All 7 pages (17–23) updated on
+  staging via wp-cli; contact-information merged into Контакти; email swapped to
+  `orders@darlinghome.bg`; findings 1–3 fixed (`woocommerce_terms_page_id=20`,
+  `wp_page_for_privacy_policy=21`, draft page 9 deleted — wp reported Success on all).
+  **GATE PASSED**: rendered staging text vs Shopify text = 100% word coverage on 6
+  pages, 92% on Контакти (missing words are the h1 + contact-form labels only);
+  zero forbidden strings (gmail / "Shopify" / placeholder marker) on any page.
+  Evidence: `_scratch_woo\apply_out.txt`, `_scratch_woo\rendered.html`, gate script
+  `tests/page-text-parity.py` (run: `python gate_diff.py` → GATE: PASS).
+  Content sources committed to `content/pages/` in this repo.
+  ⚠ Two follow-ups: (a) **contact form on Контакти not ported** (Shopify uses a
+  native contact form — Woo needs an equivalent; slice 2/3 item, stated not
+  half-built); (b) **privacy-policy legal delta needs sign-off**: Shopify text names
+  "Shopify (платформата на магазина)" as a data recipient — replaced with
+  "доставчика на хостинг на онлайн магазина"; Kris/accountant should confirm the
+  wording since it's legal text.
 - **Slice 2 — search results page** styled to theme + **blog posts index page**
   (decision 2: needed for planned SEO blogging; no articles ported — both Shopify
   blogs are empty).
