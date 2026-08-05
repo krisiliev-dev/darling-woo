@@ -1,0 +1,44 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"darling-archive darling-blog","layout":{"type":"constrained"}} -->
+<main class="wp-block-group darling-archive darling-blog">
+
+	<!-- wp:heading {"level":1,"className":"darling-archive__title"} -->
+	<h1 class="wp-block-heading darling-archive__title">Блог</h1>
+	<!-- /wp:heading -->
+
+	<!-- wp:paragraph {"className":"darling-archive__desc"} -->
+	<p class="darling-archive__desc">Съвети, идеи и новини за дома — от една домакиня за друга, darling.</p>
+	<!-- /wp:paragraph -->
+
+	<!-- wp:query {"query":{"perPage":10,"inherit":true},"className":"darling-blog__list"} -->
+	<div class="wp-block-query darling-blog__list">
+		<!-- wp:post-template -->
+			<!-- wp:group {"tagName":"article","className":"darling-blog__item"} -->
+			<article class="wp-block-group darling-blog__item">
+				<!-- wp:post-title {"level":2,"isLink":true} /-->
+				<!-- wp:post-date {"className":"darling-blog__date"} /-->
+				<!-- wp:post-excerpt {"moreText":"Прочети още","className":"darling-blog__excerpt"} /-->
+			</article>
+			<!-- /wp:group -->
+		<!-- /wp:post-template -->
+
+		<!-- wp:query-pagination {"className":"darling-pagination"} -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:query-no-results -->
+			<!-- wp:paragraph {"className":"darling-empty"} -->
+			<p class="darling-empty">Още няма публикации — съвсем скоро ще споделим първите
+			съвети и новини. Дотогава разгледай <a href="/shop/">магазина</a>, darling.</p>
+			<!-- /wp:paragraph -->
+		<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

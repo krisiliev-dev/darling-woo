@@ -415,3 +415,29 @@ a.button.alt:hover {
 	.wc-block-cart,.wc-block-checkout{gap:1.2rem}
 	.woocommerce-account .woocommerce-MyAccount-navigation{margin-bottom:1.2rem}
 }
+
+/* ------------------------------------------------------------------
+   Search results page (templates/search.html) — mirrors the Shopify
+   /search layout: query title, refine bar, filters + grid.
+   ------------------------------------------------------------------ */
+.darling-search-form{max-width:34rem;margin:0 0 1.4rem}
+.darling-search-form .wp-block-search__inside-wrapper{display:flex;gap:.5rem}
+.darling-search-form .wp-block-search__input{flex:1;border:1px solid var(--d-sand);
+	border-radius:.7rem;background:#fff;color:var(--d-cocoa);padding:.65rem .9rem;font:inherit}
+.darling-search-form .wp-block-search__input:focus{outline:2px solid var(--d-honey);outline-offset:1px}
+.darling-search-form .wp-block-search__button{border:0;border-radius:.7rem;cursor:pointer;
+	background:var(--d-cherry);color:var(--d-cream-text);padding:.65rem 1.1rem;font:inherit;font-weight:600}
+.darling-search-form .wp-block-search__button:hover{background:var(--d-cherry-deep)}
+
+/* ------------------------------------------------------------------
+   Blog index (templates/home.html) — list layout, same paper cards.
+   ------------------------------------------------------------------ */
+.darling-blog__list{max-width:46rem}
+.darling-blog__item{background:#fff;border:1px solid var(--d-sand);border-radius:1rem;
+	padding:1.2rem 1.4rem;margin-bottom:1rem}
+.darling-blog__item h2{margin:0 0 .25rem;font-size:1.25rem}
+.darling-blog__item h2 a{color:var(--d-cocoa);text-decoration:none}
+.darling-blog__item h2 a:hover{color:var(--d-cherry-deep)}
+.darling-blog__date{color:var(--d-honey-nav);font-size:.85rem;margin:0 0 .5rem}
+.darling-blog__excerpt{margin:0;color:var(--d-cocoa)}
+.darling-blog__excerpt .wp-block-post-excerpt__more-link{color:var(--d-cherry-deep);font-weight:600}
