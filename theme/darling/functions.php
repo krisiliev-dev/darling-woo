@@ -175,3 +175,14 @@ add_action( 'wp_enqueue_scripts', function () {
 		);
 	}
 }, 20 );
+
+/**
+ * The Bulgarian address form's state label ships from server-side country
+ * locale data (not JS gettext) as „Щат/Област" — no Bulgarian address has a
+ * „щат". Plain „Област", still optional.
+ */
+add_filter( 'woocommerce_get_country_locale', function ( $locale ) {
+	$locale['BG']['state']['label']    = 'Област';
+	$locale['BG']['state']['required'] = false;
+	return $locale;
+} );

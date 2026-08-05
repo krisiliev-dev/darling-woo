@@ -29,7 +29,15 @@
 		'Add a coupon': 'Добави код за отстъпка',
 	};
 
-	wp.hooks.addFilter( 'i18n.gettext', 'darling/checkout-bg', function ( translation, text ) {
+	map['Phone'] = 'Телефон';
+
+	var swap = function ( translation, text ) {
 		return Object.prototype.hasOwnProperty.call( map, text ) ? map[ text ] : translation;
+	};
+	wp.hooks.addFilter( 'i18n.gettext', 'darling/checkout-bg', swap );
+	// Strings registered with a translation context arrive on a different
+	// hook — same table serves both.
+	wp.hooks.addFilter( 'i18n.gettext_with_context', 'darling/checkout-bg-ctx', function ( translation, text ) {
+		return swap( translation, text );
 	} );
 } )();
