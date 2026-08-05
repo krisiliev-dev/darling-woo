@@ -472,3 +472,28 @@ subscription plugins and solutions and wire them in."
   Kris: Google client ID/secret + Facebook app ID/secret) and locker-picker (waits on
   panel BoxNow flip; not cutover-blocking per earlier scope). Cutover runbook remains
   ready - executes when Kris says go once frontend is done.
+
+- 2026-08-05 sprint 16 (v2 sprint 12) DONE - POLISH SLICE SHIPPED + GATED (commits
+  e40742a, cb18127; deploys green): (1) HERO EDGE-TO-EDGE - restructured, no negative
+  margins (earned lesson applied): new .darling-hero-band wrapper paints the cherry across
+  the full viewport (darling-news-band pattern - band from the WRAPPER), inner
+  .darling-hero--red constrained to --d-content; .darling-home--v2 lost its max-width, the
+  category row re-gained it itself. Follow-up cb18127: wider container un-wrapped the
+  headline to one line - live breaks 'domakinya.' onto its own italic line - copy column
+  capped at 44rem, wrap restored (verified: 2 lines, band 0->1440). (2) CART PAGE DUAL
+  CURRENCY - new assets/cart-dual.js (enqueued only on is_cart()): the blocks cart is
+  React over Store API JSON so PHP price filters never reach it; a MutationObserver+rAF
+  watcher appends ' / X,XX lv.' (.darling-bgn, ported-stylesheet class) to every
+  .wc-block-formatted-money-amount, surviving every re-render. Display only - charged
+  amount stays the server's EUR. GATE16 PASS: band left/right == viewport at 1440, no
+  h-scroll, inner constrained; cart line+totals all carry lv. companions, survive qty
+  change; checkout smoke. Gate committed as tests/polish-gate.spec.js.
+  KRIS Q&A (chat, this sprint): accounts+GDPR = fully native (core export/erase tools +
+  Woo Accounts&Privacy retention) - no plugin needed; OAuth setup instructions sent (Google
+  Cloud console + Facebook developers, redirect URIs for BOTH staging and apex, creds via
+  file drop or paste into wp-admin - NOT chat).
+  *** FRONTEND QUEUE DRAINED *** except: slice 12 OAuth (awaiting Kris credentials;
+  NEXT SPRINT preps everything credential-independent: install+configure Nextend Social
+  Login, style the buttons, so creds drop-in is the only remaining step) and locker-picker
+  (waits on panel BoxNow flip; NOT cutover-blocking). After OAuth: cutover per
+  claude/CUTOVER_RUNBOOK.md on Kris's go.
