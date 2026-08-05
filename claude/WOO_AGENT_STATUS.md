@@ -608,3 +608,34 @@ subscription plugins and solutions and wire them in."
   cheapest-first but checkout lists Econt before Speedy (method registration order wins)
   - respect the panel sort; (3) locker-picker (panel BoxNow flip). Rollback assets kept:
   default.conf.precutover.bak + staging301.bak on box.
+
+- 2026-08-05 sprint 20 (post-cutover polish) DONE - GATE20 PASS (commits e5234c2,
+  0abfc68, 9d6717d, 2966280, ffb4380, 8242e27, 029a418; deploys green):
+  (1) D5 404-WATCH: clean - only gate probes + routine bot scans (secrets.json etc, all
+  404ing safely); every Shopify-era URL 301s correctly. No map extensions needed.
+  (2) CHECKOUT FULLY BULGARIAN - the upstream bg_BG pack (current, verified) misses the
+  blocks strings; fixed in LAYERS, each verified by rendered result: JS i18n.gettext +
+  i18n.gettext_with_context filters (Porachai, Danni za kontakt, Nachin na plashtane,
+  guest notice, same-address, coupons, apartment); woocommerce_get_country_locale filter
+  (BG state label 'Oblast' - was server locale data, not gettext); PHP gettext for
+  registry-delivered strings (Telefon (po izbor)); domain-agnostic exact-string PHP
+  filter + FINAL DOM rename via MutationObserver for 'Express Checkout' (bundle-baked,
+  provably skips every i18n hook - JS, PHP any-domain, page content all checked).
+  LESSON: blocks-checkout strings arrive via FOUR distinct channels (JS gettext, JS
+  gettext_with_context, server settings JSON, bundle-baked) - fix per channel, gate on
+  the rendered page.
+  (3) SHIPPING CHEAPEST-FIRST: woocommerce_package_rates uasort by cost in
+  darling-checkout - rendered order now Speedy-ofis 4.42 / Speedy-adres 7.17 /
+  Econt-ofis 7.31 / Econt-adres 8.55 (COD, 1 item) = exactly the panel sort; cheapest is
+  the pre-selected default. Free rates naturally float to top.
+  (4) DEPLOY PIPELINE HARDENED after cutover broke it: the workflow syncs infra config
+  FROM THE REPO - my box-side cutover configs weren't committed, so the next deploy
+  pushed the STALE staging nginx conf, nginx -t failed on the deleted staging cert
+  (validate-before-apply saved the running site). FIXED: repo infra/nginx/conf.d is
+  canonical again (10-apex.conf + final default.conf committed), health check URL moved
+  staging->apex (was the last staging reference anywhere). LESSON: box config changes
+  are not real until they are in the repo the deploy syncs from.
+  Gate committed as tests/checkout-polish-gate.spec.js. Test carts cleaned.
+  OPEN (Kris, no rush): delete staging DNS record; D7 OAuth logins (Google+Facebook once
+  each on darlinghome.bg); Borica when bank contract lands. OPEN (panel): locker-picker
+  when BoxNow flips. Woo box + storefront: LIVE and quiet.
