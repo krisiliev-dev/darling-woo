@@ -5,8 +5,12 @@
 
 	<!-- Red hero band, exact live copy: serif headline with the italic word,
 	     white sub-paragraph. The visual (glow + bow + stars) animates from the
-	     ported stylesheet — markup identical to the Shopify capture. -->
-	<section class="darling-hero darling-hero--red">
+	     ported stylesheet — markup identical to the Shopify capture.
+	     Full-bleed via the WRAPPER (same lesson as darling-news-band): the outer
+	     section paints the cherry edge-to-edge, the inner div holds the
+	     constrained grid. No negative margins anywhere. -->
+	<section class="darling-hero-band">
+	<div class="darling-hero darling-hero--red">
 		<div class="darling-hero__copy">
 			<h1 class="darling-hero__title">Тайната на една <em>домакиня.</em></h1>
 			<p class="darling-hero__sub">
@@ -27,6 +31,7 @@
 			<i class="dhv-s s1">✦</i><i class="dhv-s s2">✧</i><i class="dhv-s s3">✦</i>
 			<i class="dhv-s s4">✧</i><i class="dhv-s s5">✦</i>
 		</div>
+	</div>
 	</section>
 
 	<!-- Photo category cards, scroll-snap carousel like the live site. -->

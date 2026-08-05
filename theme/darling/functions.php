@@ -119,3 +119,25 @@ add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 	unset( $items['downloads'] );
 	return $items;
 } );
+
+/**
+ * Dual currency for the blocks cart page. The PHP price filters cover
+ * server-rendered prices; the cart block renders client-side from Store API
+ * JSON, so it gets its лв. companion from a small watcher script instead.
+ * Loaded only where the cart block exists.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+		return;
+	}
+	$src = get_stylesheet_directory() . '/assets/cart-dual.js';
+	if ( file_exists( $src ) ) {
+		wp_enqueue_script(
+			'darling-cart-dual',
+			get_stylesheet_directory_uri() . '/assets/cart-dual.js',
+			array(),
+			filemtime( $src ),
+			true
+		);
+	}
+}, 20 );

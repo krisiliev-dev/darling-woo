@@ -881,3 +881,22 @@ html.darling-a11y .darling-cart-trust{opacity:1}
 html.darling-a11y .dc-min{opacity:1}
 html.darling-a11y .darling-consent a,
 html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underline}
+
+
+/* ═══════════════ SLICE 15 — polish (2026-08-05) ═══════════════
+   Hero band edge-to-edge: the band section paints the cherry across the full
+   viewport; the constrained grid moves to an inner div. The v2 home wrapper
+   loses its own max-width so the band can reach the edges — the category row
+   re-gains the constraint itself. */
+
+.darling-home--v2{max-width:none;padding:0}
+.darling-hero-band{background:var(--d-cherry)}
+.darling-hero-band .darling-hero--red{max-width:var(--d-content,1280px);
+	margin:0 auto;padding:3.6rem clamp(1.5rem,4vw,4rem) 4rem}
+.darling-home--v2 .darling-catsv2{max-width:var(--d-content,1280px);
+	margin:0 auto;padding:0 1rem}
+
+/* Cart page BGN companion inherits .darling-bgn from the ported stylesheet;
+   totals render it slightly smaller so the EUR stays the loudest number. */
+.wp-block-woocommerce-cart .wc-block-components-totals-item__value .darling-bgn,
+.wp-block-woocommerce-cart .wc-block-components-totals-footer-item .darling-bgn{font-size:.85em}
