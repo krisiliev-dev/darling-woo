@@ -694,3 +694,8 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image
 	grid-template-columns:9rem 1fr auto;gap:1rem;align-items:center}
 
 .darling-archive__filters-title{margin:0 0 .6rem}
+
+/* The live red band is drawn by the Shopify SECTION wrapper (same as darling-news) - the ported component only lays out the grid. Our modifier supplies the band. */
+.darling-cat-banner--woo{background:var(--d-cherry);border-radius:16px;overflow:hidden;margin:.6rem 0 1.6rem;align-items:stretch}
+.darling-cat-banner--woo .dcb-text{padding:2rem 2.2rem}
+.darling-cat-banner--woo .dcb-img{min-height:260px;height:100%}
