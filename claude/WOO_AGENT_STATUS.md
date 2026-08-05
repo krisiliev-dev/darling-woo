@@ -639,3 +639,61 @@ subscription plugins and solutions and wire them in."
   OPEN (Kris, no rush): delete staging DNS record; D7 OAuth logins (Google+Facebook once
   each on darlinghome.bg); Borica when bank contract lands. OPEN (panel): locker-picker
   when BoxNow flips. Woo box + storefront: LIVE and quiet.
+
+- 2026-08-05/06 sprint 21 - *** CUTOVER 100% CLOSED *** + DESIGN PASS OPENED.
+  D7 VERIFIED DONE: Kris logged in via BOTH providers on the live apex. Users created by
+  Nextend (nsl_user_avatar_md5 meta present): id 7 vasilina11@abv.bg (Facebook) and id 8
+  lorsyyy@gmail.com (Google), BOTH role=customer (my default_role subscriber->customer fix
+  took effect). Admin (id 1) is Google-linked. NOTE benign: id 7's user_login is a hash -
+  Nextend's fallback when the name is Cyrillic and cannot sanitise to a Latin login;
+  display_name is correct ('Cvetelina Ilieva') so the account UI greets her properly and she
+  signs in via the button. No fix needed.
+  FIX THAT MADE IT WORK (recorded): first Facebook attempt hit wp-login.php?registration=
+  disabled - Nextend's allow_register defaulted to -1 (defer to WP users_can_register, which
+  is OFF by design). Set allow_register=1 so SOCIAL flows may register while open wp-login
+  registration stays closed; also default_role subscriber->customer.
+  Kris deleted the staging DNS record. Staging is now gone at every level: DNS, nginx block,
+  cert lineage. Cert lineages remaining: darlinghome.bg + mail.darlinghome.bg only.
+  D1 BORICA remains the ONLY open cutover item - waits on Kris's bank contract (his note).
+  404 WATCH: clean again - only my own gate probes + bot scans (secrets.json, phpinfo.php
+  etc, all 404ing correctly). All 5 Shopify-pattern requests in the window 301'd. No map
+  extension needed. Backups + off-site + restore-test green.
+
+  *** DESIGN PASS (Kris directive, 2026-08-06) *** Kris: layout/design "has a lot to be
+  desired" - box sizes, sections not wrapping, flexboxes not flexing, sparkle overlay over
+  content and too many, footer misalignment, alignment wrong overall. Wants a ROBUST
+  frontend where incorrect display is impossible, plus a full design+creative pass with
+  innovation, responsiveness everywhere, animation/transition craft - "an experience".
+  Asked whether Woo has React components / can we use React.
+  MY ANSWER (recorded for future sessions): WP ships React (wp-element); the blocks
+  cart/checkout ARE React and we already integrate with them. But a React SPA storefront is
+  OFF the table - it would break the 60s nginx micro-cache, the hardened blocks checkout
+  (COD repricing, panel rates, i18n), and SEO. The block-theme component model IS
+  theme.json tokens + block patterns + template parts; robustness comes from CONTAINER
+  QUERIES + intrinsic layout + @layer, not from React.
+  ROOT CAUSE OF THE FRAGILITY (mine, owned): style.css is 922 lines of CHRONOLOGICAL slice
+  appends (SLICE 6..16 + 5 later 'fix' patches) layered over assets/darling.css - the
+  Shopify theme's MINIFIED stylesheet, ported verbatim, which loads AFTER ours and wins
+  specificity ties. No layer owns anything.
+  MEASURED EVIDENCE (audit.js, 6 pages x 6 viewports on LIVE, staged to cloud): 58 distinct
+  font sizes and 47 distinct spacing values on the home page alone; 22 viewport-overflow
+  defects home@mobile; escapes-parent on the product page at every width; ~16 sub-32px touch
+  targets per page. SPARKLE OVERLAY ROOT CAUSE FOUND: .darling-ambient is position:fixed and
+  darling.css contains it via .page-wrapper{position:relative;z-index:1} - .page-wrapper is a
+  SHOPIFY DOM element that DOES NOT EXIST in our block theme, so nothing lifts content above
+  the sparkles. Same class of bug as the footer df-* lesson.
+  ALSO SEEN: Stripe 'Link' express button renders as an off-brand green slab on the PDP;
+  the reviews form is raw unstyled WP comment markup; 'Mozhe da vi haresa' renders as a
+  heading over an empty void; .df-legal{justify-self:end} is the footer misalignment.
+  DECISIONS (Kris, AskUserQuestion): ambition=ELEVATE (same soul, rebuilt execution);
+  motion=TASTEFUL & PURPOSEFUL (not decorative excess); rollout=INCREMENTAL, GATED.
+  TOOLING ANSWER: no skills/connectors worth adding (searched: design skills are for
+  claude.ai artifacts; Figma only if a real design file will exist). Cloud sandbox BLOCKS
+  browser egress (curl works, Chromium ERR_CONNECTION_RESET even via proxy) - all rendering
+  stays on the laptop; screenshots + theme source are STAGED to the cloud so review agents
+  can read them. I will author a darling-design-system SKILL as an output so future sessions
+  build consistently.
+  IN FLIGHT: 11-agent workflow (4 research: award-winning commerce, motion/View Transitions,
+  fluid+container-query systems, block-theme platform; 5 audit: layout/responsive, CSS
+  architecture, type/colour+contrast, component contracts, motion/ambient/perf; 2 synthesis:
+  design system SPEC + gated BUILD PLAN).
