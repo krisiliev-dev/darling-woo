@@ -40,4 +40,20 @@
 	wp.hooks.addFilter( 'i18n.gettext_with_context', 'darling/checkout-bg-ctx', function ( translation, text ) {
 		return swap( translation, text );
 	} );
+
+	// „Express Checkout" is baked into the blocks bundle in a way that skips
+	// both i18n hooks (verified: JS hooks, PHP gettext any-domain, and the
+	// saved page content all miss it). Last resort: rename the rendered node,
+	// re-applied on every React re-render.
+	var fixDom = function () {
+		document.querySelectorAll( '.wc-block-components-express-payment__title, .wc-block-components-title' )
+			.forEach( function ( el ) {
+				if ( el.childElementCount === 0 && el.textContent.trim() === 'Express Checkout' ) {
+					el.textContent = 'Бързо плащане';
+				}
+			} );
+	};
+	if ( document.readyState !== 'loading' ) { fixDom(); }
+	document.addEventListener( 'DOMContentLoaded', fixDom );
+	new MutationObserver( fixDom ).observe( document.documentElement, { childList: true, subtree: true } );
 } )();
