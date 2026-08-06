@@ -1301,12 +1301,14 @@ body.woocommerce-account main,
 /* 3. An empty filter set must not reserve a rail — and a heading must not stand
       over nothing. Both come back on their own when real filters render. */
 @supports selector(:has(*)){
-	.darling-archive__body:not(:has(.wp-block-woocommerce-product-filter-price,
-		.wp-block-woocommerce-product-filter-stock-status,
-		.wp-block-woocommerce-product-filter-attribute,
-		.wp-block-woocommerce-product-filter-rating,
-		.wp-block-woocommerce-product-filter-active,
-		.wc-block-product-filter)) .darling-archive__side{display:none}
+	/* Keyed on a real CONTROL, not on the filter block's presence. First attempt
+	   tested for `.wp-block-woocommerce-product-filter-price` — which is in the
+	   DOM at 220x0 with nothing inside it, so the guard never fired and the rail
+	   stayed. Probed: the whole rail contains ZERO inputs today. A filter with no
+	   control is not a filter. */
+	.darling-archive__body:not(:has(.darling-archive__side :is(input, select,
+		[role="checkbox"], .wc-block-product-filter-checkbox-list,
+		.wc-block-product-filter-chips))) .darling-archive__side{display:none}
 
 	/* „Може да ви хареса" above 200px of nothing, on every product page.
 	   FIRST ATTEMPT WAS AN INVALID SELECTOR AND FAILED SILENTLY: I guarded the
