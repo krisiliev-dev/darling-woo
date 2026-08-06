@@ -10,8 +10,12 @@ name: Tests
 # they drive the real staging site and need STAGING_PASS and a live box, so on a runner they would
 # fail for reasons that have nothing to do with the commit, and a permanently red gate is ignored.
 #
-# NOTE: the plugin is deployed by hand (agent-pipeline/deploy_to_box.sh), not by this repo's
-# deploy workflow. Green here means the commit is sound, NOT that the box is running it.
+# NOTE on what green means. infra/deploy.sh DOES ship plugin/ and theme/ to the box, and it runs
+# its own php -l over the plugin first - but the Deploy infra workflow only fires on push for
+# infra/**, so a commit that changes only the plugin does not deploy itself; somebody dispatches
+# it. Green here therefore means the commit is sound, NOT that the box is running it. (An earlier
+# version of this comment said the plugin was deployed by hand via deploy_to_box.sh. That is the
+# panel lane's script, not this one - corrected 2026-08-06 after reading deploy.sh.)
 
 # No paths filter. There was one - plugin/**, theme/**, tests/** - and two pushes that touched
 # those paths produced no run at all, while an on-demand run of the same file worked and the
