@@ -2489,3 +2489,47 @@ subscription plugins and solutions and wire them in."
   4. gate: audit 0/36 · product-card PASS · checkout-polish PASS · diff11 UNCHANGED at 390
      and 1440 · reduced-motion renders `none` · cart and checkout render `none` under no
      preference · contrast sweep. Revert rather than argue if the geometry moves.
+
+- 2026-08-06 sprint 58 — *** THE ROTATION WAS WRONG AND KRIS SAW IT IMMEDIATELY. ***
+  „The break line between the Categories and Lady D's choice is spinning… the button glow
+  and sparkles on the first button are also spinning."
+
+  THE FAULT, precisely: sprint 57 turned the glint layer a full circle every 54s. On a
+  roughly SQUARE badge that reads as light moving across a surface — which is why it looked
+  right when I checked it on one. *** On a wide pill it reads as something orbiting, and on
+  a 76×3 divider rule it reads as a spinning line, because a rotating gradient on a long
+  thin box is a line sweeping through angles and nothing else. *** Rotation is only ever
+  correct for something roughly square, and NOTHING on this site that wears the metal is
+  square. The CSS now says so at the keyframe, so it does not come back.
+
+  THE FIX, and it made the motion simpler rather than more complicated:
+  • **Nothing rotates.** Two rhythms remain — the bloom and glints BREATHE together (11s,
+    opacity, composite-only) and the highlight DRIFTS (26s, background-position, the one
+    repaint). Two incommensurable periods still prevent pulsing in unison.
+  • *** A LONG THIN ELEMENT NOW CARRIES NO GLINTS AT ALL. *** On a 3px rule a „sparkle" is
+    a blob, not a sparkle. `.dff-rule` and a new `.d-metal--thin` modifier get the breath
+    and the surface, and no glint layer. That is a rule about GEOMETRY, not about taste:
+    an ornament sized for a badge is wrong on a hairline.
+
+  VERIFIED BY RENDERING, not by reading the diff: computed `animationName` on the button is
+  `d-metal-drift` alone and on its `::before` is `d-metal-breathe` alone — no `d-metal-turn`
+  anywhere. Reduced-motion still returns `none` for both.
+
+  WORTH RECORDING AS A METHOD NOTE: I checked the animation on a button and a badge and
+  called it done. The divider is the element I did not look at, and it is the one that
+  exposed the flaw — because it is the extreme aspect ratio. *** When a treatment is
+  parameterised by shape, test the EXTREMES of the shape, not the typical case. *** The
+  same lesson as the product-card gate, which is why that gate feeds a 4-character name and
+  a 78-character one rather than an average product title.
+
+  `claude/SLICE6_FINAL.css` updated: 370 lines, braces balanced, `rotate(` no longer appears
+  anywhere in the file. Still inert.
+
+  ═══ READY TO SHIP, unchanged in order ═══
+  1. `cp claude/assets/strong-ply.webp theme/darling/assets/ply-grain.webp`
+  2. record a FRESH diff11 checkout-geometry baseline BEFORE the paste
+  3. paste §1–§8 at the end of `theme/darling/style.css`
+  4. gate: audit 0/36 · product-card PASS · checkout-polish PASS · diff11 UNCHANGED at 390
+     and 1440 · reduced-motion renders `none` · cart and checkout render `none` under no
+     preference · contrast sweep. *** And this time: check the divider and the wordmark at
+     the extremes of their aspect ratios, not only the button. ***
