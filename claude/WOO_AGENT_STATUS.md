@@ -1173,3 +1173,55 @@ subscription plugins and solutions and wire them in."
   final colours land in slice 6.
   SLICE 6 STILL BLOCKED ON KRIS, asked seven times: cherry-vs-honey as the button
   colour, gold roughness step 3 (grain) vs 4 (grain + forged).
+
+- 2026-08-06 sprint 32 — DESIGN SLICE 11 SHIPPED + GATED (commit 90d1d31, deploy green).
+  STATE PRIMITIVES — ONE FOCUS RING, MEASURED BY ACTUALLY PRESSING TAB.
+  METHOD FIRST, because it is why this found anything: I walked the money path with
+  `keyboard.press('Tab')` and read `document.activeElement` at every stop, rather than
+  calling `.focus()`. Programmatic focus does not reliably set `:focus-visible` on
+  buttons, so the cheap version of this test would have reported healthy rings on
+  controls that show none to a real keyboard user. Ring contrast was computed against
+  each control's ACTUAL backdrop — walking up for the first non-transparent background —
+  not against an assumed page colour.
+  WHAT IT FOUND, before any change:
+    checkout inputs    2px honey-light on white    1.56:1   FAIL
+    checkout selects   3px honey on white          2.12:1   FAIL
+    shop add-to-cart   cherry ring on cherry fill  1.00:1   INVISIBLE
+    address toggle     honey on white              1.98:1   FAIL
+    nav / links        cherry on cream             3.2–4.7  pass
+  WCAG 1.4.11 asks 3:1 for non-text UI. Four of six families failed. *** And two more
+  had NO FOCUS INDICATOR AT ALL: the VAT-invoice fields and — worse — the COURIER
+  PICKER's city and office selects, both setting `outline:none` with only a border
+  tint. *** Those are on the checkout, and choosing an office is a step a Bulgarian COD
+  customer cannot skip. A keyboard user had no way to see where they were in it.
+  THE FIX IS ONE PRIMITIVE, AND IT IS TWO RINGS. No single colour passes 3:1 against
+  every surface this site puts a control on — that is the whole reason six different
+  treatments existed. So: a cream halo hugging the control and a cocoa outline outside
+  it. On a pale surface the cocoa carries it (13:1); on a cherry or cocoa button the
+  cream halo does (4.4:1). Six scattered treatments collapse to one. The per-surface
+  rules that survive only TINT the border so a field still reads as active where a ring
+  is clipped; they no longer pretend to be the indicator.
+  WHY IT WAS SAFE TO PUT THIS ON THE CHECKOUT: neither `outline` nor `box-shadow`
+  participates in layout. That was the design constraint, not a happy accident.
+  GATE — the strictest of the design pass, as the risk deserved:
+  • CHECKOUT GEOMETRY: I recorded a baseline of the shipping control, every rate row's
+    label and box, the payment options, the courier picker, the totals panel and the
+    Place Order button at 390 and 1440 BEFORE touching anything, then diffed after.
+    Result: UNCHANGED — zero differences at either width.
+  • Focus sweep after: every ring problem gone except three Stripe iframes, whose focus
+    is rendered inside third-party documents our CSS cannot reach. Named, not hidden.
+  • Design audit HELD at 0 defects across all 36 combos; product-card gate PASS; money
+    path PASS with „Спиди — до офис €4.42 / 8,64 лв." first.
+  • Evidence: s11-focus-cta-1440.png shows the halo+outline on the cherry pill that
+    previously had an invisible ring.
+  DELIBERATELY NOT DONE — a scope call, recorded so it is not read as an oversight. The
+  button primitive was NOT pushed into WooCommerce's checkout buttons. Making Place
+  Order reference our `.d-btn` changes its padding and radius, which is a checkout
+  geometry change, and this slice's own gate says revert rather than argue if checkout
+  geometry moves. Buttons unify in slice 6, where the cherry/honey decision lands and
+  the checkout absorbs one change instead of two. Same reasoning for input resting
+  styles: focus is unified everywhere; resting borders stay as they are on checkout.
+  NEXT: slice 12 (motion) — reduced-motion correctness, the hover-shadow repaint cost on
+  card grids, and the mega menu's `transition:all`. No colour dependency.
+  SLICE 6 STILL BLOCKED ON KRIS, asked eight times: cherry-vs-honey as the button
+  colour, gold roughness step 3 (grain) vs 4 (grain + forged).
