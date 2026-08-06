@@ -1496,8 +1496,14 @@ body.woocommerce-account main,
 	border-bottom:1px solid var(--d-sand-deep)}
 .woocommerce-tabs ul.tabs.wc-tabs::before,
 .woocommerce-tabs ul.tabs.wc-tabs::after{content:none}
-.woocommerce-tabs ul.tabs.wc-tabs > li{background:none;border:0;border-radius:0;
-	margin:0;padding:0}
+/* WooCommerce ships `.woocommerce div.product .woocommerce-tabs ul.tabs li` at
+   specificity (0,4,3); my first attempt was (0,3,2) and lost, which the render
+   showed as a lilac tab sitting next to a vanilla one. Asked the engine which
+   rule won (CDP getMatchedStylesForNode) rather than guessing, then mirrored
+   their selector shape and added one class. Not `!important`. */
+.woocommerce-tabs ul.tabs.wc-tabs > li,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li{
+	background:none;border:0;border-radius:0;margin:0;padding:0}
 .woocommerce-tabs ul.tabs.wc-tabs > li > a{display:flex;align-items:center;
 	min-height:44px;padding:0 var(--space-s);border-radius:.7rem .7rem 0 0;
 	color:var(--d-cocoa);text-decoration:none;font-weight:600;
@@ -1509,7 +1515,12 @@ body.woocommerce-account main,
 .woocommerce-tabs .panel{padding:0}
 
 /* ── The reviews form ─────────────────────────────────────────────────────── */
-.woocommerce-Reviews .comment-respond{background:#fff;border:1px solid var(--d-sand);
+/* Woo styles this with TWO IDs — `.woocommerce #review_form #respond` at
+   (2,1,0) — so a class-based rule could never dress the panel; only the
+   max-width and radius survived, which is why the first render showed correct
+   width and no card. Three IDs, and they are WordPress/Woo standard markup. */
+.woocommerce-Reviews .comment-respond,
+#reviews #review_form #respond{background:#fff;border:1px solid var(--d-sand);
 	border-radius:16px;padding:var(--space-m);margin-top:var(--space-m);
 	max-width:46rem}
 .woocommerce-Reviews .comment-reply-title{display:block;
