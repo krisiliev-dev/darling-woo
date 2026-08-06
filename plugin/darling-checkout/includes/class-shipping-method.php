@@ -145,12 +145,27 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 
 		$stale = ! empty( $payload['darling_stale'] );
 
-		if ( isset( $mine['office'] ) && 'yes' === $this->get_option( 'office', 'yes' ) ) {
-			// Availability still depends on the destination: no office in the
-			// customer's settlement -> no office rate, whatever the table says.
-			$offices = Darling_Panel_API::offices( $this->carrier, $city );
+		// *** EVERY PICKUP MODE THE PANEL SERVES, NOT JUST 'office'. ***
+		// This read `$mine['office']` alone, so BoxNow - whose rate row says
+		// `locker` - was dropped here without a word. The file's own closing
+		// comment promises a courier appears "the moment the panel starts serving
+		// rates for it"; for a locker courier that was not true.
+		// One settings switch still governs them all: "offer delivery to a courier
+		// location" is one decision to the shop owner, whatever the courier calls it.
+		$pickup_offered = 'yes' === $this->get_option( 'office', 'yes' );
+		$offices        = null;
+		foreach ( Darling_Carriers::pickup_modes() as $pickup_mode ) {
+			if ( ! isset( $mine[ $pickup_mode ] ) || ! $pickup_offered ) {
+				continue;
+			}
+			// Availability still depends on the destination: nowhere to collect in
+			// the customer's settlement -> no pickup rate, whatever the table says.
+			// Looked up once even when a courier serves several pickup modes.
+			if ( null === $offices ) {
+				$offices = Darling_Panel_API::offices( $this->carrier, $city );
+			}
 			if ( ! empty( $offices ) ) {
-				$this->add_panel_rate( $mine['office'], 'office', $is_free, $stale );
+				$this->add_panel_rate( $mine[ $pickup_mode ], $pickup_mode, $is_free, $stale );
 			}
 		}
 		if ( isset( $mine['door'] ) && Darling_Carriers::supports_door( $this->carrier )
@@ -163,7 +178,7 @@ abstract class Darling_Shipping_Base extends WC_Shipping_Method {
 	private function add_panel_rate( array $row, string $mode, bool $is_free, bool $stale ): void {
 		$label = trim( (string) ( $row['label_bg'] ?? '' ) );
 		if ( '' === $label ) {
-			$label = 'office' === $mode
+			$label = Darling_Carriers::is_pickup( $mode )
 				? $this->carrier_label . ' — ' . Darling_Carriers::office_label( $this->carrier )
 				: $this->carrier_label . ' — до адрес';
 		}

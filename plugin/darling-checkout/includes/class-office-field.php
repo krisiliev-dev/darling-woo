@@ -49,7 +49,11 @@ class Darling_Office_Field {
 	private static function office_rate_chosen(): bool {
 		$chosen = WC()->session ? (array) WC()->session->get( 'chosen_shipping_methods', array() ) : array();
 		foreach ( $chosen as $rate ) {
-			if ( preg_match( '/^darling_[a-z]+:office$/', (string) $rate ) ) {
+			// Built from the registry: a hardcoded ':office$' does not match
+			// 'darling_boxnow:locker', so the office field would never be required
+			// for a locker delivery and an order could be placed naming no locker.
+			if ( preg_match( '/^darling_[a-z]+:(' . Darling_Carriers::mode_pattern() . ')$/', (string) $rate )
+				&& Darling_Carriers::is_pickup( (string) substr( strrchr( (string) $rate, ':' ), 1 ) ) ) {
 				return true;
 			}
 		}
@@ -182,6 +186,11 @@ class Darling_Office_Field {
 			// JS, so adding a courier cannot leave the picker silently not recognising
 			// its shipping rate - which would look exactly like "the picker is broken".
 			'carriers' => array_keys( Darling_Carriers::all() ),
+			// Modes handed over too, for the same reason the carriers are: a rate id
+			// mode the JS does not recognise makes the picker never appear, which
+			// looks like a broken picker rather than a missing string.
+			'modes'    => array_merge( Darling_Carriers::pickup_modes(), array( 'door' ) ),
+			'pickup'   => Darling_Carriers::pickup_modes(),
 			'labels'   => $labels,
 			// The NOUNS are per-kind, not per-carrier. Speedy serves 833 автомати and 460
 			// offices from one list, so „до офис" on every Speedy row is wrong on most of them.
@@ -263,7 +272,7 @@ class Darling_Office_Field {
 		// validated - the connector uses this to build the waybill.
 		$name      = '';
 		$validated = false;
-		if ( 'office' === $mode && $office_id && $city ) {
+		if ( Darling_Carriers::is_pickup( $mode ) && $office_id && $city ) {
 			foreach ( Darling_Panel_API::offices( $carrier, $city ) as $o ) {
 				if ( (string) ( $o['id'] ?? '' ) === $office_id ) {
 					$name      = (string) ( $o['name'] ?? '' );
@@ -278,7 +287,7 @@ class Darling_Office_Field {
 					array( 'source' => 'darling-office' )
 				);
 			}
-		} elseif ( 'office' === $mode ) {
+		} elseif ( Darling_Carriers::is_pickup( $mode ) ) {
 			// Office delivery with no id reaching us at all. Validation should have
 			// stopped this, so if it happens the plumbing is broken, not the customer
 			// — and it must be loud, because the order cannot be dispatched.
@@ -289,10 +298,16 @@ class Darling_Office_Field {
 			);
 		}
 
-		$order->update_meta_data( 'darling_dest',        'office' === $mode ? 'office' : ( $mode ? 'door' : '' ) );
+		// *** darling_dest STAYS 'office' FOR EVERY PICKUP MODE, ON PURPOSE. ***
+		// It is a FROZEN CONTRACT the connector reads, and its vocabulary is
+		// office/door. Writing 'locker' here would be more precise and would break
+		// Hermes's mapping. The exact mode is not lost - it stays on the shipping
+		// line item as darling_mode, and darling_carrier already identifies BoxNow,
+		// which is lockers-only. Widen this only WITH the connector session.
+		$order->update_meta_data( 'darling_dest',        Darling_Carriers::is_pickup( $mode ) ? 'office' : ( $mode ? 'door' : '' ) );
 		$order->update_meta_data( 'darling_carrier',     $carrier );
 		$order->update_meta_data( 'darling_city',        $city );
-		$order->update_meta_data( 'darling_office_id',   'office' === $mode ? $office_id : '' );
+		$order->update_meta_data( 'darling_office_id',   Darling_Carriers::is_pickup( $mode ) ? $office_id : '' );
 		$order->update_meta_data( 'darling_office_name', $name );
 		$order->update_meta_data( 'darling_validated',   $validated ? 'true' : '' );
 	}

@@ -131,7 +131,7 @@ class Darling_Panel_API {
 			return null;
 		}
 		$args = array(
-			'dest_type'  => 'office' === $dest_type ? 'office' : 'door',
+			'dest_type'  => Darling_Carriers::is_pickup( $dest_type ) ? 'office' : 'door',
 			'weight_g'   => max( 1, $weight_g ),
 			'cod'        => $cod ? 'true' : 'false',
 			'amount_eur' => round( $amount, 2 ),

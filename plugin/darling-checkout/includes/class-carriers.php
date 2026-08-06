@@ -53,6 +53,37 @@ class Darling_Carriers {
 		),
 	);
 
+	/**
+	 * *** MODES THAT MEAN THE PARCEL WAITS AT A COURIER LOCATION. ***
+	 * The customer must name WHICH one, so these are the modes that require an
+	 * office id, offer the picker, and validate against the destination.
+	 *
+	 * BoxNow's rate row says `locker`, not `office`. The storefront read only
+	 * `office` and `door`, so that row was silently DROPPED: the carrier would
+	 * stay invisible at checkout while the panel showed its rate as enabled, and
+	 * it would read as "the storefront picker is broken". Confirmed by the panel
+	 * on 2026-08-06 - mode string is "locker", buffer 0.10, COD fee 0.
+	 *
+	 * Every pickup mode belongs HERE and nowhere else. A second list somewhere
+	 * that forgets one is exactly how this stayed invisible.
+	 */
+	private const PICKUP_MODES = array( 'office', 'locker' );
+
+	/** @return string[] */
+	public static function pickup_modes(): array {
+		return self::PICKUP_MODES;
+	}
+
+	/** Does this rate mode need a location id from the customer? */
+	public static function is_pickup( string $mode ): bool {
+		return in_array( strtolower( trim( $mode ) ), self::PICKUP_MODES, true );
+	}
+
+	/** Regex fragment covering every mode a darling rate id can carry. */
+	public static function mode_pattern(): string {
+		return implode( '|', array_map( 'preg_quote', array_merge( self::PICKUP_MODES, array( 'door' ) ) ) );
+	}
+
 	/** @return array<string,array> every carrier we know how to speak to */
 	public static function all(): array {
 		return self::REGISTRY;

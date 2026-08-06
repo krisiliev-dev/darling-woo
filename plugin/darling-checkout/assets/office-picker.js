@@ -30,7 +30,8 @@
 	 * for BOX NOW" rather than "someone missed a regex".
 	 */
 	var RATE_RE = new RegExp(
-		'^darling_(' + ( CFG.carriers || [ 'econt', 'speedy' ] ).join( '|' ) + '):(office|door)$'
+		'^darling_(' + ( CFG.carriers || [ 'econt', 'speedy' ] ).join( '|' ) +
+			'):(' + ( CFG.modes || [ 'office', 'door' ] ).join( '|' ) + ')$'
 	);
 
 	function findOfficeInput() {
@@ -72,7 +73,11 @@
 	/** Only offer the picker when an office rate is selected. */
 	function officeModeChosen() {
 		var r = chosenRate();
-		return !! r && 'office' === r.mode;
+		// Not just 'office'. BoxNow's mode is 'loker', and hardcoding the noun here
+		// meant the picker never appeared for it - the customer would have been asked
+		// to type a locker id into a bare text box, or more likely typed nothing.
+		var pickup = CFG.pickup || [ 'office' ];
+		return !! r && pickup.indexOf( r.mode ) !== -1;
 	}
 
 	function ensureSelect( input ) {
