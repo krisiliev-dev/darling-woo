@@ -1429,3 +1429,39 @@ subscription plugins and solutions and wire them in."
   • The a11y button can overlap the last footer link at 390 (overlay-layer question).
   • The cart page still shows the footer's flair animations; the checkout is fully still.
   • Locker picker, waiting on the panel's BoxNow flip.
+
+- 2026-08-06 sprint 36 — KRIS ANSWERED, AND THE ANSWER CHANGED THE TASK.
+  Asked the two blocking slice-6 questions as a proper prompt rather than another line of
+  prose. His reply, verbatim in substance:
+  • „I don't see much of a difference on the shadows, they still look darker rather than
+    more golden/honey." — HE IS RIGHT AND I WAS WRONG TO CALL IT DONE. My gold ramp
+    reduced lightness and rotated the hue by only a few degrees, which is invisible.
+  • „I quite like the cherry buttons, but the gold also can be the right answer if
+    implemented properly." — the button decision is NOT cherry-vs-honey after all; it is
+    conditional on the metal being convincing.
+  • „The texture isn't quite implemented correctly. Can you look for what people have
+    done online for gold/metal textures and styles? Can you give me some options?"
+  • „Maybe the striations are too small to notice them, but either way I want to see a
+    lot of options." + „can you give me some options for different golds? Some that are
+    more honey, some more yellow, some more rose, etc."
+  RESEARCHED IT PROPERLY (the thing I had not done). The technique behind every
+  convincing CSS metal is REFLECTION BANDING — a multi-stop gradient alternating light
+  and dark ACROSS the letterform, so the eye reads bands as a reflection. My earlier
+  attempts were a single light-to-dark ramp plus noise, which is a gradient with dirt on
+  it, not a metal. That is why it never looked right, and why the shadows read as „just
+  darker".
+  DELIVERED claude/_scratch_woo/sprint27/palette6.html — 7 gold families × 9 textures,
+  generated from HSL so the hue rotation is a NUMBER printed under every swatch:
+  • Section 0 answers his complaint head-on: „only darker" (hue fixed at 40°) beside
+    „hue-rotated" (49° → 40° → 16°), with the degrees shown. He can see the difference he
+    said he could not see, because it is now large enough to see.
+  • Families: honey 40°, yellow 48°, champagne 43°/low-sat, rose 22°, copper-rose 15°,
+    antique 36°, green-gold 54°.
+  • Textures: flat (the control, i.e. what ships today), reflection banding, banding +
+    fine grain, + coarse grain, 1px striations (what shipped — he was right that they are
+    invisible), 2–5px striations, brushed, hammered, gold-leaf facets.
+  • Plus the same textures on claret and cocoa, cherry-vs-every-gold buttons with measured
+    contrast on all three surfaces, and metal-filled buttons.
+  Nothing animates in any option — the „gambling website" sweep stays rejected.
+  NEXT: slice 6 executes as soon as he picks numbers. Everything else in the palette is
+  still locked. The darling-design-system SKILL remains the other outstanding promise.
