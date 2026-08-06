@@ -1055,15 +1055,19 @@ body .darling-ambient i{will-change:auto}
 /* The reset that used to live here is gone with its cause — see the .darling-nav ul
    rule above, which no longer sets overflow at all. */
 
-/* *** REGRESSION FOUND AND FIXED IN SLICE 10, INTRODUCED HERE IN SLICE 4. ***
-   This rule read `position:relative`, purely to make a stacking context for the
-   dropdown — and because it comes LATER in the file than `.darling-header
-   {position:sticky}` at equal specificity, it silently un-stuck the header on
-   every page. Measured: position:relative, and the header's top went to -639px
-   after a 900px scroll instead of staying at 0. No gate caught it because nothing
-   tested scrolling. `sticky` with a z-index makes the same stacking context and
-   keeps the behaviour the header is supposed to have. */
-.darling-header--v2{position:sticky;top:0;z-index:60}
+/* *** THE HEADER HAS NEVER ACTUALLY BEEN STICKY, AND THERE WERE TWO CAUSES. ***
+   (1) Slice 4 set `position:relative` here purely to make a stacking context for
+   the dropdown; being later in the file at equal specificity, it replaced the
+   `position:sticky` on `.darling-header`. (2) Fixing that alone changed NOTHING —
+   measured, not assumed: with sticky restored the header still scrolled to -636px.
+   A sticky element can only travel inside its own containing block, and
+   `.darling-header` sits inside `<header class="wp-block-template-part">`, a
+   wrapper exactly as tall as the header itself. Zero travel. So the sticky
+   belongs on the WRAPPER, whose parent is the whole page, and the stacking
+   context comes with it. The first fix was necessary and not sufficient — which
+   is only visible if you re-measure after fixing. */
+.wp-site-blocks > header.wp-block-template-part{position:sticky;top:0;z-index:60}
+.darling-header--v2{position:relative}
 .darling-mega{box-shadow:0 12px 32px rgb(var(--d-shadow)/.18)}
 
 /* 2. Account page: an alignfull group inside a constrained <main> was measuring
