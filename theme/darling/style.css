@@ -1680,17 +1680,27 @@ body.woocommerce-account main,
 .d-metal::before{
 	content: "";
 	position: absolute;
-	inset: -45%;
+	inset: 0;
 	z-index: -1;
 	border-radius: inherit;
 	pointer-events: none;
 	background:
-		radial-gradient(closest-side circle at 40.5% 43%, hsl(48 100% 96% / calc(.95 * var(--glow-k))) 0%,
-			hsl(45 100% 88% / calc(.55 * var(--glow-k))) 8%, transparent 22%),
-		radial-gradient(closest-side circle at 62% 60%, hsl(48 100% 96% / calc(.90 * var(--glow-k))) 0%,
-			hsl(45 100% 88% / calc(.45 * var(--glow-k))) 6%, transparent 18%),
-		radial-gradient(closest-side, hsl(38 95% 60% / calc(.42 * var(--glow-k))) 0 36%,
-			hsl(36 95% 58% / calc(.18 * var(--glow-k))) 58%, transparent 76%);
+		radial-gradient(closest-side circle at 31.9% 36.7%, hsl(48 100% 96% / calc(.95 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.55 * var(--glow-k))) 15.2%, transparent 42%),
+		radial-gradient(closest-side circle at 72.8% 69%, hsl(48 100% 96% / calc(.90 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.45 * var(--glow-k))) 11.4%, transparent 34%);
+	/* THE BLOOM IS A BOX-SHADOW, NOT A BOX THAT HANGS OUTSIDE THE BUTTON. An absolutely
+	   positioned pseudo-element contributes its right and bottom overhang to the button's
+	   scrollable overflow: at inset:-45% that made scrollWidth 1.45x clientWidth and the
+	   design audit caught it as a defect on both metal buttons at all six viewports.
+	   Measured, neither overflow:clip nor overflow:hidden moves scrollWidth - a clip
+	   container keeps its overflow region and a hidden one is simply scrollable - so the
+	   fix has to be structural. A box-shadow spills light without participating in layout.
+	   The glints are the same pixels as before, mapped off the old 190% box by
+	   centre_new = -45 + centre_old * 1.9 and radius_new = radius_old * 1.9. */
+	box-shadow:
+		0 0 12px -1px hsl(38 95% 60% / calc(.26 * var(--glow-k))),
+		0 0 30px -6px hsl(36 95% 58% / calc(.12 * var(--glow-k)));
 }
 
 /* Metal as TEXT. Keep the fallback colour so a failed clip shows gold text rather
@@ -1811,15 +1821,25 @@ a.button.alt{
 .darling-hero--red .d-btn--primary::before,
 .darling-news-band .d-btn--primary::before,
 .d-on-claret .d-btn--primary::before{
-	content: ""; position: absolute; inset: -45%; z-index: -1; border-radius: inherit;
+	content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
 	pointer-events: none;
 	background:
-		radial-gradient(closest-side circle at 40.5% 43%, hsl(48 100% 96% / calc(.95 * var(--glow-k))) 0%,
-			hsl(45 100% 88% / calc(.55 * var(--glow-k))) 8%, transparent 22%),
-		radial-gradient(closest-side circle at 62% 60%, hsl(48 100% 96% / calc(.90 * var(--glow-k))) 0%,
-			hsl(45 100% 88% / calc(.45 * var(--glow-k))) 6%, transparent 18%),
-		radial-gradient(closest-side, hsl(38 95% 60% / calc(.42 * var(--glow-k))) 0 36%,
-			hsl(36 95% 58% / calc(.18 * var(--glow-k))) 58%, transparent 76%);
+		radial-gradient(closest-side circle at 31.9% 36.7%, hsl(48 100% 96% / calc(.95 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.55 * var(--glow-k))) 15.2%, transparent 42%),
+		radial-gradient(closest-side circle at 72.8% 69%, hsl(48 100% 96% / calc(.90 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.45 * var(--glow-k))) 11.4%, transparent 34%);
+	/* THE BLOOM IS A BOX-SHADOW, NOT A BOX THAT HANGS OUTSIDE THE BUTTON. An absolutely
+	   positioned pseudo-element contributes its right and bottom overhang to the button's
+	   scrollable overflow: at inset:-45% that made scrollWidth 1.45x clientWidth and the
+	   design audit caught it as a defect on both metal buttons at all six viewports.
+	   Measured, neither overflow:clip nor overflow:hidden moves scrollWidth - a clip
+	   container keeps its overflow region and a hidden one is simply scrollable - so the
+	   fix has to be structural. A box-shadow spills light without participating in layout.
+	   The glints are the same pixels as before, mapped off the old 190% box by
+	   centre_new = -45 + centre_old * 1.9 and radius_new = radius_old * 1.9. */
+	box-shadow:
+		0 0 12px -1px hsl(38 95% 60% / calc(.26 * var(--glow-k))),
+		0 0 30px -6px hsl(36 95% 58% / calc(.12 * var(--glow-k)));
 	animation: d-metal-breathe 11s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce){
