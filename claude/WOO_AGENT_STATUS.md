@@ -1067,3 +1067,56 @@ subscription plugins and solutions and wire them in."
   number has not moved since the audit began; slice 9 is what moves it.
   SLICE 6 STILL BLOCKED ON KRIS, asked five times now: cherry-vs-honey as the button
   colour, and gold roughness step 3 (grain) vs 4 (grain + forged).
+
+- 2026-08-06 sprint 30 — DESIGN SLICE 9 SHIPPED + GATED (commits 892ef2b, 345e824,
+  fb5da7e; deploys green). THE FOOTER — AND THE TOUCH-TARGET NUMBER FINALLY MOVED.
+  *** ZERO DEFECTS ACROSS ALL 36 PAGE × VIEWPORT COMBINATIONS. *** Every page had
+  carried 15–19 sub-32px targets since the design audit began and the count had not
+  moved through five slices. It is now 0, everywhere, alongside the zero overflow /
+  zero escapes-parent / zero text-overflow that slices 1–8 established.
+  HOW, WITHOUT MOVING THE GOALPOSTS. I named all sixteen targets on /pomosht/ with
+  their DOM paths before touching anything, and they split cleanly:
+  • ELEVEN WERE REAL, all in the footer, all fixed at the source: five `.df-links`
+    nav links at 25px, four `.df-policies` links at 17px, the Google Maps link and
+    „Правила и условия" in the legal bar. All now carry a 44px hit area.
+  • FIVE WERE NOT DEFECTS AND NEVER WERE. WCAG 2.5.8 exempts a target that is „in a
+    sentence or block of text": the tel:/mailto: links inside the address block, links
+    inside FAQ sentences, and the screen-reader skip link (1×1 until focused, full size
+    when focused). Padding those to 44px would wreck the address block and the prose to
+    satisfy a rule that does not apply to them. The harness now counts them as
+    `inline_exempt` — EXCLUDED AND COUNTED, never silently dropped, same discipline as
+    the scroller / third-party / offscreen families in slice 1. The test is whether the
+    parent element contains text of its own besides the link, which is the standard's
+    own wording rather than a convenient list.
+  • Then three more, each named rather than rounded away: the card title link was
+    322×26 for a one-line product name (it now fills the two-line box the heading
+    already reserves — no visual change, because the box was reserved either way); the
+    five 24×24 review rating stars (raw WordPress comment markup — the reviews form is
+    still unstyled and belongs to a later slice, but the hit area did not need to wait);
+    and „Изгубена парола?" at 124×17 on the account page.
+  `.df-policies` WAS A `<p>` WITH `<br>` SEPARATORS. That is why four navigation targets
+  were 17px tall and could not be padded without wrecking the line box. It is now a
+  `<nav>` with block anchors, keeping the same class — the ported stylesheet's contract
+  is the CLASS, not the tag, which is the sprint-9 lesson applied rather than relearned.
+  PURGED: the entire v1/v2 `.darling-footer__*` / `.dhl-word` /
+  `.darling-foot-flair--brand` vocabulary — 44 lines. Every family was verified absent
+  from templates/, parts/ and *.php first. Also removed the two shorthand footer
+  paddings the new rules supersede, so footer spacing has ONE declaration site instead
+  of two that must be read in the right order. Dead CSS is not neutral; it is a rule
+  waiting to win an argument it should not be in.
+  FOOTER GEOMETRY: it now takes the same shell as everything else. At 1920 its outer
+  columns were 758px each holding 137px of links and 216px of address — the „flexboxes
+  not flexing" complaint in its purest form. Footer rhythm moved onto the space scale in
+  BOTH stylesheets (11 literals in the vendor file).
+  GATE: design audit 0/36 defects of every type; product-card gate PASS (42 synthetic
+  instances, long Bulgarian names, mixed aspect ratios); money path PASS with
+  „Спиди — до офис €4.42 / 8,64 лв." first. Footer verified rendered at 390/768/1440/1920.
+  OBSERVED, NOT FIXED (recorded so they are not rediscovered): the footer's two link
+  groups have different treatments — `.df-links` plain, `.df-policies`/`.df-map` cherry
+  and underlined — which is a colour/state decision, slice 6/11. And the fixed
+  accessibility button can overlap the last footer link at 390; it floats over
+  everything by design (the consent card was already lifted to bottom:78px for the same
+  reason), so it is a motion/overlay-layer question, not a footer one.
+  NEXT: slice 10 (header) — no colour dependency. SLICE 6 STILL BLOCKED ON KRIS, asked
+  six times: cherry-vs-honey as the button colour, gold roughness step 3 (grain) vs 4
+  (grain + forged).
