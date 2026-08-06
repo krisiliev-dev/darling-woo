@@ -1004,3 +1004,66 @@ subscription plugins and solutions and wire them in."
   product-search template query products only, so they get the Woo block and its
   placeholder. The cart drawer is NOT a card context — it has its own
   `.darling-cart__item` markup and stays that way.
+
+- 2026-08-06 sprint 29 — DESIGN SLICE 8 SHIPPED + GATED (commits 8488438, 583a7ad,
+  d400b15; deploys green). ARCHIVE, FILTERS, EMPTY STATES.
+  HEADLINE NUMBER: the shop grid went from **870px to 1248px** of a 1344px shell at
+  1440. Two causes, both measured, neither guessed:
+  • THE ARCHIVE SHELLED ITSELF TWICE. `<main class="darling-archive">` carries
+    WordPress global padding (48px a side at 1440) and then `.darling-grid` applied our
+    own `--d-gutter` again. 96px of the product grid was padding nobody asked for.
+    `.darling-grid` is a top-level BAND on the home page, where it correctly owns the
+    shell, and a nested CHILD in the archive, where main already owns it.
+  • THE FILTER RAIL RESERVED 250px FOR AN ELEMENT 0px TALL. Probed: the whole rail
+    contains ZERO inputs. `wc-block-product-filters` renders an empty overlay dialog and
+    a `display:none` trigger; `.wp-block-woocommerce-product-filter-price` exists at
+    220×0 with nothing inside it; the stock-status filter renders nothing at all. With
+    one product there is nothing to filter. The rail is now collapsed by a `:has()`
+    guard and comes back on its own when real controls render.
+  *** THREE THINGS I GOT WRONG FIRST, ALL CAUGHT BY RENDERING, NONE VISIBLE IN A DIFF: ***
+  1. `:has()` MAY NOT BE NESTED INSIDE `:has()`. I guarded the empty related-products
+     heading as a sibling — `.darling-section-title:has(+ .related:not(:has(li)))` — and
+     the browser DROPPED THE WHOLE RULE as an invalid selector. Silently. The companion
+     rule `.related:not(:has(li))` worked, because `:has()` inside `:not()` is legal, so
+     the block vanished while its heading kept standing over nothing — which looked like
+     a partial fix rather than a broken one. The template now wraps heading and block
+     together so a single un-nested `:has()` hides both.
+  2. THE FILTER GUARD KEYED ON THE WRONG THING. Testing for the presence of
+     `.wp-block-woocommerce-product-filter-price` never fired, because that element IS in
+     the DOM — just empty. Re-keyed on a real control (`input`, `select`, checkbox list,
+     chips). A filter with no control is not a filter.
+  3. THE PLAN'S OVERLAY FIX DOES NOT EXIST IN THIS WOOCOMMERCE. It said to set the filter
+     block's `overlay` attribute to `never` in the template. I read `block.json` on the
+     box: `woocommerce/product-filters` in WooCommerce 10.9.4 declares exactly ONE
+     attribute, `isPreview`. Writing `"overlay":"never"` would have been a silent no-op
+     that I would have recorded as done. Defensive CSS does the job instead and does not
+     depend on an API that may not be there. *** The build plan is a hypothesis document,
+     not a spec — this is the second slice where one of its steps did not survive contact
+     with the running site. ***
+  ALSO CLOSED — THE SLICE-7 CTA MYSTERY, ANSWERED PROPERLY. The card button rendered
+  200px centred despite `width:100%`. I asked the engine instead of theorising (CDP
+  `CSS.getMatchedStylesForNode`): WooCommerce ships
+  `.wp-block-button.wc-block-components-product-button .wp-block-button__link{width:auto}`
+  at specificity (0,3,0); mine was (0,2,1). It was a specificity fight, not a source-order
+  one — and the enqueue inversion from slice 2a is intact (our two stylesheets print after
+  woocommerce-general and TT5; only wc-stripe's checkout CSS follows us). Won by matching
+  their selector shape, NOT with `!important`, which is how this file got into trouble in
+  the first place. The CTA now fills its card: 288px at 390, 322px at 1440.
+  EMPTY STATES. A category with nothing in it is a NORMAL state for a shop still
+  importing 10 800 products, so it should read as „not yet", not as „broken": bow motif
+  (the footer's own mark, floating), one line of Playfair „Тук още е празно, darling.",
+  one honest sentence about the 4 590 still travelling from Свищов, one CTA. Same
+  treatment for both search templates. „Може да ви хареса" no longer stands above 200px
+  of nothing on every product page.
+  GATE: product-card gate PASS (42 synthetic card instances, long Bulgarian names and
+  mixed aspect ratios — CTA one line and ≥44px everywhere, every title exactly 2 lines,
+  rows aligned within 2px); design audit IDENTICAL to the slice-4/5/7 baseline page for
+  page, zero overflow of any kind, small-target counts unchanged; money path PASS with
+  „Спиди — до офис €4.42 / 8,64 лв." first. Verified rendered: rail collapsed at 390/768
+  /1440, grid 312/614/1248, related wrapper display:none, empty category renders the new
+  card.
+  NEXT: slice 9 (footer). It has no colour dependency, and it is where the 15–19
+  small-target defects per page actually live — every one of them is a footer link. That
+  number has not moved since the audit began; slice 9 is what moves it.
+  SLICE 6 STILL BLOCKED ON KRIS, asked five times now: cherry-vs-honey as the button
+  colour, and gold roughness step 3 (grain) vs 4 (grain + forged).
