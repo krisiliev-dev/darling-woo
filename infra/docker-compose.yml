@@ -44,7 +44,7 @@ services:
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
-      WORDPRESS_CONFIG_EXTRA: |
+      WORDPRESS_CONFIG_EXTRA: &wp_config_extra |
         define('WP_HOME',    getenv('WP_HOME'));
         define('WP_SITEURL', getenv('WP_SITEURL'));
         define('WP_REDIS_HOST', 'redis');
@@ -106,7 +106,11 @@ services:
     command:
       - |
         while true; do
-          php /var/www/html/wp-cron.php >/dev/null 2>&1 \
+          # display_errors=stderr, and stdout to /dev/null: wp-cron.php prints nothing worth
+          # keeping, but PHP writes fatals to STDOUT by default - so the obvious `>/dev/null 2>&1`
+          # throws away the only evidence. It did exactly that here for the first hour of this
+          # service's life. Whatever else is true, a failure must be visible in `docker logs`.
+          php -d display_errors=stderr /var/www/html/wp-cron.php >/dev/null \
             || echo "wp-cron: run exited $$? (watch cron_late_min in health.json)" >&2
           sleep 60
         done
@@ -118,6 +122,14 @@ services:
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      # THE WHOLE BLOCK, by anchor, not by copy. wp-config.php line 127 eval()s
+      # WORDPRESS_CONFIG_EXTRA out of the environment on every boot - it is not baked into the
+      # file on the volume - so a container without it gets no WP_REDIS_HOST and the redis-cache
+      # drop-in dials 127.0.0.1 and fatals before wp-cron.php reaches a single event. That is
+      # exactly what the first version of this service did, silently, once a minute.
+      # An alias rather than a second copy: two copies of this block would drift the first time
+      # somebody edited one of them, and the failure would look like this one.
+      WORDPRESS_CONFIG_EXTRA: *wp_config_extra
       WP_HOME: ${WP_HOME}
       WP_SITEURL: ${WP_SITEURL}
       # Scheduled work sends mail (order status, recheck outcomes). Without these the image has
