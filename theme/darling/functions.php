@@ -11,28 +11,38 @@
 defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_enqueue_scripts', function () {
-	$style = get_stylesheet_directory() . '/style.css';
-	wp_enqueue_style(
-		'darling',
-		get_stylesheet_uri(),
-		array( 'twentytwentyfive-style' ),
-		file_exists( $style ) ? filemtime( $style ) : null // cache-bust on deploy
-	);
-
-	// The Shopify theme's stylesheet, ported verbatim rather than rewritten. It
-	// carries the --d-* tokens AND the bespoke animations (ambient stars, star
-	// twinkle, bow float, gradient drift, shimmer). Reimplementing those by eye
-	// would drift from the original; keeping the file intact means the storefront
-	// matches, and a future diff against a fresh capture shows exactly what moved.
+	/*
+	 * LOAD ORDER (slice 2a, 2026-08-06). The ported Shopify stylesheet prints
+	 * FIRST and style.css prints last, so the theme wins every equal-specificity
+	 * conflict with it. It used to be the exact inverse — 'darling-ported'
+	 * declared 'darling' as its dependency — and every "SLICE n fix" block in
+	 * style.css was a downstream symptom of that one inverted line.
+	 *
+	 * Both files stay UNLAYERED, deliberately. Slice 2 tried wrapping the ported
+	 * file in `@layer ported` and had to be reverted: unlayered CSS outranks
+	 * every layer, so layering it dropped the vendored file below Twenty
+	 * Twenty-Five's own unlayered stylesheet, which it had been beating by
+	 * source order. Mobile went from 16 to 45 defects with document-level
+	 * overflow. Cascade layers are only safe here once the parent theme's
+	 * contribution is neutralised — that is slice 3's job, not this one.
+	 */
 	$ported = get_stylesheet_directory() . '/assets/darling.css';
 	if ( file_exists( $ported ) ) {
 		wp_enqueue_style(
 			'darling-ported',
 			get_stylesheet_directory_uri() . '/assets/darling.css',
-			array( 'darling' ),
+			array( 'twentytwentyfive-style' ),
 			filemtime( $ported )
 		);
 	}
+
+	$style = get_stylesheet_directory() . '/style.css';
+	wp_enqueue_style(
+		'darling',
+		get_stylesheet_uri(),
+		array( 'darling-ported' ),
+		file_exists( $style ) ? filemtime( $style ) : null // cache-bust on deploy
+	);
 
 	$hdr = get_stylesheet_directory() . '/assets/header.js';
 	if ( file_exists( $hdr ) ) {
