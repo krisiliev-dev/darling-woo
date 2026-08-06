@@ -13,7 +13,19 @@
  */
 
 define( 'DARLING_BORICA_CLI', true );
-require __DIR__ . '/class-borica-protocol.php';
+
+// The protocol class lives with the plugin, not next to this gate. Overridable so the
+// same file can be run from a box, from CI, or against an unpacked copy in /tmp.
+$protocol = getenv( 'BORICA_PHP_PROTOCOL' );
+if ( ! $protocol ) {
+	$protocol = __DIR__ . '/../plugin/darling-checkout/includes/class-borica-protocol.php';
+}
+if ( ! is_readable( $protocol ) ) {
+	fwrite( STDERR, "cannot read the protocol class at $protocol\n"
+		. "set BORICA_PHP_PROTOCOL to its path\n" );
+	exit( 2 );
+}
+require $protocol;
 
 $P      = 'Darling_Borica_Protocol';
 $passed = 0;
