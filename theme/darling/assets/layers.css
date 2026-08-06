@@ -1,0 +1,16 @@
+/**
+ * Cascade layer order for the Darling theme. Declared in its own tiny file that
+ * loads before every other stylesheet, because @layer order is fixed by FIRST
+ * DECLARATION — not by the order the rules arrive in.
+ *
+ *   ported      the verbatim Shopify stylesheet. Lowest authority of anything
+ *               we ship, so it can supply the aesthetic without dictating it.
+ *   components  reserved for slice 3+, once tokens exist.
+ *
+ * style.css itself is deliberately UNLAYERED. Unlayered author CSS outranks
+ * every layer, which is exactly what we need against WooCommerce Blocks'
+ * runtime stylesheet — Woo is unlayered too, so a layered theme would lose to
+ * it on cart, checkout and account. Slice 3 revisits this once the token layer
+ * gives us something safe to move.
+ */
+@layer reset, tokens, base, layout, ported, components, utilities;
