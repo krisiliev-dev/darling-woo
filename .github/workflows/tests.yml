@@ -1,0 +1,62 @@
+name: Tests
+
+# darling-woo had no test job at all. The only workflow here was the infra deploy, and it fires
+# only on infra/**, so the plugin's PHP - including the BORICA protocol, the code that decides
+# whether a card payment was actually paid - was never checked by anything except a human
+# remembering to run it. A gate nobody runs automatically is not a gate.
+#
+# Only what can run WITHOUT the site is here: the protocol vector gate (no WordPress, no network,
+# no credentials) and a syntax lint. The Playwright specs in tests/ are deliberately NOT here -
+# they drive the real staging site and need STAGING_PASS and a live box, so on a runner they would
+# fail for reasons that have nothing to do with the commit, and a permanently red gate is ignored.
+#
+# NOTE: the plugin is deployed by hand (agent-pipeline/deploy_to_box.sh), not by this repo's
+# deploy workflow. Green here means the commit is sound, NOT that the box is running it.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/**'
+      - 'theme/**'
+      - 'tests/**'
+      - '.github/workflows/tests.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 8.3 because that is what the box runs (wordpress:php8.3-fpm, infra/docker-compose.yml).
+      # Linting on whatever PHP the runner defaults to proves the code parses somewhere, not that
+      # it parses in production.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: openssl, mbstring, json
+          coverage: none
+
+      - name: Syntax lint (plugin, theme, tests)
+        run: |
+          n=$(find plugin theme tests -name '*.php' -type f | wc -l)
+          # A find that matched nothing would make this step pass while checking nothing.
+          if [ "$n" -eq 0 ]; then
+            echo "::error::no PHP files found - the lint would have passed while checking nothing"
+            exit 1
+          fi
+          find plugin theme tests -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          echo "linted $n PHP files"
+
+      # The one that protects money: assertions over the same borica-vectors.json the Python core
+      # is gated with, five of them carrying real signatures from BORICA's test terminal V1800001.
+      # Exit 2 = the protocol class was not found; exit 1 = an assertion failed. Neither deploys.
+      - name: BORICA protocol vector gate
+        run: php tests/borica-protocol-gate.php
