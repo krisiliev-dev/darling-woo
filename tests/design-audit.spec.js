@@ -86,9 +86,15 @@ const scan = () => {
       push('small-target', el, `${Math.round(r.width)}x${Math.round(r.height)}`);
     }
   });
+  // The ambient sparkle layer is a GENERATOR of random 8-22px text nodes with
+  // random inline offsets. Counting it made the type and spacing censuses
+  // unfalsifiable: they could never fall, no matter what the stylesheet did.
+  // It is decoration, aria-hidden, and not part of the reading surface.
+  const census = all.filter(el => !el.closest('.darling-ambient'));
+
   // 6. spacing vocabulary: how many distinct margins/paddings are in play?
   const spacings = new Set();
-  all.slice(0, 900).forEach(el => {
+  census.slice(0, 900).forEach(el => {
     const cs = getComputedStyle(el);
     ['marginTop', 'marginBottom', 'paddingTop', 'paddingBottom', 'gap'].forEach(p => {
       const v = cs[p];
@@ -97,7 +103,7 @@ const scan = () => {
   });
   // 7. type scale sprawl
   const sizes = new Set();
-  all.forEach(el => { if (el.children.length === 0 && el.textContent.trim()) sizes.add(getComputedStyle(el).fontSize); });
+  census.forEach(el => { if (el.children.length === 0 && el.textContent.trim()) sizes.add(getComputedStyle(el).fontSize); });
   // 8. ambient sparkle layer
   const amb = document.querySelector('.darling-ambient');
   const ambInfo = amb ? {
@@ -113,6 +119,7 @@ const scan = () => {
     by_type: defects.reduce((a, d) => { a[d.type] = (a[d.type] || 0) + 1; return a; }, {}),
     distinct_spacings: Array.from(spacings).sort((a, b) => parseFloat(a) - parseFloat(b)),
     distinct_font_sizes: Array.from(sizes).sort((a, b) => parseFloat(a) - parseFloat(b)),
+    ambient_excluded_from_census: all.length - census.length,
     ambient: ambInfo,
   };
 };
