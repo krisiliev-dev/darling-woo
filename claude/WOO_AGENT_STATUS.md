@@ -2627,3 +2627,137 @@ subscription plugins and solutions and wire them in."
   • O-9 said no RED slice ships without staging. *** Staging was retired at cutover, so
     that gate no longer exists to satisfy. *** Slice 6 gated on live exactly as RED
     slices 11 and 13 already did. Said plainly rather than quietly skipped.
+
+- 2026-08-06 sprint 60 — *** SPRINT 59 IS CLOSED. THE CONTRAST WAS THE MEASUREMENT,
+  NOT THE DESIGN — AND THE MONEY PATH WAS NOT ACTUALLY STILL. ***
+  A replacement session. The previous one died around 20:53 leaving two gate lines
+  reading „re-verifying after fix 2" and one recovered log,
+  `C:\Users\lora_\.darling-jobs\s6motionreverify-1786038775.log`, that nobody had
+  confirmed. The instruction was to re-run rather than inherit it. That was right
+  three separate times, and one of them was a live defect.
+
+  New scripts, both kept: `_scratch_woo/sprint60/s60-gate.js` and `s60-probe2.js`;
+  full JSON beside them as `s60-gate.json` and `s60-probe2.json`.
+
+  ═══ 1. THE OLD LOG'S CHECKOUT LEG WAS NEVER A CHECKOUT ═══
+  Read its own `moneyPath` block: `/cart/` and `/checkout/` both report
+  `bodyClass: "woocommerce-cart woocommerce-page …"`. *** The two entries are the
+  same page. *** An empty cart makes WooCommerce redirect `/checkout/` to `/cart/`,
+  so the checkout leg measured the cart a second time and returned `"moving": []`
+  about a page it never loaded. The result was not wrong; it was about the wrong
+  document.
+  This gate now puts an item in the cart via the Store API first and asserts
+  `body.woocommerce-checkout` before believing anything — measured, with 10 rate
+  rows rendered and a 789x51 place-order button, so it is the real thing.
+  *** METHOD NOTE: ASSERT THE PAGE YOU LANDED ON, NOT THE URL YOU ASKED FOR. ***
+  It is the same family as the under-loaded baseline from sprint 59: a measurement
+  taken on the wrong state is worse than no measurement, because it reads as
+  coverage.
+
+  ═══ 2. REDUCED MOTION — PASS, AND THE CHECK IS NOW A DIFFERENT SHAPE ═══
+  Nothing visible animates under `prefers-reduced-motion` on home, on the cart, or
+  on a real checkout. Fix 2 from sprint 59 holds.
+  What changed is how that is established. The old check asked five named elements
+  how they were. This one enumerates EVERY element and EVERY pseudo in the document
+  whose computed `animationName` is not `none`, and reports the lot. A named list
+  can only confirm what someone already suspected — which is precisely how the
+  `.d-metal` hole survived a diff review last sprint.
+
+  ═══ 3. AND THAT IS HOW THE MONEY PATH TURNED OUT NOT TO BE STILL ═══
+  With no motion preference, the live `/cart/` had FOUR elements in motion:
+      svg.dff-bow ............ darling-float 5.5s   46x23
+      i.dff-s.s1 / .s2 / .s3 . dhv-tw 2.8s          ~11x22 each
+  The footer flair renders on the cart and carries its own animations from the
+  ported Shopify stylesheet. The money-path guard in §5 named only the metal
+  (`.d-metal`, `.d-metal--thin`, `.dff-rule`, `.d-btn--primary`), so the metal was
+  still and everything else went on twinkling under it, while the file's own comment
+  claimed „the money path is still".
+  *** SPRINT 59 CAUGHT A GUARD NAMING A CLASS THE DOM DOES NOT USE. THIS IS THE SAME
+  MISTAKE WEARING DIFFERENT CLOTHES: THERE THE SELECTOR WAS WRONG, HERE THE SELECTOR
+  WAS RIGHT AND THE LIST WAS SHORT. *** Both are invisible to a diff and both are one
+  query away on a rendered page.
+  NOT a slice 6 regression, and worth being exact about it: `dhv-tw` and
+  `darling-float` arrived with the theme port and `.dff-*` predates the metal
+  entirely. The money path was never still on the cart. Only the metal was, and the
+  metal was all anyone had ever checked.
+  Fixed in `4f8fdb2` by extending the SAME §5 list — one list, still, not two that
+  drift — to the ported names that can reach a money-path page: the flair bow and
+  sparkles, the trust-row sparkles, the empty-state bow, and the shipbar shimmer.
+  The shimmer is in there deliberately: the cart is exactly where that bar appears.
+  `/checkout/` does not render the footer flair at all, measured, and was genuinely
+  still; its rows are written anyway so it stays still if that ever changes.
+
+  ═══ 4. THE 4.18 — IT WAS THE METHOD, NOT THE BUTTON ═══
+  The number a replacement was told not to inherit. It does not survive being
+  measured properly, and the button is comfortably fine.
+      hero button   worst glyph pixel 4.71 : 1  (1440)   ·  5.03 : 1  (390)
+      news button   worst glyph pixel 4.93 : 1  (1440)   ·  4.66 : 1  (390)
+      medians ~7.98 and ~8.01, and ZERO failing pixels at either width
+  Threshold is 4.5 — 17px/600 and 15px/700 are both normal text, not large text, so
+  no one gets to claim the 3:1 tier.
+  *** THREE THINGS WERE WRONG WITH THE OLD NUMBER, AND ALL THREE FLATTER THE FAILURE
+  RATHER THAN THE DESIGN: ***
+  • It counted anti-aliased glyph EDGES as ink. Its own `p05` of 1.08 gives it away —
+    a pixel at 1.08:1 against its own background is not ink, it is a letter fading
+    into the surface. Half a glyph's pixels are edge on a 17px font, so the median
+    lands somewhere between the ink and the metal rather than on either.
+  • It compared screenshot pixels against a surface DISTRIBUTION. WCAG is defined
+    between a text colour and the colour behind it, so ink must come from the
+    computed style — here a solid `rgb(58, 29, 32)` — and the surface must be sampled
+    from the SAME frame with the text made transparent, per pixel, underneath the
+    glyph that sits there.
+  • It took ONE frame of a surface that moves. The highlight drifts on a 26s period
+    and the glints breathe on an 11s one.
+  So: coverage is solved per pixel from `rendered = a·ink + (1-a)·surface` on the
+  channel with the largest ink/surface separation, only pixels at coverage ≥ 0.9 are
+  counted, and the pair is captured at fourteen frozen phases across the full 26s
+  (`animation-play-state: paused` with a negative `animation-delay` to seek).
+  Reported as the WORST pixel at the WORST phase, because WCAG failing anywhere in a
+  word is a failure.
+  *** AND THE DRIFT TURNS OUT NOT TO MATTER UNDER THE LETTERS. *** Surface luminance
+  across the button varies phase to phase (p50 0.445–0.450, max 0.898–0.923) but the
+  glyph-body figures are identical at every phase to three decimals: the 4% drift is
+  8px on a smooth gradient and the glint cores sit away from the text. That is a
+  measured result rather than an assumption, and it is the reason the phases were
+  sampled at all.
+  Also measured at 390 for the same reason sprint 58 gave — test the extremes of the
+  shape. The button is 192x54 there instead of 201x56 and the gradient rescales under
+  the same glyphs; it holds.
+  BONUS, AND IT INVALIDATES ANOTHER OLD NUMBER: the log's „mark 4.23" was measured on
+  `.dff-mark`, which is an `aria-hidden` decorative wrapper holding ✦✧✦ and an SVG
+  bow. It has no text in the accessibility sense and 0 glyph-body pixels once ink is
+  taken from the computed style. There was never a contrast requirement there to
+  meet or miss.
+
+  ═══ GATE AS IT STANDS — SPRINT 59 CLOSED ═══
+  reduced motion .......... home, cart, real checkout: NOTHING visible animates,
+                            whole-DOM enumeration                       ✓
+  money path .............. checkout still (real checkout, 10 rates)    ✓
+                            cart had 4 moving elements — FIXED in 4f8fdb2
+  contrast, hero label .... worst pixel 4.71 (1440) / 5.03 (390) vs 4.5 ✓
+  contrast, news label .... worst pixel 4.93 (1440) / 4.66 (390) vs 4.5 ✓
+  grain asset ............. 200                                          ✓
+  Everything above is from this session's own run on the live site.
+
+  ═══ THE THREE OWNER ASKS ARE ANSWERED ═══
+  • O-4 — free-licence stock (Unsplash / Pexels) now, replaceable later. Record
+    source URL, photographer and licence text PER IMAGE. Spec unchanged: hero + one
+    landscape per top-level category, ≥2000px, subject centred, safe area on the
+    right third.
+  • O-5 — quiet branded slab, bow motif on vanilla, with a small
+    «Изображението не се зареди». It is an ERROR state now, not a „no photo yet"
+    state, because the panel refuses to publish a product without an image — but it
+    must not make one failed fetch look like a broken shop, and the customer can
+    still buy.
+  • O-6 — five eyebrows approved verbatim, to add to `templates/front-page.html`
+    alongside the existing «Сезонно, darling»:
+      Категории → ЗА ЦЕЛИЯ ДОМ · Изборът на Lady D → ЛИЧНО ИЗБРАНО ·
+      Ново в Darling → ТОКУ-ЩО ПРИСТИГНА · Защо Darling → ОБЕЩАНИЕТО НИ ·
+      Бюлетин → ОСТАНИ НАБЛИЗО
+
+  ═══ ALSO WORTH KNOWING ═══
+  • `require` resolves against the SCRIPT's directory, not the cwd. A gate living in
+    `_scratch_woo` cannot see `darling-woo/node_modules` however you set `cwd` —
+    `NODE_PATH=C:\Users\lora_\darling\darling-woo\node_modules` is the fix, and it is
+    much better than the alternative of running a bare `npm install` next door.
+  • `pngjs` is already in `darling-woo/node_modules`, so pixel work needs no install.
