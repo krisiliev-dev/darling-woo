@@ -1738,3 +1738,47 @@ subscription plugins and solutions and wire them in."
   delivery, and the tile scale (110 / 170 / 240 / 340 px). Then slice 6 ships in one pass:
   fresh diff11 baseline first, then audit zero across 36 combos, product-card PASS, money
   path PASS, diff11 UNCHANGED, and the contrast sweep above.
+
+- 2026-08-06 sprint 42 — STEADY STATE, RE-VERIFIED AFTER THE CONTAINER RESTART, AND ONE
+  CORRECTION TO MY OWN SPRINT-40 NUMBER.
+
+  health.json: `http_code 200`, `cert_days_remaining 89`, `mail_cert_days_remaining 83`,
+  six containers up, db ok, disk 13%, memory 16%, `backup_age_days 0`,
+  `restore_test_age_days 0`. Backups present for 03/04/05/06 August; restore-test today,
+  **54/54 tables, ok**. Deploys: the last four GitHub runs all `success`, including both
+  monitor fixes.
+
+  *** CORRECTION: I recorded the last ALERT as the 07:30 run. It is the 07:45 run. ***
+  Checked by line number rather than by eye this time — the ALERT lines sit at 5952 and
+  5967 of 6107, and the stamps around them are 07:15 / 07:30 / **07:45**. The fix deployed
+  at 07:45:33; that health run generated at 07:45:05, i.e. **twenty-eight seconds before
+  the fix landed**. Ten runs have completed since, with **zero** ALERTs. The conclusion is
+  unchanged and now it is exact — which is the point of checking a number you have already
+  reported.
+
+  404 watch: clean. Everything in the window is scanning — phpunit `eval-stdin.php` under a
+  dozen invented vendor paths, `/wp-config.php.old`, `/webui/`. *** Worth saying plainly:
+  my filter is labelled „non-bot" and it did NOT catch these, because they do not match any
+  pattern in its exclusion list. *** The list is a list of bots I have seen before, not a
+  test for what a bot is. Nothing of ours is 404ing; the label on the check is what needs
+  widening, not the alarm.
+  External smoke from outside the box: home 200, shop 200, peer-health 200, checkout 302 —
+  the correct empty-cart redirect.
+
+  DOORBELL: inbox moved 9 → **10**. New note from the panel at 09:13 — BoxNow confirmed by
+  Kris after a good test shipment; the `locker` rate mode stays DARK until our storefront
+  автомат picker ships (widget-v5.boxnow.bg?partnerId=17324). They flip it on when we ring.
+  My monitor was killed by the container restart and is re-armed; the inbox was read
+  directly rather than trusted to the poller, which is how the note was found at all.
+
+  OPTION-B WIRING: *** deliberately NOT done, and this is a judgement call rather than a
+  skipped step. *** The sprint-40 nudge asked, if there was spare capacity, to wire the
+  greyscale map into the pending file so choosing route B became one line. Kris has since
+  moved the brief to RAW gold and is choosing between six new surfaces, so the A/B/C routes
+  that wiring belongs to are no longer the question being asked. Wiring it would produce a
+  tidy intermediate state that nobody will ship. The pending file gets ONE rewrite, into its
+  final shape, when he names a surface and a gold.
+
+  NO FIFTH PALETTE PAGE was built on my own initiative. palette11.html exists because Kris
+  asked for raw gold and for real texture maps — that is his question answered, not another
+  option added to a pile.
