@@ -58,10 +58,14 @@
 				<!-- /wp:query-pagination -->
 
 				<!-- wp:query-no-results -->
-					<!-- wp:paragraph {"className":"darling-empty"} -->
-					<p class="darling-empty">Нищо не намерихме за това търсене. Опитай с друга
-					дума или разгледай <a href="/shop/">всички продукти</a>, darling.</p>
-					<!-- /wp:paragraph -->
+				<!-- wp:html -->
+				<div class="darling-empty">
+					<svg class="de-bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg>
+					<p class="de-title">Нищо не намерихме, darling.</p>
+					<p class="de-sub">Опитай с друга дума — или с по-къса. Ако още не сме качили това, което търсиш, кажи ни и ще го потърсим в магазина.</p>
+					<a class="d-btn d-btn--primary" href="/shop/">Разгледай всички продукти</a>
+				</div>
+				<!-- /wp:html -->
 				<!-- /wp:query-no-results -->
 			</div>
 			<!-- /wp:query -->

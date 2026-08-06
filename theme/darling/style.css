@@ -1250,3 +1250,105 @@ body.woocommerce-account main,
 }
 .darling-grid--list li .wp-block-post-title{min-height:0}
 .darling-grid--list li .wp-block-post-title a{-webkit-line-clamp:1}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D8 — ARCHIVE, FILTERS, EMPTY STATES (2026-08-06)
+
+   Measured first, as always:
+
+   • THE ARCHIVE SHELLED ITSELF TWICE. `<main class="darling-archive">` carries
+     WordPress global padding (48px each side at 1440) and then `.darling-grid`
+     applied our own `--d-gutter` again (another 48 each side). 96px of the grid
+     was padding nobody asked for. `.darling-grid` is a top-level BAND on the
+     home page, where it correctly owns the shell, and a nested CHILD inside the
+     archive, where main already owns it. Nested, it must not shell again.
+
+   • THE FILTER RAIL RESERVES 250px FOR AN ELEMENT 0px TALL. The
+     `wc-block-product-filters` block renders an empty overlay wrapper and a
+     `display:none` trigger — with one product there is nothing to filter — so
+     the sidebar is a heading over nothing, and the grid loses a quarter of its
+     width to it. The `:has()` guard below collapses the rail until real filter
+     blocks render, and brings it back by itself when the catalogue lands.
+
+   • THE PLAN'S OVERLAY FIX DOES NOT EXIST IN THIS WOO. It said to set the
+     block's `overlay` attribute to `never` in the template. `block.json` for
+     woocommerce/product-filters in WooCommerce 10.9.4 declares exactly ONE
+     attribute — `isPreview`. Writing `"overlay":"never"` would have been a
+     silent no-op that I would have recorded as done. The defensive CSS below
+     does the job instead, and does not depend on an API that may not exist.
+
+   • THE CARD BUTTON'S `width:100%` WAS LOSING A SPECIFICITY FIGHT, not a source
+     -order one. Asked the engine directly (CDP getMatchedStylesForNode):
+     WooCommerce ships
+     `.wp-block-button.wc-block-components-product-button .wp-block-button__link
+      {width:auto}` at (0,3,0); mine was (0,2,1). Beaten by matching their
+     selector shape — not by `!important`, which is how this file got into
+     trouble in the first place.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. One shell per region. */
+.darling-archive .darling-grid,
+.darling-archive .darling-section-title{max-width:none;padding-inline:0}
+
+/* 2. The card CTA fills its card. */
+.darling-grid li .wp-block-button.wc-block-components-product-button .wp-block-button__link,
+.darling-grid li .wp-block-button.wc-block-components-product-button .wc-block-components-product-button__button{
+	width:100%;
+}
+.darling-grid li .wp-block-button.wc-block-components-product-button{justify-content:stretch}
+
+/* 3. An empty filter set must not reserve a rail — and a heading must not stand
+      over nothing. Both come back on their own when real filters render. */
+@supports selector(:has(*)){
+	.darling-archive__body:not(:has(.wp-block-woocommerce-product-filter-price,
+		.wp-block-woocommerce-product-filter-stock-status,
+		.wp-block-woocommerce-product-filter-attribute,
+		.wp-block-woocommerce-product-filter-rating,
+		.wp-block-woocommerce-product-filter-active,
+		.wc-block-product-filter)) .darling-archive__side{display:none}
+
+	/* „Може да ви хареса" above 200px of nothing, on every product page. */
+	.darling-section-title:has(+ .wp-block-woocommerce-related-products:not(:has(li))){display:none}
+	.wp-block-woocommerce-related-products:not(:has(li)){display:none}
+}
+
+/* 4. Defensive containment for the filter overlay. The mobile leak the audit
+      reported did NOT reproduce (probed: position:static, 0px tall), but the
+      block is third-party and interactivity-driven, so the failure mode is one
+      update away. Closed is closed; open is a real sheet, not page flow. */
+.wc-block-product-filters__overlay:not(.is-opened){contain:layout}
+.wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay{
+	position:fixed;inset:0;z-index:90;overflow-y:auto;overscroll-behavior:contain;
+	background:var(--d-cream);
+}
+.wc-block-product-filters__open-overlay,
+.wc-block-product-filters__close-overlay,
+.wc-block-product-filters__apply{min-height:44px;min-width:44px;
+	padding:.6rem 1.1rem;border-radius:999px;font-size:var(--fs-sm);font-weight:600}
+
+/* 5. Filter chrome speaks the card vocabulary — written now so the controls are
+      dressed the moment the catalogue makes them render. */
+.darling-archive__side .wc-block-product-filters{background:#fff;border-radius:14px;
+	padding:var(--space-xs);box-shadow:0 2px 10px rgb(var(--d-shadow)/.06)}
+.darling-archive__filters-title{font-size:var(--fs-xs);letter-spacing:var(--ls-eyebrow);
+	text-transform:uppercase;color:var(--d-cherry);margin:0 0 var(--space-2xs)}
+
+/* 6. Empty states. A category with nothing in it is a normal state for a shop
+      that is still importing 10 800 products — it should read as "not yet",
+      not as "broken". */
+.darling-empty{display:flex;flex-direction:column;align-items:center;text-align:center;
+	gap:var(--space-2xs);padding:var(--space-xl) var(--space-s);opacity:1;
+	background:#fff;border:1px solid var(--d-sand);border-radius:16px;
+	margin:var(--space-s) 0 var(--space-l)}
+.darling-empty .de-bow{width:52px;height:auto;color:var(--d-cherry);
+	filter:drop-shadow(0 2px 6px rgb(212 42 60/.18));margin-bottom:var(--space-2xs)}
+.darling-empty .de-title{margin:0;font-family:"Playfair Display",Georgia,serif;
+	font-weight:500;font-size:var(--fs-section);line-height:var(--lh-section);
+	color:var(--d-cocoa)}
+.darling-empty .de-sub{margin:0;max-width:46ch;font-size:var(--fs-sm);
+	line-height:var(--lh-body);opacity:.85}
+.darling-empty .d-btn{margin-top:var(--space-2xs)}
+@media (prefers-reduced-motion:no-preference){
+	.darling-empty .de-bow{animation:darling-float 5.5s ease-in-out infinite}
+}
