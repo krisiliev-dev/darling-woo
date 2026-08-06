@@ -1797,6 +1797,48 @@ body.woocommerce-order-received .d-btn--primary, body.woocommerce-order-received
 	animation: none !important;
 }
 
+/* THE SAME LIST, ONE SLICE LATER. The guard above names only the metal, and
+   measured on the live cart that is not the whole of what moves. The footer flair
+   carries its OWN animations from the ported Shopify stylesheet - the bow floats
+   (darling-float 5.5s) and three sparkles twinkle (dhv-tw 2.8s) - and the cart
+   renders the footer, so FOUR elements were in motion on /cart/ while this file
+   claimed the money path was still.
+
+   *** IT SURVIVED BECAUSE THE CHECK NAMED FIVE ELEMENTS AND THE PAGE HAS MORE. ***
+   Sprint 59 found the reduced-motion guard naming `.d-metal`, a class the live DOM
+   does not use. This is the same mistake wearing different clothes: there the
+   selector was wrong, here the selector was right and the LIST was short. Both are
+   invisible to a diff and both are one query away on a rendered page. The gate now
+   enumerates every element and every pseudo whose computed `animationName` is not
+   `none`, instead of asking five named ones how they are - which is the only reason
+   this was found. Anything that gains an animation still gets added to both lists
+   in the same commit; the gate is now what catches it when someone forgets.
+
+   Not a slice 6 regression: `dhv-tw` and `darling-float` came in with the theme port
+   and `.dff-*` predates the metal. The money path was never still on the cart; only
+   the metal was, and the metal was all anyone had checked.
+
+   The shipbar shimmer is in this list on purpose - the cart is exactly where that
+   bar appears. /checkout/ does not render the footer flair at all today, measured;
+   the checkout rows are here so it stays still if that ever changes. */
+body.woocommerce-cart .darling-foot-flair .dff-bow,
+body.woocommerce-cart .darling-foot-flair .dff-s,
+body.woocommerce-cart .darling-shipbar .dsb-track i::after,
+body.woocommerce-cart .darling-trust b::before,
+body.woocommerce-cart .darling-empty .de-bow,
+body.woocommerce-checkout .darling-foot-flair .dff-bow,
+body.woocommerce-checkout .darling-foot-flair .dff-s,
+body.woocommerce-checkout .darling-shipbar .dsb-track i::after,
+body.woocommerce-checkout .darling-trust b::before,
+body.woocommerce-checkout .darling-empty .de-bow,
+body.woocommerce-order-received .darling-foot-flair .dff-bow,
+body.woocommerce-order-received .darling-foot-flair .dff-s,
+body.woocommerce-order-received .darling-shipbar .dsb-track i::after,
+body.woocommerce-order-received .darling-trust b::before,
+body.woocommerce-order-received .darling-empty .de-bow{
+	animation: none !important;
+}
+
 
 /* ── §6. THE BUTTON RULE ────────────────────────────────────────────────────
    Kris's decision, and it is a RULE rather than a colour: a button contrasts with
