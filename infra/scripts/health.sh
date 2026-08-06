@@ -26,8 +26,12 @@ DISK=$(df -P / | awk 'NR==2{gsub("%","",$5); print $5}')
 # The MAIL certificate renews on the same cron but is NOT served by nginx, so the
 # check above cannot see it. A silent renewal failure there stops mail rather than
 # the website — a quieter failure, and therefore one worth watching explicitly.
-MAIL_CERT=/srv/darling/prod/nginx/certbot/conf/live/mail.darlinghome.bg/fullchain.pem
-MAIL_CERT_END=$([ -r "$MAIL_CERT" ] && openssl x509 -in "$MAIL_CERT" -noout -enddate 2>/dev/null | cut -d= -f2)
+# Read it FROM THE PORT IT IS SERVED ON, not from the filesystem. The file lives
+# under a root-owned certbot directory the darling user cannot read, so this check
+# reported -1 forever — the "quieter failure worth watching" was itself the thing
+# not being watched. Probing 993 also tests the cert as a mail client actually
+# sees it, which the file never did.
+MAIL_CERT_END=$(echo | timeout 10 openssl s_client -connect mail.darlinghome.bg:993 -servername mail.darlinghome.bg 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
 MAIL_CERT_DAYS=$([ -n "$MAIL_CERT_END" ] && echo $(( ( $(date -d "$MAIL_CERT_END" +%s) - $(date +%s) ) / 86400 )) || echo -1)
 MAIL_UP=$(docker compose ps --status running -q mailserver </dev/null 2>/dev/null | wc -l)
 MEM=$(free -m | awk '/^Mem:/{printf "%d", $3*100/$2}')
