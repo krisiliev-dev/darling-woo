@@ -12,8 +12,14 @@ age_days() { [ -f "$1" ] && echo $(( ( $(date +%s) - $(date -d "$(cat "$1")" +%s
 CONTAINERS=$(docker compose ps --format '{{.Service}}:{{.State}}' </dev/null 2>/dev/null | paste -sd, -)
 UP=$(docker compose ps --status running -q </dev/null 2>/dev/null | wc -l)
 DB_OK=$(docker compose exec -T db mariadb -u root -p"${MYSQL_ROOT_PASSWORD:-}" -N -B -e "SELECT 1;" </dev/null 2>/dev/null | tr -d '\n' || echo 0)
-HTTP=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 -H "Host: staging.darlinghome.bg" https://127.0.0.1/ 2>/dev/null || echo 000)
-CERT_END=$(echo | openssl s_client -connect 127.0.0.1:443 -servername staging.darlinghome.bg 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+# The Host header and the SNI name MUST be the live site. They said
+# staging.darlinghome.bg until 2026-08-06, which survived the cutover unnoticed:
+# the apex block 301s that hostname, so this check logged "ALERT: site returned
+# 301" 45 times AND — the part that actually mattered — never checked the real
+# site at all. A monitor pointed at a hostname that no longer exists is worse
+# than no monitor: it reports failure while proving nothing.
+HTTP=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 -H "Host: darlinghome.bg" https://127.0.0.1/ 2>/dev/null || echo 000)
+CERT_END=$(echo | openssl s_client -connect 127.0.0.1:443 -servername darlinghome.bg 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
 CERT_DAYS=$([ -n "$CERT_END" ] && echo $(( ( $(date -d "$CERT_END" +%s) - $(date +%s) ) / 86400 )) || echo -1)
 DISK=$(df -P / | awk 'NR==2{gsub("%","",$5); print $5}')
 
