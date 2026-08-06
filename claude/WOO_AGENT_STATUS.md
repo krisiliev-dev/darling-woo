@@ -1942,3 +1942,58 @@ subscription plugins and solutions and wire them in."
 
   ═══ STILL OPEN ═══
   The colour, and only the colour. Everything else in slice 6 is now decided and encoded.
+
+- 2026-08-06 sprint 46 — THE WORDMARK BUG, SATURATION, AND A REAL PROCEDURAL METAL.
+  Three questions from Kris, three answers, `palette15.html`.
+
+  1. *** HE FOUND A REAL DEFECT AND THE CAUSE IS ONE STOP. *** „The Дарлинг text is hard to
+  read in the middle because of the banding." Correct: the band carries a **vanilla** stop
+  at 50%, and on a light page that stop lands mid-word, so the letters dissolve exactly
+  where the eye is. The lesson generalises — *** a metal TEXT fill must stay in the DARK
+  half of the ramp, because the page behind it is light; a metal SURFACE may use the whole
+  ramp, because it covers the page. *** They are different jobs and now different bands
+  (`--band-text` vs `--band-quiet`).
+  MEASURED on the render, wordmark vs the grey page: **1.42–1.74:1 → 3.79–5.11:1**. All
+  four variants now clear 3:1 where none did before. Same family, same texture; only which
+  band the text uses changed.
+
+  2. SATURATION, WHICH WAS THE RIGHT DIAGNOSIS.
+  His read: „the grey washes out the darker variants, the yellow has a nice pop but is too
+  flashy." So the new family holds the honey hue and pushes SATURATION instead of
+  lightness: 40/86/0, 36/88/−2, 32/90/0, 28/92/+2, 38/84/−5 — plus the old deep honey and
+  the rejected yellow kept in frame as reference points. Shown on BOTH grounds this time,
+  because the complaint was specifically about the grey.
+
+  3. *** YES TO PROCEDURAL, AND IT IS BUILT AND WORKING — CSS PAINT API (HOUDINI). ***
+  A paint worklet receives the ELEMENT'S OWN SIZE and paints its surface in place, so:
+  the reflection runs along the long axis of a wide pill and diagonally across a square
+  badge; the dents are sized as a fraction of the SHORT side, so a badge gets small ones
+  and a hero button large ones; and the edge highlight sits on one edge with the shade on
+  the opposite, with which side chosen by the seed. Two dent scales plus sparse scratches —
+  one scale alone reads as blur, which was the flaw in the earlier attempt.
+  *** THE SEED IS DETERMINISTIC, NOT RANDOM. *** Same seed → same surface, always. Random
+  would flicker on every repaint and defeat the raster cache. On the site the seed comes
+  from the product ID: every button unique, but the *same* unique one on every load.
+  BUG CAUGHT ON THE RENDER: the first paint showed a hard seam down the middle of every
+  element. `.metal` sets `background-size:150px 150px` for the static tile, and the paint
+  layer inherited it — so the worklet output was being TILED at 150px instead of filling
+  the element. `background-size:100% 100%` fixed it. Invisible in the code, obvious in the
+  picture.
+
+  4. WEAK DEVICES — THE FALLBACK IS NOT BUILT, IT IS ALREADY THERE.
+  If the worklet never registers, `background-image:paint(darling-metal)` is simply an
+  invalid declaration and the static tile stays. So the gate can be blunt: no Paint API
+  (**Firefox and Safari have none**), ≤2 cores, <2 GB memory, or `prefers-reduced-data`.
+  A `#force` hash bypasses the gate for inspection.
+  HONEST ON COST: `paint()` runs per element per size, cached thereafter — a category page
+  with twenty cards means twenty paints at first layout. *** I cannot benchmark that
+  credibly from this box, so it is stated as a model and not as a measurement. *** The
+  cautious split is the same one we made for the SVG filter: procedural for the hero
+  button, wordmark, bow and badge; static tile for the card grid.
+  ON „TACKY": the risk is not uniqueness, it is its RANGE. The seed moves geometry only —
+  angle, dents, scratches — and never colour, so twenty buttons read as twenty pieces of
+  the same metal rather than twenty materials.
+
+  ═══ STILL OPEN ═══
+  The colour, still. Plus two new small ones this round created: whether the procedural
+  layer ships at all, and if so whether it is hero-only or everywhere.
