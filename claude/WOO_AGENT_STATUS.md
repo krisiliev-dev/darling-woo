@@ -853,3 +853,65 @@ subscription plugins and solutions and wire them in."
   NEXT: slice 5 (typography completion — migrate the ~30 component-level font sizes onto
   the scale) and slice 6 (colour semantics) — slice 6 is BLOCKED on Kris: cherry-vs-honey
   button, and gold roughness step 3 vs 4. Touch targets (16/page) are slice 6/10.
+
+- 2026-08-06 sprint 27 — DESIGN SLICE 5 SHIPPED + GATED (commit fe27292, deploy
+  31069375167 green). TYPOGRAPHY COMPLETION.
+  This slice MIGRATED rather than appended. Slice 3 deliberately added a block at the
+  bottom that put role-bearing type on the scale and left the component literals alone,
+  so the file carried two vocabularies at once. All 78 literal font-sizes in style.css
+  are now gone — replaced in place by the tokens — and every line-height and tracking
+  value with them. There is no new override block; the file is smaller in vocabulary,
+  not longer.
+  TWO NEW ROLE TOKENS, both earned by the migration rather than invented up front:
+  --fs-xl (20→22) is the rung the ramp was missing between --fs-lg (18→20) and
+  --fs-section (21→28) — without it the header wordmark and the card price had nowhere
+  to land; --fs-brand (24→32) exists because a wordmark is NOT part of the reading
+  hierarchy, and the alternative was reaching for --fs-title and dragging a 40px serif
+  into the footer. Naming them by role is what stops that.
+  THE DUAL-CURRENCY COMPANION IS NOW A RATIO, NOT A SIZE. „/ 26,40 лв." had FIVE
+  different declarations (.72em, .85em, .9em, 1em in the vendor, .95rem beside the PDP
+  price) because each context re-guessed it. It now has exactly ONE font-size
+  declaration site, `font-size:var(--bgn-ratio)`, and contexts set the VARIABLE
+  (.6em beside a PDP price, .85em in the cart totals, .72em everywhere else). It is a
+  proportion of the number it stands next to; expressing it as an absolute size was the
+  bug behind every one of those five values.
+  Deleted: the `@media (max-width:900px){.darling-header__logo{font-size:1.2rem}}`
+  override. The brand token is fluid, so the breakpoint had nothing left to do — that is
+  the point of the scale and it should keep deleting breakpoints as it spreads.
+  VENDOR (assets/darling.css, owner-approved to edit): same migration for the text it
+  owns — df-*/dff-* footer, dpt-* PDP trust, dcb-* banners, news, trust, semantic.
+  DELIBERATELY LEFT AS px: the decorative star glyphs (.s1–.s5, .dff-s), the ornament
+  pseudo-elements, the a11y-mode 17px body and the 22px a11y button icon. Those are
+  ornament geometry, not type, and putting them on a reading scale would be cargo cult.
+  *** HARNESS: I FIXED A METRIC THAT COULD NOT FALL. *** tests/design-audit.spec.js
+  counted every text node on the page, and the ambient sparkle layer GENERATES text
+  nodes at random 8–22px sizes — one distinct size per star. So "distinct font sizes"
+  was unfalsifiable: no stylesheet change could ever move it. The census now excludes
+  .darling-ambient and REPORTS the number of excluded elements rather than hiding the
+  exclusion. Measured on home@desktop, both ways, so the before/after is honest:
+  with the old polluted method 33 (slice 3) → 24 (now); with the fixed census, 14.
+  The sparkles alone were exactly 10 of the old number (10 stars, 10 sizes).
+  Fourteen is a real vocabulary: 11/12/13/14/15/17/20/22/26/28/30/60 plus two em-derived
+  companions.
+  GATE PASS, and the defect table is IDENTICAL to the slice-4 baseline page for page —
+  16/17/17/19/16/16 at mobile, 16/15/15/19/16/16 at desktop, all small-target, zero
+  viewport-overflow, zero doc-overflow, zero escapes-parent, zero text-overflow across
+  all 36 combos. Money path PASS: „Спиди — до офис €4.42 / 8,64 лв." first, cheapest
+  first, all eleven checkout i18n checks green.
+  CORRECTION TO MY OWN SPRINT-26 ENTRY: I wrote "every page 16 defects". That was
+  sloppy — the slice-4 log shows 16/17/17/19/16/16. The product page's extra three are
+  the five 24×24 review-rating stars; it has been 19 since before slice 4. Nothing
+  regressed, but a status doc that rounds its own numbers is worth less than one that
+  does not.
+  VISUAL (s5-home-desktop/mobile, s5-product-desktop): hierarchy holds at both ends —
+  display → section → body reads as three clearly different things at 390 as well as
+  1440, which is where it was collapsing before slice 3.
+  NOTED, NOT FIXED (they belong to later slices, listed so they are not rediscovered):
+  the PDP price still renders Playfair because .darling-product__price predates the D3
+  rule that moved prices to Inter tabular — resolve in slice 6 when colour/price
+  semantics land; the reviews form is still raw WP comment markup and the Stripe „Link"
+  button is still an off-brand green slab (state primitives / component slices).
+  NEXT: slice 6 (colour semantics) is STILL BLOCKED on Kris — cherry-vs-honey as the
+  button, and gold roughness step 3 (grain) vs 4 (grain + forged). Asked three times
+  now; everything else in the palette is locked and encoded. If it stays blocked I take
+  slice 7 (product card) next, which needs no colour decision.
