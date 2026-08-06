@@ -11,6 +11,12 @@ defined( 'ABSPATH' ) || exit;
 
 class Darling_Panel_API {
 
+	/**
+	 * Bump when the panel's response SHAPE changes. NOT when its data changes -
+	 * that is what the TTL is for. See self::get().
+	 */
+	private const CACHE_EPOCH   = '20260807a';
+
 	private const CACHE_OFFICES = 12 * HOUR_IN_SECONDS;
 	private const CACHE_QUOTE   = 10 * MINUTE_IN_SECONDS;
 	private const TIMEOUT       = 8;
@@ -41,7 +47,18 @@ class Darling_Panel_API {
 			return array( 'ok' => false, 'data' => array(), 'error' => 'panel not configured' );
 		}
 		$url = self::base() . $path . '?' . http_build_query( $args );
-		$key = 'darling_papi_' . md5( $url );
+		// *** THE CACHE KEY CARRIES A SHAPE EPOCH, AND IT HAD TO. ***
+		// Office lists cache for twelve hours keyed on the URL. When the panel starts
+		// returning NEW FIELDS - as it did tonight, adding kind/lat/lon/distance_km -
+		// every already-cached URL keeps serving the OLD SHAPE until it expires, and the
+		// storefront quietly renders a feature that looks broken.
+		// Measured: Свищов still answered `kind: ""` from cache while a never-queried
+		// city answered `kind: "office"` - so СВИЩОВ - БИЛЛА (АВТОМАТ) was still being
+		// labelled «офис» in the picker, which is the exact support call this whole
+		// slice exists to prevent. It also nearly had me report a working panel as
+		// broken twice in one night.
+		// *** A PANEL DEPLOY MUST NOT TAKE TWELVE HOURS TO REACH CUSTOMERS. ***
+		$key = 'darling_papi_' . self::CACHE_EPOCH . '_' . md5( $url );
 
 		$hit = get_transient( $key );
 		if ( false !== $hit ) {
