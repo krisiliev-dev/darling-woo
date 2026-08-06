@@ -2761,3 +2761,31 @@ subscription plugins and solutions and wire them in."
     `NODE_PATH=C:\Users\lora_\darling\darling-woo\node_modules` is the fix, and it is
     much better than the alternative of running a bare `npm install` next door.
   • `pngjs` is already in `darling-woo/node_modules`, so pixel work needs no install.
+
+  ═══ SPRINT 60 CLOSED — THE FIX IS LIVE AND CONFIRMED ═══
+  Deploy `4f8fdb2` landed and was verified by MEASURING THE LIVE FILE, not by trusting
+  the workflow: `style.css` is 111028 bytes, matching the expected 111028 exactly (it
+  was 108501 before). Re-running the cart leg against the live site afterwards:
+  `.dff-bow` and all three `.dff-s` now report `animationName: none`.
+  *** THE CART IS STILL. MONEY PATH PASS, ON THE RENDER, AFTER THE DEPLOY. ***
+
+  GETTING IT THERE TOOK SIX DISPATCHES, AND THE DIAGNOSIS MATTERS FOR NEXT TIME.
+  Five „Deploy infra" runs died at exactly 15m03s with `runner_name: ""`. The annotation
+  says it outright:
+      „The job was not acquired by Runner of type hosted even after multiple attempts"
+  That is a GITHUB-SIDE hosted-runner allocation failure, not our code, not the SSH key
+  and not the box. *** I first read it as an Actions billing wall and was WRONG *** — the
+  discriminator is that `Tests` completed SUCCESS at 20:44 in this same repo while a
+  Deploy sat queued. Same account, same runner label, minutes apart: capacity is
+  available and the allocation is simply flaky.
+  So the correct response is to RETRY, which is what the previous session's
+  `s6deployretry` had already discovered — it landed on attempt 1 after two failures, and
+  so did this one. Two things to get right when retrying:
+  • `deploy.yml` has `concurrency: group: deploy-woo`, so dispatch ONE AT A TIME. Stacking
+    dispatches makes a pending run get cancelled in favour of the newer one.
+  • Poll the LIVE FILE SIZE, not the workflow status. That is the only thing that proves
+    the bytes arrived.
+  Also checked and recorded as a dead end: `ssh.exe` cannot run through the laptop bridge
+  at all — even `ssh -V` exits 255 with no output — so hand-deploying with
+  `~/.ssh/woo_deploy_key` is not available from here, and the key must not be copied
+  anywhere to make it available.
