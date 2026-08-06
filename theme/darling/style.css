@@ -1165,7 +1165,11 @@ body.woocommerce-account main,
    gate caught it: a 78-character Bulgarian name still ran to four lines. */
 .darling-grid li .wp-block-post-title a{color:inherit;text-decoration:none;
 	display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-	overflow:hidden}
+	overflow:hidden;
+	/* Fill the height the heading already reserves. A one-line product name gave
+	   a 322x26 link — the only sub-32px target left on the shop grid — and this
+	   costs nothing visually because the two-line box is reserved either way. */
+	min-height:calc(2em * var(--lh-tight))}
 .darling-grid li .wp-block-post-title a:hover{color:var(--d-cherry-deep)}
 
 /* Price: loud, but not louder than it is on the product page itself. */
@@ -1368,3 +1372,12 @@ body.woocommerce-account main,
 .darling-foot-flair .dff-social{gap:var(--space-2xs)}
 .df-head{margin-block:0 var(--space-xs)}
 .df-map{margin-block:var(--space-2xs) 0}
+
+
+/* The review rating stars are five 24x24 anchors of raw WordPress comment
+   markup — a real control, and the last per-page cluster the audit reports.
+   The reviews form as a whole is still unstyled and belongs to a later slice;
+   the hit area does not need to wait for it. */
+.darling-product .comment-form-rating .stars a,
+.comment-form-rating .stars a{display:inline-flex;align-items:center;
+	justify-content:center;min-width:34px;min-height:34px}
