@@ -72,6 +72,67 @@ services:
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/zz-darling.ini:ro
       - ./php/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-darling.conf:ro
 
+  # WP-Cron, which WordPress cannot run for itself here.
+  #
+  # DISABLE_WP_CRON above is right: the scheduler WordPress ships with fires on random page
+  # loads, so "in 960 seconds" really means "whenever somebody next visits". But turning it off
+  # is only half a change, and for a long time nothing did the other half - so every
+  # wp_schedule_single_event() in the plugin was queued and never run.
+  #
+  # The one that costs money is the BORICA recheck. A card transaction that comes back
+  # non-final is provisional until GUARDTIME passes; the callback puts the order ON HOLD and
+  # re-queries with TRTYPE=90 at +960s. With no runner that query never happens - the order
+  # sits on hold forever while the card may well have been charged, and nothing goes red. It
+  # looks exactly like an order nobody has got round to yet.
+  #
+  # A container rather than a host crontab, because this file is what a rebuild carries; a line
+  # typed on the box once is invisible and is lost the day the box is rebuilt. CLI rather than
+  # a curl to wp-cron.php, because HTTP would drag in the rate limits in 00-limits.conf, the
+  # staging basic-auth gate, and a dependency on the site being reachable from inside its own
+  # network - all for a call that never needed to leave the host.
+  wpcron:
+    image: wordpress:php8.3-fpm
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    # The image's entrypoint installs and rewrites WordPress on the volume it is handed. This
+    # container must only ever READ that volume, so the entrypoint is replaced outright, and it
+    # runs as the same user php-fpm does so it cannot leave root-owned files behind.
+    user: www-data
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          php /var/www/html/wp-cron.php >/dev/null 2>&1 \
+            || echo "wp-cron: run exited $$? (watch cron_late_min in health.json)" >&2
+          sleep 60
+        done
+    environment:
+      # wp-config.php already sits on the shared volume, but it resolves WP_HOME and WP_SITEURL
+      # through getenv() at RUNTIME. Under CLI there is no Host header to fall back on, so
+      # without these two every URL WordPress builds inside a scheduled job comes out wrong.
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WP_HOME: ${WP_HOME}
+      WP_SITEURL: ${WP_SITEURL}
+      # Scheduled work sends mail (order status, recheck outcomes). Without these the image has
+      # no MTA and the failure is silent, which is the whole reason they are on wordpress too.
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-Дарлинг}
+      DARLING_PANEL_URL: ${DARLING_PANEL_URL}
+      DARLING_PANEL_TOKEN: ${DARLING_PANEL_TOKEN}
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./php/uploads.ini:/usr/local/etc/php/conf.d/zz-darling.ini:ro
+
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
