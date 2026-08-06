@@ -697,3 +697,62 @@ subscription plugins and solutions and wire them in."
   fluid+container-query systems, block-theme platform; 5 audit: layout/responsive, CSS
   architecture, type/colour+contrast, component contracts, motion/ambient/perf; 2 synthesis:
   design system SPEC + gated BUILD PLAN).
+
+- 2026-08-06 sprint 22 — DESIGN PASS: workflow delivered + SLICE D1 SHIPPED & GATED
+  (commit 1ecccd7, deploy green).
+  WORKFLOW wf_bab06eac-3dc COMPLETE: 11 agents, 0 errors, 52 min, 1.16M subagent tokens,
+  290 tool calls. Outputs saved as project docs claude/DESIGN_SYSTEM.md (78K, 9 chapters)
+  and claude/DESIGN_BUILD_PLAN.md (53K, 14 slices + operating rules + 9 owner asks).
+  FUNCTIONAL BUGS FOUND that my earlier gates missed (they tested scripted behaviour, not
+  the whole surface — lesson recorded): (1) the DESKTOP MEGA MENU CANNOT OPEN — inherited
+  overflow-x:auto on the nav list clips it, so Продукти is dead on desktop; (2) the Woo
+  filters mobile overlay leaks into page flow and covers the grid and footer.
+  ROOT CAUSES (all one-liners, all mine): functions.php:29 enqueued darling.css as a
+  DEPENDENT of style.css so the vendor file always won (69 !important vs our 20); three
+  ported layout contracts referenced Shopify DOM that WP never emits (.page-wrapper for
+  sparkle stacking, .df-legal as grid child, [id*=hero_darling] h1 for hero colour), so
+  every "fix" in style.css for the owner's exact complaints was inert; and darling.css
+  redefined --d-content as min(calc(100vw - 96px), max(115rem,84vw)) = 1840px cap with
+  100vw (counts the scrollbar) = the container blowout AND a whole class of overflow.
+  KRIS APPROVED editing the vendored darling.css (owner ask O-1), so SLICE D1 fixed four
+  causes AT SOURCE instead of out-specifying them: .page-wrapper -> .wp-site-blocks;
+  h1,h2,h3 dropped from the forced-gold !important rule (style.css already asked for
+  vanilla on the hero — deleting the override simply let it apply); .df-legal grid-only
+  placement removed; --d-content -> min(calc(100% - gutter*2), 90rem).
+  style.css: section title margin -> margin-block (restores the auto inline margins, kills
+  the ~45px stagger); .woocommerce-account -> body.woocommerce-account main (it is a BODY
+  class — was clamping the whole document to 294px on a phone); backdrop-filter deleted
+  from the sticky header (blur behind an opaque surface = pure scroll cost); plus a slice-1
+  block: --d-gutter clamp, body{isolation:isolate}, contain:strict + will-change:auto on
+  the ambient layer, min-width:0 safety net on owned grid/flex containers (THE cause of
+  "flexboxes not flexing"), full-width footer legal bar, footer third column right-aligned.
+  ambient.js REWRITTEN to DENSITY not count (Kris's direction — "it should adjust
+  dynamically based on screen size"): budget = viewport area / 130000, clamped 3..14,
+  halved on <=4 cores or <4GB, ZERO under prefers-reduced-motion; spawn interval stretches
+  as the count falls so a sparse sky does not pulse in unison; recomputed on resize and
+  orientationchange (debounced); inserted as body.firstChild so DOM order matches paint
+  order; stars inset 2-96% (edge stars were being counted as real overflow).
+  GATE (tests/design-audit.spec.js, 6 pages x 6 viewports): genuine viewport-overflow
+  0/36 (baseline: 22 on home@mobile alone); escapes-parent 1 (an alignfull group on
+  account, 68px — slice 4 container work) down from 2-3; distinct font sizes on home
+  58 -> 28; ambient verified 3 stars @390 / 5 @768 / 7 @1440 / 10 @1920, z-index 0,
+  behind content. Money path untouched (CSS+JS only, no template/checkout surface).
+  HARNESS CORRECTED MID-GATE (important): the first re-run still showed 19 "overflow" on
+  home@mobile. Investigation showed three families of FALSE POSITIVE — category-carousel
+  cards inside a horizontal scroller (legitimate), Stripe's own iframes inside Stripe's
+  own wrapper (not ours), and the newsletter honeypot parked at -9999px (deliberate).
+  audit.js now excludes and separately COUNTS each family. A gate that cries wolf is worse
+  than no gate.
+  KRIS PALETTE DECISIONS SO FAR (design conversation, artefacts palette.html..palette5.html):
+  claret #9E1B32 for large red fields LOCKED; neutral = grey, +2 step LOCKED at #E6E6EC;
+  gold shadows must HUE-SHIFT toward amber/copper (41->36->31->27) not just darken — his
+  idea, and it is how gold physically behaves; sheen/sweep animation REJECTED ("reminds me
+  of gambling websites") — all motion removed from the metal; wordmark + bow take the
+  softer gradient (step 2) for legibility, badge takes full; roughness via inline SVG
+  feTurbulence noise + optional forged striations — PENDING his choice of step 3 vs 4.
+  Cherry-vs-honey button PENDING: measured honey at only 1.95:1 against the grey page vs
+  cherry 4.03:1, so cherry is the argued default WITH the rule that the button contrasts
+  with whatever it sits on (honey on the claret hero).
+  NEXT: slice 2 (cascade control — @layer + enqueue order + surgical de-!important) is the
+  gate for everything after; then tokens. Owner asks O-2..O-9 still open (photography is
+  the longest lead time). Touch targets (15-19 sub-32px per page) are slice 6/10.

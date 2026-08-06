@@ -29,6 +29,23 @@ const VIEWPORTS = [
 const scan = () => {
   const docW = document.documentElement.clientWidth;
   const defects = [];
+  const excluded = { scroller: 0, thirdParty: 0, offscreen: 0 };
+  // Three families of legitimate "overflow" that are not defects. Counting them
+  // as failures makes the gate cry wolf, which is worse than not gating at all.
+  const inScroller = (el) => {
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      const o = getComputedStyle(p);
+      if (/(auto|scroll)/.test(o.overflowX + o.overflow)) return true;
+    }
+    return false;
+  };
+  const isThirdParty = (el) =>
+    !!el.closest('iframe, [class*="__PrivateStripe"], [id*="stripe"], [class*="nsl-"], .wc-block-components-express-payment');
+  const isOffscreen = (el) => {
+    const r = el.getBoundingClientRect();
+    // deliberate hiding: honeypots, screen-reader-only text
+    return r.right < -500 || r.left > docW + 2000 || getComputedStyle(el).clip === 'rect(0px, 0px, 0px, 0px)';
+  };
   const push = (type, el, detail) => {
     const cls = (el.className && String(el.className).slice(0, 60)) || '';
     defects.push({ type, tag: el.tagName.toLowerCase(), cls, detail });
@@ -45,7 +62,10 @@ const scan = () => {
     if (cs.position === 'fixed') return;
     // 2. element sticking out of the viewport
     if (r.right > docW + 1 || r.left < -1) {
-      push('viewport-overflow', el, `left ${Math.round(r.left)} right ${Math.round(r.right)} vs ${docW}`);
+      if (isOffscreen(el)) { excluded.offscreen++; }
+      else if (isThirdParty(el)) { excluded.thirdParty++; }
+      else if (inScroller(el)) { excluded.scroller++; }
+      else { push('viewport-overflow', el, `left ${Math.round(r.left)} right ${Math.round(r.right)} vs ${docW}`); }
     }
     // 3. child wider than parent (broken containment)
     const p = el.parentElement;
@@ -53,7 +73,8 @@ const scan = () => {
       const pr = p.getBoundingClientRect();
       const pcs = getComputedStyle(p);
       if (pcs.overflow === 'visible' && pr.width > 0 && r.width > pr.width + 2) {
-        push('escapes-parent', el, `${Math.round(r.width)} > parent ${Math.round(pr.width)} (${p.tagName.toLowerCase()}.${String(p.className).slice(0, 30)})`);
+        if (isThirdParty(el)) { excluded.thirdParty++; }
+        else { push('escapes-parent', el, `${Math.round(r.width)} > parent ${Math.round(pr.width)} (${p.tagName.toLowerCase()}.${String(p.className).slice(0, 30)})`); }
       }
     }
     // 4. text overflowing its box
@@ -86,6 +107,7 @@ const scan = () => {
     over_content: parseInt(getComputedStyle(amb).zIndex || '0', 10) > 0,
   } : null;
   return {
+    excluded,
     defects: defects.slice(0, 60),
     defect_count: defects.length,
     by_type: defects.reduce((a, d) => { a[d.type] = (a[d.type] || 0) + 1; return a; }, {}),
@@ -120,7 +142,7 @@ const scan = () => {
   }
   fs.writeFileSync(path.join(OUT, 'audit.json'), JSON.stringify(report, null, 1));
   // compact console summary
-  const summary = Object.entries(report).map(([k, v]) => `${k}: ${v.error ? 'ERR ' + v.error : v.defect_count + ' defects ' + JSON.stringify(v.by_type)}`);
+  const summary = Object.entries(report).map(([k, v]) => `${k}: ${v.error ? 'ERR ' + v.error : v.defect_count + ' defects ' + JSON.stringify(v.by_type) + '  [excluded ' + JSON.stringify(v.excluded) + ']'}`);
   console.log(summary.join('\n'));
   await b.close();
 })();
