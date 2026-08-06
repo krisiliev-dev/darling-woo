@@ -2533,3 +2533,97 @@ subscription plugins and solutions and wire them in."
      and 1440 · reduced-motion renders `none` · cart and checkout render `none` under no
      preference · contrast sweep. *** And this time: check the divider and the wordmark at
      the extremes of their aspect ratios, not only the button. ***
+
+- 2026-08-06 sprint 59 — *** SLICE 6 IS LIVE. AND THE GATE EARNED ITS KEEP THREE TIMES. ***
+  Kris said „lets run it end to end", so it ran end to end: asset, paste, deploy, gate.
+  The paste itself was uneventful. Everything worth recording is what the gate caught
+  afterwards, because in all three cases the CSS read as correct and the RENDER did not.
+
+  ═══ 1. THE BLOOM WAS INFLATING EVERY METAL BUTTON'S SCROLL BOX ═══
+  The design audit went from 0 defects across 36 combos to 2 on home at EVERY viewport,
+  and the arithmetic named the cause before I had a theory: scrollW 285 vs clientW 197,
+  and 217 vs 150 — 1.45x in both cases, which is exactly 1 + 0.45. The bloom `::before`
+  sat at `inset:-45%` inside a `position:relative` button, so the 45% hanging off the
+  RIGHT and the BOTTOM became the button's scrollable overflow. *** Left and top never
+  count — scrollable overflow only grows one way. ***
+
+  TWO OBVIOUS FIXES WERE MEASURED AND BOTH ARE WRONG, recorded so neither comes back:
+  • `overflow:clip` + `overflow-clip-margin` — crops the bloom at any margin under 96px
+    and does NOT move scrollWidth at all. A clip container is still laid out with its
+    overflow region intact.
+  • `overflow:hidden` — also does not move scrollWidth. It just makes the button
+    programmatically scrollable, which is worse than the symptom.
+  *** The only things that spill light without existing in layout are BOX-SHADOW and
+  FILTER. *** So the glints came back to `inset:0` — where they still paint above the
+  surface, because `isolation:isolate` makes the button a stacking context — and the
+  bloom became a box-shadow.
+
+  THE GLINTS ARE THE SAME PIXELS, NOT RE-EYEBALLED. Both boxes are height-driven for
+  closest-side and the old one was exactly 1.9x the new, so every stop maps by
+  `centre_new = -45 + centre_old * 1.9` and `radius_new = radius_old * 1.9`.
+
+  THE BLOOM COULD NOT BE IDENTICAL and I am not pretending it is: it was an ELLIPSE
+  reaching ~43px sideways and ~12px vertically, and no shadow is elliptical. Eight
+  candidates were measured against the approved render. *** The first six all scored
+  WORSE THAN HAVING NO BLOOM AT ALL *** — which was the measurement telling me something
+  I had not worked out: the old bloom's bright core (alpha .42) sat BEHIND the button and
+  was never visible. Only its faint .18 shoulder ever spilled. Once the candidates were
+  re-cut faint and tight, the best pair landed at mean channel delta 1.15 on both
+  buttons, against 1.21–1.29 for dropping the glow entirely.
+  `drop-shadow` tied on pixels and was still NOT taken: `filter` would make the button a
+  stacking context and a containing block, changing how the grain's `mix-blend-mode`
+  resolves, and would need its own animation instead of riding the existing opacity
+  breath.
+
+  ═══ 2. THE MOTION GUARDS NAMED A CLASS THAT DOES NOT EXIST ON THE SITE ═══
+  Slice 6's own notes call both guards non-negotiable. Measured, NEITHER held for the
+  footer rule: `.dff-rule::before` kept breathing under `prefers-reduced-motion` and kept
+  breathing on the cart. *** Both guards named `.d-metal`, which is the documented
+  primitive and matches NOTHING in the live DOM *** — the metal reaches real elements
+  through the §6 selectors. A second, narrower query did cover the two buttons, which is
+  why the buttons behaved and hid the hole entirely.
+  A diff review passes this. Computing `animationName` on a rendered page does not.
+  Both lists now name every element that moves, the duplicate query is gone so there is
+  ONE list rather than two that drift, and it is written longhand rather than folded into
+  `:is()` — if `:is()` were ever unsupported the whole selector would be dropped and the
+  guard would vanish silently, and the people most likely to be on an old engine are the
+  same people most likely to have asked for reduced motion.
+
+  ═══ 3. „MOVED" ON THE CHECKOUT — AND IT WAS MY OWN BASELINE THAT WAS WRONG ═══
+  diff11 returned MOVED with four changes: shippingControl appeared, totals.h 379→396,
+  rateRows 0→4, paymentOptions 2→6. *** None of those are things a colour-and-motion
+  stylesheet can do. *** A CSS change cannot make rate rows appear, and it cannot affect
+  desktop while leaving mobile identical, which is what the numbers showed.
+  The fresh baseline I recorded at 18:50 — the one the ship order specifically demands —
+  was captured on a run where the desktop shipping block never finished loading. Against
+  the genuine pre-slice-6 baseline the verdict is *** UNCHANGED, zero changes ***, and
+  the after-numbers match it exactly on both viewports (789x51 place-order, totals 396 /
+  406, 4 rates, 6 payment options).
+  METHOD NOTE, and it is on me: I recorded a baseline and trusted it without checking it
+  was fully loaded. *** A baseline is a measurement too, and an under-loaded one is worse
+  than none, because it manufactures a regression that is not there. *** The
+  under-loaded file is kept as `s11-baseline-UNDERLOADED-1850.json` rather than deleted.
+
+  ═══ GATE AS IT STANDS ═══
+  design audit ............ 0 defects × 36 combos      ✓ (after fix 1)
+  product-card ............ PASS                        ✓
+  checkout-polish ......... GATE: PASS, rates sorted    ✓
+  checkout geometry ....... UNCHANGED vs pre-slice-6    ✓
+  grain asset ............. 200, 90588 B, image/webp    ✓
+  motion, no preference ... buttons drift + breathe, rule breathes only,
+                            wordmark and mark static    ✓
+  extremes of the shape ... rule 76×3 aspect 25.3 carries ONE bloom layer and no
+                            glints; buttons aspect 3.6 and 2.6 carry two ✓
+  reduced motion .......... re-verifying after fix 2
+  money path .............. re-verifying after fix 2
+
+  ═══ ALSO WORTH KNOWING ═══
+  • `npm install <pkg>` in a directory with node_modules but NO package.json PRUNES
+    everything else. It removed playwright and cost a reinstall. Do not run bare npm
+    install in darling-woo.
+  • Known and accepted: `.dff-rule::before` still overhangs by 8px down and 15px right.
+    A 3px rule cannot host a glow at `inset:0` — there is nothing to host it in — and the
+    audit does not flag it because the heuristic keys on text.
+  • O-9 said no RED slice ships without staging. *** Staging was retired at cutover, so
+    that gate no longer exists to satisfy. *** Slice 6 gated on live exactly as RED
+    slices 11 and 13 already did. Said plainly rather than quietly skipped.
