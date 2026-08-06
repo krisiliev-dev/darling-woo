@@ -757,7 +757,7 @@ subscription plugins and solutions and wire them in."
   gate for everything after; then tokens. Owner asks O-2..O-9 still open (photography is
   the longest lead time). Touch targets (15-19 sub-32px per page) are slice 6/10.
 
-- 2026-08-06 sprint 23 â€” DESIGN SLICE 2 FAILED, REVERTED, RE-DONE MINIMAL AS 2a.
+- 2026-08-06 sprint 23 — DESIGN SLICE 2 FAILED, REVERTED, RE-DONE MINIMAL AS 2a.
   *** LESSON: UNLAYERED CSS OUTRANKS EVERY LAYER. ***
   Slice 2 (c10ea05) wrapped assets/darling.css in @layer ported + layers.css + token move.
   GATE FAILED: home@mobile 16 -> 45 defects (doc-overflow, 25 viewport-overflow, 5
@@ -765,7 +765,7 @@ subscription plugins and solutions and wire them in."
   money path returned ZERO shipping rates. REVERTED (283b845), re-verified clean.
   ROOT CAUSE: layering the vendored file gave style.css authority over it BUT dropped it
   below Twenty Twenty-Five's own UNLAYERED parent stylesheet, which it had been beating by
-  source order. Tell-tale: sub-32px touch targets fell 15 -> 8 on DESKTOP â€” geometry moved
+  source order. Tell-tale: sub-32px touch targets fell 15 -> 8 on DESKTOP — geometry moved
   on pages that should not have changed. The build plan's own gate criterion caught it.
   DO NOT retry layering until theme.json owns the tokens and the parent theme's unlayered
   contribution is neutralised.
