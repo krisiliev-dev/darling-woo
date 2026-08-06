@@ -98,24 +98,62 @@ class Darling_Office_Field {
 			'methods'             => 'GET',
 			'permission_callback' => '__return_true', // office lists are public information
 			'args'                => array(
-				'carrier' => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
-				'city'    => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
+				'carrier'   => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
+				// City stops being REQUIRED once a position is given. "The автомати nearest
+				// me" is a legitimate question that names no settlement, and the nearest
+				// locker to someone in Свищов can easily sit in the next village - filtering
+				// by their typed city would hide it.
+				'city'      => array( 'required' => false, 'sanitize_callback' => 'sanitize_text_field' ),
+				'lat'       => array( 'required' => false ),
+				'lon'       => array( 'required' => false ),
+				'radius_km' => array( 'required' => false ),
 			),
 			'callback'            => function ( WP_REST_Request $r ) {
-				$offices = Darling_Panel_API::offices( (string) $r['carrier'], (string) $r['city'] );
+				$lat = self::coord( $r['lat'], 90.0 );
+				$lon = self::coord( $r['lon'], 180.0 );
+				// Only meaningful as a pair. One alone is DISCARDED rather than half-applied:
+				// a lone latitude would rank nothing and silently look like it had.
+				if ( null === $lat || null === $lon ) {
+					$lat = null;
+					$lon = null;
+				}
+				$radius = is_numeric( $r['radius_km'] ) ? min( 200.0, max( 1.0, (float) $r['radius_km'] ) ) : null;
+
+				$offices = Darling_Panel_API::offices(
+					(string) $r['carrier'],
+					(string) ( $r['city'] ?? '' ),
+					$lat,
+					$lon,
+					$radius
+				);
 				return rest_ensure_response( array(
-					'count'   => count( $offices ),
-					'offices' => array_map(
+					'count'    => count( $offices ),
+					'ranked'   => null !== $lat,
+					'offices'  => array_map(
 						fn( $o ) => array(
-							'id'      => (string) ( $o['id'] ?? '' ),
-							'name'    => (string) ( $o['name'] ?? '' ),
-							'address' => trim( (string) ( $o['address'] ?? '' ) ),
+							'id'          => (string) ( $o['id'] ?? '' ),
+							'name'        => (string) ( $o['name'] ?? '' ),
+							'address'     => trim( (string) ( $o['address'] ?? '' ) ),
+							'city'        => (string) ( $o['city'] ?? '' ),
+							// The ROW's own kind, so the picker can call an автомат an автомат
+							// even when its carrier also runs staffed offices. Speedy does.
+							'kind'        => (string) ( $o['kind'] ?? '' ),
+							'distance_km' => isset( $o['distance_km'] ) ? round( (float) $o['distance_km'], 2 ) : null,
 						),
 						$offices
 					),
 				) );
 			},
 		) );
+	}
+
+	/** A coordinate, or null when absent, unparseable or out of range. */
+	private static function coord( $v, float $limit ): ?float {
+		if ( ! is_numeric( $v ) ) {
+			return null;
+		}
+		$f = (float) $v;
+		return abs( $f ) <= $limit ? $f : null;
 	}
 
 	public static function assets(): void {
@@ -145,11 +183,23 @@ class Darling_Office_Field {
 			// its shipping rate - which would look exactly like "the picker is broken".
 			'carriers' => array_keys( Darling_Carriers::all() ),
 			'labels'   => $labels,
+			// The NOUNS are per-kind, not per-carrier. Speedy serves 833 автомати and 460
+			// offices from one list, so „до офис" on every Speedy row is wrong on most of them.
+			'kinds'    => array(
+				'locker' => 'автомат',
+				'office' => 'офис',
+				'pudo'   => 'пункт',
+			),
 			'i18n'     => array(
-				'choose'  => '— избери офис —',
-				'loading' => 'зареждане…',
-				'none'    => 'няма офиси в това населено място',
-				'error'   => 'грешка при зареждане',
+				'choose'   => '— избери —',
+				'loading'  => 'зареждане…',
+				'none'     => 'няма намерени локации',
+				'error'    => 'грешка при зареждане',
+				'near'     => 'Най-близките до мен',
+				'locating' => 'определяне на местоположението…',
+				'denied'   => 'няма достъп до местоположението — избери от списъка',
+				'backCity' => 'Обратно към списъка за града',
+				'km'       => 'км',
 			),
 		) );
 	}

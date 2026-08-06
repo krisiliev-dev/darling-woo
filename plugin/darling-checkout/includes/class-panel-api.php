@@ -71,13 +71,51 @@ class Darling_Panel_API {
 		return array( 'ok' => true, 'data' => $data, 'error' => '' );
 	}
 
-	/** @return array<int,array{id:string,name:string,address:string}> */
-	public static function offices( string $carrier, string $city ): array {
+	/**
+	 * Courier offices AND lockers for a settlement, optionally ranked by distance.
+	 *
+	 * Every row is now {id, name, address, city, lat, lon, kind} for every carrier,
+	 * and `kind` is `locker` (автомат), `office` or `pudo`.
+	 *
+	 * *** THAT FIELD IS NOT COSMETIC. *** Speedy's list is 833 lockers and 460
+	 * staffed offices in ONE response, so the per-CARRIER noun in the registry is
+	 * wrong for Speedy on nearly two thirds of its rows - it sends someone to look
+	 * for a counter at an unattended machine, which is exactly the support call the
+	 * registry's own comment says the noun exists to prevent. The noun has to follow
+	 * the ROW, not the courier.
+	 *
+	 * `$lat`/`$lon` must be given together; they rank nearest-first and add
+	 * `distance_km`. They are ROUNDED TO 3 DECIMALS (~110 m) before the call, because
+	 * the transient key is a hash of the URL: a browser's raw high-precision position
+	 * would mint a fresh cache entry per customer per request and the 12h office cache
+	 * would never hit once.
+	 *
+	 * @return array<int,array{id:string,name:string,address:string,city:string,lat:?float,lon:?float,kind:string,distance_km?:float}>
+	 */
+	public static function offices( string $carrier, string $city, ?float $lat = null, ?float $lon = null, ?float $radius_km = null ): array {
 		$carrier = self::carrier( $carrier );
-		if ( ! $carrier || '' === trim( $city ) ) {
+		if ( ! $carrier ) {
 			return array();
 		}
-		$r = self::get( "/api/public/couriers/$carrier/offices", array( 'city' => $city ), self::CACHE_OFFICES );
+		$args = array();
+		if ( '' !== trim( $city ) ) {
+			$args['city'] = $city;
+		}
+		if ( null !== $lat && null !== $lon ) {
+			$args['lat'] = round( $lat, 3 );
+			$args['lon'] = round( $lon, 3 );
+			if ( null !== $radius_km && $radius_km > 0 ) {
+				$args['radius_km'] = round( $radius_km, 1 );
+			}
+		}
+		// Never ask for a whole country's offices. With neither a settlement nor a
+		// position there is nothing to rank or filter by, and the panel caps at 300
+		// AFTER filtering - so an unfiltered call returns an arbitrary 300 of Speedy's
+		// 1293 and looks like a complete answer.
+		if ( ! $args ) {
+			return array();
+		}
+		$r = self::get( "/api/public/couriers/$carrier/offices", $args, self::CACHE_OFFICES );
 		return $r['ok'] ? (array) ( $r['data']['offices'] ?? array() ) : array();
 	}
 
