@@ -2120,3 +2120,47 @@ subscription plugins and solutions and wire them in."
 
   ═══ STILL OPEN ═══
   Gold vs another material entirely; and if gold, which of 1/2/5/6.
+
+- 2026-08-06 sprint 50 — *** КЕХЛИБАР IS THE COLOUR. 36 / 88 / −2. *** Kris decided.
+  Two decks delivered: `palette20.html` (the amber in eleven materials, including his three
+  new sets) and `palette21.html` (**glow** — tying the accent to the sparkle theme).
+
+  1. THE THREE NEW SETS, BAKED — AND ONE THAT CANNOT BE.
+  White marble, everytexture misc-00079 and plywood are in. *** The marble set's height map
+  is entirely ZEROS and its normal map is flat — all the information in that set is in the
+  albedo, so the veining comes from the colour, not from geometry. *** Worth knowing before
+  anyone tries to light it. misc-00079 turns out to read as **opal / mother-of-pearl**, pale
+  with pink-grey iridescence, and it is the one material in the whole exercise that looks
+  „magic" without any help — which is why it earned its own page next to the glow deck.
+  *** `SurfaceImperfectionsSubstance002.sbsar` I CANNOT read: *** it is a compiled Substance
+  archive and needs Substance Designer/Player. Said so rather than quietly skipping it — if
+  he wants it, he exports PNGs from Substance and I bake them like the rest.
+
+  2. THE GLOW ANSWER, WITH THE RIGHT NAME ON IT.
+  His instinct was right and it has a precise formulation: *** everything so far made the
+  material REFLECTIVE; magic comes from a material that EMITS. *** Seven steps: none, outer
+  bloom, **lit rim**, backlit onyx, candle-from-below, static glints, and all of it at once.
+  • The best trick is the cheapest: **invert the rim.** A dark rim says „solid object"; a
+    LIT rim says „light passes through me" — amber, resin, glass. Same one declaration,
+    colours reversed.
+  • The candle variant lights from BELOW, like a flame in an amber jar. The shop sells
+    scented candles, so the gesture is theirs rather than borrowed.
+  • The glints are the site's own four-point stars, STATIC, sitting in the surface instead
+    of only floating behind the page. *** Nothing here animates — the sweeping sheen stays
+    rejected as „gambling". ***
+  COST, honestly: it is all `box-shadow` and inline gradients, composited on the GPU. No
+  `backdrop-filter` anywhere in the glow deck — that is the one expensive thing and I left
+  it out on purpose.
+
+  3. MEASURED, hero button vs claret (3:1):
+  бял мрамор 5.87 · емайл 5.77 · глазура 5.09 · хартия 4.62 · **злато 3.63** · лен 3.48 ·
+  оникс 3.10 · течен кехлибар 3.03 · опал 2.64 · теракота 2.54 · шперплат 1.72.
+  Tinting to amber lifted terracotta (2.23 → 2.54) but three still fail; those can carry the
+  badge and the bow, not the hero button.
+  *** A small surprise: amber ONYX (3.10) measures WEAKER than plain amber gold (3.63) —
+  the veining breaks up the mean luminance. It looks more expensive and reads less well. ***
+  And on the glow deck every variant passes, with the lit rim actually RAISING contrast to
+  4.24 because it adds light along the whole boundary. Glow does not cost legibility.
+
+  ═══ STILL OPEN ═══
+  Material, and how much glow. The colour is settled.
