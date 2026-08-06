@@ -1457,3 +1457,98 @@ body.woocommerce-account main,
 /* The last one, named rather than rounded away: „Изгубена парола?" is a
    standalone link in its own paragraph on the account page — 124x17. */
 .woocommerce-LostPassword a{display:inline-flex;align-items:center;min-height:44px}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D13 — THE PRODUCT PAGE'S UNFINISHED HALF (2026-08-06)
+
+   Checked assets/darling.css first, as the house rule requires: it has NO
+   vocabulary for reviews, comment forms, wc-tabs, rating stars or the gallery
+   lightbox. Nothing to conform to, so these rules are ours to author — that is
+   the answer to the check, not an excuse to skip it.
+
+   MEASURED ON THE LIVE PDP BEFORE WRITING ANYTHING:
+   • The review textarea computed `font-family: monospace`, `padding: 2px`,
+     `border: 1px solid #767676` — browser defaults, untouched. A Bulgarian
+     customer writing a review was typing into Courier.
+   • The name and email inputs: `border: 2px inset`, `padding: 1px 2px`,
+     Arial, 247×21px. Also pure UA default, and 21px tall.
+   • The tabs: #E9E6ED grey-lilac inactive, white active, #CFC8D8 borders,
+     4px radius — WooCommerce's own chrome, in a lilac this palette does not
+     contain anywhere else.
+   • The submit button was ALREADY branded (cherry pill, 167×60) because
+     theme.json styles `wp-element-button`. So the form was half-dressed, which
+     read worse than untouched.
+
+   THE STRIPE „Link" BUTTON IS NOT STYLEABLE FROM HERE, AND I AM NOT GOING TO
+   PRETEND OTHERWISE. `#wc-stripe-express-checkout-element-link` is a
+   `div.StripeElement` whose content is an IFRAME served from js.stripe.com; the
+   green fill lives inside that document. CSS in this stylesheet cannot reach it
+   — appearance would have to come from the Stripe plugin's own appearance API.
+   What I CAN do is place it deliberately instead of letting it sit as a loose
+   slab under the buy column: give it a labelled divider so it reads as a
+   deliberate alternative, and constrain its width to the column.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+.woocommerce-tabs ul.tabs.wc-tabs{display:flex;flex-wrap:wrap;gap:var(--space-3xs);
+	list-style:none;margin:0 0 var(--space-m);padding:0;
+	border-bottom:1px solid var(--d-sand-deep)}
+.woocommerce-tabs ul.tabs.wc-tabs::before,
+.woocommerce-tabs ul.tabs.wc-tabs::after{content:none}
+.woocommerce-tabs ul.tabs.wc-tabs > li{background:none;border:0;border-radius:0;
+	margin:0;padding:0}
+.woocommerce-tabs ul.tabs.wc-tabs > li > a{display:flex;align-items:center;
+	min-height:44px;padding:0 var(--space-s);border-radius:.7rem .7rem 0 0;
+	color:var(--d-cocoa);text-decoration:none;font-weight:600;
+	font-size:var(--fs-sm);border-bottom:2px solid transparent;
+	transition:background-color .18s ease,color .18s ease,border-color .18s ease}
+.woocommerce-tabs ul.tabs.wc-tabs > li > a:hover{background:var(--d-vanilla)}
+.woocommerce-tabs ul.tabs.wc-tabs > li.active > a{background:var(--d-vanilla);
+	border-bottom-color:var(--d-cherry);color:var(--d-cherry-deep)}
+.woocommerce-tabs .panel{padding:0}
+
+/* ── The reviews form ─────────────────────────────────────────────────────── */
+.woocommerce-Reviews .comment-respond{background:#fff;border:1px solid var(--d-sand);
+	border-radius:16px;padding:var(--space-m);margin-top:var(--space-m);
+	max-width:46rem}
+.woocommerce-Reviews .comment-reply-title{display:block;
+	font-family:"Playfair Display",Georgia,serif;font-weight:500;
+	font-size:var(--fs-section);line-height:var(--lh-section);
+	color:var(--d-cocoa);margin:0 0 var(--space-2xs)}
+.woocommerce-Reviews .comment-notes,
+.woocommerce-Reviews .comment-form-cookies-consent label{font-size:var(--fs-sm);
+	opacity:.85;line-height:var(--lh-body)}
+.comment-form{display:flex;flex-direction:column;gap:var(--space-s)}
+.comment-form > p,
+.comment-form > div{margin:0}
+.comment-form label{display:block;font-size:var(--fs-xs);font-weight:600;
+	margin:0 0 var(--space-3xs);color:var(--d-cocoa)}
+/* One input treatment, the same one the account and contact forms use. The
+   defaults here were monospace and 2px inset borders. */
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="url"],
+.comment-form textarea{width:100%;box-sizing:border-box;
+	font:inherit;font-size:var(--fs-base);color:var(--d-cocoa);
+	background:#fff;border:1px solid var(--d-sand-deep);border-radius:.65rem;
+	padding:var(--space-2xs) var(--space-xs)}
+.comment-form textarea{min-height:8rem;resize:vertical;line-height:var(--lh-body)}
+.comment-form input:focus-visible,
+.comment-form textarea:focus-visible{border-color:var(--d-honey-dark)}
+.comment-form-cookies-consent{display:flex;align-items:flex-start;gap:var(--space-2xs)}
+.comment-form-cookies-consent input[type="checkbox"]{width:1.15rem;height:1.15rem;
+	margin:.15rem 0 0;accent-color:var(--d-cherry);flex:none}
+.comment-form-cookies-consent label{margin:0;font-weight:400}
+.comment-form-rating{margin:0}
+.comment-form-rating .stars{margin:0;display:flex;gap:var(--space-3xs)}
+.comment-form .form-submit{margin:0}
+.woocommerce-noreviews{margin:0 0 var(--space-s);font-size:var(--fs-sm);opacity:.85}
+
+/* ── Express checkout: placed, not restyled (see the note above) ──────────── */
+.darling-product__buy #wc-stripe-express-checkout-element{max-width:100%;
+	margin-block:var(--space-s) 0}
+.darling-product__buy #wc-stripe-express-checkout-element::before{
+	content:"или плати бързо с";display:block;text-align:center;
+	font-size:var(--fs-2xs);letter-spacing:var(--ls-eyebrow);text-transform:uppercase;
+	color:var(--d-cocoa);opacity:.6;margin-bottom:var(--space-2xs)}
