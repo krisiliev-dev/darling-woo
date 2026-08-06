@@ -1529,3 +1529,46 @@ subscription plugins and solutions and wire them in."
   the desktop side panel open and it kept re-opening and closing over what he was
   reading. Everything is `display:"attach"` from now on — he opens what he wants, when he
   wants.
+
+- 2026-08-06 sprint 38 — SLICE 6 WRITTEN AND DELIBERATELY NOT SHIPPED (commit cec4ca8).
+  Kris has decided two of the three: TEXTURE 8 (кован / hammered) and the BUTTON RULE
+  (cherry on grey, gold on claret) — the second chosen on its merits, as a rule rather
+  than a colour: a button contrasts with what it sits ON. Only the gold tone is open.
+  PREPARED, INERT: claude/SLICE6_COLOUR_PENDING.css. It lives in claude/, which the
+  deploy does NOT sync, and nothing enqueues it — so it cannot leak onto the site by
+  accident. Shipping it is: paste at the end of style.css, set two numbers, gate.
+  *** THE GOLD IS TWO NUMBERS. *** `--gold-hue` and `--gold-sat`, with all seven ramp
+  stops derived from them in CSS (`hsl(calc(var(--gold-hue) + 9) …)`). „Gold 2" is
+  `48 / 82`, not seven hex codes to keep in sync. And the hue ROTATES 33° across the
+  ramp — +9° at the highlight to −24° at the darkest — because three or four degrees is
+  precisely what Kris looked at and could not see. Real gold's shadows go amber and
+  copper; they do not simply go dark. That must not be flattened back into a lightness
+  ramp by anyone later, which is why the file says so at the point of definition.
+  ALSO IN THE FILE: the locked palette as role-named tokens; one `.d-metal` class
+  carrying BOTH texture 8 (CSS-only, cheap, safe anywhere) and the SVG lighting-model
+  variant behind a commented swap, with the honest note that the filter is a raster
+  operation and belongs on the hero button, wordmark, bow and badge only — never a grid
+  of twenty cards; a `background-clip:text` fallback so a failed clip shows gold text
+  rather than invisible text; and the two colour-dependent fixes deferred earlier — the
+  footer's two inconsistent link treatments (slice 9) and the PDP price still rendering
+  Playfair when slice 3 moved prices to Inter tabular.
+  *** FRESH CHECKOUT GEOMETRY BASELINE RECORDED BEFORE ANY OF THIS. *** Slice 6 is the
+  highest checkout risk of the whole pass, because it is where the button primitive
+  finally unifies INCLUDING WooCommerce's checkout buttons — which slice 11 deliberately
+  left alone so the checkout absorbs one change instead of two. The pre-slice-6 baseline
+  is preserved as s11-baseline-preS6.json and the current one re-recorded, so the diff
+  when it ships is against today's geometry, not last sprint's.
+  KRIS ASKED A GOOD QUESTION MID-SPRINT: can we use texture maps, like 3D? Answer: yes,
+  and the browser has a REAL lighting model rather than an imitation. `feTurbulence`
+  generates a procedural height field — the same fractal-noise node you would use in
+  Blender — and `feDiffuseLighting`/`feSpecularLighting` read its alpha AS A BUMP MAP,
+  compute surface normals and light it from a stated azimuth and elevation. Delivered
+  palette8.html with six variants (the current CSS-only one plus five lit surfaces).
+  HONEST RESULT: the lighting model works and the speculars are coherent, but at these
+  settings it reads as ROLLED or undulating metal rather than hammered — fractal noise
+  makes smooth waves, not discrete dents. Getting true hammer marks wants a TILED
+  PATTERN OF CIRCLES as the height map instead of noise. Said so rather than presenting
+  it as finished.
+  DELIVERY RULE FROM KRIS, now permanent: send files with `display:"attach"`, never
+  `"render"` — render forces the desktop side panel open and it kept re-opening over
+  what he was reading.
