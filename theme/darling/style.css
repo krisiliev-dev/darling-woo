@@ -1079,3 +1079,52 @@ body .darling-ambient i{will-change:auto}
 
 /* Body measure: Bulgarian runs 10-15% longer than English, so cap by ch not px. */
 .darling-hero__sub,.dcb-desc,.darling-news>p{max-width:46ch}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D4 — containment repair
+
+   1. THE DESKTOP MEGA MENU WAS DEAD. `.darling-nav ul` (style.css:113, from the
+      v1 header) sets `overflow-x:auto` for horizontal scrolling on narrow
+      screens. The v2 header rule at :478 restyles the same <ul> but never
+      resets it — and per CSS spec, when overflow-x is not `visible`, overflow-y
+      computes to `auto` as well. So the nav bar became a ~40px-tall scrollport
+      and clipped its own absolutely-positioned dropdown to nothing. The menu
+      opened; you just could not see any of it.
+
+      Verified by pixels, not geometry: getBoundingClientRect reported the panel
+      at its full 259×422 because layout boxes ignore clipping. Only the
+      screenshot showed it rendering nothing. Geometry lies about clipping.
+
+      The v2 nav never needs to scroll — below 900px it is display:none and the
+      drawer takes over — so the inherited rule is simply wrong here.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.darling-header--v2 .darling-nav--pages,
+.darling-header--v2 .darling-nav--pages > ul{overflow:visible}
+
+/* The dropdown needs a stacking context above the hero band that follows it. */
+.darling-header--v2{position:relative;z-index:20}
+.darling-mega{box-shadow:0 12px 32px rgb(var(--d-shadow)/.18)}
+
+/* 2. Account page: an alignfull group inside a constrained <main> was measuring
+      1412px against a 1344px parent. alignfull is *meant* to escape, but not
+      out of a container we set — so the container yields to it instead. */
+body.woocommerce-account main > .alignfull{width:auto;max-width:100%;margin-inline:0}
+
+/* 3. ONE LEFT EDGE. Every band that sets its own width now derives it from the
+      same two tokens, so the shell edge is a single value site-wide rather than
+      a per-component accident. Full-bleed bands stay at 0 deliberately; nothing
+      else is allowed a third value. */
+.darling-home,
+.darling-section-title,
+.darling-grid,
+.darling-product,
+.darling-archive,
+body.woocommerce-account main,
+.df-legal,
+.darling-hero-band .darling-hero--red,
+.darling-home--v2 .darling-catsv2{
+	max-width:var(--d-content,90rem);
+	margin-inline:auto;
+	padding-inline:var(--d-gutter);
+}
