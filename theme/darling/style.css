@@ -152,29 +152,33 @@ a.button.alt:hover {
 
 .darling-header{position:sticky;top:0;z-index:50;background:var(--d-cream);
 	border-bottom:1px solid var(--d-sand)}
-.darling-header__inner{display:flex;align-items:center;gap:1rem;
-	max-width:var(--d-content,1280px);margin:0 auto;padding:.7rem 1rem}
+.darling-header__inner{display:flex;align-items:center;gap:var(--space-s);
+	max-width:var(--d-content,1280px);margin:0 auto;
+	padding:var(--space-2xs) var(--space-s)}
 
 .darling-header__logo{position:relative;display:inline-flex;align-items:center;gap:.4rem;
 	text-decoration:none;color:var(--d-cocoa);font-weight:700;font-size:var(--fs-brand);
 	letter-spacing:var(--ls-ui)}
-.darling-header__logo .dhv-bow{width:1.5rem;height:auto;color:var(--d-cherry)}
-.darling-header__logo .dhv-s{position:absolute;font-size:var(--fs-3xs);color:var(--d-honey)}
-.darling-header__logo .s1{top:-.2rem;right:-.5rem}
-.darling-header__logo .s2{bottom:-.1rem;right:.8rem}
 
 .darling-nav{flex:1 1 auto;min-width:0}
-.darling-nav ul{display:flex;flex-wrap:nowrap;gap:.15rem;list-style:none;margin:0;padding:0;
-	overflow-x:auto;scrollbar-width:none}
-.darling-nav ul::-webkit-scrollbar{display:none}
+/* NO overflow-x here. The v1 header let this list scroll horizontally on narrow
+   screens; the v2 header hides it below 900px and hands over to the drawer, so the
+   scroll mechanism had no job — but it DID clip the mega menu's own dropdown to
+   nothing for weeks (slice 4). Removing the cause is better than keeping the cause
+   and the reset. */
+.darling-nav ul{display:flex;flex-wrap:nowrap;gap:var(--space-3xs);list-style:none;margin:0;padding:0}
 .darling-nav a{position:relative;display:block;white-space:nowrap;padding:.45rem .6rem;
 	border-radius:.6rem;text-decoration:none;color:var(--d-cocoa);font-size:var(--fs-sm)}
 .darling-nav a:hover,.darling-nav a:focus-visible{background:var(--d-honey-light);color:var(--d-cherry-deep)}
 
-.darling-header__actions{display:flex;align-items:center;gap:.15rem;margin-left:auto}
-.darling-header__icon{position:relative;display:grid;place-items:center;width:2.4rem;height:2.4rem;
-	border-radius:50%;color:var(--d-cocoa)}
-.darling-header__icon:hover{background:var(--d-honey-light);color:var(--d-cherry-deep)}
+.darling-header__actions{display:flex;align-items:center;gap:var(--space-3xs);margin-left:auto}
+/* 44px, not 38.4px: these are the account and basket entries and they are the
+   smallest thing a thumb has to hit in the whole header. */
+.darling-header__icon{position:relative;display:grid;place-items:center;
+	width:2.75rem;height:2.75rem;border-radius:50%;color:var(--d-cocoa);
+	transition:background .18s ease,color .18s ease}
+.darling-header__icon:hover,
+.darling-header__icon:focus-visible{background:var(--d-honey-light);color:var(--d-cherry-deep)}
 .darling-header__icon svg{width:1.25rem;height:1.25rem}
 .darling-cart-count{position:absolute;top:.15rem;right:.15rem;min-width:1.1rem;height:1.1rem;
 	padding:0 .2rem;border-radius:999px;background:var(--d-cherry);color:#fff;
@@ -197,10 +201,12 @@ a.button.alt:hover {
 .darling-drawer__close{border:0;background:none;font-size:var(--fs-lg);cursor:pointer;
 	width:2.2rem;height:2.2rem;border-radius:50%;color:var(--d-cocoa)}
 .darling-drawer__close:hover{background:var(--d-honey-light)}
-.darling-drawer__nav ul{list-style:none;margin:0;padding:.5rem}
-.darling-drawer__nav a{display:block;padding:.7rem .8rem;border-radius:.6rem;
+.darling-drawer__nav ul{list-style:none;margin:0;padding:var(--space-2xs)}
+.darling-drawer__nav a{display:flex;align-items:center;min-height:44px;
+	padding:var(--space-3xs) var(--space-xs);border-radius:.6rem;
 	text-decoration:none;color:var(--d-cocoa)}
-.darling-drawer__nav a:hover{background:var(--d-honey-light);color:var(--d-cherry-deep)}
+.darling-drawer__nav a:hover,
+.darling-drawer__nav a:focus-visible{background:var(--d-honey-light);color:var(--d-cherry-deep)}
 .darling-drawer__nav hr{border:0;border-top:1px solid var(--d-sand);margin:.5rem 1rem}
 .darling-drawer__secondary a{font-size:var(--fs-sm);opacity:.85}
 
@@ -495,24 +501,33 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .darling-wordmark{font-family:"Playfair Display",Georgia,serif;font-weight:500;
 	font-size:var(--fs-brand);letter-spacing:var(--ls-ui);color:var(--d-cocoa);text-decoration:none}
 
-.darling-header--v2 .darling-header__inner{display:flex;align-items:center;gap:1.4rem}
-.darling-header--v2 .darling-nav--pages>ul{display:flex;gap:1.1rem;list-style:none;margin:0;padding:0}
+.darling-header--v2 .darling-header__inner{display:flex;align-items:center;gap:var(--space-m)}
+.darling-header--v2 .darling-nav--pages>ul{display:flex;gap:var(--space-s);list-style:none;margin:0;padding:0}
 .darling-header--v2 .mega-menu__link{white-space:nowrap}
 
 /* Продукти mega dropdown */
 .darling-nav__mega{position:relative}
 .darling-mega{position:absolute;left:0;top:100%;z-index:60;min-width:15rem;
-	display:none;flex-direction:column;padding:.6rem;margin-top:.4rem;
+	display:none;flex-direction:column;padding:var(--space-2xs);margin-top:var(--space-3xs);
 	background:#fff;border-radius:1rem;box-shadow:0 14px 40px rgb(var(--d-shadow)/.18)}
-.darling-mega a{padding:.5rem .8rem;border-radius:.6rem;text-decoration:none;color:var(--d-cocoa)}
-.darling-mega a:hover{background:var(--d-vanilla);color:var(--d-cherry-deep)}
+.darling-mega a{display:flex;align-items:center;min-height:44px;
+	padding:var(--space-3xs) var(--space-xs);border-radius:.6rem;
+	text-decoration:none;color:var(--d-cocoa)}
+/* One rule per state, not one per pseudo-class scattered down the file. */
+.darling-mega a:hover,
+.darling-mega a:focus-visible{background:var(--d-vanilla);color:var(--d-cherry-deep)}
 .darling-nav__mega:hover .darling-mega,
 .darling-nav__mega:focus-within .darling-mega{display:flex}
 
 /* Big search bar */
-.darling-search{flex:1 1 auto;display:flex;align-items:center;gap:.6rem;
-	background:#fff;border-radius:999px;padding:.65rem 1.1rem;min-width:0;
+.darling-search{flex:1 1 auto;display:flex;align-items:center;gap:var(--space-2xs);
+	background:#fff;border-radius:999px;padding:var(--space-2xs) var(--space-s);min-width:0;
 	box-shadow:0 2px 10px rgb(var(--d-shadow)/.07)}
+/* THE SEARCH FIELD HAD NO FOCUS INDICATOR AT ALL — the input sets outline:0 (so the
+   ring does not cut across the pill) and nothing ever put one back. A keyboard user
+   tabbing through the header could not see where they were. The ring belongs on the
+   visible pill, not on the invisible input inside it. */
+.darling-search:focus-within{outline:2px solid var(--d-honey-dark);outline-offset:2px}
 .darling-search svg{width:1.1rem;height:1.1rem;flex:none;color:var(--d-honey-nav)}
 .darling-search input[type="search"]{flex:1 1 auto;min-width:0;border:0;outline:0;
 	background:none;font:inherit;color:var(--d-cocoa)}
@@ -1037,11 +1052,18 @@ body .darling-ambient i{will-change:auto}
       The v2 nav never needs to scroll — below 900px it is display:none and the
       drawer takes over — so the inherited rule is simply wrong here.
    ═══════════════════════════════════════════════════════════════════════════ */
-.darling-header--v2 .darling-nav--pages,
-.darling-header--v2 .darling-nav--pages > ul{overflow:visible}
+/* The reset that used to live here is gone with its cause — see the .darling-nav ul
+   rule above, which no longer sets overflow at all. */
 
-/* The dropdown needs a stacking context above the hero band that follows it. */
-.darling-header--v2{position:relative;z-index:20}
+/* *** REGRESSION FOUND AND FIXED IN SLICE 10, INTRODUCED HERE IN SLICE 4. ***
+   This rule read `position:relative`, purely to make a stacking context for the
+   dropdown — and because it comes LATER in the file than `.darling-header
+   {position:sticky}` at equal specificity, it silently un-stuck the header on
+   every page. Measured: position:relative, and the header's top went to -639px
+   after a 900px scroll instead of staying at 0. No gate caught it because nothing
+   tested scrolling. `sticky` with a z-index makes the same stacking context and
+   keeps the behaviour the header is supposed to have. */
+.darling-header--v2{position:sticky;top:0;z-index:60}
 .darling-mega{box-shadow:0 12px 32px rgb(var(--d-shadow)/.18)}
 
 /* 2. Account page: an alignfull group inside a constrained <main> was measuring
