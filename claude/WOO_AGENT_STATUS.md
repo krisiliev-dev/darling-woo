@@ -1330,3 +1330,102 @@ subscription plugins and solutions and wire them in."
   unmovable.
   SLICE 6 STILL BLOCKED ON KRIS, asked ten times: cherry-vs-honey as the button colour,
   gold roughness step 3 (grain) vs 4 (grain + forged).
+
+- 2026-08-06 sprint 35 — DESIGN SLICE 14 SHIPPED + GATED (commits c4f14df, ca1788d;
+  deploys green). *** THE LAST STRUCTURAL SLICE OF THE DESIGN PASS. ***
+
+  1. THE PURGE — VERIFIED TWO WAYS, AND MOSTLY DECLINED.
+  Extracted all 158 class families from style.css, then tested each against BOTH our
+  source (templates/, parts/, *.php, assets/*.js) and the RENDERED DOM of thirteen
+  surfaces — home, shop, category, EMPTY category, product, account, page, kontakti,
+  blog, search, 404, cart and checkout, with both drawers forced open so their markup
+  was present. Source grep alone would have been wrong: WooCommerce emits classes our
+  templates never mention, and deleting those breaks surfaces we do not author.
+  DELETED (absent from both): `.darling-card` / `.wc-block-grid__product` /
+  `ul.products li.product` (the pre-blocks card), `.darling-crumbs` (breadcrumbs were
+  dropped deliberately in slice 8), `.darling-hero__eyebrow` and its hero override.
+  *** DECLINED AFTER CHECKING, which is as much a result: *** every other suspect on the
+  list survived. `.darling-blog__*` renders when a post exists; `.darling-cart__*` and
+  `.darling-cart-trust` are drawn by JS into an open drawer; `.darling-grid--list` is
+  added on click; `.darling-pagination` needs >24 products; `.darling-form-notice*` are
+  contact-form states; `.woocommerce-MyAccount-*` and `.woocommerce-Address*` only exist
+  when LOGGED IN — my crawl was logged out, and deleting on that evidence would have
+  stripped the account dashboard. `.darling-a11y` is a state on <html>. Recording the
+  declines matters more than the deletions: the next person to run this check should not
+  redo the reasoning.
+
+  2. THE DISTINCT-SPACINGS CENSUS — IT WAS OURS, AND IT MOVED.
+  The metric had gone 47 → 45 → 43 across the whole design pass and never really fell.
+  Rather than assert why, I attributed every distinct spacing value on the page to the
+  element carrying it. The answer: the survivors were OUR OWN component literals —
+  `.darling-hero`, `.darling-catsv2__row`, `.darling-trust`, `.darling-news`,
+  `.darling-pdp-trust`, the 404, the archive toolbar, the consent card — expressed as
+  0.2/0.35/0.55/0.85/1.1/1.3/2.2/3.4rem and so on, i.e. eighteen ad-hoc rem values that
+  no slice had owned. Not WooCommerce's, not the parent theme's. Mine.
+  69 declarations moved onto the scale. MEASURED RESULT: home 43 → **33**, shop 33 →
+  **27**, product 42 → **35**. That is the first real fall in this number since the pass
+  began.
+  SCOPE DISCIPLINE: an explicit DENY list kept the sweep off the cart drawer, the
+  shipbar, the courier picker and the VAT-invoice fields. `dc-` prefixes BOTH the consent
+  card and the courier controls, and the courier controls are on the checkout — a
+  prefix-based sweep without that deny list would have quietly repadded the checkout.
+  HONEST CAVEAT: the allowlist leaked slightly. My block regex captures the comment above
+  a rule as part of its selector text, so two blocks (`.darling-home`, `.darling-empty`)
+  were rewritten because a NEARBY COMMENT matched the allow pattern. The changes are the
+  same token substitutions and are harmless — `padding:0 1rem` → `0 var(--space-xs)`,
+  16px → 15px — but the mechanism was sloppier than I intended and is worth knowing if
+  anyone reuses the script. The deny list was matched the same way and still held.
+  Also changed by the sweep and worth naming: the PDP's classic add-to-cart button
+  padding, 13.6/25.6px → 15/20px. It is a money-path entry point, not part of the
+  checkout geometry baseline, and it re-gated clean.
+
+  3. VIEW TRANSITIONS — ASSESSED AND DELIBERATELY NOT SHIPPED.
+  Cross-document view transitions need `@view-transition{navigation:auto}` and same-origin
+  navigation. They are progressive enhancement by construction: an unsupported browser
+  simply navigates, so there is no fallback to build. They do NOT conflict with the 60s
+  nginx micro-cache — the rule ships with the static CSS and the transition is entirely
+  client-side. The real question is the money path: the at-rule is DOCUMENT-level, not
+  selector-scoped, so „exclude the checkout" cannot be expressed in CSS — it needs a
+  conditional enqueue in PHP (`! is_checkout() && ! is_cart() && ! is_order_received_page()`).
+  That is buildable, but it means the one thing standing between a payment result and a
+  stale animated frame would be a PHP conditional I would be adding at the end of a long
+  session, against a browser matrix I cannot test from this box (no Safari, no Firefox).
+  *** So: not shipped, and not dismissed either. *** The design is recorded above and it
+  is ready to build as its own slice, after Kris has seen the colour work — which is when
+  the site's identity is settled enough for a transition to be worth designing around.
+  Shipping something clever that could put a frame over a payment result is exactly the
+  trade this pass has refused all the way through.
+
+  GATE: design audit **0 defects across all 36 page × viewport combinations**;
+  product-card gate PASS; money path PASS with „Спиди — до офис €4.42 / 8,64 лв." first;
+  slice-11 checkout geometry baseline re-diffed **UNCHANGED** at 390 and 1440.
+
+  ═══ WHAT THE DESIGN PASS ACHIEVED, MEASURED ═══
+  Starting point (sprint 21 audit, live site): 22 viewport-overflow defects on the home
+  page at mobile alone, escapes-parent on the product page at every width, 15–19 sub-32px
+  touch targets per page, 58 distinct font sizes and 47 spacing values on one page, a
+  dead desktop mega menu, a header that was never sticky, a checkout whose inputs had a
+  1.56:1 focus ring and whose courier picker had none at all, a review form in Courier,
+  and a card CTA whose styling had never applied.
+  Now: **zero defects of every type across all 36 combos** — no viewport overflow, no
+  document overflow, no escapes-parent, no text overflow, no small targets. 14 distinct
+  font sizes on the home page (measured like-for-like against the old polluted method:
+  33 → 24, and 14 with the census fixed). Spacing 47 → 33. One focus primitive, one card
+  component driven by a container query, one shell, one type scale, one space scale.
+  Fourteen slices, every one gated on the rendered result, one reverted outright (slice 2)
+  when the gate said it made things worse.
+
+  ═══ WHAT REMAINS OPEN ═══
+  • *** SLICE 6, COLOUR SEMANTICS — BLOCKED ON KRIS, ASKED ELEVEN TIMES. *** Two
+    decisions: cherry-vs-honey as the button colour, and gold roughness step 3 (grain) vs
+    4 (grain + forged). Everything else in the palette is locked and encoded. This is now
+    the ONLY thing standing between the design pass and completion, and several deferred
+    items are queued behind it: the button primitive unification (deliberately kept out of
+    the checkout until colour lands so it absorbs one change, not two), the footer's two
+    inconsistent link treatments, and the PDP price still rendering Playfair.
+  • BORICA production card test — waits on the bank contract.
+  • Owner asks O-2…O-9 from claude/DESIGN_BUILD_PLAN.md, of which PHOTOGRAPHY is the
+    longest lead time and gates the card's real appearance more than any CSS will.
+  • The a11y button can overlap the last footer link at 390 (overlay-layer question).
+  • The cart page still shows the footer's flair animations; the checkout is fully still.
+  • Locker picker, waiting on the panel's BoxNow flip.
