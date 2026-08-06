@@ -1846,3 +1846,58 @@ subscription plugins and solutions and wire them in."
   surfaces); and if it is one of his, whether we take the set's own colour or only its
   relief tinted through our ramp. Slice 6 gets ONE rewrite into final shape when those
   land — not a rewrite per round.
+
+- 2026-08-06 sprint 44 — THE ADAPTIVE METAL. *** KRIS'S IDEA WAS BUILDABLE AS STATED, AND
+  MEASURING IT CORRECTED TWO THINGS I HAD TOLD HIM. *** Delivered `palette13.html`.
+
+  HIS BRIEF: metal_0065 is the readable one; the others fight the label. But they could
+  work „if the texture is an accent rather than the main attraction — at the edges, the
+  empty space, the padding". A texture that smooths out where it must and shows relief
+  where we want accents.
+
+  1. TWO MAPS, TWO ROLES, AND NO JAVASCRIPT.
+  The base is metal_0065, tiled across the whole surface — clean, and it does not argue
+  with the text. The accent is everytexture 00102 on an `::after` with `mask-image` and
+  `mix-blend-mode:overlay`, so it paints ONLY where the mask lets it. *** The mask is
+  expressed in PERCENTAGES, so it follows the button at any width — no fixed geometry, no
+  script, one extra pseudo-element. *** Three geometries shown: rim only, ends only (the
+  padding), rim+ends. Four accent strengths from zero to full.
+
+  2. THE MEASUREMENT — AND MY FIRST ATTEMPT AT IT WAS WRONG.
+  I sampled the strip under the label and computed contrast against the ink — but the
+  sample INCLUDED THE GLYPHS, so I was measuring the ink against itself and every button
+  scored 1.00:1. The page is now screenshotted a second time with `color:transparent`, and
+  contrast is computed between the ink and the SURFACE beneath it, at the 4th and 96th
+  percentile — the worst place, not the average.
+  RESULT, and it is the answer to his question: control (metal_0065, no accent)
+  **4.51:1**; with the accent at full strength **4.51:1**. *** The accent does not touch
+  readability at all — the mask keeps it out of the label's zone. ***
+
+  3. *** THE THING EATING THE CONTRAST WAS NOT THE TEXTURE. IT WAS THE BAND. ***
+  The worst case under the label came from the DARK end of the reflection banding passing
+  under the letters. So the same six stops were re-ordered — dark at the two ENDS, where
+  the accent already lives, light through the middle. Same density Kris approved, different
+  order. Measured: dull-brass 4.51 → **7.99**, deep honey 4.47 → **8.49**, dull brass
+  3.83 → **7.24**. His „accent, not main attraction" instinct turned out to apply to the
+  reflection as much as to the texture.
+
+  4. CORRECTION TO SPRINT 43: I TOLD HIM BRONZE WANTS CREAM INK. IT WANTS COCOA.
+  That claim came from the tile's MEAN colour (cream 3.86 vs cocoa 3.69). Measured on the
+  real render at the worst point, it inverts: cream **1.39:1**, cocoa **2.75:1**, and cocoa
+  on the quiet band **5.56:1** — which passes. A mean lies when the background is a
+  gradient; the worst point does not. Bronze is therefore still viable, but only with cocoa
+  ink AND the re-ordered band.
+
+  5. THE dull-brass COLOUR, EXPRESSED AS THREE NUMBERS RATHER THAN IMPORTED.
+  He liked that set's own colour. Its albedo is `rgb(170,143,92)` and — worth saying —
+  practically flat: p5 131, p95 139 out of 255. *** That set carries no texture to give;
+  its whole value is the colour. *** So it is now `hue 39 / sat 31 / lift −1` in our ramp
+  rather than a JPEG, which keeps it tintable, keeps the hue unlocked, and costs nothing.
+  Shown beside deep honey (39/70/−6), dull brass (41/40/−8) and bronze (28/50/−14), all
+  four on the adaptive metal, with long Bulgarian labels because a short word always looks
+  fine.
+
+  ═══ STILL OPEN ═══
+  Which of the four colours; which mask geometry and accent strength; and whether the band
+  keeps its current order or the quiet-centre order (the measurement argues hard for quiet).
+  Slice 6 still gets ONE rewrite into final shape when those land.
