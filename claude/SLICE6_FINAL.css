@@ -100,7 +100,7 @@
 	   the wood is not brown, it lends its pattern and nothing else. The mask keeps
 	   it out of the label's zone: clean where the text sits, grain in the padding
 	   and along the rim. */
-	--metal-grain: url("assets/ply-grain.webp");
+	--metal-grain: url("/wp-content/themes/darling/assets/ply-grain.webp");
 	--metal-grain-size: 260px 260px;
 	--grain-mask: radial-gradient(64% 190% at 50% 50%, transparent 0 26%, #000 86%);
 
