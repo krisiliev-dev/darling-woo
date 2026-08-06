@@ -1381,3 +1381,7 @@ body.woocommerce-account main,
 .darling-product .comment-form-rating .stars a,
 .comment-form-rating .stars a{display:inline-flex;align-items:center;
 	justify-content:center;min-width:34px;min-height:34px}
+
+/* The last one, named rather than rounded away: „Изгубена парола?" is a
+   standalone link in its own paragraph on the account page — 124x17. */
+.woocommerce-LostPassword a{display:inline-flex;align-items:center;min-height:44px}
