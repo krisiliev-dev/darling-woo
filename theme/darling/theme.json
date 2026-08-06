@@ -282,7 +282,8 @@
 		"typography": {
 			"fontFamily": "var(--wp--preset--font-family--inter)",
 			"fontSize": "var(--wp--preset--font-size--medium)",
-			"lineHeight": "1.65"
+			"lineHeight": "1.65",
+			"letterSpacing": "0"
 		},
 		"elements": {
 			"link": {
