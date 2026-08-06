@@ -915,3 +915,76 @@ subscription plugins and solutions and wire them in."
   button, and gold roughness step 3 (grain) vs 4 (grain + forged). Asked three times
   now; everything else in the palette is locked and encoded. If it stays blocked I take
   slice 7 (product card) next, which needs no colour decision.
+
+- 2026-08-06 sprint 28 — DESIGN SLICE 7 SHIPPED + GATED (commits 095c89e, 1a11538,
+  9b93332; deploys green). THE PRODUCT CARD, ONCE.
+  *** THE CARD'S ADD-TO-CART STYLING HAD NEVER APPLIED, SINCE THE DAY IT WAS WRITTEN. ***
+  Both rules selected `.wp-block-woocommerce-product-button a`. WooCommerce renders a
+  `<button>`. The only `<a>` in that block is Woo's hidden „Преглед на количката" link,
+  which is why my earlier probe measured a 0×0 element and told me nothing. So the
+  button kept Woo's own `padding:16px 36px`, which ate 72px of a 244px card and wrapped
+  „Добавяне в количката" onto THREE lines in every card at every viewport. The most-used
+  entry to the funnel was a three-line blob because of a tag name. It is now one line,
+  44px tall, at all six viewports — 189×44 phone, 200×44 desktop.
+  ALSO FIXED, each measured on the live site before it was touched:
+  • `auto-fill` → `auto-fit` + `justify-content:start`. auto-fill reserves phantom
+    tracks, which is why the home „Изборът на Lady D" band rendered one 248px card
+    marooned in a five-track 1344px row. It is now a 352px card at the shell edge.
+  • *** A REGRESSION OF MINE, FROM SLICE 3. *** The archive body computed
+    `max-width:688px` inside a 1344px `<main>`. 688px is 43rem — the theme.json
+    contentSize I set in slice 3 and described in my own status note as "a prose
+    measure". The columns block inherited it, so the entire archive, sidebar included,
+    was rendering at prose width. The shop grid was 310px wide at 1440. Fixed by giving
+    `<main>` its own declared `contentSize:90rem`.
+    FIRST ATTEMPT WAS WRONG AND THE GATE CAUGHT IT: I marked the columns block
+    `alignwide`, which works, but WordPress gives aligned children negative margins so
+    they can span the root padding — and the page then overflowed by exactly one gutter
+    (39px at 390, 45px at 430) on every phone. Declaring the measure is the honest fix;
+    aligning was a trick.
+  • `-webkit-line-clamp` on the `<h2>` did NOTHING. Core renders the linked post title
+    as an inline-block `<a>`, which is a single inline-level box to its parent, so the
+    heading saw one line box and clamped nothing. A 78-character Bulgarian product name
+    still ran to four lines. The clamp belongs on the anchor. Caught by the gate, not by
+    reading the CSS.
+  • `box-sizing` on the placeholder image. An `<img>` is a replaced element and does not
+    inherit the border-box default, so the 22% padding I added to quieten Woo's grey
+    slab was added OUTSIDE its 249px width and pushed every phone page 39px wide.
+  • `.wc-block-product-template` (related products on the PDP) is matched by nothing in
+    either stylesheet — confirmed. Styled anyway. It renders empty today because the
+    catalogue has one product; a component that is only correct when it has no content
+    is not correct.
+  • The home cards used `post-featured-image` and the archive cards used
+    `woocommerce/product-image`, so a product with no photo rendered NO media box on the
+    home page and a placeholder on the shop page. Unified on the Woo block.
+  • `post-title` lost `fontSize:"small"`. Core prints preset size classes with
+    `!important`, so the card title could not be restyled from CSS at all.
+  • theme.json `letterSpacing:0`. Twenty Twenty-Five sets **-0.1px globally** — negative
+    tracking on Cyrillic, which is the one thing my own token block explicitly forbids.
+    It was on every glyph on the site, not just cards.
+  THE MECHANISM: the card is now a query container (`container-name:card`) and sizes
+  itself from ITS OWN width. That is how one component stays correct in the shop grid,
+  the five-up home row, the list view and the related strip without any of them knowing
+  about each other. The title is two-line clamped with a RESERVED height, so prices and
+  buttons line up across a row whatever the name length.
+  GATE — tests/product-card-gate.spec.js, committed. It does not test the card against
+  the one product we have; it CLONES the real card and feeds it what a 10 800-product
+  Barsy catalogue will actually contain: a 4-character name, a 78-character name, a
+  portrait image, a landscape image and no image, across six viewports. PASS: CTA one
+  line and ≥44px in all 42 card instances; every title exactly 2 lines; price and CTA
+  rows aligned within 2px; card widths uniform; zero document overflow. Design audit
+  IDENTICAL to the slice-4/5 baseline page for page (small-target counts did not rise).
+  Money path PASS, „Спиди — до офис €4.42 / 8,64 лв." first.
+  CARD CTA COLOUR DELIBERATELY UNCHANGED. The build plan wants an outlined pill; fill
+  vs outline is downstream of Kris's open cherry/honey decision and belongs to slice 6.
+  This slice changed geometry only, so any conversion effect is attributable.
+  HONEST OPEN ITEMS FROM THIS SLICE (not swept):
+  • The CTA renders 200px centred rather than filling the card, despite `width:100%` on
+    both the wrapper and the button. It looks right and it is stable at every viewport,
+    so I shipped it — but I do not yet know why, and an unexplained gap between declared
+    CSS and rendered result is exactly what burned me on the mega menu. Slice 12.
+  • The archive still reserves 250px for a filter rail holding one collapsed trigger,
+    AND applies WordPress global padding twice (once on `<main>`, once on the query
+    div), so the shop grid is 870px of a 1344px shell and shows two columns where it
+    should show four. Both belong to slice 8 (archive + filters).
+  NEXT: slice 8 (archive, filters, empty states) — it has no colour dependency either.
+  Slice 6 remains BLOCKED on Kris: cherry-vs-honey button, gold roughness step 3 vs 4.
