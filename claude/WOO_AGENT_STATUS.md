@@ -1594,3 +1594,23 @@ subscription plugins and solutions and wire them in."
   Now the dents read as dimples in gold and the gold survives underneath.
   Delivered palette9.html (attach, never render — Kris's rule).
   STILL OPEN, unchanged: which gold. Slice 6 remains written and inert.
+  *** AND THE ONE ITEM THE NUDGE ASKED FOR THAT I HAD NOT DONE: A REAL TEXTURE MAP. ***
+  Not a stock photo — I could not verify a licence I would be happy shipping — so I
+  RENDERED one: a field of jittered dents built as a height map that WRAPS at the tile
+  edges (seamless by construction, not by retouching), differentiated into surface
+  normals, shaded per pixel with Blinn-Phong and a hue-rotated gold. Verified by tiling
+  it 2×2 and looking for a seam: none.
+  THE USEFUL VERSION IS GREYSCALE. Rendering the gold INTO the tile bakes the tone, so
+  seven golds would mean seven files. Rendering only the SHADING as a grey map and
+  tinting it in CSS (`background-blend-mode: overlay` over the gold ramp) means ONE
+  asset serves all seven — and it is the smaller file.
+  COST, measured rather than estimated:
+    A. CSS-only ......................... 0 KB
+    B. Grey map, 256px WebP ............. 15 KB   ← recommendation
+    B. Grey map, 512px WebP ............. 38 KB
+    C. Colour tile, 256px WebP .......... 18 KB (per gold)
+    C. Colour tile, 512px PNG ........... 415 KB (would not ship)
+  For scale, one product photograph is 60–150 KB. And unlike the SVG filter, an image is
+  just a background — it is NOT re-rasterised on every repaint, so option B is the only
+  high-fidelity route that would also be safe on a grid of product cards.
+  Delivered palette10.html plus the two .webp tiles.
