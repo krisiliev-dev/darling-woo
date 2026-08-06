@@ -55,6 +55,13 @@
 	     which is why „Отзиви" appeared twice on the page.) -->
 	<!-- wp:woocommerce/product-details {"className":"darling-product__details"} /-->
 
+	<!-- Heading and block are wrapped TOGETHER so one :has() can hide both when
+	     there is nothing related. They cannot be guarded as siblings: :has()
+	     may not be nested inside :has(), and an invalid selector is dropped
+	     silently — which is exactly how the first attempt failed. -->
+	<!-- wp:group {"className":"darling-related","layout":{"type":"default"}} -->
+	<div class="wp-block-group darling-related">
+
 	<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
 	<h2 class="wp-block-heading darling-section-title">Може да ви хареса</h2>
 	<!-- /wp:heading -->
@@ -69,6 +76,9 @@
 		<!-- /wp:woocommerce/product-template -->
 	</div>
 	<!-- /wp:woocommerce/related-products -->
+
+	</div>
+	<!-- /wp:group -->
 
 </div>
 <!-- /wp:woocommerce/single-product -->

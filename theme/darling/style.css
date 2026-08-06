@@ -1308,9 +1308,15 @@ body.woocommerce-account main,
 		.wp-block-woocommerce-product-filter-active,
 		.wc-block-product-filter)) .darling-archive__side{display:none}
 
-	/* „Може да ви хареса" above 200px of nothing, on every product page. */
-	.darling-section-title:has(+ .wp-block-woocommerce-related-products:not(:has(li))){display:none}
-	.wp-block-woocommerce-related-products:not(:has(li)){display:none}
+	/* „Може да ви хареса" above 200px of nothing, on every product page.
+	   FIRST ATTEMPT WAS AN INVALID SELECTOR AND FAILED SILENTLY: I guarded the
+	   heading as a sibling — `.darling-section-title:has(+ .related:not(:has(li)))`
+	   — but :has() MAY NOT BE NESTED INSIDE :has(), so the browser dropped the
+	   whole rule and the heading kept rendering over nothing. (:has() inside
+	   :not() is fine, which is why the second rule worked and the first did not
+	   — a difference invisible in a diff.) The template now wraps heading and
+	   block together, so one un-nested :has() hides both. */
+	.darling-related:not(:has(li)){display:none}
 }
 
 /* 4. Defensive containment for the filter overlay. The mobile leak the audit
