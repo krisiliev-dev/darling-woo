@@ -2033,3 +2033,46 @@ subscription plugins and solutions and wire them in."
 
   ═══ STILL OPEN ═══
   The colour. Then: whether the procedural layer ships, and if so hero-only or everywhere.
+
+- 2026-08-06 sprint 48 — BAND OR HIGHLIGHT. *** KRIS DESCRIBED A REAL OPTICAL DIFFERENCE,
+  NOT A PREFERENCE, AND NAMING IT SOLVED THE SLICE. *** „The big bands make it look like we
+  have taken a cutout of a piece of metal, whereas I want it to look like a piece of gold on
+  its own." Delivered `palette17.html`.
+
+  THE PRINCIPLE, because it is worth keeping: *** banding across a form is the reflection
+  of a WIDE environment — a rolled sheet, a mirror, a car panel. A small solid object is lit
+  by a comparatively small source, so it shows a BODY TONE, one or two SPECULAR HIGHLIGHTS,
+  and a DARKER RIM where the surface curves away from the light. *** Every previous round
+  had been making a better and better sheet. Six surfaces now run along that axis: the
+  current band (control), a bevel, body+one spot, body+two spots, body+spot+rim, and a
+  single elongated streak.
+
+  *** THE RIM IS THE ANSWER, AND IT IS BETTER BUILT THAN I EXPECTED. ***
+  It is the one element in the whole list that says „this object ends here". Without it any
+  surface reads as a window onto a larger material, however handsome. The spot gives the
+  DIRECTION of the light; the rim gives the BOUNDARY.
+  First attempt used a `radial-gradient` for the rim and it was wrong — on a wide pill an
+  ellipse darkens the ends but not the long edges, which is why the render showed a bright
+  band down one side. Rebuilt with **`inset` box-shadows**, which follow `border-radius`
+  exactly: ONE declaration works on a pill, a circle, a rounded square and a badge without
+  knowing the shape. *** That is the „adapts to the component" property Kris asked the
+  TEXTURE for two sprints ago, and the rim delivers it more cleanly than the texture can. ***
+  It is also a separate layer, so it composes onto any of the six surfaces — shown as an
+  explicit before/after switch rather than baked into one option.
+
+  ALSO: the wordmark now has a spot-lit variant — one highlight at the top-left of the word
+  over a dark body, so the letters stay legible and only their shoulders catch light. Shown
+  beside the dark-band version from sprint 46.
+
+  OBSERVED, worth recording: the band looks WORST on the round badge and the disc, and mildest
+  on a wide button. That fits the principle exactly — the smaller and rounder the object, the
+  more obviously a wide-environment reflection is wrong for it. So the badge gains most from
+  the change.
+
+  COLOURS NARROWED AGAIN, by Kris: 3 (оранжев мед) and 4 (портокалово злато) are out —
+  „too orange". He likes 5 (наситен мед, по-тъмен, 38/84/−5) but is still weighing it against
+  1, 2 and 6, so section 2 shows the three most object-like surfaces across exactly those four.
+
+  ═══ STILL OPEN ═══
+  Colour (1, 2, 5 or 6) and surface style. Kris has said he has another idea coming, so the
+  pending file stays unwritten until it lands — one rewrite, not one per round.
