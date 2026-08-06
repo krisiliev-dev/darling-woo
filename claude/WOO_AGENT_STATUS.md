@@ -1280,3 +1280,53 @@ subscription plugins and solutions and wire them in."
   colour dependency for its structure.
   SLICE 6 STILL BLOCKED ON KRIS, asked nine times: cherry-vs-honey as the button colour,
   gold roughness step 3 (grain) vs 4 (grain + forged).
+
+- 2026-08-06 sprint 34 — DESIGN SLICE 13 SHIPPED + GATED (commits b683439, ddee933;
+  deploys green). THE PRODUCT PAGE'S UNFINISHED HALF.
+  CHECKED assets/darling.css FIRST, as the house rule requires. It has NO vocabulary for
+  reviews, comment forms, wc-tabs, rating stars or the gallery lightbox. Nothing to
+  conform to — that is the answer to the check, not a reason to have skipped it.
+  MEASURED ON THE LIVE PDP BEFORE WRITING ANYTHING:
+  • The review textarea computed `font-family:monospace`, `padding:2px`, `border:1px
+    solid #767676`. Browser defaults, untouched since the day the theme was made.
+    *** A Bulgarian customer writing a review was typing into Courier. ***
+  • Name and email inputs: `border:2px inset`, `padding:1px 2px`, Arial, 247×21px.
+  • The tabs: #E9E6ED grey-lilac inactive, #CFC8D8 borders — WooCommerce's own chrome,
+    in a lilac this palette does not contain anywhere else.
+  • The submit button was ALREADY branded (cherry pill) because theme.json styles
+    `wp-element-button`. So the form was half-dressed, which reads worse than untouched.
+  *** THE STRIPE „Link" BUTTON IS NOT STYLEABLE FROM HERE, AND I AM NOT PRETENDING
+  OTHERWISE. *** `#wc-stripe-express-checkout-element-link` is a `div.StripeElement`
+  whose content is an IFRAME served from js.stripe.com; the green fill lives inside that
+  document. No rule in this stylesheet can reach it — appearance would have to come from
+  the Stripe plugin's own appearance API, which is a backend change, not a theme one.
+  What I did instead is place it deliberately: a quiet „или плати бързо с" divider above
+  it so it reads as an intentional alternative rather than a loose slab, and its width
+  constrained to the buy column. Shipping a rule that silently does nothing would have
+  been worse than leaving it alone, and I would not have known without measuring.
+  *** TWO SPECIFICITY LOSSES THAT ONLY THE RENDER CAUGHT. *** The first deploy looked
+  half-applied, so I asked the engine which rule won (CDP `getMatchedStylesForNode`)
+  rather than guessing:
+  • WooCommerce ships `.woocommerce div.product .woocommerce-tabs ul.tabs li` at (0,4,3);
+    my rule was (0,3,2) and lost — a lilac tab sitting next to a vanilla one.
+  • Woo styles the review panel with TWO IDs, `.woocommerce #review_form #respond`
+    (2,1,0), so a class-based rule could never dress it. Only `max-width` and
+    `border-radius` survived — which is exactly why the first render showed the right
+    WIDTH and no card, a symptom I would have misread as „nearly working".
+  Both fixed by matching their selector shape and adding one step, NOT by `!important`.
+  That distinction is the whole reason slice 2a exists.
+  GATE: design audit HELD at 0 defects across all 36 combos; product-card gate PASS;
+  money path PASS; the slice-11 checkout geometry baseline re-diffed **UNCHANGED** at
+  390 and 1440; focus rings still clean except the three Stripe iframes. PDP verified
+  rendered at 390/768/1440 — the review form is now a white card on the sand border with
+  real inputs and a proper checkbox row, and both tabs sit on the site's own surface with
+  a cherry underline on the active one.
+  NOT TOUCHED, DELIBERATELY: `.woocommerce-product-gallery__wrapper` keeps WooCommerce's
+  `transition:all 0.5s`. It is the last `transition:all` on the site and it is not ours;
+  nothing on the PDP changes a property it would animate, so overriding it would be
+  noise in the diff for no rendered difference.
+  NEXT: slice 14 (the experience layer and the purge) is the last structural slice, and
+  it is also where the distinct-spacings census finally has to move or be admitted as
+  unmovable.
+  SLICE 6 STILL BLOCKED ON KRIS, asked ten times: cherry-vs-honey as the button colour,
+  gold roughness step 3 (grain) vs 4 (grain + forged).
