@@ -3,7 +3,9 @@
  * Self-test for the BORICA signing plumbing.
  *
  * Run:  scripts/wp.sh eval-file /var/www/html/wp-content/plugins/darling-checkout/../../../tests/borica-mac.php
- * (or via the wrapper in tests/run-borica-mac.sh)
+ * There is no wrapper script - that path was never created. This file needs WordPress
+ * loaded, so it is NOT in CI; the standalone gate that is, and that covers the protocol
+ * itself, is tests/borica-protocol-gate.php.
  *
  * What this CAN prove without a contract: the MAC string is built to the
  * documented length-prefix rule, empty fields collapse to "-", signing and
