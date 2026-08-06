@@ -2284,3 +2284,55 @@ subscription plugins and solutions and wire them in."
 
   ═══ STILL OPEN ═══
   Material and how much light. Colour, surface, mask, texture treatment all settled.
+
+- 2026-08-06 sprint 54 — *** WHY THE CSS GLASS COULD NEVER WORK, AND A PROTOTYPE THAT
+  DOES. *** Kris: the effects „don't pass off as actual light and refractions and crystal
+  like surfaces… maybe there is a lightweight physics light engine". Researched properly and
+  built the thing that answers it: `glass-webgl.html`, plus a written memo at
+  `claude/GLASS_RESEARCH_20260806.md`.
+
+  1. THE DIAGNOSIS, WHICH IS STRUCTURAL AND NOT A TUNING PROBLEM.
+  *** CSS gradients PAINT A PICTURE of light; they never bend anything. *** Refraction is
+  not a look, it is an operation — sample the background at a DISPLACED position, where the
+  displacement comes from the surface normal and Snell's law. Layering more gradients cannot
+  perform that operation, so it was never going to read as glass. Six rounds of increasingly
+  clever gradients were, in hindsight, refining the wrong thing, and saying so plainly is
+  more useful than a seventh round.
+
+  2. EXACTLY THREE MECHANISMS ON THE WEB CAN DISPLACE A BACKDROP:
+  • **SVG `feDisplacementMap` + `backdrop-filter:url(#f)`** — the „liquid glass" route. A
+    few KB, potentially zero JS. *** Chrome only: *** Firefox and Safari do not support SVG
+    filters in `backdrop-filter` (open W3C proposal, svgwg #1142; nothing shipped). The map
+    is computed per size, so it fits FIXED-size components only.
+  • **WebGL** — real physics, supported everywhere, but *** it cannot see the DOM. *** The
+    page behind must be captured into a texture; the published libraries use `html-to-image`
+    and openly report 100–500 ms init plus a re-capture on every resize. That is the true
+    cost, not the shader.
+  • **Pre-baked render** — do the physics offline in a path tracer, ship one 15–40 KB WebP.
+    Free at runtime, works on the weakest phone, fixed geometry.
+
+  3. THE PROTOTYPE, BUILT RATHER THAN DESCRIBED. `glass-webgl.html` is **~4 KB of
+  hand-written shader and glue, zero libraries** (three.js would be ~600 KB for this).
+  It renders our REAL hero band as a texture and lays a glass slab across the headline, so
+  the type visibly bends at its edge — which is the one thing no CSS version did. In the
+  shader: rounded-box SDF → lens height profile → normal from the analytic gradient → Snell
+  at IOR 1.52 → **dispersion**, three refractions at slightly different IOR per channel,
+  which is the cue that reads as *crystal* rather than *plastic* → Beer–Lambert absorption
+  so thickness saturates → caustics focused inside → Fresnel rim.
+  TUNING NOTE worth keeping: the first render displaced by half the button's width and came
+  out as a red smear. A believable refraction is a FEW PIXELS. Dropped the thickness
+  coefficient from 0.55 to 0.30 and it became glass.
+
+  4. *** MY RECOMMENDATION: BAKE IT. *** For the hero button, badge and bow — few in number,
+  fixed size, and exactly where quality matters — an offline path-traced render will beat any
+  runtime approximation and costs one image on the site. WebGL earns its keep only if the
+  refraction must respond to what is behind it in real time; over a flat claret band it would
+  not. Paying 100–500 ms of DOM capture plus a live canvas for an effect over a solid colour
+  is precisely the trade this pass has refused throughout.
+  The SVG route is the one to revisit if it ever standardises — cheapest and most CSS-native,
+  blocked only by Chrome being alone.
+
+  ═══ STILL OPEN ═══
+  Whether real refraction reads as glass where the CSS did not — that is what the prototype
+  is for. If yes, the remaining question is only delivery (bake vs WebGL). If no, the whole
+  direction can be dropped cheaply, which is the other reason to prototype before choosing.
