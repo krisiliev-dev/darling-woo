@@ -97,16 +97,6 @@ h1, h2, h3, .wp-block-heading { color: var(--d-honey-dark); }
 a { color: var(--d-cherry-deep); }
 a:hover { color: var(--d-cherry); }
 
-/* Cards / panels — the "paper" feel */
-.darling-card,
-.wc-block-grid__product,
-ul.products li.product {
-  background: #fff;
-  border: 1px solid var(--d-sand);
-  border-radius: 14px;
-  box-shadow: 0 1px 2px rgba(var(--d-shadow), .04);
-}
-
 /* Primary action */
 .wp-element-button,
 .wc-block-components-button,
@@ -245,8 +235,6 @@ a.button.alt:hover {
 
 .darling-hero{position:relative;display:grid;grid-template-columns:1.15fr .85fr;
 	gap:2rem;align-items:center;min-height:min(66vh,30rem);padding:2.5rem 0}
-.darling-hero__eyebrow{margin:0 0 .5rem;font-size:var(--fs-xs);letter-spacing:var(--ls-eyebrow);
-	text-transform:uppercase;color:var(--d-cherry)}
 .darling-hero__title{margin:0 0 .9rem;font-size:var(--fs-display);line-height:var(--lh-display);
 	color:var(--d-cocoa);font-weight:700}
 .darling-hero__sub{margin:0 0 1.6rem;max-width:34rem;font-size:var(--fs-base);line-height:var(--lh-body);
@@ -306,8 +294,6 @@ a.button.alt:hover {
    --------------------------------------------------------------------------- */
 
 .darling-product{max-width:var(--d-content,1280px);margin:0 auto;padding:1.5rem 1rem 3rem}
-.darling-crumbs{font-size:var(--fs-xs);opacity:.75;margin-bottom:1rem}
-.darling-crumbs a{color:var(--d-cocoa)}
 
 .darling-product__top{gap:2.5rem;align-items:flex-start}
 .darling-product__media img{border-radius:1rem;background:var(--d-vanilla,var(--d-cream))}
@@ -576,7 +562,6 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .d-btn--on-red{border-color:var(--d-cream-text);color:var(--d-cream-text)}
 .d-btn--on-red:hover{background:rgb(255 255 255/.12)}
 .darling-hero--red .dhv-bow{color:#fff}
-.darling-hero--red .darling-hero__eyebrow{display:none}
 
 /* Photo category cards */
 .darling-catsv2{margin:2.6rem 0 1rem}
