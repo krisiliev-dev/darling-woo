@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D6 — COLOUR SEMANTICS.   *** PREPARED, NOT ENQUEUED, NOT SHIPPED. ***
+
+   This file is deliberately NOT loaded by functions.php. It exists so that when
+   Kris names a gold, shipping slice 6 is a two-number change rather than a build.
+   To ship: paste this block at the end of style.css, set the two numbers in
+   §2, delete this header, and run the full gate.
+
+   DECIDED BY KRIS (2026-08-06):
+     • Neutral = grey, +2 step  ........................ #E6E6EC   LOCKED
+     • Claret for large red fields ..................... #9E1B32   LOCKED
+     • Cherry for prices and accents ................... #D42A3C   LOCKED
+     • Gold shadows must ROTATE hue, not just darken ... his idea, and correct
+     • No animation on the metal ....................... rejected as "gambling"
+     • Metal treatment ................................. TEXTURE 8 (hammered)
+     • Button rule ..................... cherry on grey, gold on claret
+   STILL OPEN: which gold. Contrast on claret narrows it to three —
+     yellow 4.56:1, green-gold 4.19:1, honey 3.49:1. Champagne (2.86), antique
+     (2.75), rose (2.25) and copper-rose (2.02) fail 3:1 on claret and are
+     viable only on cocoa.
+   ALSO IN FLIGHT: Kris asked about texture maps, so §4 carries BOTH the
+     CSS-only texture 8 and the SVG lighting-model variant. Pick one there.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── §1. The locked palette ─────────────────────────────────────────────────
+   Names describe ROLE, not appearance, so a later hue change does not make the
+   token names lie. */
+:root{
+	--d-page:        #E6E6EC;   /* the page ground */
+	--d-page-mid:    #D4D4DD;   /* dividers, quiet fills */
+	--d-page-deep:   #C2C2CD;   /* borders that must be seen */
+	--d-claret:      #9E1B32;   /* large red fields: hero, newsletter band */
+	--d-claret-deep: #7D1526;   /* the shadow side of a claret surface */
+	--d-cherry:      #D42A3C;   /* prices, accents, the default button */
+	--d-cherry-deep: #B01F30;   /* cherry pressed / hovered */
+	--d-cocoa:       #3A1D20;   /* headings and body ink */
+	--d-cream:       #FFF6E9;   /* on-dark text, halos */
+	--d-vanilla:     #FFE9C9;   /* warm tint on dark surfaces */
+
+	/* Ink roles, so contrast is decided once rather than per component. */
+	--ink:           var(--d-cocoa);
+	--ink-quiet:     rgb(58 29 32 / .72);
+	--ink-on-dark:   var(--d-cream);
+	--ink-price:     var(--d-cherry-deep);
+}
+
+
+/* ── §2. THE GOLD — TWO NUMBERS ─────────────────────────────────────────────
+   Change these and the whole ramp follows. That is the point: "gold 2" is a
+   hue and a saturation, not seven hex codes to keep in sync.
+
+       1 honey 40/72   2 yellow 48/82   3 champagne 43/38   4 rose 22/55
+       5 copper-rose 15/62   6 antique 36/48   7 green-gold 54/60
+
+   THE HUE ROTATES ACROSS THE RAMP — +9° at the highlight to −24° at the
+   darkest, a 33° sweep. This is the thing Kris said he could not see when it
+   was three or four degrees: real gold's shadows go amber and copper, they do
+   not simply go dark. Do not flatten this back into a lightness ramp. */
+:root{
+	--gold-hue: 40;    /* ← pick */
+	--gold-sat: 72;    /* ← pick (unitless; multiplied by 1% below) */
+
+	--g-vanilla: hsl(calc(var(--gold-hue) + 9)  calc((var(--gold-sat) + 8) * 1%) 93%);
+	--g-hi:      hsl(calc(var(--gold-hue) + 6)  calc((var(--gold-sat) + 6) * 1%) 82%);
+	--g-light:   hsl(calc(var(--gold-hue) + 2)  calc(var(--gold-sat) * 1%)       68%);
+	--g-core:    hsl(var(--gold-hue)            calc(var(--gold-sat) * 1%)       52%);
+	--g-shadow:  hsl(calc(var(--gold-hue) - 9)  calc((var(--gold-sat) + 6) * 1%) 38%);
+	--g-deep:    hsl(calc(var(--gold-hue) - 17) calc((var(--gold-sat) + 10) * 1%) 27%);
+	--g-darkest: hsl(calc(var(--gold-hue) - 24) calc((var(--gold-sat) + 12) * 1%) 19%);
+
+	/* Flat gold, for anything that must NOT carry a texture (icons, rules). */
+	--d-gold:      var(--g-core);
+	--d-gold-dark: var(--g-shadow);
+}
+
+
+/* ── §3. Reflection banding ─────────────────────────────────────────────────
+   The base of every metal surface. Bands of light and dark ACROSS the form is
+   what the eye reads as a reflection; a single light-to-dark ramp reads as a
+   beige gradient no matter how good the colours are. This was the missing
+   technique, not a missing colour. */
+:root{
+	--metal-band: linear-gradient(102deg,
+		var(--g-deep) 0%, var(--g-core) 8%, var(--g-vanilla) 16%, var(--g-light) 24%,
+		var(--g-shadow) 34%, var(--g-core) 42%, var(--g-hi) 50%, var(--g-vanilla) 56%,
+		var(--g-light) 64%, var(--g-deep) 74%, var(--g-core) 82%, var(--g-hi) 90%,
+		var(--g-shadow) 100%);
+
+	/* TEXTURE 8 — hammered, Kris's pick. Radial dimples over the banding.
+	   CSS-only: cheap, composites well, safe on any number of elements. */
+	--metal-dimples:
+		radial-gradient(circle at 20% 30%, rgb(255 255 255 / .30) 0 6%, transparent 24%),
+		radial-gradient(circle at 62% 68%, rgb(0 0 0 / .24) 0 5%, transparent 22%),
+		radial-gradient(circle at 82% 22%, rgb(255 255 255 / .22) 0 4%, transparent 18%),
+		radial-gradient(circle at 38% 80%, rgb(0 0 0 / .20) 0 5%, transparent 20%);
+}
+
+
+/* ── §4. The metal surface ──────────────────────────────────────────────────
+   ONE class. Everything metal wears it: wordmark, bow, badge, hero button.
+   NEVER animated — a sweeping sheen was built, shown and rejected.
+
+   Option A (default, shipped-safe): CSS-only texture 8.
+   Option B: the SVG lighting model — feTurbulence height field lit by
+   feDiffuseLighting + feSpecularLighting, i.e. real surface normals. Higher
+   fidelity, but it is a raster filter recomputed on every repaint, so it is
+   for the hero button, the wordmark, the bow and the badge ONLY — never a
+   grid of product cards. Swap by commenting one line for the other. */
+.d-metal{
+	background-image: var(--metal-dimples), var(--metal-band);   /* option A */
+	/* background-image: var(--metal-lit), var(--metal-band);        option B
+	   background-blend-mode: hard-light, normal;
+	   background-size: 420px 140px, auto; */
+	background-color: var(--g-core);   /* fallback if gradients are unsupported */
+}
+/* Metal as TEXT (wordmark, bow label). Needs the clip; keep the fallback colour
+   so a failed clip shows gold text rather than invisible text. */
+.d-metal--text{
+	color: var(--g-core);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+@supports not ((background-clip: text) or (-webkit-background-clip: text)){
+	.d-metal--text{ -webkit-text-fill-color: currentColor; color: var(--g-shadow); }
+}
+
+
+/* ── §5. THE BUTTON RULE ────────────────────────────────────────────────────
+   Kris's decision, and it is a RULE rather than a colour: a button contrasts
+   with what it sits ON. Cherry is the default because it holds 4.03:1 against
+   the grey page; gold is the hero button because it holds against claret while
+   cherry-on-claret would be a low-contrast pairing.
+
+   *** THIS IS ALSO WHERE THE BUTTON PRIMITIVE FINALLY UNIFIES, INCLUDING
+   WOOCOMMERCE'S CHECKOUT BUTTONS. *** Slice 11 deliberately left those alone so
+   the checkout absorbs ONE change instead of two. That makes this the highest
+   checkout-geometry risk of any slice: record a fresh diff11 baseline BEFORE
+   touching it, and revert rather than argue if the geometry moves. */
+.d-btn,
+.wp-element-button,
+.wc-block-components-button,
+button.button.alt,
+a.button.alt{
+	--btn-bg:   var(--d-cherry);
+	--btn-ink:  var(--d-cream);
+	--btn-bg-hover: var(--d-cherry-deep);
+	background: var(--btn-bg);
+	color: var(--btn-ink);
+}
+.d-btn:hover,
+.wp-element-button:hover{ background: var(--btn-bg-hover); }
+
+/* On any claret surface the button becomes the metal. */
+.darling-hero--red .d-btn--primary,
+.darling-news-band .d-btn--primary,
+.d-on-claret .d-btn--primary{
+	--btn-ink: var(--d-cocoa);
+	background-image: var(--metal-dimples), var(--metal-band);
+	background-color: var(--g-core);
+	color: var(--btn-ink);
+	box-shadow: 0 2px 0 rgb(0 0 0 / .22), 0 8px 18px rgb(0 0 0 / .22);
+}
+
+
+/* ── §6. Two things deferred into this slice ────────────────────────────────
+   Both were found earlier, both were correctly held back because they are
+   colour decisions. */
+
+/* 6a. The footer had TWO link treatments: .df-links plain, .df-policies and
+   .df-map cherry and underlined. One vocabulary. */
+.df-links a,
+.df-policies a,
+.df-map a,
+.df-legal p a{ color: var(--ink); text-decoration: none; }
+.df-links a:hover, .df-policies a:hover, .df-map a:hover, .df-legal p a:hover,
+.df-links a:focus-visible, .df-policies a:focus-visible,
+.df-map a:focus-visible, .df-legal p a:focus-visible{
+	color: var(--d-cherry-deep); text-decoration: underline;
+}
+
+/* 6b. The PDP price still rendered Playfair because .darling-product__price
+   predates the slice-3 rule that moved prices to Inter tabular. A price is a
+   number, not an ornament. */
+.darling-product__price,
+.darling-product__price .woocommerce-Price-amount{
+	font-family: Inter, -apple-system, "Segoe UI", sans-serif;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--ink-price);
+}
+
+
+/* ── §7. Gate before this ships ─────────────────────────────────────────────
+   • tests/design-audit.spec.js — MUST hold at 0 defects across all 36 combos
+   • tests/product-card-gate.spec.js — PASS
+   • tests/checkout-polish-gate.spec.js — PASS
+   • diff11.js against a FRESH baseline — UNCHANGED
+   • contrast sweep: no text/background pair below 4.5:1 (<24px) or 3:1 (≥24px)
+     on any surface these colours touch, including the two this slice exposes
+     by removing the forced-gold heading override: footer column headings on
+     vanilla, and trust headings on sand.
+   ═══════════════════════════════════════════════════════════════════════════ */
