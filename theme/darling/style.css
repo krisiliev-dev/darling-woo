@@ -1189,8 +1189,13 @@ body.woocommerce-account main,
 /* Woo's stock placeholder is a grey slab. Until the branded one exists (O-5),
    sit it on vanilla and quieten it so a photo-less product reads as "coming",
    not as "broken". */
-.darling-grid li img.woocommerce-placeholder{object-fit:contain;padding:22%;
-	background:var(--d-vanilla);opacity:.38;mix-blend-mode:multiply}
+.darling-grid li img.woocommerce-placeholder{box-sizing:border-box;
+	object-fit:contain;padding:22%;background:var(--d-vanilla);opacity:.38;
+	mix-blend-mode:multiply}
+/* box-sizing is not decoration here: an <img> is a replaced element and does
+   NOT inherit the border-box default, so 22% padding was added OUTSIDE its
+   249px width and pushed the page 39px wider than the phone. The gate caught
+   it; nothing else would have. */
 
 /* Name second-loudest, two lines, and the height is RESERVED — cards in a row
    line their prices up whether the title runs one line or two. Bulgarian
