@@ -2382,3 +2382,57 @@ subscription plugins and solutions and wire them in."
   follows: bake it offline versus ship the shader — and the emission finding shifts that
   slightly, because an emissive slab depends much less on what is behind it, which is exactly
   the case where a baked image loses least.
+
+- 2026-08-06 sprint 56 — *** KRIS PICKED THE WINNER. ШПЕРПЛАТ + СИЯНИЕ + СВЕТЕЩ РЪБ +
+  ИСКРИ. *** After twenty rounds of colour and material work, slice 6 has an answer, and
+  the pending file is now written in its FINAL shape rather than as a scaffold.
+
+  THE COMPLETE SPECIFICATION, all of it decided by him:
+    • Colour ........ КЕХЛИБАР, hue 36 / sat 88 / lift −2
+    • Surface ....... E — body + one specular + a real inset rim
+    • Texture ....... ШПЕРПЛАТ, as a GREY map, masked to the rim and the padding
+    • Light ......... glow + lit rim + static glints
+    • Button rule ... cherry on grey, metal on claret
+    • Wordmark ...... the dark text band from sprint 46
+  Written out as `claude/SLICE6_FINAL.css` — 275 lines, braces balanced, *** still inert:
+  nothing enqueues it and `claude/` is not deploy-synced. ***
+
+  1. HE ALSO REJECTED WEBGL, AND HIS REASON IS THE RIGHT ONE.
+  „It changes the colour too much when there is transparency and it mixes with the colour
+  below it." That is exactly the wall from sprint 52 and 55: a transmissive material takes
+  the colour of what is behind it, and over claret amber goes red. *** I had patched it with
+  an emission term — and his objection is the better read of that patch: a material that
+  needs artificial internal light in order not to take on its background's colour is no
+  longer glass. *** The shader work is not wasted (it is committed and the research memo
+  stands), but it is not what ships.
+
+  2. THE ONE NUMBER LEFT IS THE GLOW STRENGTH. He said the glow „does seem good even if a
+  bit too strong and intense", so `palette27.html` shows the winning combination at
+  **100% / 75% / 55% / 40%**, four full pages, everything else identical. It is a single
+  knob in the CSS — `--glow-k` — scaling the lit rim and both blooms together through
+  `calc()`, so choosing is a one-value edit and not a rewrite.
+  MY RECOMMENDATION IS **55%**: at that setting the rim still reads as light, but the outer
+  bloom stops tinting the claret around the button. That is the point where the glow stops
+  announcing itself as an effect.
+
+  3. MEASURED on the winning combination (button vs claret ≥3 · label ≥4.5):
+    without light 3.48 : 5.81 · glow + lit rim 3.95 : 5.99 · **+ glints 3.97 : 5.99**
+  The glints move contrast by 0.00–0.02 — pure ornament, and the CSS says so at the point
+  of definition so nobody later mistakes them for structure.
+
+  4. NOTHING IN THIS SLICE ANIMATES. The sweeping sheen was built, shown and rejected as
+  „gambling" long ago; the glints are static. So there is nothing for
+  `prefers-reduced-motion` to switch off and nothing to suppress on the money path — the
+  cheapest possible answer to both questions, and worth stating because every previous
+  motion decision needed a mechanism.
+
+  ═══ WHAT HAPPENS NEXT, IN ORDER ═══
+  1. Kris names the glow level.
+  2. `cp claude/assets/strong-ply.webp theme/darling/assets/ply-grain.webp`
+  3. paste §1–§6 at the end of `theme/darling/style.css`, set `--glow-k`
+  4. *** record a FRESH diff11 checkout-geometry baseline BEFORE the paste *** — this slice
+     unifies the button primitive including WooCommerce's checkout buttons, which slice 11
+     deliberately left alone so the checkout absorbs one change instead of two. It is the
+     highest checkout risk of the entire pass.
+  5. gate: audit 0/36 · product-card PASS · money path PASS · diff11 UNCHANGED at 390 and
+     1440 · contrast sweep. Revert rather than argue if the geometry moves.
