@@ -64,18 +64,43 @@ happening" are different claims, and it was the second one that was false while 
 reported healthy. A row we cannot read is its own separate ALERT rather than a pass, because a
 monitor that reports fine when its query failed is worse than no monitor.
 
+## The monitor has been seen to fail, on purpose
+
+A monitor nobody has ever watched fail is not a monitor, so it was made to fail. On the live box:
+stop wpcron, schedule darling_wpcron_monitorprobe twenty minutes in the PAST so the queue cannot be
+drained out from under the test, run health.sh.
+
+    RESULT: health.sh exited NON-ZERO - the monitor fired
+      "cron_late_min": 20,
+    ALERT: WP-Cron queue is 20 min overdue - the wpcron runner is not draining it
+
+Then delete the probe and restart wpcron:
+
+    services: db, mailserver, nginx, redis, roundcube, wordpress, wpcron - all running
+    overdue events: 0
+    RESULT: health.sh exited ZERO - green
+      "cron_late_min": 0,      (no ALERT)
+    docker compose logs wpcron: empty
+
+Both directions demonstrated. Note the bait had to be BOTH scheduled in the past AND the runner
+stopped first: with wpcron alive it would have been drained inside sixty seconds and the test would
+have proved nothing at all while looking like it passed.
+
 ## What is verified, and what is not
 
 Verified here: the compose file resolves (`docker compose config` clean, $$? unescapes to $?, the
 Cyrillic SMTP_FROM_NAME survives), and the CLI behaviour of wp-cron.php against WordPress source.
 
-NOT verified, and this is the acceptance test somebody has to actually run on the box:
+VERIFIED on the live box after the second deploy: wpcron is up; a probe event scheduled thirty
+seconds out fired and vanished; the week-old backlog drained 24 -> 15 -> 0 overdue; health.sh reads
+cron_late_min 0; and the monitor has been proven to go red and back to green (section above).
 
-1. `docker compose ps` shows wpcron running after the deploy.
-2. Drive a real order into the on-hold-plus-scheduled state, wait out the 960 seconds, and read
-   the outcome OFF THE ORDER. Not off the container, not off the log.
-3. Break it on purpose - `docker compose stop wpcron`, wait 20 minutes, run health.sh - and
-   confirm it goes red with cron_late_min. A monitor nobody has ever seen fail is not a monitor.
+STILL NOT verified, and it is the one that matters most:
+
+  * the real BORICA path. Once the vPOS credentials arrive, drive an order into the
+    on-hold-plus-scheduled state, wait out the 960 seconds, and read the outcome OFF THE ORDER -
+    not off the container, not off a log. Everything above proves the queue moves; only that
+    proves the money case.
 
 Note that this landed while GitHub Actions was failing to acquire runners, so the Deploy infra
 workflow may not have run. Check that the change is actually ON the box before believing any of it.
