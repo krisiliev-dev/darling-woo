@@ -47,6 +47,16 @@
 		}
 	}
 
+	// THE MONEY PATH IS STILL. Measured on the live checkout: the sparkle layer was
+	// animating there too (`darling-amb 9.54s`, one animation per star, forever). A
+	// customer entering an address and choosing a courier does not need decoration
+	// moving in their peripheral vision, and a page whose job is a transaction should
+	// not spend frames on atmosphere. Cart and checkout opt out entirely.
+	function transactional() {
+		var c = document.body ? document.body.className : '';
+		return /woocommerce-checkout|woocommerce-cart|woocommerce-order-received/.test( c );
+	}
+
 	// Coarse, deliberately pessimistic: both properties are absent on Safari and
 	// Firefox, and the fallbacks assume a capable device rather than punishing
 	// browsers that decline to fingerprint themselves.
@@ -57,7 +67,7 @@
 	}
 
 	function measure() {
-		if ( ! motionOK() ) {
+		if ( ! motionOK() || transactional() ) {
 			return { max: 0, interval: 0 };
 		}
 		var area = ( window.innerWidth || 1280 ) * ( window.innerHeight || 800 );

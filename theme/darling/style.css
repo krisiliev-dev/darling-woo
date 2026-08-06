@@ -256,7 +256,10 @@ a.button.alt:hover {
 /* Button palette taken from the live theme's custom properties rather than
    eyeballed: honey fill with cocoa text, and a ghost variant on the same hue. */
 .d-btn{display:inline-block;padding:.75rem 1.4rem;border-radius:999px;
-	text-decoration:none;font-weight:600;border:2px solid transparent;transition:.18s}
+	text-decoration:none;font-weight:600;border:2px solid transparent;
+	/* Named properties, not `all`. `transition:.18s` means transition-property:all,
+	   so any future declaration — including a layout one — would silently animate. */
+	transition:background-color .18s ease,border-color .18s ease,color .18s ease}
 .d-btn--primary{background:var(--d-honey);color:var(--d-cocoa);border-color:var(--d-honey)}
 .d-btn--primary:hover{background:var(--d-honey-dark);border-color:var(--d-honey-dark)}
 .d-btn--ghost{background:transparent;color:var(--d-cocoa);border-color:var(--d-cocoa)}
@@ -266,7 +269,8 @@ a.button.alt:hover {
 	gap:.7rem;padding:1rem 0 2rem}
 .darling-cats a{display:grid;place-items:center;min-height:5.5rem;padding:1rem;
 	border-radius:1rem;background:var(--d-vanilla,var(--d-cream));border:1px solid var(--d-sand);
-	color:var(--d-cocoa);text-decoration:none;font-weight:600;text-align:center;transition:.18s}
+	color:var(--d-cocoa);text-decoration:none;font-weight:600;text-align:center;
+	transition:background-color .18s ease,color .18s ease}
 .darling-cats a:hover{background:var(--d-honey-light);border-color:var(--d-honey);
 	transform:translateY(-2px);box-shadow:var(--d-shadow,0 6px 18px rgb(0 0 0/.08))}
 
@@ -322,7 +326,8 @@ a.button.alt:hover {
 .darling-product__atc button,
 .darling-product__atc .single_add_to_cart_button{padding:.85rem 1.6rem;border:0;border-radius:999px;
 	background:var(--d-honey);color:var(--d-cocoa);font-weight:700;cursor:pointer;
-	font-size:var(--fs-base);transition:.18s}
+	font-size:var(--fs-base);
+	transition:background-color .18s ease,color .18s ease}
 .darling-product__atc button:hover{background:var(--d-honey-dark)}
 
 .darling-trust{list-style:none;margin:1.4rem 0 0;padding:1rem;display:grid;gap:.55rem;
@@ -1165,18 +1170,38 @@ body.woocommerce-account main,
 .darling-grid .wc-block-product-template > li{
 	container-type:inline-size;
 	container-name:card;
+	position:relative;
 	display:flex;flex-direction:column;gap:var(--space-2xs);
 	background:#fff;border-radius:14px;padding:var(--space-xs);
 	box-shadow:0 2px 10px rgb(var(--d-shadow)/.06);
-	transition:box-shadow .25s ease,transform .25s ease;
+	transition:transform .25s ease;
+}
+/* THE LIFT SHADOW IS A PSEUDO-ELEMENT WHOSE OPACITY CHANGES, not a box-shadow whose
+   blur radius changes. A 26px blur is rasterised by the compositor; animating the
+   shadow itself asks it to be re-rasterised every frame, and a category page will
+   hold twenty of these cards. Fading a shadow that is already painted is a
+   composite-only change. I have NOT measured frame timings for this — headless
+   Chromium here gives me no trustworthy number — so this is justified on the
+   rendering model, not on a benchmark I do not have. */
+.darling-grid .wp-block-post-template > li::after,
+.darling-grid .wp-block-post-template > .wp-block-post::after,
+.darling-grid .wc-block-product-template > li::after{
+	content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+	box-shadow:0 10px 26px rgb(var(--d-shadow)/.14);
+	opacity:0;transition:opacity .25s ease;
 }
 .darling-grid .wp-block-post-template > li:hover,
 .darling-grid .wp-block-post-template > .wp-block-post:hover,
 .darling-grid .wc-block-product-template > li:hover,
 .darling-grid .wp-block-post-template > li:focus-within,
 .darling-grid .wc-block-product-template > li:focus-within{
-	box-shadow:0 10px 26px rgb(var(--d-shadow)/.14);transform:translateY(-2px);
+	transform:translateY(-2px);
 }
+.darling-grid .wp-block-post-template > li:hover::after,
+.darling-grid .wp-block-post-template > .wp-block-post:hover::after,
+.darling-grid .wc-block-product-template > li:hover::after,
+.darling-grid .wp-block-post-template > li:focus-within::after,
+.darling-grid .wc-block-product-template > li:focus-within::after{opacity:1}
 
 /* Media slot: one fixed box whatever the photograph is. A mixed-aspect
    catalogue of 10 800 products cannot be allowed to shear the grid, and a
