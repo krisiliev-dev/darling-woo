@@ -1572,3 +1572,25 @@ subscription plugins and solutions and wire them in."
   DELIVERY RULE FROM KRIS, now permanent: send files with `display:"attach"`, never
   `"render"` — render forces the desktop side panel open and it kept re-opening over
   what he was reading.
+
+- 2026-08-06 sprint 39 — KRIS: „I don't see a difference between the buttons" + „can we
+  make texture 8 less dense, more space between the lines?" Both were fair, and the
+  second named a real defect I had not seen.
+  *** THE „LINES" ARE THE REFLECTION BANDING, AND IT HAD THIRTEEN STOPS. *** Texture 8's
+  base is a multi-stop gradient across the form; at thirteen transitions it reads as
+  corduroy rather than as light on metal. Band density is now a knob with four settings —
+  13 stops (the original), 9, 6 and 4 — shown side by side, bare and with the dents on
+  top. Six is the recommendation: two broad highlights, two shadows.
+  *** AND THAT IS ALSO WHY THE GOLDS LOOKED THE SAME. *** At button size the dense
+  banding was eating the hue: every button showed the same rapid light-dark sweep, so
+  honey, yellow and green-gold converged. With wide bands and a larger swatch the tone
+  reads properly. Re-shown at §6 with hue, saturation and claret contrast printed.
+  HAMMERING, THIRD ATTEMPT AND FINALLY RIGHT-ISH: the height map is now a TILED FIELD OF
+  SOFT-EDGED CIRCLES — actual dents — jittered in position, size and depth so it cannot
+  read as machine-stamped, fed through feDiffuseLighting + feSpecularLighting.
+  FIRST COMPOSITE WAS WRONG AND I CAUGHT IT ON THE RENDER: summing diffuse and specular
+  at full weight and blending hard-light clipped to white — it looked like BUBBLE WRAP,
+  not metal. Re-weighted (k2 .55 / k3 .30), surface scale cut by 58%, blend soft-light.
+  Now the dents read as dimples in gold and the gold survives underneath.
+  Delivered palette9.html (attach, never render — Kris's rule).
+  STILL OPEN, unchanged: which gold. Slice 6 remains written and inert.
