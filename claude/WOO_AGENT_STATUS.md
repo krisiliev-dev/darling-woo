@@ -1465,3 +1465,67 @@ subscription plugins and solutions and wire them in."
   Nothing animates in any option — the „gambling website" sweep stays rejected.
   NEXT: slice 6 executes as soon as he picks numbers. Everything else in the palette is
   still locked. The darling-design-system SKILL remains the other outstanding promise.
+
+- 2026-08-06 sprint 37 — THE SKILL DELIVERED, AND A STEADY-STATE WATCH THAT FOUND TWO
+  DEAD MONITORS.
+  *** darling-design-system SKILL DELIVERED *** (promised in sprint 21, outstanding ever
+  since): handed over as both `darling-design-system.skill` and a plain `SKILL.md`.
+  DELIVERED, NOT SAVED — this session cannot write to Kris's account, only give him the
+  file. It carries what fourteen slices actually taught rather than theory: the token
+  vocabulary and the theme.json-mirrors-style.css rule; the cascade rules (unlayered
+  author CSS outranks every layer — slice 2 was reverted for it; darling.css first,
+  style.css last; never !important, match the winning selector's shape and ask the engine
+  via CDP which rule won); the method rules (test the RESULT; geometry lies about
+  clipping; RE-MEASURE after a fix because the first is often necessary and not
+  sufficient; a gate that cries wolf is worse than no gate; exclude AND count); the
+  component contracts (card = container query + reserved 2-line title + CTA pinned
+  bottom, clamp on the ANCHOR not the heading; one shell per region; two-tone focus ring;
+  :has() cannot nest); the Bulgarian rules; and the lane, gates and deploy discipline.
+  *** THE STEADY-STATE WATCH FOUND TWO MONITORS THAT HAVE NEVER WORKED SINCE THE
+  CUTOVER. *** Nobody was reading the alerts, which is exactly why they lasted:
+  1. `health.sh` still sent `Host: staging.darlinghome.bg` and used it as SNI. Staging was
+     retired on 2026-08-05, so the apex block 301s it — 45 „ALERT: site returned 301"
+     lines in health.log. The alert is the small part. The large part is that the monitor
+     WAS NEVER CHECKING THE LIVE SITE OR THE LIVE CERTIFICATE AT ALL. A monitor aimed at a
+     hostname that no longer exists is worse than no monitor: it reports failure while
+     proving nothing. In sprint 20 I fixed the DEPLOY workflow's health URL and recorded
+     the lesson „box config is not real until it is in the repo the deploy syncs from" —
+     and then missed this script, which is in that same repo and synced by that same
+     deploy. Fixed (3751d72): `http_code` now reads 200 and `cert_days_remaining` 89.
+  2. `mail_cert_days_remaining` had been `-1` forever. The script reads the mail
+     certificate from a file under a root-owned certbot directory the `darling` user
+     cannot open. Its own comment calls the mail cert „the quieter failure, and therefore
+     one worth watching explicitly" — and it was the thing not being watched. It now
+     probes port 993, which additionally tests the certificate AS A MAIL CLIENT SEES IT
+     rather than as a file on disk. Fixed (13dddb8): now reads 83 days.
+  REST OF THE WATCH, all green: six containers up; db ok; disk 13%; memory 17%; backups
+  nightly with today's present; restore-test today, 54/54 tables; apex cert to
+  2026-11-03; www→apex and http→https both 301 correctly.
+  404 WATCH — one item, and I want to be precise because my first reading was wrong. A
+  single real client (149.62.209.45, Android) fired 15 Shopify-era POSTs — monorail,
+  /api/collect, graphql.json, /apps/izpratibg/checkout/config — with a referrer of
+  /collections/za-banyata. My first thought was a broken redirect or a stale service
+  worker. CHECKED: there is no `/collections/` request in the last 3000 log lines at all,
+  so nothing of ours failed to redirect; that client simply has an old Shopify page open
+  or cached and its JavaScript is still beaconing. No action, and specifically NOT the
+  service-worker kill-switch I was about to write — the evidence did not support it.
+  Everything else in the log is routine bot scanning (/remote/login, sonicos, Censys),
+  all 404ing correctly.
+  *** KRIS DECIDED, MID-SPRINT — SLICE 6 IS NOW ALMOST UNBLOCKED. ***
+  • TEXTURE: **8 — кован / hammered** (soft radial dimples over the reflection banding).
+  • BUTTON RULE: **cherry on grey, gold on claret** — the „a button contrasts with what it
+    sits on" rule, chosen on its merits rather than as a compromise.
+  • Still open: WHICH gold. He asked to see the tones on BUTTONS rather than on the
+    wordmark, which is right — that is the decision he is actually making.
+  DELIVERED palette7.html: all seven golds as hammered buttons on claret, on cocoa, on
+  grey, and as the chosen pairing side by side (cherry on the grey page next to gold in
+  the red hero), plus a small-size row to check the texture does not fall apart.
+  MEASURED AND WORTH KNOWING BEFORE HE PICKS: only three of the seven clear 3:1 against
+  claret — yellow 4.56:1, green-gold 4.19:1, honey 3.49:1. Champagne (2.86), antique
+  (2.75), rose (2.25) and copper-rose (2.02) all fail on claret. So „gold on claret"
+  narrows the choice to the yellow end of the family whether we like it or not; the rose
+  golds are only viable on cocoa (3.91–4.35:1).
+  PROCESS NOTE FROM KRIS, worth keeping: delivering files with `display:"render"` forces
+  the desktop side panel open and it kept re-opening and closing over what he was
+  reading. Everything is `display:"attach"` from now on — he opens what he wants, when he
+  wants.
