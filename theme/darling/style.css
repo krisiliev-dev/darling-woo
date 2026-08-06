@@ -1198,10 +1198,15 @@ body.woocommerce-account main,
 .darling-grid li .wp-block-post-title{
 	margin:0;font-family:Inter,-apple-system,"Segoe UI",sans-serif;
 	font-size:var(--fs-lg);font-weight:600;line-height:var(--lh-tight);
-	display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-	overflow:hidden;min-height:calc(2em * var(--lh-tight));color:var(--d-cocoa);
+	min-height:calc(2em * var(--lh-tight));color:var(--d-cocoa);
 }
-.darling-grid li .wp-block-post-title a{color:inherit;text-decoration:none}
+/* The CLAMP GOES ON THE ANCHOR, not the heading. Core renders the linked title
+   as an inline-block <a>, which is a single inline-level box to its parent — so
+   -webkit-line-clamp on the <h2> saw one line box and did nothing at all. The
+   gate caught it: a 78-character Bulgarian name still ran to four lines. */
+.darling-grid li .wp-block-post-title a{color:inherit;text-decoration:none;
+	display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+	overflow:hidden}
 .darling-grid li .wp-block-post-title a:hover{color:var(--d-cherry-deep)}
 
 /* Price: loud, but not louder than it is on the product page itself. */
@@ -1238,4 +1243,5 @@ body.woocommerce-account main,
 .darling-grid--list .wp-block-post-template > .wp-block-post{
 	container-type:normal;                            /* the row is not a card box */
 }
-.darling-grid--list li .wp-block-post-title{min-height:0;-webkit-line-clamp:1}
+.darling-grid--list li .wp-block-post-title{min-height:0}
+.darling-grid--list li .wp-block-post-title a{-webkit-line-clamp:1}

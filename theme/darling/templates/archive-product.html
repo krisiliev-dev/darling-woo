@@ -1,6 +1,6 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","className":"darling-archive","layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"main","className":"darling-archive","layout":{"type":"constrained","contentSize":"90rem"}} -->
 <main class="wp-block-group darling-archive">
 
 	<!-- Red category banner — the live site's .darling-cat-banner component from
@@ -25,12 +25,15 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- The columns block must be alignwide. Without it, main's constrained
-	     layout hands it theme.json contentSize (43rem = 688px) — a PROSE
-	     measure — and the whole archive, sidebar included, renders 688px wide
-	     inside a 1344px main, which is why one product card sat marooned. -->
-	<!-- wp:columns {"align":"wide","className":"darling-archive__body"} -->
-	<div class="wp-block-columns alignwide darling-archive__body">
+	<!-- main declares its OWN contentSize above (90rem). Without it the group
+	     inherits theme.json contentSize — 43rem, a PROSE measure set in slice 3 —
+	     and the whole archive, sidebar included, rendered 688px wide inside a
+	     1344px main, which is why one product card sat marooned. `alignwide`
+	     was the first attempt and was wrong: WP gives aligned children negative
+	     margins to span the root padding, so the page overflowed by exactly the
+	     gutter on every phone. Declaring the measure is the honest fix. -->
+	<!-- wp:columns {"className":"darling-archive__body"} -->
+	<div class="wp-block-columns darling-archive__body">
 
 		<!-- Filters in a sidebar rather than a drawer: on a category page the
 		     customer is browsing, and hiding the controls behind a tap costs more
