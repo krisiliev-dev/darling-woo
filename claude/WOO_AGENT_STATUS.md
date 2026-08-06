@@ -1225,3 +1225,58 @@ subscription plugins and solutions and wire them in."
   card grids, and the mega menu's `transition:all`. No colour dependency.
   SLICE 6 STILL BLOCKED ON KRIS, asked eight times: cherry-vs-honey as the button
   colour, gold roughness step 3 (grain) vs 4 (grain + forged).
+
+- 2026-08-06 sprint 33 — DESIGN SLICE 12 SHIPPED + GATED (commit 93e6e87, deploy green).
+  MOTION.
+  VERIFIED BY RENDERING WITH `prefers-reduced-motion` EMULATED, not by reading the media
+  query: `newContext({reducedMotion:'reduce'})` across home, shop and product, then
+  asking every element its computed `animationName`.
+  *** THE REDUCED-MOTION STORY WAS ALREADY CORRECT, AND SAYING SO IS PART OF THE JOB. ***
+  Zero animations under reduce on all three pages, and the ambient sparkle layer is not
+  merely paused but ABSENT — ambient.js returns a zero budget and never inserts it. Had
+  I not measured, I would have „fixed" something that was already right and reported it
+  as progress.
+  TWO REAL FINDINGS:
+  1. *** THE SPARKLES WERE ANIMATING ON THE CHECKOUT. *** Measured on the live page:
+     `darling-amb 9.54s`, one animation per star, indefinitely. A customer entering an
+     address and choosing a courier does not need decoration moving in their peripheral
+     vision, and a page whose job is a transaction should not spend frames on
+     atmosphere. Cart, checkout and order-received now opt out through the SAME
+     zero-budget path reduced-motion uses — one mechanism, not two. Re-measured after:
+     checkout has the ambient layer ABSENT and ZERO animations of any kind; home still
+     has its 9 stars.
+  2. `transition:.18s` IS `transition-property:all`. Three of our own buttons carried it.
+     It works today, but it means any property added to those rules later — including a
+     layout one — silently starts animating. Named properties now. After the change the
+     only `transition:all` left anywhere under no-preference is WooCommerce's own
+     product-gallery wrapper, which is not ours.
+  CARD HOVER: the lift shadow moved to a pseudo-element whose OPACITY transitions,
+  instead of a box-shadow whose blur radius transitions. A 26px blur is rasterised by
+  the compositor; animating the shadow asks for a re-raster every frame and a category
+  page will hold twenty of these, while fading an already-painted shadow is a
+  composite-only change. *** I HAVE NOT MEASURED FRAME TIMINGS — headless Chromium here
+  gives no number I would trust — so this is justified on the rendering model, not on a
+  benchmark I do not have. *** Saying „faster" without a measurement would be a claim,
+  not a result.
+  CORRECTION TO MY OWN SLICE-10 NOTE: I recorded that `.darling-mega` computes
+  `transition:all` and implied it was sloppy. It computes `transition-property:all` with
+  duration ZERO — the CSS initial value. The mega menu has no transition at all. Nothing
+  to fix; I had read a default as a defect.
+  HARNESS NOTE FOR WHOEVER READS THE JSON NEXT: under `reducedMotion:'reduce'` every
+  element reports `transition:all 1e-06s`. That is the platform's own „make transitions
+  instant" rule, not a defect, and it swamps the census. Do not chase it.
+  GATE: design audit HELD at 0 defects across all 36 combos; product-card gate PASS;
+  money path PASS; and the slice-11 checkout geometry baseline re-diffed **UNCHANGED**
+  at 390 and 1440 — the same recorded numbers, not a fresh eyeball. Focus rings still
+  clean except the three Stripe iframes.
+  MEASURED BUT NOT ACTED ON, stated rather than buried: the CART page still has three
+  animations — `dhv-tw` (footer star twinkle), `darling-float` (footer bow) and `dc-in`
+  (the consent card's one-time entrance). Those are site chrome present on every page
+  rather than cart decoration, and the checkout itself measures completely still. If the
+  rule is „the whole money path is still" rather than „the transaction page is still",
+  the footer flair should be suppressed on cart too — that is a judgement call for Kris,
+  not something to decide silently.
+  NEXT: slice 13 (the PDP — reviews form, gallery, tabs, the Stripe „Link" slab) has no
+  colour dependency for its structure.
+  SLICE 6 STILL BLOCKED ON KRIS, asked nine times: cherry-vs-honey as the button colour,
+  gold roughness step 3 (grain) vs 4 (grain + forged).
