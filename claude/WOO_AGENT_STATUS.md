@@ -2198,3 +2198,41 @@ subscription plugins and solutions and wire them in."
   ═══ STILL OPEN ═══
   Gloss level (matte / gloss / mirror), and how much glow from sprint 50. Colour settled at
   36/88/−2; surface E settled; mask and strength settled.
+
+- 2026-08-06 sprint 52 — REAL GLASS, AND A RESULT THAT CHALLENGES THE BUTTON RULE.
+  Kris shortlisted **метал, кехлибарен мрамор, шперплат**, and asked where the glass had
+  gone. Fair: *** what I had been calling glass was an OPAQUE body with a glossy highlight. ***
+  Glass is defined by what passes THROUGH it, so every variant this round is genuinely
+  translucent. `palette23.html` (seven glasses) and `palette24.html` (his three + glass, each
+  at three levels of glow).
+
+  1. SEVEN GLASSES: clear 55%, thin 30%, frosted (the only `backdrop-filter` in the whole
+  project), thick-with-refracting-edge, seeded with bubbles, caustic streaks, and glass+glow.
+  The thick variant inverts the metal's rim: glass is BRIGHTEST where it is thickest, i.e.
+  at the edge, so the rim lights instead of darkening.
+
+  2. *** THE MEASUREMENT KILLS GLASS ON THE CLARET HERO, AND IT IS A RULE PROBLEM RATHER
+  THAN AN EXECUTION PROBLEM. *** Button vs claret: 1.44 – 2.51 against a threshold of 3.
+  Every single variant fails. The reason is inherent: translucent amber over dark red simply
+  BECOMES dark red-orange. **A material cannot separate itself from a background it is
+  transmitting.** No amount of tuning fixes that.
+  On light grounds it is lovely — the badge on a white product card and everything on the
+  grey page work well. So glass is viable only if the button rule INVERTS: solid material (or
+  cherry) on claret, glass on the grey page and the white cards. That is a change to „gold on
+  claret, cherry on grey", not a tweak, which is exactly why it is worth saying before the
+  choice rather than after.
+
+  3. GLOW IS A NET GAIN FOR THE SOLID MATERIALS, measured:
+    метал 3.49 → 3.95 · мрамор 3.52 → 3.98 · шперплат 3.11 → 3.55.
+  The lit rim adds light along the whole boundary, so it improves the look AND the number.
+  The glints move nothing (6.00 → 6.00) — they are pure ornament, which is useful to know:
+  they can be added or dropped with no consequence. Glass stays the exception, 1.86 → 2.18.
+
+  4. HONEST COST NOTE repeated where it matters: only the frosted variant uses
+  `backdrop-filter`, and it is the one genuinely expensive thing in this whole design pass —
+  it re-blurs on every scroll. The other six translucent variants cost no more than a solid
+  colour.
+
+  ═══ STILL OPEN ═══
+  Material (metal / amber marble / plywood / glass-with-an-inverted-rule), and the glow
+  level. Colour, surface, mask and texture treatment are all settled.
