@@ -820,3 +820,36 @@ subscription plugins and solutions and wire them in."
   and are correctly blocked on the second one.
   NEXT: slice 4 (template surgery — give every band a container; the account alignfull
   escapes-parent lives here) then slice 5 (typography completion).
+
+- 2026-08-06 sprint 26 — DESIGN SLICE 4 SHIPPED + GATED (commit e9f83b1, deploy green).
+  *** FIXED A DEAD PRIMARY NAVIGATION. *** The desktop „Продукти" mega menu had not been
+  opening at all. Cause: `.darling-nav ul{overflow-x:auto}` at style.css:113 — written for
+  the v1 header so the nav could scroll horizontally on narrow screens. The v2 header rule
+  at :478 restyles that same <ul> but never resets it, and per CSS spec, when overflow-x is
+  not `visible` the computed overflow-y becomes `auto` too. The ~40px-tall nav bar was
+  therefore a scrollport in BOTH axes and clipped its own absolutely-positioned dropdown to
+  nothing. Fix: `.darling-header--v2 .darling-nav--pages, .darling-header--v2
+  .darling-nav--pages > ul{overflow:visible}` + a stacking context on the header so the
+  panel sits above the hero band. Verified rendering all 10 categories.
+  *** METHOD LESSON, worth more than the fix: GEOMETRY LIES ABOUT CLIPPING. *** My probe
+  reported the panel `visible:true` at its full 259×422, because getBoundingClientRect
+  returns the LAYOUT box and ignores clipping by an ancestor's overflow. Only the
+  screenshot showed it rendering nothing. Any future "is it visible" check must look at
+  pixels, or at least walk ancestors for overflow — element.getBoundingClientRect() is not
+  evidence of visibility.
+  *** AND: ONE OF THE TWO AUDIT-CLAIMED BUGS DID NOT REPRODUCE. *** The "Woo filters mobile
+  overlay leaks into page flow and covers the grid and footer" claim is NOT true as stated:
+  probed at 390px the filters block is position:static, 319×21, sitting above the grid as a
+  collapsed „Филтриране на продукти" trigger. What appears to cover the grid in a naive
+  screenshot is the consent banner on a first visit, which is correct behaviour. Needs a
+  click-through test before anyone acts on it. Agent findings are hypotheses until rendered.
+  ALSO IN THIS SLICE: account alignfull escape fixed (an alignfull group measured 1412 >
+  1344 parent inside a constrained <main>; alignfull is meant to escape, but not out of a
+  container we set — the container now yields instead); and every band that sets its own
+  width derives it from the same two tokens, so the shell edge is one site-wide value.
+  GATE PASS: zero genuine overflow of any kind across all 36 combos; ESCAPES-PARENT NOW
+  ZERO EVERYWHERE (was 1 on account at every viewport); every page 16 defects, all
+  small-target; money path PASS with „Спиди — до офис €4.42 / 8,64 лв." first.
+  NEXT: slice 5 (typography completion — migrate the ~30 component-level font sizes onto
+  the scale) and slice 6 (colour semantics) — slice 6 is BLOCKED on Kris: cherry-vs-honey
+  button, and gold roughness step 3 vs 4. Touch targets (16/page) are slice 6/10.
