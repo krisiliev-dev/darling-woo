@@ -98,7 +98,7 @@ a.button.alt:hover {
    --------------------------------------------------------------------------- */
 
 .darling-header{position:sticky;top:0;z-index:50;background:var(--d-cream);
-	border-bottom:1px solid var(--d-sand);backdrop-filter:saturate(1.2) blur(6px)}
+	border-bottom:1px solid var(--d-sand)}
 .darling-header__inner{display:flex;align-items:center;gap:1rem;
 	max-width:var(--d-content,1280px);margin:0 auto;padding:.7rem 1rem}
 
@@ -359,7 +359,7 @@ a.button.alt:hover {
 
 .wp-block-woocommerce-cart,
 .wp-block-woocommerce-checkout,
-.woocommerce-account{max-width:var(--d-content,1280px);margin:0 auto;padding:1.5rem 1rem 3rem}
+body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;padding:1.5rem 1rem 3rem}
 
 /* Panels — the sidebar totals on cart and checkout. */
 .wc-block-cart__sidebar .wc-block-components-sidebar,
@@ -530,7 +530,7 @@ a.button.alt:hover {
 	padding:.35rem .7rem;border-radius:999px}
 
 /* Section titles (serif via theme.json headings; size + rhythm here) */
-.darling-section-title{font-size:clamp(1.5rem,2.6vw,2rem);margin:2.6rem 0 1.1rem}
+.darling-section-title{font-size:clamp(1.5rem,2.6vw,2rem);margin-block:2.6rem 1.1rem}
 
 /* Trust row */
 .darling-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;
@@ -920,3 +920,75 @@ html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underli
 	display:flex;flex-direction:column;gap:.55rem;align-items:stretch}
 .woocommerce-account .nsl-container .nsl-button{border-radius:.65rem;overflow:hidden}
 #login .nsl-container{margin-top:1rem}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D1 — structural repair (2026-08-06)
+   Design pass, slice 1 of 14. See claude/DESIGN_BUILD_PLAN.md.
+
+   This block is deliberately the LAST word in style.css and deliberately
+   temporary: slice 2 introduces @layer and absorbs everything here into the
+   proper layer. It exists so the owner sees the reported defects fixed today
+   without waiting for the cascade rebuild.
+
+   Four of the causes were fixed at source in assets/darling.css instead
+   (stacking counterweight, forced gold headings, footer legal placement, the
+   1840px/100vw container formula) — owner approved editing the vendored file.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- The shell: one gutter, one measure -----------------------------------
+   --d-content is now defined in darling.css as
+   min(calc(100% - gutter*2), 90rem). It reads --d-gutter from here, so the
+   gutter is the single knob for page breathing room at every width. */
+html{--d-gutter:clamp(16px,5vw,48px)}
+
+/* --- Ambient stars belong BEHIND the page --------------------------------
+   isolation:isolate makes <body> a stacking context so the fixed sparkle
+   layer cannot escape it; .wp-site-blocks (retargeted in darling.css) then
+   lifts all real content above it. z-index stays 0, never -1: a negative-z
+   child of body paints beneath body's own background and vanishes. */
+body{isolation:isolate}
+body .darling-ambient{overflow:hidden;contain:strict}
+/* 40+ permanent compositor layers for an opacity+transform animation the
+   compositor already handles unaided — pure cost on mid-range Android. */
+body .darling-ambient i{will-change:auto}
+
+/* --- The actual cause of "flexboxes not flexing" -------------------------
+   Grid and flex items default to min-width:auto, so they refuse to shrink
+   below their content and push out of their container instead of wrapping.
+   Applied only to containers this theme owns. */
+.wp-block-columns > .wp-block-column,
+.u-columns.col2-set > *,
+.darling-footer > *,
+.darling-archive__body > *,
+.darling-hero > *,
+.darling-trust > *{min-width:0}
+
+/* --- Footer: legal bar is a real full-width bar --------------------------
+   It is a SIBLING of .darling-footer, never a grid child, so the ported
+   justify-self:end did nothing except strand it. */
+.df-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.5rem;justify-content:space-between;
+	align-items:baseline;max-width:var(--d-content,80rem);
+	margin-inline:auto;padding:1rem var(--d-gutter) 1.6rem;text-align:start}
+.df-legal p{margin:0}
+@media (max-width:720px){
+	.df-legal{flex-direction:column;gap:.3rem;align-items:flex-start}
+}
+
+/* --- Footer: third column reclaims the dead space ------------------------ */
+@media (min-width:850px){
+	.darling-footer > :last-child{justify-self:end;text-align:right}
+	.darling-footer > :last-child .df-map,
+	.darling-footer > :last-child .df-policies,
+	.darling-footer > :last-child .df-pledge{margin-inline-start:auto}
+}
+
+/* --- Hero headline is legible again --------------------------------------
+   style.css already asked for vanilla here; the ported !important overrode
+   it. That override is gone, so this is now simply the rule that applies. */
+.darling-hero--red .darling-hero__title{color:var(--d-vanilla)}
+
+/* --- Headings inherit the ink they should --------------------------------
+   With the forced gold removed, give the two footer marks a value that is
+   actually readable on vanilla. Provisional: slice 6 re-tokenises colour. */
+.df-head{color:var(--d-cocoa)}
