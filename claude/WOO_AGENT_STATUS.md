@@ -1782,3 +1782,67 @@ subscription plugins and solutions and wire them in."
   NO FIFTH PALETTE PAGE was built on my own initiative. palette11.html exists because Kris
   asked for raw gold and for real texture maps — that is his question answered, not another
   option added to a pile.
+
+- 2026-08-06 sprint 43 — HONEY NARROWED, AND KRIS'S OWN TEXTURE MAPS BAKED.
+  *** THE GOLD IS NOW ONE FAMILY, NOT SEVEN. *** He picked honey and asked to see it
+  browner — „more brass than gold" — plus the five PBR sets he had downloaded to a
+  „Metal textures" folder on the Desktop. Both delivered as `palette12.html`.
+
+  1. THE RAMP TOOK A THIRD NUMBER, AND THAT IS THE REAL FINDING.
+  Honey → brass → bronze is **mostly a LIGHTNESS move, not a hue move**. Chasing it with
+  hue alone produces a muddy yellow, not brass. So the model is now `--gold-hue`,
+  `--gold-sat` and **`--gold-lift`**, the last shifting all seven ramp stops together:
+  honey is 40/72/0, bronze is 28/50/−14. Three numbers describe the whole family, which
+  keeps the „gold is not seven hex codes" property that made this tokenisable at all.
+  Eight variants rendered on real buttons, on claret, tinted from ONE grey relief through
+  the CSS ramp — the shipping mechanism itself, not a picture of it.
+
+  2. *** MEASURED: GOING BROWN FLIPS WHICH SURFACE THE GOLD BELONGS ON. ***
+  Button vs claret, threshold 3:1 — honey 3.79, deep honey 3.18, amber 3.26, brass 3.31
+  PASS; dull brass 2.63, antique 2.26, bronze 1.91, dark bronze 1.55 FAIL. But against the
+  GREY page the order inverts: bronze 3.33 and dark bronze 4.11 PASS where honey manages
+  only 1.68. So „gold on claret, cherry on grey" — the rule Kris chose on its merits —
+  quietly **caps how brown the gold may go**. Past brass, the metal wants the grey page,
+  which is cherry's seat.
+  And a second consequence I had not predicted: cocoa ink falls below 4.5:1 on bronze
+  (3.69) and dark bronze (2.98). Those two want **cream** ink (3.86 and 4.78), i.e. the
+  ink flips too, not just the ground. A colour choice that changes the ink is a different
+  size of decision and he should know that before making it.
+
+  3. HIS FIVE SETS, BAKED THROUGH THE SAME PIPELINE.
+  Pulled from the Desktop folder, extracted the maps we can use, downscaled to 1024 and
+  staged: dull-brass (Unity), everytexture 00102, metal_0065, metal_0073, rusty_metal_04.
+  Each ran through height (or normal) → surface normals → GGX specular + wrapped diffuse +
+  AO, using **each set's own roughness map** where it ships one.
+  WHAT OPENING THE FILES SHOWED, which the previews do not:
+  • dull-brass: normal std **0.9** — effectively no relief. Its value is the colour
+    (170,143,92). The metallic map is a PSD this pipeline does not read.
+  • everytexture 00102: the only one with real depth (height std **30**) AND grey in
+    colour, so it tints cleanly to any gold. Used it as the family's relief.
+  • metal_0065: height std **0.6** — flat. Its character is entirely in the roughness map,
+    which is exactly how brushed metal behaves.
+  • metal_0073: colour (98,73,59), the brown he is asking about; relief reads as etching.
+  • rusty_metal_04: nor/rough/metal ship as **EXR** and were not read; used diff + disp.
+    Rust reads as wear, not luxury — included for comparison, not as a candidate.
+  • *** BOTH 4K SETS CARRY A CALIBRATION CROSSHAIR IN THE CENTRE OF THE MAP. *** A centre
+    crop would have baked it into the tile and repeated it on every button. Cropped around
+    it — the kind of thing that is invisible until it ships a thousand times.
+
+  4. NONE OF THE DOWNLOADED MAPS TILE, AND THE FIX IS VISIBLE.
+  They are photographs of metal, not tiles. I first healed the seam by cloning from
+  elsewhere in the image; on the three high-relief sets that left a **bright grid line**,
+  which is worse than the problem. They are now **mirror tiles** — a quarter flipped into
+  the other three quadrants, seamless by construction, at the cost of a symmetry a careful
+  eye can find on a wide surface. Verified by tiling each 2×2 and looking.
+  *** This is the honest argument for our own rendered maps over photographed ones: *** the
+  procedural tiles from sprint 41 are seamless because the noise is generated in the
+  Fourier domain, so they wrap exactly, with no symmetry and no healing.
+
+  COMMITTED: `claude/raw-gold-render.py` (sprint 41) and `claude/brass-render.py` (this
+  sprint). The tiles remain reproducible from source. Nothing enqueues anything.
+
+  ═══ STILL OPEN ═══
+  Which variant of the family; which relief (one of his five, or one of the six raw
+  surfaces); and if it is one of his, whether we take the set's own colour or only its
+  relief tinted through our ramp. Slice 6 gets ONE rewrite into final shape when those
+  land — not a rewrite per round.
