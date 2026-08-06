@@ -29,7 +29,7 @@ const VIEWPORTS = [
 const scan = () => {
   const docW = document.documentElement.clientWidth;
   const defects = [];
-  const excluded = { scroller: 0, thirdParty: 0, offscreen: 0 };
+  const excluded = { scroller: 0, thirdParty: 0, offscreen: 0, inlineExempt: 0 };
   // Three families of legitimate "overflow" that are not defects. Counting them
   // as failures makes the gate cry wolf, which is worse than not gating at all.
   const inScroller = (el) => {
@@ -81,9 +81,17 @@ const scan = () => {
     if (el.children.length === 0 && el.textContent.trim() && el.scrollWidth > el.clientWidth + 2 && cs.overflow !== 'hidden' && cs.textOverflow !== 'ellipsis') {
       push('text-overflow', el, `scrollW ${el.scrollWidth} > clientW ${el.clientWidth}`);
     }
-    // 5. touch targets too small (mobile only, checked by caller)
+    // 5. touch targets too small.
+    // WCAG 2.5.8 exempts a target that is "in a sentence or block of text", and
+    // a screen-reader skip link is 1x1 only until it is focused. Counting those
+    // as failures made the number un-fixable without wrecking prose, so they are
+    // now EXCLUDED AND COUNTED — never silently dropped.
     if (/^(a|button)$/i.test(el.tagName) && (r.height < 32 || r.width < 32) && el.textContent.trim()) {
-      push('small-target', el, `${Math.round(r.width)}x${Math.round(r.height)}`);
+      const p2 = el.parentElement;
+      const inSentence = !!p2 && [...p2.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length > 1);
+      const srOnly = /skip-link|screen-reader-text|sr-only/.test(String(el.className));
+      if (inSentence || srOnly) { excluded.inlineExempt++; }
+      else { push('small-target', el, `${Math.round(r.width)}x${Math.round(r.height)}`); }
     }
   });
   // The ambient sparkle layer is a GENERATOR of random 8-22px text nodes with

@@ -267,26 +267,10 @@ a.button.alt:hover {
 
 .darling-footer{margin-top:3rem;background:var(--d-vanilla,var(--d-cream));
 	border-top:1px solid var(--d-sand);color:var(--d-cocoa)}
-.darling-footer__cols{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:2rem;
-	max-width:var(--d-content,1280px);margin:0 auto;padding:2rem 1rem 1.5rem}
-.darling-footer__brand .dhl-word{margin:0;font-size:var(--fs-brand);font-weight:700}
-.darling-footer__tag{margin:.3rem 0 0;opacity:.8;font-size:var(--fs-sm)}
-.darling-footer__col h2{margin:0 0 .7rem;font-size:var(--fs-xs);letter-spacing:var(--ls-eyebrow);
-	text-transform:uppercase;color:var(--d-cherry)}
-.darling-footer__col ul{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}
-.darling-footer__col a{color:var(--d-cocoa);text-decoration:none;font-size:var(--fs-sm)}
-.darling-footer__col a:hover{color:var(--d-cherry-deep);text-decoration:underline}
-.darling-footer__legal{display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between;
-	max-width:var(--d-content,1280px);margin:0 auto;padding:1rem 1rem 2rem;
-	border-top:1px solid var(--d-sand);font-size:var(--fs-xs);opacity:.85}
-.darling-footer__legal p{margin:0}
 
 @media (max-width:820px){
-	.darling-footer__cols{grid-template-columns:1fr 1fr;gap:1.5rem}
-	.darling-footer__brand{grid-column:1 / -1}
 }
 @media (max-width:520px){
-	.darling-footer__cols{grid-template-columns:1fr}
 }
 
 /* ---------------------------------------------------------------------------
@@ -595,31 +579,7 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 
 /* ═══════════════ SLICE 7 — footer v2 + branded 404 (2026-08-05) ═══════════════ */
 
-.darling-footer--v2 .darling-footer__cols{display:grid;grid-template-columns:1fr auto 1fr;
-	gap:2.4rem;align-items:start;padding:2.6rem 0 1.6rem}
-.darling-footer--v2 .darling-footer__brand{text-align:center;justify-self:center}
-.darling-footer--v2 .dff-word{margin:.4rem 0 0;font-size:var(--fs-brand)}
-.darling-footer--v2 .darling-footer__tag{margin:.25rem 0 0;opacity:.8;font-size:var(--fs-sm)}
-.darling-footer__social{display:flex;gap:.7rem;justify-content:center;margin-top:1rem}
-.darling-footer__social a{display:inline-flex;align-items:center;justify-content:center;
-	width:2.3rem;height:2.3rem;border-radius:50%;background:#fff;color:var(--d-cherry);
-	box-shadow:0 2px 8px rgb(var(--d-shadow)/.10);transition:transform .2s ease}
-.darling-footer__social a:hover{transform:translateY(-2px);color:var(--d-cherry-deep)}
-.darling-footer__social svg{width:1.15rem;height:1.15rem}
-.darling-footer__info{justify-self:end;text-align:right}
-.darling-footer__info p{margin:.2rem 0;line-height:var(--lh-body);font-size:var(--fs-sm)}
-.darling-footer__info a{color:var(--d-cherry-deep)}
-.darling-footer__map{margin-top:.5rem}
-.darling-footer__policies{list-style:none;margin:.8rem 0 0;padding:0;font-size:var(--fs-sm)}
-.darling-footer__policies li{margin:.15rem 0}
-.darling-footer--v2 .darling-footer__legal{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;
-	justify-content:space-between;align-items:center;border-top:1px solid var(--d-sand-deep);
-	padding:1rem 0 1.4rem;font-size:var(--fs-xs);opacity:.9}
-.darling-footer--v2 .darling-footer__legal p{margin:0}
 @media (max-width: 880px){
-	.darling-footer--v2 .darling-footer__cols{grid-template-columns:1fr;text-align:center}
-	.darling-footer__info{justify-self:center;text-align:center}
-	.darling-footer--v2 .darling-footer__legal{justify-content:center;text-align:center}
 }
 
 /* Branded 404 */
@@ -629,12 +589,7 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .darling-404__actions{margin:0 0 2rem}
 .darling-404__discover{text-align:left}
 
-.darling-foot-flair--brand{margin:0;padding:0}
-.darling-foot-flair--brand .dff-rule{display:none}
 
-/* container reset: v1 grid on .darling-footer split cols+legal side by side */
-.darling-footer--v2{display:block;grid-template-columns:none;padding:0 var(--d-margin)}
-.darling-footer--v2 .darling-footer__cols{width:100%}
 
 /* ══ SLICE 7 fixes: conform to darling.css component contract + kill overflow ══
    darling.css loads AFTER style.css and owns .darling-footer/.darling-news —
@@ -648,9 +603,8 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .darling-news-band{background:var(--d-cherry);padding:3.4rem 1rem 3.8rem}
 .darling-news-band .darling-news h3{color:var(--d-vanilla)}
 .darling-news-band .darling-news h3 em{color:var(--d-honey-light)}
-.darling-footer{padding:2.6rem clamp(1.5rem,4vw,4rem) 1rem}
 .df-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;justify-content:space-between;
-	align-items:center;padding:1rem clamp(1.5rem,4vw,4rem) 1.6rem;font-size:var(--fs-xs);
+	align-items:center;font-size:var(--fs-xs);
 	opacity:.9;border-top:1px solid var(--d-sand-deep);background:var(--d-vanilla)}
 .df-legal p{margin:0}
 @media (max-width: 880px){.df-legal{justify-content:center;text-align:center}}
@@ -1360,3 +1314,57 @@ body.woocommerce-account main,
 @media (prefers-reduced-motion:no-preference){
 	.darling-empty .de-bow{animation:darling-float 5.5s ease-in-out infinite}
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D9 — THE FOOTER, AND THE TOUCH-TARGET NUMBER THAT NEVER MOVED
+
+   Every page has carried 15–19 sub-32px targets since the audit began and the
+   count did not move through five slices. Named all sixteen on /pomosht/ with
+   their DOM paths before touching anything, and they split cleanly in two:
+
+   ELEVEN ARE REAL TARGETS, all in the footer, all fixable at the source —
+   five `.df-links` nav links at 25px, four `.df-policies` links at 17px, the
+   Google Maps link and the „Правила и условия" link in the legal bar. Given a
+   real hit area below.
+
+   FIVE ARE NOT DEFECTS AND NEVER WERE. WCAG 2.5.8 exempts a target that is
+   "in a sentence or block of text" — the tel:/mailto: links inside the address
+   block, the two links inside FAQ sentences, and the screen-reader skip link
+   (1×1 until focused, full size when focused). Padding those to 44px would
+   wreck the address block and the prose to satisfy a rule that does not apply.
+   The harness now counts them separately as `inline_exempt` instead of
+   reporting them as failures — excluded AND counted, same discipline as the
+   scroller / third-party / offscreen families in slice 1.
+
+   Also purged here: the entire v1/v2 `.darling-footer__*` / `.dhl-word` /
+   `.darling-foot-flair--brand` vocabulary. The live footer uses the ported
+   `.df-*` / `.dff-*` classes; every one of the purged families was verified
+   absent from templates/, parts/ and *.php. Dead CSS is not neutral — it is a
+   rule waiting to win an argument it should not be in.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* One shell, so the footer stops sprawling at 1920 (its outer columns were
+   758px each holding 137px of links and 216px of address). */
+.darling-footer,
+.df-legal{max-width:var(--d-content);margin-inline:auto;padding-inline:var(--d-gutter)}
+.darling-footer{padding-block:var(--space-xl) var(--space-s);gap:var(--space-l)}
+.df-legal{padding-block:var(--space-s) var(--space-m);gap:var(--space-2xs) var(--space-m)}
+
+/* Standalone footer links are TARGETS, not prose. */
+.df-links a,
+.df-policies a,
+.df-map a,
+.df-legal p a{display:inline-flex;align-items:center;min-height:44px}
+.df-links{gap:0}
+.df-policies{display:flex;flex-direction:column;margin-top:var(--space-2xs)}
+/* .df-pledge is deliberately absent from that list: its tel:/mailto: links sit
+   inside the address block, which is exactly the sentence-context WCAG exempts. */
+
+/* Footer rhythm on the scale rather than on five arbitrary literals. */
+.darling-foot-flair .dff-rule{margin-block:0 var(--space-m)}
+.darling-foot-flair .dff-word{margin-block:var(--space-2xs) var(--space-3xs)}
+.darling-foot-flair .dff-tag{margin-block:0 var(--space-s)}
+.darling-foot-flair .dff-social{gap:var(--space-2xs)}
+.df-head{margin-block:0 var(--space-xs)}
+.df-map{margin-block:var(--space-2xs) 0}

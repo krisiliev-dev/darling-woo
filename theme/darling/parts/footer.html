@@ -55,12 +55,16 @@
 			<a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%94%D0%B0%D1%80%D0%BB%D0%B8%D0%BD%D0%B3%207%20%D0%A1%D0%B2%D0%B8%D1%89%D0%BE%D0%B2%20%D1%83%D0%BB.%20%D0%A5%D0%B0%D0%BD%20%D0%90%D1%81%D0%BF%D0%B0%D1%80%D1%83%D1%85%201"
 			   target="_blank" rel="noopener">Виж ни в Google Maps</a>
 		</p>
-		<p class="df-policies">
-			<a href="/obshti-usloviya/">Общи условия</a><br>
-			<a href="/vrashtane/">Политика за връщане</a><br>
-			<a href="/dostavka/">Доставка</a><br>
+		<!-- A list of links is not a paragraph. It was a <p> with <br>, which made
+		     four navigation targets 17px tall and un-paddable without wrecking the
+		     line box. Same .df-policies class, so the ported stylesheet's size and
+		     opacity still apply — the contract is the CLASS, not the tag. -->
+		<nav class="df-policies" aria-label="Условия и политики">
+			<a href="/obshti-usloviya/">Общи условия</a>
+			<a href="/vrashtane/">Политика за връщане</a>
+			<a href="/dostavka/">Доставка</a>
 			<a href="/poveritelnost/">Поверителност</a>
-		</p>
+		</nav>
 	</div>
 </div>
 
