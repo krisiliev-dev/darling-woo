@@ -100,13 +100,36 @@
 	}
 
 	/**
-	 * "офис" is wrong for BOX NOW and Sameday - those are unstaffed parcel lockers.
-	 * Sending someone to look for an office that does not exist is a real support
-	 * call, so the noun follows the carrier.
+	 * *** THE NOUN FOLLOWS THE ROW, NOT THE COURIER. ***
+	 * The registry carries one noun per carrier. For BOX NOW that is right - every
+	 * point it has is an автомат. For Speedy it is wrong on most rows: the panel
+	 * serves 833 автомата and 460 staffed offices from ONE list, and the nearest
+	 * Speedy point to Свищов is СВИЩОВ - БИЛЛА (АВТОМАТ), 220 m away. Calling
+	 * that «офис» sends someone hunting for a counter at a machine - the exact
+	 * support call the registry comment says the noun exists to prevent.
+	 * Every row now carries its own `kind`, so every row gets its own word.
 	 */
-	function noun( carrier ) {
+	function kindNoun( o ) {
+		return ( CFG.kinds && o && o.kind && CFG.kinds[ o.kind ] ) || '';
+	}
+
+	/** Fallback for a row whose kind the panel could not tell us. */
+	function carrierNoun( carrier ) {
 		var l = ( CFG.labels && CFG.labels[ carrier ] ) || 'до офис';
 		return l.replace( /^до\s+/, '' );
+	}
+
+	function noun( o, carrier ) {
+		return kindNoun( o ) || carrierNoun( carrier );
+	}
+
+	function distanceText( o ) {
+		if ( ! o || typeof o.distance_km !== 'number' ) { return ''; }
+		// Under a kilometre, metres. "0.2 км" reads as a rounding artefact; "200 м"
+		// reads as walkable, which is the whole point of showing a distance.
+		return o.distance_km < 1
+			? ' · ' + Math.round( o.distance_km * 1000 ) + ' м'
+			: ' · ' + o.distance_km.toFixed( 1 ) + ' ' + ( CFG.i18n.km || 'км' );
 	}
 
 	function fill( sel, offices, current, carrier ) {
@@ -114,16 +137,135 @@
 		var o0 = document.createElement( 'option' );
 		o0.value = '';
 		o0.textContent = offices.length
-			? '— избери ' + noun( carrier ) + ' — (' + offices.length + ')'
+			? ( CFG.i18n.choose || '' ) + ' (' + offices.length + ')'
 			: CFG.i18n.none;
 		sel.appendChild( o0 );
 		offices.forEach( function ( o ) {
 			var opt = document.createElement( 'option' );
 			opt.value = o.id;
-			opt.textContent = o.name + ( o.address ? ' — ' + o.address : '' );
+			opt.textContent = '[' + noun( o, carrier ) + '] ' + o.name +
+				( o.address ? ' — ' + o.address : '' ) + distanceText( o );
 			if ( o.id === current ) { opt.selected = true; }
 			sel.appendChild( opt );
 		} );
+	}
+
+	/* ── Nearest to me ──────────────────────────────────────────────────
+	   A settlement name cannot answer "which автомат is nearest me": the closest
+	   locker to someone in Свищов can sit in the next village, and filtering by
+	   their typed city hides it. The panel ranks by lat/lon and returns distance_km,
+	   so the browser only has to offer a position.
+	   Progressive enhancement like the rest of this file: if geolocation is missing,
+	   refused or times out, the city list is still there and a typed id still works. */
+	var GEO_RADIUS_KM = 25;
+	var geo = null;   // { lat, lon, carrier, city } while a nearest-first list is shown
+	var geoBusy = false;
+
+	function geoNote( text ) {
+		var n = document.getElementById( 'darling-office-geo-note' );
+		if ( n ) { n.textContent = text || ''; }
+	}
+
+	function ensureGeoRow( sel ) {
+		var row = document.getElementById( 'darling-office-geo' );
+		if ( row ) { return row; }
+		row = document.createElement( 'div' );
+		row.id = 'darling-office-geo';
+		row.style.cssText = 'display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.35rem';
+
+		var btn = document.createElement( 'button' );
+		// *** type="button" IS NOT OPTIONAL HERE. *** A <button> inside the checkout
+		// form defaults to type="submit"; without this, "find the nearest one" would
+		// try to PLACE THE ORDER. This control sits on the money path.
+		btn.type = 'button';
+		btn.id = 'darling-office-geo-btn';
+		btn.textContent = CFG.i18n.near || '';
+		btn.style.cssText = 'cursor:pointer;border:1.5px solid #EFDCC3;background:#fff;border-radius:999px;padding:.4rem .9rem;font:inherit;font-size:.9em;color:inherit';
+		// Re-resolve the nodes on click rather than closing over them: block checkout
+		// replaces this subtree often, and a captured input would go stale.
+		btn.addEventListener( 'click', function () {
+			var i = findOfficeInput();
+			var s2 = document.getElementById( 'darling-office-select' );
+			if ( ! i || ! s2 ) { return; }
+			if ( geo ) { geo = null; lastKey = ''; geoNote( '' ); refresh(); }
+			else { locate( i, s2 ); }
+		} );
+
+		var note = document.createElement( 'span' );
+		note.id = 'darling-office-geo-note';
+		note.style.cssText = 'font-size:.85em;opacity:.75';
+
+		row.appendChild( btn );
+		row.appendChild( note );
+		sel.parentNode.insertBefore( row, sel.nextSibling );
+		return row;
+	}
+
+	function locate( input, sel ) {
+		if ( geoBusy ) { return; }
+		if ( ! navigator.geolocation ) { geoNote( CFG.i18n.denied ); return; }
+		geoBusy = true;
+		geoNote( CFG.i18n.locating );
+		navigator.geolocation.getCurrentPosition( function ( pos ) {
+			geoBusy = false;
+			var carrier = findCarrier();
+			if ( ! carrier ) { geoNote( '' ); return; }
+			geo = { lat: pos.coords.latitude, lon: pos.coords.longitude, carrier: carrier, city: findCity() };
+			load( input, sel, carrier, geo );
+		}, function () {
+			// Refused, unavailable or timed out - all the same to the customer, and all
+			// recoverable, because the city list is still sitting there.
+			geoBusy = false;
+			geo = null;
+			geoNote( CFG.i18n.denied );
+		}, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 } );
+	}
+
+	/** One fetch path for both lists, so they cannot drift apart. */
+	function load( input, sel, carrier, position ) {
+		var url = CFG.endpoint + '?carrier=' + encodeURIComponent( carrier );
+		var key;
+		if ( position ) {
+			// Rounded in the browser as well as on the server: a device reports a slightly
+			// different position every reading, and an unrounded one would miss the cache
+			// on every single request.
+			var la = position.lat.toFixed( 3 ), lo = position.lon.toFixed( 3 );
+			url += '&lat=' + la + '&lon=' + lo + '&radius_km=' + GEO_RADIUS_KM;
+			key = carrier + '|@' + la + ',' + lo;
+		} else {
+			url += '&city=' + encodeURIComponent( findCity() );
+			key = carrier + '|' + findCity();
+		}
+		lastKey = key;
+		if ( cache[ key ] ) {
+			fill( sel, cache[ key ], input.value.trim(), carrier );
+			afterFill( position, cache[ key ] );
+			return;
+		}
+		sel.innerHTML = '<option value="">' + CFG.i18n.loading + '</option>';
+		fetch( url )
+			.then( function ( r ) { return r.json(); } )
+			.then( function ( d ) {
+				var offices = ( d && d.offices ) || [];
+				cache[ key ] = offices;
+				fill( sel, offices, input.value.trim(), carrier );
+				afterFill( position, offices );
+			} )
+			.catch( function () {
+				// Fail visibly, and leave the typed input usable.
+				sel.innerHTML = '<option value="">' + CFG.i18n.error + '</option>';
+				lastKey = '';
+				geo = null;
+				afterFill( null, [] );
+			} );
+	}
+
+	function afterFill( position, offices ) {
+		var btn = document.getElementById( 'darling-office-geo-btn' );
+		if ( btn ) {
+			btn.textContent = position ? ( CFG.i18n.backCity || '' ) : ( CFG.i18n.near || '' );
+		}
+		geoNote( position && ! offices.length ? CFG.i18n.none : '' );
 	}
 
 	function refresh() {
@@ -133,37 +275,39 @@
 		if ( ! officeModeChosen() ) {
 			var stale = document.getElementById( 'darling-office-select' );
 			if ( stale ) { stale.remove(); }
+			var staleGeo = document.getElementById( 'darling-office-geo' );
+			if ( staleGeo ) { staleGeo.remove(); }
+			geo = null;
 			return;
 		}
 
 		var city = findCity();
 		var carrier = findCarrier();
-		if ( ! city || ! carrier ) { return; }
-
-		var key = carrier + '|' + city;
-		if ( key === lastKey && document.getElementById( 'darling-office-select' ) ) { return; }
-		lastKey = key;
+		if ( ! carrier ) { return; }
 
 		var sel = ensureSelect( input );
+		ensureGeoRow( sel );
 
-		if ( cache[ key ] ) {
-			fill( sel, cache[ key ], input.value.trim(), carrier );
+		// A nearest-first list SURVIVES the re-renders block checkout does constantly.
+		// Only a change of carrier or of typed settlement drops back to the city list -
+		// otherwise the customer's search would be wiped by an unrelated DOM update.
+		if ( geo ) {
+			if ( geo.carrier === carrier && geo.city === city ) { return; }
+			geo = null;
+		}
+
+		if ( ! city ) {
+			// No settlement typed yet: offer the position search rather than an empty
+			// list that reads as "there is nothing near you".
+			if ( ! sel.options.length ) {
+				sel.innerHTML = '<option value="">' + ( CFG.i18n.choose || '' ) + '</option>';
+			}
 			return;
 		}
 
-		sel.innerHTML = '<option value="">' + CFG.i18n.loading + '</option>';
-		fetch( CFG.endpoint + '?carrier=' + encodeURIComponent( carrier ) + '&city=' + encodeURIComponent( city ) )
-			.then( function ( r ) { return r.json(); } )
-			.then( function ( d ) {
-				var offices = ( d && d.offices ) || [];
-				cache[ key ] = offices;
-				fill( sel, offices, input.value.trim(), carrier );
-			} )
-			.catch( function () {
-				// Fail visibly, and leave the typed input usable.
-				sel.innerHTML = '<option value="">' + CFG.i18n.error + '</option>';
-				lastKey = '';
-			} );
+		var key = carrier + '|' + city;
+		if ( key === lastKey && sel.options.length > 1 ) { return; }
+		load( input, sel, carrier, null );
 	}
 
 	var t;
