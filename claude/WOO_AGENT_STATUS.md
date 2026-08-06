@@ -2336,3 +2336,49 @@ subscription plugins and solutions and wire them in."
   Whether real refraction reads as glass where the CSS did not — that is what the prototype
   is for. If yes, the remaining question is only delivery (bake vs WebGL). If no, the whole
   direction can be dropped cheaply, which is the other reason to prototype before choosing.
+
+- 2026-08-06 sprint 55 — THE SHORTLIST, TEXTURES TURNED UP, AND WEBGL IN THE COMPARISON.
+  `palette26.html`: метал · кехлибарен мрамор · шперплат · **WebGL стъкло**, each at three
+  levels of light — twelve full pages. Kris likes the WebGL route and wants the CSS one kept
+  as the weak-device fallback, which is exactly the split I would have argued for anyway.
+
+  1. TEXTURES STRONGER, as asked: the grey maps re-normalised at **2.1–2.6×** their previous
+  contrast, the accent at full opacity, and the mask opening a **smaller** clean island
+  (26% instead of 38%) so the grain reaches closer to the label without touching it. Metal
+  now uses the deep-relief everytexture map as its accent rather than its own smooth one —
+  that was the original adaptive design and it is what makes the grain legible.
+
+  2. *** THE WEBGL PAGES RENDER THE HERO BAND AS A CANVAS, AND THAT IS NOT A SHORTCUT — IT
+  IS HOW IT WOULD SHIP. *** WebGL cannot read the DOM, so the backdrop has to be a texture
+  either way. The label sits in the DOM above the canvas, exactly as it would in production.
+  The badge, ticks and bow stay CSS on the same page, so the two approaches can be compared
+  side by side rather than page against page.
+
+  3. *** A FINDING THAT SAVED THE GLASS: IT NEEDED EMISSION. *** The first WebGL pass over
+  the real hero produced a dull red pill, because amber glass over a flat red field simply
+  transmits red — the same wall we hit in sprint 52. Adding an internal emission term to the
+  shader (light INSIDE the slab, scaled by thickness) turns it into lit amber glass that is
+  bright regardless of what is behind it. Physically that is a lamp in coloured glass, which
+  is precisely the „светлина отвътре" Kris liked two rounds ago; it is now in the shader
+  rather than faked with gradients.
+
+  4. MEASURED, all twelve (button vs claret ≥3 · label ≥4.5):
+    метал 3.51/5.83 → 3.98/6.00 · мрамор 3.64/5.86 → 4.12/6.02 ·
+    шперплат 3.48/5.81 → 3.97/5.99 · **WebGL 3.75/7.95 → 4.00/8.06**
+  All twelve pass both. *** WebGL leads on the label by a wide margin — 7.95–8.06 against
+  5.8–6.0 — because the emission lifts the whole slab. *** Glow adds a steady ~0.45 to the
+  three solid materials and ~0.25 to the glass. The glints move nothing at all, again:
+  pure ornament, removable without consequence.
+
+  MEASUREMENT NOTE, since I nearly published wrong numbers: my first pass assumed the button
+  box from page fractions and reported label contrast of 1.83 for materials that had measured
+  5.82 a sprint earlier. The box was twelve pixels off and the sample was catching the edge.
+  *** Numbers that disagree with a previous measurement of the same thing are a bug until
+  proven otherwise. *** Re-queried the real element boxes from the DOM and the figures above
+  are from those.
+
+  ═══ STILL OPEN ═══
+  Material and light level. If the answer is WebGL, the delivery question from sprint 54
+  follows: bake it offline versus ship the shader — and the emission finding shifts that
+  slightly, because an emissive slab depends much less on what is behind it, which is exactly
+  the case where a baked image loses least.
