@@ -11,61 +11,28 @@
 defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_enqueue_scripts', function () {
-	$dir = get_stylesheet_directory();
-	$uri = get_stylesheet_directory_uri();
-
-	/*
-	 * LOAD ORDER IS THE ARCHITECTURE (slice 2, 2026-08-06).
-	 *
-	 * The chain is layers -> ported -> darling, declared through explicit
-	 * dependencies so neither WordPress nor a future edit can let it drift.
-	 * It used to be the exact inverse: 'darling-ported' declared 'darling' as
-	 * its dependency, so the vendored Shopify stylesheet printed LAST and won
-	 * every equal-specificity conflict with the theme's own rules. Every
-	 * "SLICE n fix" block in style.css was a downstream symptom of that one
-	 * inverted line.
-	 *
-	 * 1. darling-layers  declares @layer order. Must be first: layer order is
-	 *                    fixed by first declaration, not by rule order.
-	 * 2. darling-ported  the verbatim Shopify stylesheet, wrapped in
-	 *                    `@layer ported` — lowest authority we ship.
-	 * 3. darling         style.css, deliberately UNLAYERED so it outranks both
-	 *                    the ported layer and WooCommerce Blocks' unlayered
-	 *                    runtime stylesheet.
-	 */
-	$layers = $dir . '/assets/layers.css';
-	if ( file_exists( $layers ) ) {
-		wp_enqueue_style(
-			'darling-layers',
-			$uri . '/assets/layers.css',
-			array( 'twentytwentyfive-style' ),
-			filemtime( $layers )
-		);
-	}
-
-	// The Shopify theme's stylesheet, ported verbatim rather than rewritten. It
-	// carries the bespoke animations (ambient stars, star twinkle, bow float,
-	// gradient drift, shimmer). Reimplementing those by eye would drift from the
-	// original; keeping the file intact means the storefront matches, and a
-	// future diff against a fresh capture shows exactly what moved. Layers do
-	// not scope @keyframes, so wrapping it changed nothing about the animations.
-	$ported = $dir . '/assets/darling.css';
-	if ( file_exists( $ported ) ) {
-		wp_enqueue_style(
-			'darling-ported',
-			$uri . '/assets/darling.css',
-			array( 'darling-layers' ),
-			filemtime( $ported )
-		);
-	}
-
-	$style = $dir . '/style.css';
+	$style = get_stylesheet_directory() . '/style.css';
 	wp_enqueue_style(
 		'darling',
 		get_stylesheet_uri(),
-		array( 'darling-ported' ),
+		array( 'twentytwentyfive-style' ),
 		file_exists( $style ) ? filemtime( $style ) : null // cache-bust on deploy
 	);
+
+	// The Shopify theme's stylesheet, ported verbatim rather than rewritten. It
+	// carries the --d-* tokens AND the bespoke animations (ambient stars, star
+	// twinkle, bow float, gradient drift, shimmer). Reimplementing those by eye
+	// would drift from the original; keeping the file intact means the storefront
+	// matches, and a future diff against a fresh capture shows exactly what moved.
+	$ported = get_stylesheet_directory() . '/assets/darling.css';
+	if ( file_exists( $ported ) ) {
+		wp_enqueue_style(
+			'darling-ported',
+			get_stylesheet_directory_uri() . '/assets/darling.css',
+			array( 'darling' ),
+			filemtime( $ported )
+		);
+	}
 
 	$hdr = get_stylesheet_directory() . '/assets/header.js';
 	if ( file_exists( $hdr ) ) {

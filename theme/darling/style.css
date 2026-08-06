@@ -940,13 +940,7 @@ html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underli
    --d-content is now defined in darling.css as
    min(calc(100% - gutter*2), 90rem). It reads --d-gutter from here, so the
    gutter is the single knob for page breathing room at every width. */
-html{
-	--d-gutter:clamp(16px,5vw,48px);
-	/* Owned here, not in the vendored file (slice 2). 100% not 100vw — 100vw
-	   counts the scrollbar and was a standing source of horizontal overflow. */
-	--d-content:min(calc(100% - (var(--d-gutter) * 2)), 90rem);
-	--d-margin:max(var(--d-gutter), calc((100% - 90rem) / 2));
-}
+html{--d-gutter:clamp(16px,5vw,48px)}
 
 /* --- Ambient stars belong BEHIND the page --------------------------------
    isolation:isolate makes <body> a stacking context so the fixed sparkle
@@ -998,24 +992,3 @@ body .darling-ambient i{will-change:auto}
    With the forced gold removed, give the two footer marks a value that is
    actually readable on vanilla. Provisional: slice 6 re-tokenises colour. */
 .df-head{color:var(--d-cocoa)}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SLICE D2 — cascade control (2026-08-06)
-
-   assets/darling.css is now wrapped in `@layer ported` and stripped of every
-   !important except accessibility mode. Layered CSS always loses to unlayered
-   CSS, so this file — which stays deliberately unlayered — now wins every
-   conflict with the vendored stylesheet at any specificity, with no !important
-   and no ordering tricks.
-
-   Why this file is NOT layered: WooCommerce Blocks ships its own unlayered
-   runtime stylesheet for cart, checkout and account. A layered theme would lose
-   to it everywhere it matters most. The rules below that carry !important all
-   target Woo Blocks chrome and are the one place it stays permitted.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* The five historic "SLICE n fix" patches were re-patches of rules the ported
-   file had already beaten. They are now redundant by construction — left in
-   place for this slice so the visual diff stays empty, and removed in slice 3
-   once the token layer proves the cascade holds. */
