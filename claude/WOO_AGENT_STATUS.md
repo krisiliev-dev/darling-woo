@@ -756,3 +756,33 @@ subscription plugins and solutions and wire them in."
   NEXT: slice 2 (cascade control — @layer + enqueue order + surgical de-!important) is the
   gate for everything after; then tokens. Owner asks O-2..O-9 still open (photography is
   the longest lead time). Touch targets (15-19 sub-32px per page) are slice 6/10.
+
+- 2026-08-06 sprint 23 â€” DESIGN SLICE 2 FAILED, REVERTED, RE-DONE MINIMAL AS 2a.
+  *** LESSON: UNLAYERED CSS OUTRANKS EVERY LAYER. ***
+  Slice 2 (c10ea05) wrapped assets/darling.css in @layer ported + layers.css + token move.
+  GATE FAILED: home@mobile 16 -> 45 defects (doc-overflow, 25 viewport-overflow, 5
+  escapes-parent, 6 text-overflow); shop@mobile 17 -> 44; every viewport <=430px broke;
+  money path returned ZERO shipping rates. REVERTED (283b845), re-verified clean.
+  ROOT CAUSE: layering the vendored file gave style.css authority over it BUT dropped it
+  below Twenty Twenty-Five's own UNLAYERED parent stylesheet, which it had been beating by
+  source order. Tell-tale: sub-32px touch targets fell 15 -> 8 on DESKTOP â€” geometry moved
+  on pages that should not have changed. The build plan's own gate criterion caught it.
+  DO NOT retry layering until theme.json owns the tokens and the parent theme's unlayered
+  contribution is neutralised.
+  SLICE 2a SHIPPED (af9eab7): minimal + correct. functions.php enqueue INVERTED so
+  darling.css prints first and style.css prints last (the one line behind every historic
+  "SLICE n fix"); vendor !important stripped except html.darling-a11y, 69 -> 7. Both files
+  stay UNLAYERED so the vendor keeps authority over the parent theme while losing it to us.
+- 2026-08-06 sprint 24 — SLICE 2a GATE CONFIRMED PASS (the unread log from sprint 23).
+  Read C:\Users\lora_\.darling-jobs\gate-2a-1785980919.log after the bridge returned.
+  Result is IDENTICAL to the slice-1 baseline, i.e. the expected empty diff:
+  zero genuine viewport-overflow / doc-overflow / text-overflow across all 36 page×viewport
+  combos; escapes-parent = 1, account only, all six viewports (the alignfull group, slice-4
+  container work); home@mobile 16 defects all small-target. MONEY PATH PASS — checkout
+  renders, rates cheapest-first with „Спиди — до офис €4.42 / 8,64 лв." leading, all
+  Bulgarian strings intact. (Bonus observed: the cart-dual watcher now also decorates the
+  checkout shipping rates with лв. — unintended but correct.)
+  So the cascade is now OURS: assets/darling.css prints first, style.css prints last, vendor
+  !important down to 7 (html.darling-a11y only), no layering. af9eab7 STANDS — do not revert.
+  REMINDER FOR SLICE 3+: do NOT reintroduce @layer until theme.json owns the tokens and the
+  parent theme's unlayered contribution is neutralised. See the sprint-23 entry for why.
