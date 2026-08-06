@@ -584,6 +584,12 @@ truth are different properties and need different checks.
          de-indexing throws the authority away.
       3. Does `darling7.com` stay registered afterwards? It must, if it is
          redirecting — a redirect only works while the domain resolves.
+      ✅ **DECIDED (owner, 2026-08-01): darlinghome.bg is the permanent home.**
+      darling7.com 301-redirects EVERYTHING to darlinghome.bg at cutover and STAYS
+      REGISTERED indefinitely (a redirect only works while the domain resolves).
+      Execution = going-live task: build the server-level 301 map once the new
+      catalogue slugs exist; categories are a straight rewrite, products need the
+      lookup table. Do NOT de-index darling7.com — redirect it.
 - [ ] 🚩 **`darling7.com` and `darlinghome.bg` are BOTH live and BOTH indexable.**
       The old site serves `robots.txt: Allow: /`, a full sitemap, and
       **self-referencing canonicals** — it is actively telling Google it is the
