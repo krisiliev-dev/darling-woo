@@ -1120,3 +1120,56 @@ subscription plugins and solutions and wire them in."
   NEXT: slice 10 (header) — no colour dependency. SLICE 6 STILL BLOCKED ON KRIS, asked
   six times: cherry-vs-honey as the button colour, gold roughness step 3 (grain) vs 4
   (grain + forged).
+
+- 2026-08-06 sprint 31 — DESIGN SLICE 10 SHIPPED + GATED (commits 9bcf26d, f0007d3;
+  deploys green). THE HEADER.
+  *** THE HEADER HAS NEVER ACTUALLY BEEN STICKY — AND THERE WERE TWO CAUSES, WHICH I
+  ONLY FOUND BECAUSE I RE-MEASURED AFTER FIXING THE FIRST ONE. ***
+  (1) Slice 4 added `.darling-header--v2{position:relative;z-index:20}` purely to make a
+  stacking context for the mega dropdown. Being later in the file at equal specificity,
+  it replaced the `position:sticky` on `.darling-header`. Measured: computed position
+  `relative`, header top at −639px after a 900px scroll.
+  (2) FIXING THAT CHANGED NOTHING. Re-measured with sticky restored: still −636px. A
+  sticky element can only travel inside its own containing block, and `.darling-header`
+  sits inside `<header class="wp-block-template-part">` — a wrapper exactly as tall as
+  the header itself. Zero travel. The sticky belongs on the WRAPPER, whose parent is the
+  whole page, and the stacking context comes with it. Now verified: after scrolling
+  900px, wrapper top 0 and header top 0 at both 390 and 1440.
+  The lesson is the second half: the first fix was necessary and not sufficient, and
+  that is invisible unless you re-run the measurement instead of trusting the diff. I
+  would have shipped „sticky restored" and been wrong.
+  ALSO FOUND: *** THE SEARCH FIELD HAD NO FOCUS INDICATOR AT ALL. *** The input sets
+  `outline:0` so the ring does not cut across the rounded pill, and nothing ever put one
+  back — a keyboard user tabbing through the header could not see where they were. The
+  ring now lives on the pill via `:focus-within`, which is where it belongs.
+  REMOVED THE CAUSE, NOT THE SYMPTOM: `.darling-nav ul` no longer sets `overflow-x` at
+  all. The v1 header let that list scroll horizontally on narrow screens; the v2 header
+  hides it below 900px and hands over to the drawer, so the mechanism had no job — but
+  it clipped the mega menu's own dropdown to nothing for weeks until slice 4 reset it.
+  Keeping a cause plus its reset is worse than keeping neither, so both are gone.
+  PURGE CHECK RAN, AND CAME BACK NEGATIVE — worth recording. I verified all eighteen
+  header/drawer class families against templates/, parts/, *.php and assets/*.js, the
+  same check that made the slice-9 footer purge safe. Unlike the footer, the header
+  vocabulary is LIVE: the v2 header reuses the v1 element class names, so there was
+  nothing to delete except the logo's bow and star rules, which have no markup left to
+  style. A purge you decline after checking is as much a result as one you perform.
+  STATES: one rule per state instead of one per pseudo-class scattered down the file.
+  Header icons, mega links and drawer links now carry `:hover` AND `:focus-visible`
+  together. Header icons went 38.4px → 44px — they are the account and basket entries
+  and the smallest thing a thumb has to hit up there. Mega and drawer links got 44px rows.
+  GATE: design audit HELD AT ZERO defects across all 36 combos (the standing bar, and a
+  regression would have been a failure); product-card gate PASS; money path PASS. Mega
+  menu verified opening BY SCREENSHOT at 1440 — ten category rows rendering above the
+  hero band — not by geometry, per the sprint-26 lesson. Sticky verified by scrolling and
+  re-measuring, not by reading the rule.
+  HONEST NUMBER, AS ASKED: the distinct-spacings census moved 45 → 43. That is a small
+  move and I am not going to dress it up. The header's own literals are gone, but the
+  census counts every element on the page, and what remains lives in WooCommerce's own
+  block CSS, the checkout surfaces, and the components that have not had their slice yet.
+  It will not fall meaningfully until those are covered — it is a slice-13/14 metric, not
+  a slice-10 one.
+  NEXT: slice 11 (state primitives — buttons, inputs, focus rings, loading and error
+  states as one vocabulary) has no colour dependency for its structure, though its
+  final colours land in slice 6.
+  SLICE 6 STILL BLOCKED ON KRIS, asked seven times: cherry-vs-honey as the button
+  colour, gold roughness step 3 (grain) vs 4 (grain + forged).
