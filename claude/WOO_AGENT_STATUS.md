@@ -988,3 +988,19 @@ subscription plugins and solutions and wire them in."
     should show four. Both belong to slice 8 (archive + filters).
   NEXT: slice 8 (archive, filters, empty states) — it has no colour dependency either.
   Slice 6 remains BLOCKED on Kris: cherry-vs-honey button, gold roughness step 3 vs 4.
+  SLICE 7 COMPLETION (same sprint, commit 75b7c46, deploy green): the nudge asked for a
+  card that is correct "in the drawer, the grid, the related row and the 404 row AT
+  ONCE", so I checked the contexts I had not rendered. Three templates were still
+  outside the contract — 404.html („Открий нещо ново"), search.html and
+  product-search-results.html — each still carrying `post-featured-image` (so a product
+  with no photo rendered NO media box and sheared the row) and `fontSize:"small"` (so
+  the card title could not be styled at all, core printing preset sizes with
+  !important). Fixed. VERIFIED RENDERED at 390 and 1440 on both the 404 page and product
+  search: container-type inline-size, clamp 2 on the anchor, 46.8/52px reserved title
+  height, 1:1 media box, CTA 200×44 on one line, justify-content:start.
+  DELIBERATE ASYMMETRY, recorded so nobody "fixes" it later: generic search.html keeps
+  the CORE featured-image block, because that query inherits and can return pages and
+  posts, where WooCommerce's product-image block renders nothing. 404 and Woo's own
+  product-search template query products only, so they get the Woo block and its
+  placeholder. The cart drawer is NOT a card context — it has its own
+  `.darling-cart__item` markup and stays that way.
