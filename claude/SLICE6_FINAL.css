@@ -1,28 +1,28 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SLICE 6 — COLOUR SEMANTICS AND THE METAL.   *** FINAL SHAPE. NOT YET ENQUEUED. ***
+   SLICE 6 — COLOUR SEMANTICS, THE METAL, AND ITS MOTION.
+   *** FINAL. READY TO PASTE. NOT YET ENQUEUED. ***
 
-   Every decision is now made. What is left before this ships is ONE number:
-   --glow-k, the strength of the light. Kris is choosing between 1.00 / .75 / .55 / .40
-   in palette27.html; .55 is my recommendation and the value written below.
+   Everything is decided. Kris chose, in order: кехлибар 36/88/−2 · surface E ·
+   ШПЕРПЛАТ as the grain · glow + lit rim + glints · glow at FULL strength · and
+   motion on all three.
 
-   DECIDED, in order of when he decided it:
-     • Neutral grey page ......... #E6E6EC                    locked
-     • Claret for red fields ..... #9E1B32                    locked
-     • Cherry for prices/accents . #D42A3C                    locked
-     • Gold shadows ROTATE hue, they do not merely darken     his idea, and correct
-     • No animation on the metal .. the sweeping sheen was rejected as „gambling"
-     • Button rule ................ cherry on grey, gold on claret
-     • Band density ............... six stops, then superseded by surface E
-     • Colour ..................... КЕХЛИБАР — hue 36 / sat 88 / lift −2
-     • Surface .................... E: body + one specular + a real inset rim
-     • Texture .................... ШПЕРПЛАТ, as a grey map, masked to rim + padding
-     • Light ...................... glow + lit rim + static glints
+   *** THE LIVE DOM WAS PROBED BEFORE ANY SELECTOR WAS WRITTEN, and it changed the
+   plan for the better: every class this slice needs ALREADY EXISTS, so slice 6
+   requires NO markup change. *** Verified on darlinghome.bg:
+       a.d-btn.d-btn--primary          inside .darling-hero--red
+       button.d-btn.d-btn--primary     inside .darling-news-band
+       a.darling-header__logo.darling-wordmark
+       span.dff-rule  and  div.dff-mark   in the footer flair
+   TWO THINGS I EXPECTED ARE NOT THERE, recorded rather than invented:
+     • the trust „ticks" are the text glyph ✦ with no element of their own, so they
+       can take the flat gold COLOUR but not the metal surface;
+     • the product card has NO badge element at all.
 
    TO SHIP:
      1. cp claude/assets/strong-ply.webp theme/darling/assets/ply-grain.webp
-     2. paste this block at the end of theme/darling/style.css
-     3. set --glow-k to Kris's answer
-     4. run the gate in §9. Revert rather than argue if the checkout geometry moves.
+     2. paste §1–§8 at the end of theme/darling/style.css
+     3. record a FRESH diff11 checkout baseline BEFORE the paste (see §9)
+     4. run the gate in §9. Revert rather than argue if checkout geometry moves.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 
@@ -30,35 +30,35 @@
    Names describe ROLE, not appearance, so a later hue change does not make the
    token names lie. */
 :root{
-	--d-page:        #E6E6EC;   /* the page ground */
-	--d-page-mid:    #D4D4DD;   /* dividers, quiet fills */
-	--d-page-deep:   #C2C2CD;   /* borders that must be seen */
-	--d-claret:      #9E1B32;   /* large red fields: hero, newsletter band */
+	--d-page:        #E6E6EC;
+	--d-page-mid:    #D4D4DD;
+	--d-page-deep:   #C2C2CD;
+	--d-claret:      #9E1B32;
 	--d-claret-deep: #7D1526;
-	--d-cherry:      #D42A3C;   /* prices, accents, the default button */
+	--d-cherry:      #D42A3C;
 	--d-cherry-deep: #B01F30;
-	--d-cocoa:       #3A1D20;   /* headings and body ink */
+	--d-cocoa:       #3A1D20;
 	--d-cream:       #FFF6E9;
 	--d-vanilla:     #FFE9C9;
 
-	--ink:           var(--d-cocoa);
-	--ink-quiet:     rgb(58 29 32 / .72);
-	--ink-on-dark:   var(--d-cream);
-	--ink-price:     var(--d-cherry-deep);
+	--ink:         var(--d-cocoa);
+	--ink-quiet:   rgb(58 29 32 / .72);
+	--ink-on-dark: var(--d-cream);
+	--ink-price:   var(--d-cherry-deep);
 }
 
 
 /* ── §2. THE METAL — THREE NUMBERS ──────────────────────────────────────────
-   Change these and the whole ramp follows. „Кехлибар" is a hue, a saturation and
-   a lightness offset — not seven hex codes to keep in sync.
+   „Кехлибар" is a hue, a saturation and a lightness offset, not seven hex codes
+   to keep in sync.
 
    THE HUE ROTATES ACROSS THE RAMP: +9° at the highlight to −17° at the deepest.
    Real gold's shadows go amber and copper; they do not simply go dark. Three or
-   four degrees is invisible — that is what Kris looked at and could not see. Do
-   not flatten this back into a lightness ramp.
+   four degrees is invisible — that is what Kris looked at and could not see.
+   Do not flatten this back into a lightness ramp.
 
-   LIFT is the third number and it is what „more brass, more brown" actually means:
-   honey→bronze is mostly a LIGHTNESS move, not a hue move. */
+   LIFT is the third number, and it is what „more brass, more brown" actually
+   means: honey → bronze is mostly a LIGHTNESS move, not a hue move. */
 :root{
 	--gold-hue: 36;
 	--gold-sat: 88;
@@ -71,90 +71,72 @@
 	--g-shadow:  hsl(calc(var(--gold-hue) - 9)  calc((var(--gold-sat) + 6) * 1%)  calc(38% + var(--gold-lift) * 1%));
 	--g-deep:    hsl(calc(var(--gold-hue) - 17) calc((var(--gold-sat) + 10) * 1%) calc(27% + var(--gold-lift) * 1%));
 
-	/* flat metal, for anything that must NOT carry a texture (icons, rules) */
-	--d-gold:      var(--g-core);
+	--d-gold:      var(--g-core);       /* flat gold, for glyphs and rules */
 	--d-gold-dark: var(--g-shadow);
 }
 
 
-/* ── §3. The surface ────────────────────────────────────────────────────────
+/* ── §3. The surface, the grain and the light ───────────────────────────────
    SURFACE E, chosen after six styles were compared from „sheet" to „nugget".
 
-   THE PRINCIPLE, because it is worth keeping: banding across a form is the
-   reflection of a WIDE environment — a rolled sheet, a mirror, a car panel — and
-   that is why it reads as „cut out of something larger". A small solid object is
-   lit by a comparatively small source, so it shows a BODY TONE, ONE specular, and
-   a DARKER RIM where the surface curves away. Body + spot + rim = an object. */
+   THE PRINCIPLE, worth keeping: banding across a form is the reflection of a WIDE
+   environment — a rolled sheet, a mirror, a car panel — which is why it reads as
+   „cut out of something larger". A small solid object is lit by a comparatively
+   small source, so it shows a BODY TONE, ONE specular, and a DARKER RIM where the
+   surface curves away. Body + spot + rim = an object. */
 :root{
 	--surface-E:
 		radial-gradient(52% 120% at 26% 20%, var(--g-vanilla) 0%, var(--g-light) 36%, transparent 74%),
 		linear-gradient(175deg, var(--g-light) 0%, var(--g-core) 58%, var(--g-shadow) 100%);
 
-	/* METAL AS TEXT needs its own fill and it must stay in the DARK half of the
-	   ramp. On a light page a vanilla stop lands mid-word and the letters dissolve —
-	   this was a real defect Kris caught, and the fix took the wordmark from
-	   1.42–1.74:1 to 3.79–5.11:1 against the grey page. */
+	/* METAL AS TEXT must stay in the DARK half of the ramp. On a light page a
+	   vanilla stop lands mid-word and the letters dissolve — a real defect Kris
+	   caught; the fix took the wordmark from 1.42–1.74:1 to 3.79–5.11:1. */
 	--band-text:
 		linear-gradient(102deg, var(--g-deep) 0%, var(--g-shadow) 22%, var(--g-core) 40%,
 			var(--g-shadow) 58%, var(--g-deep) 78%, var(--g-shadow) 100%);
 
-	/* Static glints — the site's own four-point star, sitting IN the surface rather
-	   than only floating behind the page. Measured: they change contrast by 0.00, so
-	   they are pure ornament and can be dropped without consequence. */
-	--glints:
-		radial-gradient(closest-side circle at 21% 25%, hsl(48 100% 96%) 0%, hsl(45 100% 88% / .6) 20%, transparent 58%),
-		radial-gradient(closest-side circle at 76% 69%, hsl(48 100% 96%) 0%, hsl(45 100% 88% / .5) 16%, transparent 52%);
-
-	/* THE TEXTURE, as an accent only. Plywood, as a GREY map, so it takes its colour
-	   from the ramp above — the wood is not brown, it lends its grain and nothing else.
-	   The mask keeps it out of the label's zone: clean where the text sits, grain in
-	   the padding and along the rim. */
+	/* THE GRAIN. Plywood, as a GREY map, so it takes its colour from the ramp —
+	   the wood is not brown, it lends its pattern and nothing else. The mask keeps
+	   it out of the label's zone: clean where the text sits, grain in the padding
+	   and along the rim. */
 	--metal-grain: url("assets/ply-grain.webp");
 	--metal-grain-size: 260px 260px;
 	--grain-mask: radial-gradient(64% 190% at 50% 50%, transparent 0 26%, #000 86%);
 
-	/* THE ONE NUMBER LEFT. 1 is what Kris saw and called „a bit too strong". */
-	--glow-k: .55;
+	--glow-k: 1;    /* Kris: full strength. The dial is here if it ever needs turning. */
 }
 
 
 /* ── §4. The metal primitive ────────────────────────────────────────────────
-   ONE class. Everything metal wears it: hero button, newsletter button, badge,
-   bow, trust ticks, divider rule.
-
    *** THE RIM IS INSET SHADOWS, NOT A GRADIENT. *** That is what makes one
    declaration work on a pill, a circle, a rounded square and a badge alike — an
-   inset shadow follows border-radius exactly, and a radial gradient never can.
-   It is also the only thing in the whole treatment that says „this object ends
-   here"; without it any surface reads as a window onto a larger material. */
+   inset shadow follows border-radius exactly and a radial gradient never can. It
+   is also the only thing here that says „this object ends"; without it any surface
+   reads as a window onto a larger material. */
 .d-metal{
 	position: relative;
 	isolation: isolate;
-	overflow: hidden;
 	color: var(--ink);
 	background-color: var(--g-core);
-	background-image: var(--glints), var(--surface-E);
+	background-image: var(--surface-E);
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
 	box-shadow:
-		/* lit rim */
-		inset 0 0 0 1px  hsl(42 100% 88% / calc(.80 * var(--glow-k))),
-		inset 0 8px 16px -10px hsl(45 100% 92% / calc(.90 * var(--glow-k))),
+		inset 0 0 0 1px       hsl(42 100% 88% / calc(.80 * var(--glow-k))),
+		inset 0 8px 16px -10px  hsl(45 100% 92% / calc(.90 * var(--glow-k))),
 		inset 0 -10px 20px -12px hsl(30 90% 55% / calc(.80 * var(--glow-k))),
-		inset 12px 0 22px -16px hsl(45 100% 90% / calc(.70 * var(--glow-k))),
+		inset 12px 0 22px -16px  hsl(45 100% 90% / calc(.70 * var(--glow-k))),
 		inset -12px 0 22px -16px hsl(45 100% 90% / calc(.70 * var(--glow-k))),
-		/* outer bloom */
-		0 0 0 1px rgb(255 214 140 / calc(.30 * var(--glow-k))),
-		0 0 18px 2px hsl(38 95% 60% / calc(.55 * var(--glow-k))),
-		0 0 46px 10px hsl(36 95% 58% / calc(.30 * var(--glow-k))),
-		/* the object's own weight */
 		0 2px 0 rgb(0 0 0 / .22),
 		0 8px 18px rgb(0 0 0 / .22);
 }
+/* the grain, masked to the rim and the padding */
 .d-metal::after{
 	content: "";
 	position: absolute;
 	inset: 0;
+	border-radius: inherit;
 	pointer-events: none;
 	background-image: var(--metal-grain);
 	background-size: var(--metal-grain-size);
@@ -164,10 +146,27 @@
 	-webkit-mask-size: 100% 100%;
 	        mask-size: 100% 100%;
 }
+/* the bloom and the glints, BEHIND the element so they can spill outside it */
+.d-metal::before{
+	content: "";
+	position: absolute;
+	inset: -45%;
+	z-index: -1;
+	border-radius: inherit;
+	pointer-events: none;
+	background:
+		radial-gradient(closest-side circle at 40.5% 43%, hsl(48 100% 96% / calc(.95 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.55 * var(--glow-k))) 8%, transparent 22%),
+		radial-gradient(closest-side circle at 62% 60%, hsl(48 100% 96% / calc(.90 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.45 * var(--glow-k))) 6%, transparent 18%),
+		radial-gradient(closest-side, hsl(38 95% 60% / calc(.42 * var(--glow-k))) 0 36%,
+			hsl(36 95% 58% / calc(.18 * var(--glow-k))) 58%, transparent 76%);
+}
 
-/* Metal as TEXT (wordmark, bow label). Keep the fallback colour so a failed clip
-   shows gold text rather than invisible text. */
-.d-metal--text{
+/* Metal as TEXT. Keep the fallback colour so a failed clip shows gold text rather
+   than invisible text. */
+.d-metal--text,
+.darling-wordmark{
 	color: var(--g-core);
 	background-image: var(--band-text);
 	background-size: 100% 100%;
@@ -175,13 +174,54 @@
 	        background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
-.d-metal--text::after{ content: none; }
+.d-metal--text::after, .darling-wordmark::after{ content: none; }
 @supports not ((background-clip: text) or (-webkit-background-clip: text)){
-	.d-metal--text{ -webkit-text-fill-color: currentColor; color: var(--g-shadow); }
+	.d-metal--text, .darling-wordmark{ -webkit-text-fill-color: currentColor; color: var(--g-shadow); }
 }
 
 
-/* ── §5. THE BUTTON RULE ────────────────────────────────────────────────────
+/* ── §5. MOTION ─────────────────────────────────────────────────────────────
+   Three rhythms, deliberately incommensurable so nothing ever pulses in unison:
+     the bloom BREATHES ....... 11s
+     the glints TURN .......... 54s for one revolution
+     the highlight DRIFTS ..... 26s
+   The first two run on the ::before and change only `transform` and `opacity` —
+   the two properties the compositor animates without layout or paint.
+
+   *** THE THIRD ONE IS A REPAINT AND I AM NOT PRETENDING OTHERWISE. ***
+   `background-position` cannot be composited. The amplitude is 4%, the period is
+   26s, and the metal lands on roughly five elements per page, so the cost is
+   small — but it is a cost, and the next person deserves to know which of the
+   three is the expensive one.
+
+   The sweeping sheen Kris rejected as „gambling" stays rejected. Nothing here
+   travels ACROSS a surface; the light breathes, turns and drifts in place. */
+@keyframes d-metal-breathe{ 0%,100%{ opacity: 1 } 50%{ opacity: .62 } }
+@keyframes d-metal-turn{ to{ transform: rotate(360deg) } }
+@keyframes d-metal-drift{
+	0%,100%{ background-position: 0% 0%, 0% 0% }
+	50%    { background-position: 4% 2%, 0% 0% }
+}
+.d-metal{ animation: d-metal-drift 26s ease-in-out infinite; }
+.d-metal::before{
+	animation: d-metal-breathe 11s ease-in-out infinite,
+	           d-metal-turn 54s linear infinite;
+}
+
+/* Both guards are non-negotiable and both are pure CSS — no JS, nothing to
+   forget. The money path is still, exactly as the ambient sparkles already are. */
+@media (prefers-reduced-motion: reduce){
+	.d-metal, .d-metal::before{ animation: none !important; }
+}
+body.woocommerce-cart .d-metal,
+body.woocommerce-checkout .d-metal,
+body.woocommerce-order-received .d-metal,
+body.woocommerce-cart .d-metal::before,
+body.woocommerce-checkout .d-metal::before,
+body.woocommerce-order-received .d-metal::before{ animation: none !important; }
+
+
+/* ── §6. THE BUTTON RULE ────────────────────────────────────────────────────
    Kris's decision, and it is a RULE rather than a colour: a button contrasts with
    what it sits ON. Cherry is the default because it holds 4.03:1 against the grey
    page; the metal is the hero button because it holds against claret, where
@@ -190,8 +230,7 @@
    *** THIS IS ALSO WHERE THE BUTTON PRIMITIVE UNIFIES, INCLUDING WOOCOMMERCE'S
    CHECKOUT BUTTONS. *** Slice 11 deliberately left those alone so the checkout
    absorbs ONE change instead of two. That makes this the highest checkout-geometry
-   risk of the whole pass: record a fresh diff11 baseline BEFORE touching it, and
-   revert rather than argue if the geometry moves. */
+   risk of the whole pass. */
 .d-btn,
 .wp-element-button,
 .wc-block-components-button,
@@ -206,35 +245,79 @@ a.button.alt{
 .d-btn:hover,
 .wp-element-button:hover{ background: var(--btn-bg-hover); }
 
-/* On any claret surface the button becomes the metal. */
+/* THE METAL LANDS HERE — all four selectors verified in the live DOM. */
 .darling-hero--red .d-btn--primary,
 .darling-news-band .d-btn--primary,
 .d-on-claret .d-btn--primary{
 	color: var(--ink);
 	background-color: var(--g-core);
-	background-image: var(--glints), var(--surface-E);
+	background-image: var(--surface-E);
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
+	position: relative;
+	isolation: isolate;
+	animation: d-metal-drift 26s ease-in-out infinite;
+}
+.darling-hero--red .d-btn--primary::after,
+.darling-news-band .d-btn--primary::after,
+.d-on-claret .d-btn--primary::after{
+	content: ""; position: absolute; inset: 0; border-radius: inherit;
+	pointer-events: none;
+	background-image: var(--metal-grain);
+	background-size: var(--metal-grain-size);
+	mix-blend-mode: overlay;
+	-webkit-mask-image: var(--grain-mask); mask-image: var(--grain-mask);
+	-webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
+.darling-hero--red .d-btn--primary::before,
+.darling-news-band .d-btn--primary::before,
+.d-on-claret .d-btn--primary::before{
+	content: ""; position: absolute; inset: -45%; z-index: -1; border-radius: inherit;
+	pointer-events: none;
+	background:
+		radial-gradient(closest-side circle at 40.5% 43%, hsl(48 100% 96% / calc(.95 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.55 * var(--glow-k))) 8%, transparent 22%),
+		radial-gradient(closest-side circle at 62% 60%, hsl(48 100% 96% / calc(.90 * var(--glow-k))) 0%,
+			hsl(45 100% 88% / calc(.45 * var(--glow-k))) 6%, transparent 18%),
+		radial-gradient(closest-side, hsl(38 95% 60% / calc(.42 * var(--glow-k))) 0 36%,
+			hsl(36 95% 58% / calc(.18 * var(--glow-k))) 58%, transparent 76%);
+	animation: d-metal-breathe 11s ease-in-out infinite,
+	           d-metal-turn 54s linear infinite;
+}
+@media (prefers-reduced-motion: reduce){
+	.darling-hero--red .d-btn--primary, .darling-news-band .d-btn--primary,
+	.darling-hero--red .d-btn--primary::before, .darling-news-band .d-btn--primary::before{
+		animation: none !important;
+	}
 }
 
+/* The footer flair: a rule and a mark, both real elements, both verified. */
+.dff-rule{
+	background: var(--surface-E);
+	background-size: 100% 100%;
+	box-shadow: 0 0 10px 1px hsl(38 95% 60% / calc(.40 * var(--glow-k)));
+}
+.dff-mark{ color: var(--d-gold); }
 
-/* ── §6. Two things deferred into this slice ────────────────────────────────
-   Both were found earlier and correctly held back, because both are colour
-   decisions. */
+/* The trust row's ✦ are TEXT, not elements, so they take the flat colour only. */
+.darling-trust b + *, .darling-trust i{ color: var(--d-gold); }
 
-/* 6a. The footer had TWO link treatments: .df-links plain, .df-policies and
+
+/* ── §7. Two things deferred into this slice ────────────────────────────────
+   Both found earlier, both correctly held back, because both are colour decisions. */
+
+/* 7a. The footer had TWO link treatments: .df-links plain, .df-policies and
    .df-map cherry and underlined. One vocabulary. */
-.df-links a,
-.df-policies a,
-.df-map a,
-.df-legal p a{ color: var(--ink); text-decoration: none; }
+.df-links a, .df-policies a, .df-map a, .df-legal p a{
+	color: var(--ink); text-decoration: none;
+}
 .df-links a:hover, .df-policies a:hover, .df-map a:hover, .df-legal p a:hover,
 .df-links a:focus-visible, .df-policies a:focus-visible,
 .df-map a:focus-visible, .df-legal p a:focus-visible{
 	color: var(--d-cherry-deep); text-decoration: underline;
 }
 
-/* 6b. The PDP price still rendered Playfair, because .darling-product__price
+/* 7b. The PDP price still rendered Playfair, because .darling-product__price
    predates the slice-3 rule that moved prices to Inter tabular. A price is a
    number, not an ornament. */
 .darling-product__price,
@@ -246,28 +329,25 @@ a.button.alt{
 }
 
 
-/* ── §7. Nothing here animates ──────────────────────────────────────────────
-   The sweeping sheen was built, shown and rejected as „gambling website". The
-   glints are STATIC. There is therefore nothing for prefers-reduced-motion to
-   switch off in this slice, and nothing to suppress on the money path — which is
-   the cheapest possible answer to both questions. */
-
-
 /* ── §8. What the numbers were, measured on the render ──────────────────────
-   Hero button vs claret (threshold 3:1) · label on the button (threshold 4.5:1):
-     without light .............. 3.48 : 5.81
-     with glow + lit rim ........ 3.95 : 5.99
-     + glints ................... 3.97 : 5.99   ← the chosen combination
-   The glints move contrast by 0.00–0.02, which is why §3 calls them ornament.
+   Hero button vs claret (≥3:1) · label on the button (≥4.5:1):
+     without light .......... 3.48 : 5.81
+     glow + lit rim ......... 3.95 : 5.99
+     + glints ............... 3.97 : 5.99   ← shipped
+   The glints move contrast by 0.00–0.02, which is why §3 calls them ornament and
+   why they can be dropped without consequence.
    Wordmark vs the grey page, with the §3 text band: 4.32 : 1. */
 
 
 /* ── §9. Gate before this ships ─────────────────────────────────────────────
-   • record a FRESH diff11 checkout-geometry baseline first
-   • tests/design-audit.spec.js ....... MUST hold at 0 defects across all 36 combos
-   • tests/product-card-gate.spec.js .. PASS
-   • tests/checkout-polish-gate.spec.js PASS
+   • record a FRESH diff11 checkout-geometry baseline BEFORE pasting
+   • tests/design-audit.spec.js ......... MUST hold at 0 defects across all 36 combos
+   • tests/product-card-gate.spec.js .... PASS
+   • tests/checkout-polish-gate.spec.js . PASS
    • diff11.js against the fresh baseline ... UNCHANGED at 390 and 1440
+   • motion: verify with newContext({reducedMotion:'reduce'}) that animationName is
+     `none` on the metal AND its ::before — not by reading the media query
+   • money path: verify the same on /cart/ and /checkout/ under NO preference
    • contrast sweep: no text/background pair below 4.5:1 (<24px) or 3:1 (≥24px) on
      any surface these colours touch, including the two this slice exposes by
      removing the forced-gold heading override: footer column headings on vanilla,

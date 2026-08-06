@@ -2436,3 +2436,56 @@ subscription plugins and solutions and wire them in."
      highest checkout risk of the entire pass.
   5. gate: audit 0/36 · product-card PASS · money path PASS · diff11 UNCHANGED at 390 and
      1440 · contrast sweep. Revert rather than argue if the geometry moves.
+
+- 2026-08-06 sprint 57 — GLOW AT FULL, MOTION ADDED, AND *** THE LIVE DOM PROBED BEFORE A
+  SINGLE SELECTOR WAS WRITTEN — WHICH CHANGED THE PLAN FOR THE BETTER. ***
+  Kris clarified: the WebGL bloom was the strong one; the CSS glow stays at 100%. Then he
+  asked for motion on all of it. `SLICE6_FINAL.css` is now complete and `palette28.html`
+  shows it moving.
+
+  1. *** SLICE 6 NEEDS NO MARKUP CHANGE AT ALL. *** Before writing selectors I probed the
+  rendered site, and every class the metal wants already exists:
+      a.d-btn.d-btn--primary        inside .darling-hero--red
+      button.d-btn.d-btn--primary   inside .darling-news-band
+      a.darling-header__logo.darling-wordmark
+      span.dff-rule  ·  div.dff-mark
+  *** TWO THINGS I HAD ASSUMED ARE NOT THERE, and they are recorded rather than invented:
+  the trust „ticks" are the text glyph ✦ with no element of their own — so they take the
+  flat gold COLOUR but cannot take the metal surface — and the product card has NO badge
+  element whatsoever. *** Every mockup since sprint 45 has drawn a badge that does not
+  exist. Harmless in a mockup, a silent no-op if it had gone into a stylesheet, and exactly
+  the class of mistake that cost slice 7 and slice 8 a deploy each.
+
+  2. MOTION, THREE RHYTHMS, DELIBERATELY INCOMMENSURABLE so nothing pulses in unison:
+  the bloom BREATHES (11s), the glints TURN (54s per revolution), the highlight DRIFTS
+  (26s). The first two live on a `::before` behind the element and change only `transform`
+  and `opacity` — the two properties the compositor animates without layout or paint.
+  *** THE THIRD IS A REPAINT AND I AM NOT PRETENDING OTHERWISE: *** `background-position`
+  cannot be composited. Amplitude 4%, period 26s, on roughly five elements per page — small,
+  but a cost, and the CSS names which of the three is the expensive one.
+  The sweeping sheen rejected long ago as „gambling" stays rejected: nothing here travels
+  ACROSS a surface. The light breathes, turns and drifts in place.
+
+  3. BOTH MOTION GUARDS ARE PURE CSS — no JavaScript, nothing to forget.
+  `prefers-reduced-motion` kills it, and so does being on cart / checkout / order-received.
+  *** VERIFIED BY RENDERING, not by reading the media query: *** under
+  `newContext({reducedMotion:'reduce'})` the computed `animationName` is `none` on both the
+  element and its `::before`.
+
+  4. THE BLOOM MOVED OUT OF `box-shadow` AND ONTO A PSEUDO-ELEMENT, and that was forced by
+  the motion rather than chosen for tidiness: a box-shadow's opacity cannot be animated
+  cheaply. Putting the bloom and the glints on a `::before` at `z-index:-1` with negative
+  inset lets them spill outside the button AND animate on the compositor. It also means the
+  element no longer needs `overflow:hidden`, so the grain `::after` now takes
+  `border-radius: inherit` instead.
+
+  ═══ READY TO SHIP — the order matters ═══
+  1. `cp claude/assets/strong-ply.webp theme/darling/assets/ply-grain.webp`
+  2. *** record a FRESH diff11 checkout-geometry baseline BEFORE the paste *** — this slice
+     unifies the button primitive including WooCommerce's checkout buttons, which slice 11
+     deliberately left alone so the checkout absorbs one change instead of two. Highest
+     checkout risk of the entire pass.
+  3. paste §1–§8 at the end of `theme/darling/style.css`
+  4. gate: audit 0/36 · product-card PASS · checkout-polish PASS · diff11 UNCHANGED at 390
+     and 1440 · reduced-motion renders `none` · cart and checkout render `none` under no
+     preference · contrast sweep. Revert rather than argue if the geometry moves.
