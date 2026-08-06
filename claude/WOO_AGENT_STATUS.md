@@ -1997,3 +1997,39 @@ subscription plugins and solutions and wire them in."
   ═══ STILL OPEN ═══
   The colour, still. Plus two new small ones this round created: whether the procedural
   layer ships at all, and if so whether it is hero-only or everywhere.
+
+- 2026-08-06 sprint 47 — SEVEN FULL PAGES, AND CONTRAST HAS STOPPED BEING THE CONSTRAINT.
+  Kris: „render full pages again with each variant — I need to see everything in full
+  context from now on." Delivered `palette16.html`: seven complete home pages, the
+  saturated honey/orange family plus the two reference points (the previous deep honey and
+  the rejected yellow). Everything except the three ramp numbers is identical — rim+ends,
+  strength 1, quiet band, and the sprint-46 text-band fix carried in.
+  *** THE PROCEDURAL LAYER IS DELIBERATELY OFF IN THESE MOCKUPS. *** A comparison that
+  changes two things at once answers neither question.
+
+  MEASURED IN CONTEXT (hero button vs claret ≥3 · wordmark vs grey ≥3 · label on the
+  button ≥4.5):
+    1 мед +нас. 40/86/0 ....... 4.20 · 3.74 · 9.96
+    2 кехлибар 36/88/−2 ....... 3.88 · 4.37 · 9.16
+    3 оранжев мед 32/90/0 ..... 3.79 · 4.32 · 8.92
+    4 портокал 28/92/+2 ....... 3.79 · 4.29 · 8.74
+    5 наситен тъмен 38/84/−5 .. 3.71 · 4.88 · 8.89
+    6 тъмен мед 39/70/−6 ...... 3.49 · 5.26 · 8.32
+    7 жълто 48/82/0 ........... 4.62 · 3.20 · 11.05
+  *** ALL SEVEN PASS ALL THREE THRESHOLDS. *** Two rounds ago contrast was narrowing the
+  field; after the text-band fix it no longer does. So the decision is now purely
+  aesthetic, and saying so is the useful part — I should not dress a taste question up as
+  a measurement.
+  The trend still reads cleanly: the yellower the gold, the stronger the button on claret
+  and the weaker the wordmark on grey (yellow 4.62 / 3.20); the darker and more orange, the
+  reverse (deep honey 3.49 / 5.26). Saturation lifted BOTH ends versus the previous round,
+  which is exactly what Kris predicted when he said the grey was washing the dull ones out.
+  Metal coverage unchanged at **1.23%** of the page.
+
+  METHOD NOTE, because I made the same mistake twice: the label-contrast figure came out
+  1.00:1 for every variant on the first pass — again because the sample included the
+  glyphs. The second screenshot with `color:transparent` is now the standing method for
+  any „text on a textured surface" measurement, and it belongs in the design-system skill.
+
+  ═══ STILL OPEN ═══
+  The colour. Then: whether the procedural layer ships, and if so hero-only or everywhere.
