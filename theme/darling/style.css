@@ -1,3 +1,49 @@
+/**
+ * DESIGN TOKENS — slice 3 (2026-08-06). The single source of scale.
+ *
+ * Every fluid value interpolates 430px -> 1280px and carries a rem term in the
+ * preferred value, so browser text-zoom keeps working (WCAG 1.4.4). Below 430
+ * values freeze at the minimum — phone type never shrinks; above 1280 they
+ * freeze at the maximum — type never balloons on a 1920 monitor.
+ *
+ * theme.json mirrors these literals so the block editor cannot produce an
+ * off-scale value. This file is the source of truth.
+ *
+ * Sizes are ROLE-NAMED, not step-numbered: --fs-price and --fs-section are
+ * self-enforcing in review; --step-3 is not.
+ */
+:root{
+	/* type */
+	--fs-3xs:0.6875rem;
+	--fs-2xs:clamp(0.75rem,0.7184rem + 0.118vw,0.8125rem);
+	--fs-xs:clamp(0.8125rem,0.7809rem + 0.118vw,0.875rem);
+	--fs-sm:clamp(0.875rem,0.8434rem + 0.118vw,0.9375rem);
+	--fs-base:clamp(1rem,0.9684rem + 0.118vw,1.0625rem);
+	--fs-lg:clamp(1.125rem,1.0618rem + 0.235vw,1.25rem);
+	--fs-price:clamp(1.375rem,1.1221rem + 0.941vw,1.875rem);
+	--fs-section:clamp(1.3125rem,1.0912rem + 0.824vw,1.75rem);
+	--fs-title:clamp(1.625rem,1.1824rem + 1.647vw,2.5rem);
+	--fs-display:clamp(2.25rem,1.4912rem + 2.824vw,3.75rem);
+
+	/* line-height and tracking. NEVER negative tracking on Cyrillic below 40px —
+	   Playfair's Cyrillic already runs tight and it turns to mush. */
+	--lh-display:1.14;--lh-title:1.18;--lh-section:1.25;
+	--lh-lead:1.55;--lh-body:1.65;--lh-ui:1.4;--lh-tight:1.3;
+	--ls-eyebrow:.10em;--ls-ui:.005em;--ls-body:0;
+
+	/* space — same anchors, so type and rhythm grow together */
+	--space-3xs:clamp(0.25rem,0.2184rem + 0.1176vw,0.3125rem);
+	--space-2xs:clamp(0.5rem,0.4368rem + 0.2353vw,0.625rem);
+	--space-xs:clamp(0.75rem,0.6551rem + 0.3529vw,0.9375rem);
+	--space-s:clamp(1rem,0.8735rem + 0.4706vw,1.25rem);
+	--space-m:clamp(1.5rem,1.3103rem + 0.7059vw,1.875rem);
+	--space-l:clamp(2rem,1.7471rem + 0.9412vw,2.5rem);
+	--space-xl:clamp(3rem,2.6206rem + 1.4118vw,3.75rem);
+	--space-2xl:clamp(4rem,3.4941rem + 1.8824vw,5rem);
+	--space-3xl:clamp(6rem,5.2412rem + 2.8235vw,7.5rem);
+	--band-sm:var(--space-xl);--band:var(--space-2xl);--band-lg:var(--space-3xl);
+}
+
 /*
 Theme Name: Дарлинг
 Theme URI: https://darlinghome.bg
@@ -992,3 +1038,44 @@ body .darling-ambient i{will-change:auto}
    With the forced gold removed, give the two footer marks a value that is
    actually readable on vanilla. Provisional: slice 6 re-tokenises colour. */
 .df-head{color:var(--d-cocoa)}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLICE D3 — the scale, applied.
+
+   Only ROLE-BEARING type moves onto the scale here: the display/title/section
+   headings whose ratios were collapsing on mobile (H1:H2 measured 1.75 on
+   desktop but 1.40 on a phone — the hierarchy was disappearing exactly where
+   the screen has least room to signal it), plus price, eyebrow and lead.
+   Component-level sizes follow in their own slices, so any regression here is
+   attributable.
+
+   Playfair is permitted ONLY at section/title/display, weight 500-600.
+   Everything else is Inter — including the price, which was Playfair and read
+   as decorative when it needs to read as a number.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.darling-hero__title{font-size:var(--fs-display);line-height:var(--lh-display)}
+.darling-hero__sub{font-size:var(--fs-lg);line-height:var(--lh-lead)}
+.darling-section-title{font-size:var(--fs-section);line-height:var(--lh-section)}
+.darling-cat-banner h1{font-size:var(--fs-title);line-height:var(--lh-title)}
+.darling-product .product_title,
+.wp-block-post-title{font-size:var(--fs-title);line-height:var(--lh-title)}
+
+/* Price is a number, not an ornament: Inter 700, tabular so digits align in a
+   grid, and one size everywhere it appears. */
+.darling-product p.price,
+.darling-product .woocommerce-Price-amount,
+.wp-block-woocommerce-product-price .woocommerce-Price-amount{
+	font-family:Inter,-apple-system,sans-serif;font-weight:700;
+	font-size:var(--fs-price);line-height:var(--lh-tight);
+	font-variant-numeric:tabular-nums}
+
+.darling-bgn{font-size:.72em;font-weight:400}
+
+/* Eyebrows buy hierarchy on mobile that font-size alone cannot afford. */
+.dcb-coming,.ds-eyebrow,.eyebrow{font-size:var(--fs-2xs);
+	letter-spacing:var(--ls-eyebrow);text-transform:uppercase;line-height:var(--lh-ui)}
+
+/* Body measure: Bulgarian runs 10-15% longer than English, so cap by ch not px. */
+.darling-hero__sub,.dcb-desc,.darling-news>p{max-width:46ch}
