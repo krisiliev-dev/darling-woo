@@ -2236,3 +2236,51 @@ subscription plugins and solutions and wire them in."
   ═══ STILL OPEN ═══
   Material (metal / amber marble / plywood / glass-with-an-inverted-rule), and the glow
   level. Colour, surface, mask and texture treatment are all settled.
+
+- 2026-08-06 sprint 53 — GLASS THAT REFRACTS. *** KRIS'S NOTE CHANGED THE MODEL, NOT A
+  SETTING, AND IT FIXED THE WORSE OF THE TWO PROBLEMS BY ITSELF. *** `palette25.html`.
+  „These are simply transparent, which isn't very indicative that it is glass… say the light
+  is coming from within the button… kaleidoscopic refractions… maybe procedural animation."
+
+  1. THE MODEL: until now the glass was LIT FROM OUTSIDE and I varied its opacity. Now the
+  source is INSIDE the object — a bright core, filaments carrying it outward, caustics where
+  the curved glass focuses it. Two rendered assets:
+  • **caustic web**, seamless: filaments drawn as the RIDGES of a warped field
+    (`1 − |sin(field)|` raised to a high power), because a caustic is a hairline, not a band.
+    First attempt was too fine and read as television static; lowering the frequency and
+    thinning harder gave the pool-bottom look.
+  • **kaleidoscopic burst**, not tiled: built by taking ONE angular wedge of filaments and
+    repeating it around the circle, so it has *** true rotational symmetry — which is what
+    „kaleidoscope" means and what noise can never produce. *** Nine folds and fourteen folds,
+    so the badge and the button need not be identical. It radiates from the centre of each
+    element, so it follows the shape.
+  Both are GREYSCALE and blend with `screen`: they only ADD light and cannot introduce any
+  colour but the amber underneath. That was the constraint he set and it is structural here,
+  not a promise.
+
+  2. *** MEASURED: THE LABEL PROBLEM SOLVED ITSELF. *** Label contrast on the glass went
+  from 2.56–4.99 (sprint 52) to **4.52–6.49** — all seven now pass 4.5:1, with no change to
+  the ink. Putting the light inside makes the glass brighter, and cocoa sits on it cleanly.
+  The second problem shrank but did not vanish: button-vs-background 1.85 → **2.48–3.22**.
+  Only the **facets** variant clears 3:1 unaided (3.22); the darkened **pocket** is 2.86 —
+  a hair short. The honest finish, if he goes this way, is facets + pocket together, and I
+  did NOT build it this round because seven variants is already a lot to look at.
+
+  3. THE POCKET IS PHYSICS, NOT A TRICK. Glass with light inside darkens what surrounds it
+  and casts a warm shadow. So the fix for „glass cannot separate from a background it
+  transmits" is to give it the nest a real object would have, rather than faking opacity.
+
+  4. ANIMATION, since he opened the door: variants 5 and 7 move. **48 seconds for a full
+  turn** of the burst, 9 for the core to breathe. Only `transform` and `opacity` change, so
+  it composites on the GPU with zero layout and zero repaint. *** It stops dead under
+  `prefers-reduced-motion`, and it would be absent on cart / checkout / order-received
+  through the same zero-budget path the ambient sparkles already use (slice 12). *** The
+  sweeping sheen he rejected as „gambling" stays rejected — this is a slow rotation of a
+  light field, not a highlight running across a surface, and at 48s it reads as light rather
+  than as an advertisement.
+
+  NEXT IF HE PICKS THIS: move the burst into the paint worklet from sprint 46, so every
+  button gets its OWN symmetry from its product-ID seed instead of sharing one file.
+
+  ═══ STILL OPEN ═══
+  Material and how much light. Colour, surface, mask, texture treatment all settled.
