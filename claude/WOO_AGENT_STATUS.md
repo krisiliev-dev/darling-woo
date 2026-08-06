@@ -2789,3 +2789,77 @@ subscription plugins and solutions and wire them in."
   at all — even `ssh -V` exits 255 with no output — so hand-deploying with
   `~/.ssh/woo_deploy_key` is not available from here, and the key must not be copied
   anywhere to make it available.
+
+- 2026-08-07 sprint 62 — *** A LOCKER IS A PICKUP MODE, AND THE STOREFRONT ONLY KNEW
+  „office". BOXNOW WOULD HAVE STAYED DARK FOREVER. ***
+  The panel answered both questions I rang about, and both were traps.
+  „BoxNow mode string is `locker`… already in _SPEC but enabled:false, so no boxnow row
+  has ever been served." So the row was never going to arrive as `office`.
+
+  ═══ WHAT WAS BROKEN, IN FOUR PLACES AT ONCE ═══
+  `class-shipping-method` keyed `$mine['office']` and `$mine['door']` and nothing else ·
+  `class-office-field` matched `/^darling_[a-z]+:office$/` to decide an office is needed ·
+  `office-picker.js` matched `(office|door)` and tested `'office' === r.mode` ·
+  `class-panel-api::quote()` mapped anything not `office` to `door`.
+  A `boxnow:locker` row is dropped at EVERY one of those. The rate never renders, the
+  picker never appears, the office field is never required, and a quote is asked for as a
+  door delivery. *** The panel would show the carrier enabled and the shop would show
+  nothing — which reads as „the storefront picker is broken". *** The file's own closing
+  comment promises a courier appears „the moment the panel starts serving rates for it";
+  for a locker courier that was simply false.
+
+  THE FIX IS ONE CONCEPT IN ONE PLACE: `PICKUP_MODES` in `Darling_Carriers` — „the parcel
+  waits at a courier location, so the customer must name which one". Everything else asks
+  `is_pickup()` or builds its pattern from `mode_pattern()`. A second list that forgets a
+  mode is precisely how this stayed invisible, which is the lesson sprint 59 and sprint 60
+  each already paid for once.
+  *** `darling_dest` STILL RECORDS 'office' FOR EVERY PICKUP MODE, DELIBERATELY. *** It is
+  a FROZEN CONTRACT the connector reads and its vocabulary is office/door. Writing
+  'locker' would be more precise and would break Hermes. The exact mode survives as
+  `darling_mode` on the shipping line item, and `darling_carrier` already identifies
+  BoxNow, which is lockers-only. Widening it is a conversation with the connector session.
+
+  ═══ VERIFIED, BEFORE AND AFTER, ON A REAL LIVE CHECKOUT ═══
+  Behaviour first: `darling_boxnow:locker` now counts as pickup, `darling_econt:office`
+  still does, `darling_speedy:door` still does not, a colon-less or bogus id is refused.
+  Then the money path at BG-04, Свищов, item in cart, body class asserted:
+      rate ids .......... UNCHANGED — speedy office/door, econt office/door
+      picker options .... 5 before, 5 after
+      place-order box ... 789x51 before, 789x51 after
+      CFG.modes ......... office|locker|door     CFG.pickup ... office|locker
+  Rates untouched is the point: this edits rate construction, which slice 6 called the
+  highest checkout risk of the whole pass.
+
+  ═══ THE METHOD NOTE THAT MATTERS MOST, AND IT WAS MY OWN BUG ═══
+  *** `String.prototype.replace` INTERPRETS `$'` IN THE REPLACEMENT STRING AS „EVERYTHING
+  AFTER THE MATCH". *** My patch script's replacement text contained `':office$'` — the
+  `$` followed by an apostrophe — so applying it spliced the ENTIRE REST OF THE FILE back
+  in. `class-office-field.php` silently went from 323 lines to 599, with the whole class
+  body duplicated. PHP would still have parsed much of it; the deploy's `php -l` might
+  well have passed it.
+  It was caught ONLY because every replacement in that script asserts it matches exactly
+  once, and the NEXT edit then found two matches instead of one. Without that assertion it
+  would have been committed and deployed.
+  Two rules out of it: **use a function replacement — `s.replace(from, () => to)` — which
+  disables `$` substitution entirely**, and **assert the match count on every mechanical
+  edit**, because a patch script is a measurement too.
+
+  ═══ ALSO ESTABLISHED ═══
+  • Sprint 61's diagnosis was right: the panel confirmed „admin-panel CI failed 3x on
+    GitHub runner flake, so 16140c1 never deployed" — the SAME 15m03s runner flake that
+    cost this session six dispatches. Two repos, one GitHub problem.
+  • *** OUR OFFICE CACHE IS 12h AND KEYED ON THE URL, SO A PANEL DEPLOY TAKES UP TO 12h TO
+    SHOW. *** After their redeploy, `speedy&…&radius_km=15` still served the PRE-deploy
+    answer (300 rows, ПЛОВДИВ first, no `kind`) while `radius_km=14` — a fresh cache key —
+    returned the new one. I nearly reported a working panel as broken. There is no purge.
+  • *** AND THE `kind` ARGUMENT IS NOW PROVEN WITH A REAL ROW. *** The nearest Speedy
+    location to Свищов is `СВИЩОВ - БИЛЛА (АВТОМАТ)`, 0.22 km, `kind: locker`. Under the
+    per-CARRIER noun the shop would label that «до офис» and send someone looking for a
+    counter at a machine 220 m away. BoxNow returns 6 автомата, nearest 0.2 km.
+  • Told the panel they can enable the BoxNow row now, and warned them about the 12h lag.
+
+  ═══ NEXT ═══
+  The browser half: per-ROW noun from `kind`, and a «Най-близките до мен» geolocation
+  button re-querying with lat/lon + radius_km and showing `distance_km`. The `kinds` map
+  and the i18n strings are already localized to the browser; only `office-picker.js`
+  still needs writing. Then verify a real BoxNow rate once the panel enables the row.
