@@ -2164,3 +2164,37 @@ subscription plugins and solutions and wire them in."
 
   ═══ STILL OPEN ═══
   Material, and how much glow. The colour is settled.
+
+- 2026-08-06 sprint 51 — ONE COLOUR, ONE BEHAVIOUR, ELEVEN MATERIALS. `palette22.html`.
+  Kris asked for exactly two changes and both were right.
+
+  1. EVERY MATERIAL IS NOW КЕХЛИБАР. No material keeps its own colour. Plywood, opal,
+  enamel and white marble enter as **greyscale relief maps only** and take their tone from
+  the ramp (36/88/−2). So the wood is not brown and the marble is not cold — they
+  contribute the pattern, the palette contributes the colour. That also means one asset
+  serves any future retint, which is the same property that made the gold tokenisable.
+
+  2. EVERY TEXTURE IS NOW AN ACCENT. The grain moved to the `::after` with the rim+ends
+  mask — the treatment the metal already had. Clean under the label, textured in the
+  padding and along the edges. The body underneath varies only by GLOSS: matte (paper,
+  linen, terracotta, plywood), gloss (glaze, enamel, opal), mirror (liquid amber).
+
+  MEASURED AFTER THE CHANGE — button vs claret ≥3, label on button ≥4.5:
+    емайл 4.81/8.07 · опал 4.60/8.07 · глазура 4.59/8.07 · оникс 3.52/5.82 ·
+    метал 3.49/5.82 · камък 3.48/5.82 · хартия 3.25/6.25 · течен кехлибар 3.20/4.09 ·
+    шперплат 3.11/5.91 · лен 3.11/5.90 · теракота 3.11/5.90
+  *** ALL ELEVEN NOW PASS BOTH. *** Plywood was 1.72 last round and failed; it is 3.11 now.
+  Nothing about the material changed — only the two things he asked for.
+
+  *** THE CONSEQUENCE WORTH STATING, BECAUSE IT CHANGES THE REMAINING DECISION: ***
+  once everything is one tone and the grain is banished from the centre, **the eleven
+  materials converge**. What still separates them is essentially GLOSS — matte, gloss,
+  mirror — with the pattern only felt in the padding and along the rim. Anyone expecting a
+  big visible gap between „marble" and „linen" will not find one now. That is good news for
+  consistency, and it means the real remaining choice is between **three levels of gloss**,
+  not between eleven materials. Better to say that than to let him hunt for a difference the
+  treatment has deliberately removed.
+
+  ═══ STILL OPEN ═══
+  Gloss level (matte / gloss / mirror), and how much glow from sprint 50. Colour settled at
+  36/88/−2; surface E settled; mask and strength settled.
