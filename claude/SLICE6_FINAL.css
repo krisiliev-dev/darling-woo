@@ -229,15 +229,43 @@
 
 /* Both guards are non-negotiable and both are pure CSS — no JS, nothing to
    forget. The money path is still, exactly as the ambient sparkles already are. */
+/* *** THESE LISTS MUST NAME EVERY ELEMENT THAT ACTUALLY MOVES, AND THE FIRST VERSION
+   DID NOT. *** They named .d-metal alone, which is the documented primitive and
+   matches NOTHING in the live DOM â€” the metal reaches real elements through the
+   selectors in Â§6. So the footer rule kept breathing under prefers-reduced-motion AND
+   on the cart, in a slice whose own notes call both guards non-negotiable. Reading the
+   media query looked entirely correct; only computing animationName on a render caught
+   it. Anything that gains an animation gets added to BOTH lists in the same commit.
+
+   Written out rather than folded into :is(). :is() is supported everywhere that
+   matters, but if it ever were not the whole selector would be dropped and the guard
+   would silently vanish â€” and the people most likely to be on an old engine are the
+   same people most likely to have asked for reduced motion. Verbosity is the cheaper
+   failure mode here. */
 @media (prefers-reduced-motion: reduce){
-	.d-metal, .d-metal::before{ animation: none !important; }
+	.d-metal, .d-metal::before,
+	.d-metal--thin, .d-metal--thin::before,
+	.dff-rule, .dff-rule::before,
+	.darling-hero--red .d-btn--primary, .darling-hero--red .d-btn--primary::before,
+	.darling-news-band .d-btn--primary, .darling-news-band .d-btn--primary::before,
+	.d-on-claret .d-btn--primary, .d-on-claret .d-btn--primary::before{
+		animation: none !important;
+	}
 }
-body.woocommerce-cart .d-metal,
-body.woocommerce-checkout .d-metal,
-body.woocommerce-order-received .d-metal,
-body.woocommerce-cart .d-metal::before,
-body.woocommerce-checkout .d-metal::before,
-body.woocommerce-order-received .d-metal::before{ animation: none !important; }
+body.woocommerce-cart .d-metal, body.woocommerce-cart .d-metal::before,
+body.woocommerce-cart .d-metal--thin, body.woocommerce-cart .d-metal--thin::before,
+body.woocommerce-cart .dff-rule, body.woocommerce-cart .dff-rule::before,
+body.woocommerce-cart .d-btn--primary, body.woocommerce-cart .d-btn--primary::before,
+body.woocommerce-checkout .d-metal, body.woocommerce-checkout .d-metal::before,
+body.woocommerce-checkout .d-metal--thin, body.woocommerce-checkout .d-metal--thin::before,
+body.woocommerce-checkout .dff-rule, body.woocommerce-checkout .dff-rule::before,
+body.woocommerce-checkout .d-btn--primary, body.woocommerce-checkout .d-btn--primary::before,
+body.woocommerce-order-received .d-metal, body.woocommerce-order-received .d-metal::before,
+body.woocommerce-order-received .d-metal--thin, body.woocommerce-order-received .d-metal--thin::before,
+body.woocommerce-order-received .dff-rule, body.woocommerce-order-received .dff-rule::before,
+body.woocommerce-order-received .d-btn--primary, body.woocommerce-order-received .d-btn--primary::before{
+	animation: none !important;
+}
 
 
 /* ── §6. THE BUTTON RULE ────────────────────────────────────────────────────
@@ -312,12 +340,8 @@ a.button.alt{
 		0 0 30px -6px hsl(36 95% 58% / calc(.12 * var(--glow-k)));
 	animation: d-metal-breathe 11s ease-in-out infinite;
 }
-@media (prefers-reduced-motion: reduce){
-	.darling-hero--red .d-btn--primary, .darling-news-band .d-btn--primary,
-	.darling-hero--red .d-btn--primary::before, .darling-news-band .d-btn--primary::before{
-		animation: none !important;
-	}
-}
+/* The motion guards for these buttons live in Â§5 with every other moving element, so
+   there is ONE list to keep correct rather than two that can drift apart. */
 
 /* The footer flair: a rule and a mark, both real elements, both verified.
    The rule is 76x3 — it gets the surface and the breath, never glints. */
