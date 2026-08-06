@@ -13,14 +13,15 @@ name: Tests
 # NOTE: the plugin is deployed by hand (agent-pipeline/deploy_to_box.sh), not by this repo's
 # deploy workflow. Green here means the commit is sound, NOT that the box is running it.
 
+# No paths filter. There was one - plugin/**, theme/**, tests/** - and two pushes that touched
+# those paths produced no run at all, while an on-demand run of the same file worked and the
+# admin-panel repo's unfiltered push trigger fired normally in the same minutes. The filter was
+# the only part of this that could not be verified from the outside, so it is gone. The job
+# takes 14 seconds; asking "did this commit break the payment protocol" on every push is worth
+# more than the seconds saved, and a filter that silently skips is worse than no filter.
 on:
   push:
     branches: [main]
-    paths:
-      - 'plugin/**'
-      - 'theme/**'
-      - 'tests/**'
-      - '.github/workflows/tests.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
