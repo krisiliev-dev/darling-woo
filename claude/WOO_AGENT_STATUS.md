@@ -2076,3 +2076,47 @@ subscription plugins and solutions and wire them in."
   ═══ STILL OPEN ═══
   Colour (1, 2, 5 or 6) and surface style. Kris has said he has another idea coming, so the
   pending file stays unwritten until it lands — one rewrite, not one per round.
+
+- 2026-08-06 sprint 49 — SURFACE E LOCKED, AND ELEVEN MATERIALS ON FULL PAGES.
+  Kris picked **surface E** (body + one specular + the inset rim). Two decks delivered:
+  `palette18.html` — the four remaining golds, full pages, on E.
+  `palette19.html` — *** ELEVEN MATERIALS: what this brand looks like if the accent is not
+  metal at all. *** Same site eleven times; only the accent material changes. Cherry and
+  claret untouched, so the variable is isolated.
+
+  1. NO DOWNLOADS WERE NEEDED, AND THAT IS THE USEFUL ENGINEERING ANSWER.
+  He offered to fetch more textures. Not necessary: paper, linen, stone/marble, wood,
+  terracotta and glaze are all **generated** — Fourier-domain noise, so they wrap exactly —
+  as greyscale maps of 0.6–29 KB that tint from CSS. Glass, enamel and liquid gold need no
+  texture at all; they are pure CSS (layered speculars, inset rims, `backdrop-filter`).
+  The ONLY thing I cannot get from this session is a photographic marble or wood; if he
+  wants that specifically, he downloads a CC0 set (colour + roughness + height) and I bake
+  it through the same pipeline.
+
+  2. *** THE MEASUREMENT INVERTED MY EXPECTATION, AND IT MATTERS FOR THE WHOLE DECISION. ***
+  Hero button vs claret, threshold 3:1:
+    керамична глазура 6.25 · хартия 6.22 · емайл 5.54 · камък 5.38 · лен 5.05 ·
+    **злато 3.49** · течно злато 2.91 · теракота 2.23 · матово стъкло 2.19 · дърво 1.95 ·
+    гума 1.08
+  *** The PALE materials beat gold by a wide margin. *** Claret is dark; cream separates
+  from it better than any gold can. Gold has been winning on connotation, not on contrast —
+  worth knowing before the choice is made on looks alone. Conversely rubber and frosted
+  glass effectively vanish in the hero, and wood and terracotta sit too close to claret in
+  luminance; those three can only work if the hero button becomes cherry and the material is
+  kept for the badge and the bow.
+
+  3. A LESSON THAT GENERALISED FROM THE GOLD.
+  A PALE material cannot fill TEXT on a light page — the wordmark disappears exactly as the
+  vanilla band stop did in sprint 46. So for glaze, enamel, paper, linen, stone and frosted
+  glass the wordmark is solid cocoa and the material is kept for the objects. Stated in the
+  deck rather than hidden, and the „wordmark" column deliberately left OUT of the table,
+  because for those six it would measure the ink, not the material.
+
+  4. WORTH SAYING ABOUT BRAND, not just contrast: this is a HOME-GOODS shop. Glaze, enamel
+  and linen are the materials the shop actually sells; metal is the material a jeweller
+  sells. The enamel variant in particular gives cherry a structural job — as the rim of an
+  enamelled dish — instead of leaving it to fight the gold for attention. That is an
+  argument I would not have reached from the swatches, only from the full pages.
+
+  ═══ STILL OPEN ═══
+  Gold vs another material entirely; and if gold, which of 1/2/5/6.
