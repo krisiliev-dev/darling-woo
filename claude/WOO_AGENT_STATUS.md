@@ -1901,3 +1901,44 @@ subscription plugins and solutions and wire them in."
   Which of the four colours; which mask geometry and accent strength; and whether the band
   keeps its current order or the quiet-centre order (the measurement argues hard for quiet).
   Slice 6 still gets ONE rewrite into final shape when those land.
+
+- 2026-08-06 sprint 45 — THE FOUR GOLDS IN CONTEXT. Kris locked three of the four
+  remaining decisions: **mask = rim + ends, accent strength = 1, quiet-centre band.**
+  Only the colour is open, and he asked for the one thing the swatch pages could not give
+  him — each gold on a WHOLE PAGE, with the claret, the grey, the type and the cards,
+  „because how much of the page this colour will be is important". Delivered
+  `palette14.html`: four complete home-page mockups where everything except the three ramp
+  numbers is identical.
+
+  1. *** THE NUMBER THAT ACTUALLY ANSWERS HIS QUESTION: 1.23%. ***
+  Measured, not estimated — the summed area of every metal element against the page area at
+  1440px. Metal appears on the wordmark, the hero button, the newsletter button, the „Ново"
+  badge, three trust ticks, a divider rule and the footer bow. Everything else is cherry on
+  grey, per his own rule. So the gold is **about one hundredth of the surface**. That
+  reframes the decision: this is a jewellery choice, not a wall-paint choice.
+
+  2. THE TRADE, IN TWO COLUMNS.
+  Hero button vs claret / wordmark vs the grey header:
+  dull-brass 3.37 / 1.91 · deep honey **3.49** / 1.78 · dull brass 3.00 / 2.14 ·
+  bronze 2.38 / **2.74**. *** The lighter the gold, the better it sits on claret and the
+  worse the wordmark reads on grey; bronze is exactly the reverse. *** There is no variant
+  that wins both, because the metal appears on both surfaces. None reaches 3:1 for the
+  wordmark — a logotype is exempt from WCAG 1.4.11, so this is a legibility judgement
+  rather than a compliance one, and it is his to make with the numbers in front of him.
+
+  3. *** A BUG IN MY OWN CODE, FOUND ONLY BECAUSE THE NUMBERS WERE IDENTICAL. ***
+  The first measurement returned wordmark contrast of **2.97:1 in all four variants**. Four
+  different golds cannot produce one number. Cause: `.d-metal--text` set two background
+  layers but no `background-blend-mode`, so the greyscale shading map simply covered the
+  colour ramp and the wordmark rendered GREY everywhere. Fixed; the four now read
+  1.91/1.78/2.14/2.74. Worth recording twice over: the suspicious result was not a
+  measurement error, it was the measurement doing its job.
+
+  4. ALSO SEEN ONLY IN THE RENDER: the quiet band's dark end stops sit at 1.16–1.58:1
+  against claret, i.e. almost the same luminance as the background, so the hero button
+  „thins out" at both ends. The drop shadow holds the shape and it reads as a soft edge
+  rather than a fault — but if he wants a crisp pill, the end stops need lifting. Stated
+  rather than quietly corrected, because it may well be the nicer look.
+
+  ═══ STILL OPEN ═══
+  The colour, and only the colour. Everything else in slice 6 is now decided and encoded.
