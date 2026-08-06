@@ -786,3 +786,37 @@ subscription plugins and solutions and wire them in."
   !important down to 7 (html.darling-a11y only), no layering. af9eab7 STANDS — do not revert.
   REMINDER FOR SLICE 3+: do NOT reintroduce @layer until theme.json owns the tokens and the
   parent theme's unlayered contribution is neutralised. See the sprint-23 entry for why.
+
+- 2026-08-06 sprint 25 — DESIGN SLICE 3 SHIPPED + GATED (commit 8485e78, deploy green).
+  TOKENS. theme.json: settings.typography.fluid anchored 430px->1280px; 7 fluid fontSizes
+  (x-small..xx-large) mirroring the spec's role-named ramp; settings.spacing.spacingSizes
+  with the 9-step scale (was ABSENT entirely); layout contentSize 820px -> 43rem (a prose
+  measure) and wideSize 1280px -> 90rem; h1/h2/h3 element roles bound to the scale with
+  their own line-heights and families. WordPress generated the clamps correctly — verified
+  in the live page's inline preset CSS.
+  style.css: a :root token block PREPENDED (source of truth; theme.json mirrors it) with
+  the 10-step type ramp, line-height/tracking set, and the 9-step space scale + band
+  aliases. Then applied ONLY to role-bearing type — hero display, section titles, category
+  H1, product title, price, eyebrows, lead measure (46ch, because Bulgarian runs 10-15%
+  longer than English). Component-level sizes deliberately left for their own slices so
+  any regression stays attributable.
+  PRICE moved from Playfair to Inter 700 tabular-nums: it is a number, not an ornament,
+  and tabular digits align down a grid.
+  NEVER negative letter-spacing on Cyrillic below 40px — recorded in the token block.
+  GATE PASS: zero genuine viewport/doc/text overflow across all 36 combos; account@mobile
+  IMPROVED 17 -> 16 (its escapes-parent cleared at that width); money path PASS with
+  „Спиди — до офис €4.42 / 8,64 лв." first and dual currency on the rates.
+  HONEST CAVEAT: distinct font sizes did NOT drop (29 mobile / 33 desktop vs 28 before).
+  Two reasons: (a) only role type was migrated — the ~30 component-level sizes are slices
+  5/7/8; (b) the metric is polluted, since the ambient sparkles are text nodes with random
+  8-22px sizes and the harness counts them. Do not treat this number as a KPI until the
+  harness excludes .darling-ambient i.
+  VISUAL (s3-home-desktop.png): section titles now share the left edge of the grids they
+  label — the ~45px stagger that was the single most visible alignment defect is gone;
+  hero display type has real presence; the category row shows six tiles instead of two cut
+  off; footer columns and the full-width legal bar read correctly.
+  STILL PENDING FROM KRIS (asked twice, not blocking slice 4/5): gold roughness step 3
+  (grain) vs 4 (grain + forged); cherry-vs-honey as the button. Colour tokens are slice 6
+  and are correctly blocked on the second one.
+  NEXT: slice 4 (template surgery — give every band a container; the account alignfull
+  escapes-parent lives here) then slice 5 (typography completion).
