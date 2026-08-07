@@ -2279,3 +2279,28 @@ a.button.alt{
    which is why raising the eyebrow alone would not have closed the gap. */
 .ds-eyebrow + .darling-section-title,
 .ds-eyebrow + h2{ margin-top:var(--space-3xs) }
+/* ===========================================================================
+   SPRINT 84 - full-bleed red bands, and the last two creams.
+
+   MEASURED CAUSE of the inset the owner reported: main.darling-home carries
+   padding-inline:48px and max-width:min(100% - 96px, 1440px), so EVERY band
+   inherited a 48px margin - hero, newsletter and trust all spanned 48..1473 of
+   a 1521px viewport. The winning design (palette28_1.html) has no wrapper
+   padding at all: .hero/.news/.trust are full width and carry their own
+   padding:64px 44px inside. This reproduces that without restructuring the
+   wrapper.
+
+   overflow-x:CLIP, not hidden. `hidden` would make main a scroll container and
+   break the sticky header; `clip` does not.
+   =========================================================================== */
+.darling-home{ overflow-x:clip }
+.darling-hero-band,
+.darling-news-band,
+.darling-trust{
+	margin-inline:calc(50% - 50vw);
+	padding-inline:clamp(1.5rem, 4vw, 4rem);
+}
+
+/* The section BELOW the footer. .df-legal is a SIBLING of .darling-footer, not
+   a child - which is why the footer commit in 6c026ed did not reach it. */
+.df-legal{ background:var(--d-page-mid); border-top-color:var(--d-page-deep) }
