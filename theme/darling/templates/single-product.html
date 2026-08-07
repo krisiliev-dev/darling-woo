@@ -1,5 +1,14 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
+<!-- No main landmark existed on this template. Measured on the live product page:
+     0 main elements and 0 skip target ids, against exactly 1 of each on every other
+     page of the site. WordPress adds the skip target id to the first main element it
+     finds, so with none present the header skip link pointed at a missing anchor and
+     screen-reader landmark navigation had nothing to jump to. This block supplies it. -->
+<!-- wp:html -->
+<main class="darling-product-main">
+<!-- /wp:html -->
+
 <!-- wp:woocommerce/single-product {"className":"darling-product"} -->
 <div class="wp-block-woocommerce-single-product darling-product">
 
@@ -82,5 +91,9 @@
 
 </div>
 <!-- /wp:woocommerce/single-product -->
+
+<!-- wp:html -->
+</main>
+<!-- /wp:html -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

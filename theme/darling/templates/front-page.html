@@ -58,7 +58,6 @@
 			<a href="/product-category/podaraci/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/podaraci-440.webp 440w, /wp-content/themes/darling/assets/img/categories/podaraci-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/podaraci.jpg" alt="" loading="lazy" decoding="async"></picture><span>Подаръци</span></a>
 		</div>
 	</section>
-</main>
 <!-- /wp:html -->
 
 <!-- wp:paragraph {"className":"ds-eyebrow"} -->
@@ -179,6 +178,13 @@
 	});
 })();
 </script>
+<!-- /wp:html -->
+
+<!-- main closes here, not after the category strip. 11 472 characters of content
+     (two product query sections and the seasonal band) used to render outside every
+     landmark, so landmark navigation and the skip link stopped short of them. -->
+<!-- wp:html -->
+</main>
 <!-- /wp:html -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
