@@ -3094,3 +3094,60 @@ subscription plugins and solutions and wire them in."
   other eighteen? (c) If someone else can download files — Kris, or the panel agent, which
   has no such restriction — I will specify subject, crop, minimum pixels and the licence
   text to record per image, and gate the result live as usual.
+
+- 2026-08-07 sprint 67 — *** HALF THE HOME PAGE WAS IMAGES NOBODY NEEDED. 794 KB → 162 KB. ***
+  `40b8a3e`, deploy green, gated on the deployed site with nothing injected.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22), the four `boxnow` rows are still `enabled=0`.
+  O-4: the panel has not answered the "can you download image binaries" ring (seq 51).
+
+  ═══ MEASURED FIRST, COLD CACHE, PER RESOURCE ═══
+      home@mobile ..... 794 KB of images inside a 1600 KB page — HALF the page weight
+      home@desktop .... the same 794 KB; the tiles were not responsive at all
+      shop@mobile ..... 134 KB banner, *** LCP 3536 ms *** (the banner IS the LCP element)
+      za-decata ....... 414 KB banner for a 234×260 box on a phone
+  Eight 800px JPEGs, no `srcset`, rendered in a 160–210px box. Every visitor was served
+  the retina-desktop file, including a dpr-1 phone.
+
+  ═══ THE PART WORTH READING TWICE: `sizes` IS NOT THE BOX WIDTH ═══
+  The tile is `clamp(160px,17vw,210px)` with `aspect-ratio:4/5` and `object-fit:cover`,
+  and the sources are 3:2 LANDSCAPE. Cover scales by HEIGHT here, so the image the
+  browser actually needs is about `box-height × 1.5` wide — ~300px on a phone, ~400px on
+  a desktop — NOT the 160/210 the box measures. *** Feed `sizes` the box width and a
+  retina desktop picks the 440w file for a slot that needs 800w, and every tile goes
+  soft. *** The bytes would look even better and the site would look worse, which is the
+  kind of win worth refusing. Written into the template next to the markup.
+
+  ═══ GATE — deployed site, four dpr/viewport combos ═══
+      home@mobile   dpr1 .... 794 → *** 162.4 KB *** (−80%), all 8 chose the 440w webp
+      home@mobile   dpr2 .... 794 → 395.7 KB (−50%), all 8 chose the 800w webp
+      home@desktop  dpr1 .... 162.4 KB, 440w  (440×294 into a 263-tall box ✓)
+      home@desktop  dpr2 .... 395.7 KB, 800w  (800×640 into a 525-device-px box ✓)
+      page total .............. 1600 → 968 KB at dpr1
+      LCP home@mobile ......... 876 → 948 ms (unchanged within noise; bytes were not
+                                its bottleneck — see the lazy finding below)
+      live files .............. 6 of 16 webp md5-identical to local, 8 `<picture>` blocks
+                                in the served HTML
+      design audit ............ *** 0 defects across all 36 combos *** (`audit_s9.js`)
+
+  ═══ TWO THINGS FOUND AND DELIBERATELY NOT FIXED ═══
+  1. *** `loading="lazy"` sits on the LCP element. *** On home@mobile the LCP element is
+     the first category tile, and it is lazy — which delays the very paint LCP measures.
+     One attribute fixes it (`eager` + `fetchpriority=high` on the first tile only). NOT
+     done here on purpose: changing it in the same commit would have made the byte
+     numbers and the LCP numbers un-attributable to each other. Next sprint, alone.
+  2. *** The 11 category BANNERS are still full-size. *** They are CSS
+     `background-image`, a different mechanism — `image-set()` with a webp tier and a
+     mobile tier. `za-decata.jpg` is 414 KB for a 234×260 phone box. `banners/all.jpg`
+     must stay UNTOUCHED while its provenance is open: it is the only image carrying
+     `dc:rights` and re-encoding destroys the evidence.
+
+  ═══ ALSO WORTH KNOWING ═══
+  · `ffmpeg` is on the laptop and encodes webp (`libwebp`); `cwebp` and ImageMagick are
+    not, and `convert.exe` on PATH is Windows' filesystem tool, not ImageMagick.
+  · `System.Drawing` cannot decode webp — it throws "Out of memory", which reads like a
+    resource problem and is not one. Use `ffprobe` for webp dimensions.
+  · The laptop bridge dropped mid-verification and the tools had to be re-loaded. The
+    deploy was already green; the RESULT gate was simply re-run afterwards rather than
+    assumed. Worth remembering that a dropped bridge looks exactly like a finished job.
