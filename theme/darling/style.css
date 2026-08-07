@@ -686,6 +686,108 @@ body.tax-product_cat.term-podaraci .darling-cat-banner .dcb-img{background-image
 body.tax-product_cat.term-izborat-na-lady-d .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/izborat-na-lady-d.png)}
 body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image:url(/wp-content/themes/darling/assets/img/banners/promocii.webp)}
 
+/* ==========================================================================
+   BANNER IMAGE TIERS — the last of the oversupplied images
+
+   These banners are CSS background-image, so a phone was pulling the full 1400px
+   file for a 234×260 band: za-decata 413 KB, za-kuhnyata 364 KB. The tier numbers
+   are NOT the box width — background-size:cover crops, so which edge binds depends
+   on the ratios, and here it differs between phone and desktop:
+       mobile   234×260 box (0.90) vs a 3:2 source → HEIGHT binds → 389w at dpr1,
+                778w at dpr2
+       desktop  674×260 box (2.59) vs a 3:2 source → WIDTH binds  → 674w at dpr1,
+                1348w at dpr2
+   Two tiers cover all four cases: 800w and 1400w. The mobile block at the end pins
+   BOTH resolutions to 800w, because a phone at dpr2 needs 778w and would otherwise
+   take the 1400w file for nothing.
+
+   The .jpg rules above are left in place ON PURPOSE: a browser that cannot parse
+   image-set() ignores every declaration here and keeps the original. The jpeg is
+   also listed as a final option inside each image-set for the same reason.
+
+   *** banners/all.jpg (the /shop/ banner) is deliberately NOT in this block. *** It
+   is the only image on the site carrying provenance metadata (XMP dc:rights), and
+   re-encoding it would destroy the only evidence we have while the question of who
+   owns it is still open with the owner.
+   ========================================================================== */
+body.tax-product_cat.term-za-kuhnyata .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-za-banyata .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-banyata-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/za-banyata-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/za-banyata.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-dekoraciya-za-doma .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-za-gradinata .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-gradinata-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/za-gradinata-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/za-gradinata.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-pochistvane .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/pochistvane-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/pochistvane-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/pochistvane.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-parti .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/parti-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/parti-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/parti.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-za-decata .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-decata-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/za-decata-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/za-decata.jpg) type("image/jpeg") 1x)}
+body.tax-product_cat.term-podaraci .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/podaraci-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/podaraci-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/podaraci.jpg) type("image/jpeg") 1x)}
+/* These two were never landscape photographs — 265×265 and 650×650 squares that
+   background-size:cover already upscales into a 674px-wide band. No 800/1400 tier is
+   generated for them: upscaling is inventing detail, not fixing weight. And
+   promocii.webp IS NOT A WEBP — ffprobe reports png, which is why a 650×650 square
+   cost 314 KB. Both of these categories need real photographs (O-4). */
+body.tax-product_cat.term-izborat-na-lady-d .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/izborat-na-lady-d-265.webp) type("image/webp"),
+		url(/wp-content/themes/darling/assets/img/banners/izborat-na-lady-d.png) type("image/png"))}
+body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/promocii-650.webp) type("image/webp"),
+		url(/wp-content/themes/darling/assets/img/banners/promocii.webp) type("image/png"))}
+@media (max-width:700px){
+	body.tax-product_cat.term-za-kuhnyata .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-za-banyata .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-banyata-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/za-banyata-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/za-banyata.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-dekoraciya-za-doma .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/dekoraciya-za-doma.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-za-gradinata .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-gradinata-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/za-gradinata-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/za-gradinata.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-pochistvane .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/pochistvane-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/pochistvane-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/pochistvane.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-parti .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/parti-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/parti-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/parti.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-za-decata .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-decata-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/za-decata-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/za-decata.jpg) type("image/jpeg") 1x)}
+	body.tax-product_cat.term-podaraci .darling-cat-banner .dcb-img{
+		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/podaraci-800.webp) type("image/webp") 1x,
+			url(/wp-content/themes/darling/assets/img/banners/podaraci-800.webp) type("image/webp") 2x,
+			url(/wp-content/themes/darling/assets/img/banners/podaraci.jpg) type("image/jpeg") 1x)}
+}
+
 
 /* Toolbar */
 .darling-archive__bar{align-items:center;margin:0 0 var(--space-xs)}
