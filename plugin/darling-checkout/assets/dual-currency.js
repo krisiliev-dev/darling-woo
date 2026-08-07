@@ -77,6 +77,21 @@
 
 	function decorate( el ) {
 		if ( el.dataset[ MARK ] ) { return; }
+		// SELECTORS lists two class names that are ONE element on the cart page but TWO
+		// NESTED elements in the checkout totals footer. Decorating both printed the BGN
+		// figure twice on the grand total - measured live as
+		//     span.darling-bgn 63x15 @1229  and  span.darling-bgn 63x15 @1292
+		// both visible, neither screen-reader-only. querySelectorAll returns document
+		// order, so the ancestor is decorated first; keep that one and refuse anything
+		// nested inside it, or anything that already contains a decoration.
+		if ( el.parentElement && el.parentElement.closest( '[data-darling-dual="1"]' ) ) {
+			el.dataset[ MARK ] = 'nested';
+			return;
+		}
+		if ( el.querySelector( '.darling-bgn' ) ) {
+			el.dataset[ MARK ] = 'has-child';
+			return;
+		}
 		// Never touch something that already shows лв. - the server-side filter may
 		// have rendered it, and two conversions would compound.
 		if ( /лв\./.test( el.textContent ) ) {
