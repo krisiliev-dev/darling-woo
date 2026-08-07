@@ -260,3 +260,31 @@ add_filter( 'gettext', function ( $translation, $text, $domain ) {
 add_filter( 'gettext', function ( $translation, $text ) {
 	return 'Express Checkout' === $text ? 'Бързо плащане' : $translation;
 }, 10, 2 );
+
+/**
+ * The order-received page should only be reachable BY an order.
+ *
+ * Measured sprint 76: /checkout/order-received/ returns 200 to anyone and renders the
+ * confirmation template with a generic "check your email" fallback. No order data leaks
+ * (no order number, no overview), so this is not a disclosure fix - it is that a bare
+ * confirmation page is a dead end nobody should land on.
+ *
+ * DELIBERATELY NARROW. This fires ONLY when the endpoint carries no order id at all.
+ * Every real post-purchase URL is /checkout/order-received/<id>/?key=wc_order_..., and
+ * those are left entirely to WooCommerce own key validation, untouched. Guarding on the
+ * key as well would put a redirect in the path of a customer returning from a payment
+ * provider, and Stripe went live today - that is not a risk worth taking to tidy up a
+ * page nobody reaches on purpose.
+ */
+add_action( 'template_redirect', function () {
+	if ( ! function_exists( 'is_order_received_page' ) || ! is_order_received_page() ) {
+		return;
+	}
+	// get_query_var is empty for the bare endpoint and numeric for every real order URL.
+	if ( absint( get_query_var( 'order-received' ) ) > 0 ) {
+		return;
+	}
+	$shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
+	wp_safe_redirect( $shop ? $shop : home_url( '/' ), 302 );
+	exit;
+} );
