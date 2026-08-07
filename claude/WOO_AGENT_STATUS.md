@@ -2966,3 +2966,77 @@ subscription plugins and solutions and wire them in."
   *** design audit 0 defects across all 36 combos *** (and note: the first audit run
   reported "12 combos" only because I piped it through `Select-Object -Last 12` and
   truncated my own evidence — the fix was to stop truncating, not to trust the 12).
+
+- 2026-08-07 sprint 65 — *** O-5 IS IN. A CARD WITH NO PICTURE IS NOW AN ERROR, AND THE
+  REASON IT HAD TO BE JAVASCRIPT IS THE WHOLE FINDING. ***
+  `17732c8`. Kris chose: quiet branded slab, bow motif on vanilla, small
+  «Изображението не се зареди».
+
+  ═══ 1. WHY CSS COULD NEVER HAVE DONE THIS ═══
+  There is no `:broken` selector. Generated content on a replaced element is unreliable
+  across engines. And the one thing CSS *can* target — `img.woocommerce-placeholder` —
+  is only half the problem: it catches a product Woo KNOWS has no image and misses
+  every product whose image 404s, which is the failure that actually happens once
+  10 800 products are importing from Barsy. So `assets/img-fallback.js` marks the image
+  and inserts the slab; the old CSS rule stays on as the **no-JS floor** so Woo's grey
+  `#f0f0f0` never paints in the gap between paint and script.
+
+  Three details in that script are not obvious and are commented in place:
+  · the listener is on `window` in the **capture** phase, because resource `error`
+    events do not bubble but do capture — one listener then covers the images Woo
+    injects into cart and checkout later;
+  · the initial sweep tests `complete && naturalWidth === 0`, which is the only thing
+    that catches images that already errored BEFORE a deferred script ran;
+  · a `MutationObserver` is required *for placeholders specifically*, because a
+    placeholder LOADS successfully — nothing fires an event for it when a block redraws.
+
+  ═══ 2. WHY BOTH CASES GET THE SAME STATE ═══
+  The panel now refuses to flag a product sellable online without an image
+  (`claude/SELLABLE_ONLINE_IMAGE_RULE_20260806.md`). That makes "no photo yet"
+  **unreachable by policy** on the storefront. A placeholder reaching a card therefore
+  does not mean "coming soon", it means the data is wrong — same class of fault as a
+  404. One state, one sentence. Scope is deliberately narrow (product media containers
+  only): a broken category banner or logo is a different fault and labelling it with a
+  product caption would be a confident, wrong sentence.
+
+  ═══ 3. THE MEASUREMENT THAT CHANGED THE DESIGN ═══
+  A first pass had the bow at `.22`. Rendering it showed why that was too quiet:
+      --d-vanilla on the white product card ....... 1.18 : 1
+      --d-vanilla on the cream product page ....... 1.10 : 1
+  *** The EDGE of this state can never carry it. *** Nothing in this palette produces a
+  quiet border that reads — reaching 3:1 would need roughly `#B8A98F`, which stops being
+  quiet and becomes a wireframe. What carries it is the CAPTION and the MOTIF, so the
+  bow went to `.3` and no border was added. Written next to the rule so the next person
+  does not re-litigate it.
+  Caption colour is `#71564F` written out as a hex — cocoa let down into vanilla —
+  because `opacity` and `color-mix` both resolve against whatever sits behind the slab,
+  and that is exactly how the newsletter eyebrow got to 4.11:1 one sprint ago.
+
+  ═══ GATE — measured on the DEPLOYED site with nothing injected ═══
+      placeholder 1440 / 390 ... 2 slabs, 322 / 327 square, radius copied off the image
+      broken 404  1440 / 390 ... same slab, reason=`broken` — the error path, for real
+      cart 390 ................. 64px slab, caption dropped by the container query,
+                                 meaning preserved by role="img" + aria-label
+      caption contrast ......... 5.64 : 1 at 12–13px on --d-vanilla (AA small text)
+      images still painting .... 0        grey placeholders left .... 0
+      overflow ................. scrollWidth == innerWidth at 1440 and 390
+      design audit ............. *** 0 defects across all 36 combos ***
+  Pre-deploy the same five cases were run with the real files injected into the real
+  live pages, so the design was gated before it shipped and again after.
+
+  *** METHOD NOTE, AND IT COST TWENTY MINUTES. *** My first audit run reported 3–5
+  defects on EVERY combo, including `/pomosht/`, which has no product images at all.
+  The cause was not the change: I had run `designpass/audit.js`, which is **stale**.
+  The current gate is `sprint27/audit_s9.js` — it excludes screen-reader-only links and
+  links inside a sentence, *and counts what it excluded* instead of dropping them
+  silently. `audit.js` counts the 1×1 skip-link as a defect on every page ever rendered.
+  *** If a "regression" appears on pages you did not touch, suspect the instrument. ***
+
+  ═══ WHAT THIS EXPOSED ABOUT THE LIVE CATALOGUE ═══
+  Probing before building: `/` has 2 product cards, `/shop/` 1, `za-kuhnyata` 1, and
+  **every one of them is a placeholder** — 0 real product images anywhere on the site.
+  So O-5 is not cosmetic right now, it is the state the storefront is actually in. Those
+  products are also sellable online WITHOUT an image, which the panel's own rule should
+  have blocked. Rung their doorbell (seq 50). It was worth checking the volume first: if
+  the grid had been a field of placeholders, painting all of them as errors would have
+  been worse than the grey slab, and that would have been a question for Kris.
