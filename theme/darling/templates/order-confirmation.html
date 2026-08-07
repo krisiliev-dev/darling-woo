@@ -1,0 +1,64 @@
+<!-- Copied verbatim from WooCommerce order-confirmation.html with ONE line added, the
+     same fix and the same reasoning as page-checkout.html.
+     Measured on the live page: /checkout/order-received/ returns 200 and renders this
+     template even with no valid order key, and it had ZERO h1 elements. That is the
+     page a customer lands on immediately after paying, so its heading tree had no root
+     and a screen reader never announced it.
+     Screen reader only, as on checkout: WooCommerce omits the title here deliberately
+     and the visual design is not the defect. Unlike checkout, this template uses the
+     THEME header and footer, and those are left exactly as shipped. -->
+<!-- wp:template-part {"slug":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"inherit":true,"type":"constrained"}} -->
+<main class="wp-block-group">
+	<!-- wp:post-title {"align":"wide", "level":1, "className":"screen-reader-text"} /-->
+	<!-- wp:woocommerce/order-confirmation-status {"fontSize":"large"} /-->
+
+	<!-- wp:woocommerce/order-confirmation-summary /-->
+
+	<!-- wp:woocommerce/order-confirmation-totals-wrapper {"align":"wide"} -->
+	<!-- wp:pattern {"slug":"woocommerce/order-confirmation-totals-heading"} /-->
+
+	<!-- wp:woocommerce/order-confirmation-totals {"lock":{"remove":true}} /-->
+	<!-- /wp:woocommerce/order-confirmation-totals-wrapper -->
+
+	<!-- wp:woocommerce/order-confirmation-downloads-wrapper {"align":"wide"} -->
+	<!-- wp:pattern {"slug":"woocommerce/order-confirmation-downloads-heading"} /-->
+
+	<!-- wp:woocommerce/order-confirmation-downloads {"lock":{"remove":true}} /-->
+	<!-- /wp:woocommerce/order-confirmation-downloads-wrapper -->
+
+	<!-- wp:columns {"align":"wide","className":"wc-block-order-confirmation-address-wrapper"} -->
+	<div class="wp-block-columns alignwide wc-block-order-confirmation-address-wrapper">
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:woocommerce/order-confirmation-shipping-wrapper {"align":"wide"} -->
+			<!-- wp:pattern {"slug":"woocommerce/order-confirmation-shipping-heading"} /-->
+
+			<!-- wp:woocommerce/order-confirmation-shipping-address {"lock":{"remove":true}} /-->
+			<!-- /wp:woocommerce/order-confirmation-shipping-wrapper -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:woocommerce/order-confirmation-billing-wrapper {"align":"wide"} -->
+			<!-- wp:pattern {"slug":"woocommerce/order-confirmation-billing-heading"} /-->
+
+			<!-- wp:woocommerce/order-confirmation-billing-address {"lock":{"remove":true}} /-->
+			<!-- /wp:woocommerce/order-confirmation-billing-wrapper -->
+		</div>
+		<!-- /wp:column -->
+	</div>
+	<!-- /wp:columns -->
+
+	<!-- wp:woocommerce/order-confirmation-additional-fields-wrapper {"align":"wide"} -->
+	<!-- wp:pattern {"slug":"woocommerce/order-confirmation-additional-fields-heading"} /-->
+	<!-- wp:woocommerce/order-confirmation-additional-fields /-->
+	<!-- /wp:woocommerce/order-confirmation-additional-fields-wrapper -->
+
+	<!-- wp:woocommerce/order-confirmation-additional-information /-->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer"} /-->
