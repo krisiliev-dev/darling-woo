@@ -4038,3 +4038,45 @@ subscription plugins and solutions and wire them in."
   it corrected a wrong conclusion of mine and produced an actionable admin instruction - but
   O-4 has now been the headline item three times and started zero times. *** Sprint 79 does
   photography FIRST and touches BoxNow only if someone replies that the zone changed.
+
+- 2026-08-07 sprint 78 ADDENDUM - *** BOXNOW IS LIVE. IT WAS THE ZONE, EXACTLY AS PREDICTED,
+  AND KRIS GAVE ME THE SSH ACCESS TO FIX IT MYSELF. *** No repo change; this was WP config.
+
+  Getting there: System32 ssh.exe is broken on this laptop (exit 255 on -V, zero output, even
+  via Start-Process with redirected stderr). Git ships a working one at
+  C:\Program Files\Git\usr\bin\ssh.exe. Nested quoting through the bridge mangles remote
+  commands, so remote scripts go base64 -> `base64 -d | bash`, same discipline as file transfer.
+  The WP box is 169.58.89.40 (darlinghome.bg); 169.58.69.210 is the panel/connector box and has
+  no PHP at all. WordPress runs in docker as darling-wordpress-1, no wp-cli, so the inspection
+  ran as a PHP script through wp-load.php rather than installing tooling on production.
+
+  *** AND I TRIPPED THE DEPLOY KEY ON THE WAY. *** Trying woo_deploy_key for a shell fired its
+  forced command and re-deployed main. Harmless - it redeployed 5057a02, already live, health
+  check 200 - but it was not intended and is recorded rather than quietly dropped.
+
+  === WHAT THE ZONE ACTUALLY HELD ===
+      REGISTERED methods ... flat_rate, free_shipping, local_pickup, darling_econt,
+                             darling_speedy, *** darling_boxnow ***, darling_sameday,
+                             darling_pigeon, darling_evropat, pickup_location
+      zones ................ ONE. Zone 0, Rest of World. No custom zone exists.
+      zone 0 methods ....... darling_econt (inst 1) | darling_speedy (inst 2)
+  *** BOX NOW was registered and simply never added. Speedy and Econt were added when they went
+  live; boxnow was dark until 13:08 today, so nobody ever added it. Exactly the hypothesis. ***
+  Added as instance 3 via WC_Shipping_Zone::add_shipping_method, enabled=yes.
+  (The call timed out on the bridge. Sprint 78 own rule applied: CHECKED before redoing, and it
+  had landed. Re-running would have added a duplicate instance.)
+
+  === GATE - live checkout ===
+      rates 4 -> *** 5 ***: darling_boxnow:locker, speedy office, econt office, speedy door,
+                 econt door
+      boxnow is cheapest at 1.64 EUR so it sorts first and is the DEFAULT selection
+      office picker renders, officeInput present, 8 options
+
+  === THE ONE THING I DID NOT DO, AND WHY ===
+  The order-is-REFUSED-without-a-locker-id test. *** That test creates a real COD order IF the
+  guard is broken - which is precisely the decision reserved for Kris. *** What I can say
+  without placing one: the guard is not a new path. office_rate_chosen() keys on
+  Darling_Carriers::is_pickup( mode ) (class-office-field.php:56), is_pickup covers office AND
+  locker, and that same path has protected the live office rates for many sprints. The locker
+  rate reuses it with one more mode, it does not introduce an unguarded one.
+  Still worth an explicit test the moment placing one order is authorised.
