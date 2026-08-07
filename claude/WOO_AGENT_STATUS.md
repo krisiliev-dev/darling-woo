@@ -3226,3 +3226,79 @@ subscription plugins and solutions and wire them in."
   · PowerShell: `Write-Output` inside a function joins the function's RETURN VALUE. It
     turned a string into an array mid-patch and made every subsequent match count
     nonsense. Use `Write-Host` for progress inside functions.
+
+- 2026-08-07 sprint 69 — *** THE PARITY QUEUE'S THREE "OPEN" SLICES WERE ALL ALREADY BUILT.
+  GATING THEM FOUND THAT ONE OF THEM MADE THINGS WORSE. ***
+  `418523e`, deploy green, gated on the deployed site.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22), the four `boxnow` rows are still `enabled=0`.
+  O-4: no answer yet to the image-download ring (seq 51).
+
+  ═══ THE QUEUE WAS STALE, WHICH IS ITS OWN FINDING ═══
+  `WOO_PARITY_SWEEP.md` lists slices 12 (social login), 13 (cookie consent) and 14
+  (accessibility widget) as the remaining work. All three are in the theme already —
+  `parts/footer.html` carries the consent card and the a11y button, `functions.php`
+  carries the Nextend shortcode hooks. *** Nobody had ever confirmed they WORK. *** So
+  this sprint gated the RESULT of each on the live site instead of building anything.
+
+  ═══ 1. COOKIE CONSENT — VERIFIED, NO CHANGE ═══
+      shows on a first visit (368×120), `role=region`, aria-label „Бисквитки"
+      text contrast .............. 15.26 : 1 on white
+      accept button .............. keyboard-focusable
+      after accept ............... hidden, `display:none`
+      cookie ..................... darling_consent=all · SameSite=Lax · Secure · 180 days
+      after reload ............... does not reappear
+
+  ═══ 2. ACCESSIBILITY MODE — ONE REAL DEFECT, FIXED ═══
+  Everything the button's aria-label promises is delivered and measurable: body 16→17px,
+  ambient hidden, `animation-name` → none, transitions 0.18s → 0s, card borders on,
+  choice survives reload, cookie clears to `0` on second press.
+  *** Except it was making the biggest heading on the site WORSE. *** The ported
+  stylesheet has a protective rule forcing headings on coloured bands to white — but its
+  selector list is Shopify vocabulary (`[id*=hero_darling] h1`) and our hero is
+  `.darling-hero--red .darling-hero__title`. So the generic
+  `html.darling-a11y h1{color:var(--d-cocoa)!important}` won and painted cocoa on cherry:
+      normal (--d-vanilla) ......... 4.23 : 1
+      a11y as shipped (--d-cocoa) .. 3.05 : 1   ← the accessibility mode REDUCED contrast
+      a11y with #fff (now live) .... 5.00 : 1
+  *** An accessibility mode is allowed to look different. It is not allowed to be worse. ***
+  For scale, what the mode gets RIGHT: trust-row headings 2.35 → 12.08, shop and category
+  h1 3.20 → 5.00, newsletter h3 4.23 → 5.00.
+
+  ═══ 3. SOCIAL LOGIN — SHIPPED AND WORKING, BUT IN ENGLISH ═══
+  Nextend renders 4 buttons across the login and register forms, and every one said
+  „Continue with Facebook" / „Continue with Google" — in the visible label AND the
+  aria-label — on a storefront whose `<html lang>` is `bg-BG`. Translated on the shortcode
+  OUTPUT, not through `gettext`: the string comes from Nextend's own catalogue and I could
+  not verify its text domain without guessing. If Nextend ever changes the wording this
+  no-ops and the button stays English rather than breaking. Live: 0 occurrences of
+  „Continue with", 8 of „Продължи с" (4 buttons × label + aria-label).
+
+  ═══ AND THE ONE I NEARLY "FIXED" THAT WAS ALREADY RIGHT ═══
+  The same probe flagged the seasonal band's h3 „Лято в двора" as regressing 1.46 → 1.07.
+  *** Both numbers are wrong. *** `.darling-season` paints itself with a `linear-gradient`,
+  so `background-color` is transparent and the walk-up found the cream page behind it —
+  the same trap that once reported the seasonal eyebrow at 1.46 : 1. Against the REAL
+  gradient (`--d-cherry` → `--d-cherry-deep`) that heading is 3.20–4.35 : 1 normally and
+  5.00–6.81 : 1 in accessibility mode. The mode is helping there. Left alone.
+  *** A contrast checker that reads background-color is blind to every gradient on this
+  site, and a RELATIVE before/after comparison does not rescue it — the two inks rank
+  differently against the wrong surface than against the right one. ***
+  (Worth noting for Kris's open question: the a11y mode already answers the seasonal
+  contrast question for anyone who turns it on. The base 3.20 : 1 still stands for
+  everyone who does not.)
+
+  ═══ GATE ═══
+      live style.css md5-identical to local, hero a11y rule present
+      /my-account/ renders, 90 KB, no PHP fatal, 0 English button labels
+      hero h1 under a11y ......... 3.05 → *** 5.00 *** : 1
+      every other heading delta ... unchanged or better on home / shop / category
+      design audit ................ 0 defects across all 36 combos (`audit_s9.js`)
+
+  ═══ METHOD NOTE ═══
+  *** PowerShell 5.1 has no `` `u{...} `` escape. *** It silently dropped the backticks and
+  wrote the literal text `u{041F}u{0440}...` into functions.php. Nothing errored — the file
+  was simply wrong, and would have shipped a PHP string of gibberish into the login form.
+  Caught by reading the written line back instead of trusting the write. Build non-ASCII
+  from `[char]0x....` code points on this box.
