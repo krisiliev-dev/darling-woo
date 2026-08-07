@@ -3354,3 +3354,70 @@ subscription plugins and solutions and wire them in."
   them would have made the site worse: underlining buttons, un-inverting a state indicator,
   or "repairing" a component that already works. *** The sprint's output is the evidence
   and the corrected doc. *** Design audit 0/36 (unchanged — nothing was touched).
+
+- 2026-08-07 sprint 71 — *** SLICE 11 IS CLOSED. THE DASHBOARD LOST ITS WIDTH TO ONE MISSING
+  CLASS — AND I OVERSTATED THE SYMPTOM ON THE WAY PAST, WHICH IS WORTH MORE THAN THE FIX. ***
+  `e6637f5` + `37f410d`, both deployed green, gated logged in.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22), the four `boxnow` rows are still `enabled=0`.
+  O-4: no answer yet to the image-download ring (seq 51).
+
+  ═══ WHAT SLICE 11 ACTUALLY LOOKED LIKE, LOGGED IN ═══
+  Every sweep before this ran logged out, so the account navigation had never been seen.
+  Logged in as the `parity-customer` test account. Most of the slice was already right:
+      two columns at 1440 ..... yes            «Изтегляния» ............ GONE, as Kris asked
+      endpoints ............... Табло · Поръчки · Адреси · Методи за разплащане ·
+                                Детайли на профила · Излизане
+      language ................ all Bulgarian; the ONLY Latin string in `main` is the test
+                                account's own username in the greeting
+      mobile 390 .............. stacked, no overflow (scrollWidth == innerWidth)
+      a11y contrast ........... 0 elements below their threshold; the only "worse" reading
+                                is `.darling-a11y-btn` inverting, as everywhere else
+
+  ═══ THE DEFECT, AND WHY NOTHING HAD EVER CAUGHT IT ═══
+  The grid declares `240px 1fr`. WooCommerce's own layout stylesheet still ships the
+  float-era
+      .woocommerce-account .woocommerce-MyAccount-navigation{float:left;width:30%}
+      .woocommerce-account .woocommerce-MyAccount-content   {float:right;width:68%}
+  at **0,2,0** — and the `float:none;width:auto` written at line 904 to defeat it is
+  **0,1,0**. It loses by one class. Inside a 240px track, 30% computes to 72px.
+      nav ......... 101px wide inside its 240px track — 168px of the gap sat empty
+      content ..... 592px inside its 811px track
+  *** Nothing was ever CLIPPED — scrollWidth == clientWidth on every link — which is
+  exactly why no audit caught it in ten sprints. Wrapping is not overflow, and a defect
+  that only makes something ugly will never trip a checker looking for breakage. ***
+  Re-asserted at matching specificity (`e6637f5`), then widened the track 240 → 264
+  (`37f410d`) because at 240 the nav's `.9rem` padding leaves 211px per link and the
+  longest label needs 222 — one item still wrapped for the sake of 11px.
+
+  ═══ *** AND THE PART I GOT WRONG. *** ═══
+  `e6637f5`'s message said "every label wrapped to 2–4 lines". *** It did not, and I had
+  no business saying so. *** I derived a `lines` figure by dividing each item's height by
+  its line-height — which counts the link's vertical padding as a line. A metric I
+  invented, never validated, and then wrote into a commit message as if it were measured.
+  Asking the real question instead — disable wrapping, compare `scrollWidth` to
+  `clientWidth` — gives:
+      at 130px per link (the bug) ..... 2 of 6 wrapped, needing 222px and 202px
+      at 211px (first fix) ............ 1 of 6 wrapped
+      at 235px (now live) ............. *** 0 of 6 wrap; every item is 47px tall ***
+      nav height ...................... 579 → 551 → 523
+  The GEOMETRY claims were all correct and were the real bug. The wrapping was a symptom
+  I measured badly while walking past it. Corrected in `37f410d`'s message rather than
+  quietly.
+  *** THE LESSON IS NOT "MEASURE" — I DID MEASURE. IT IS THAT A DERIVED NUMBER IS NOT A
+  MEASUREMENT UNTIL YOU HAVE CHECKED WHAT IT IS ACTUALLY COUNTING. *** The control run
+  (force the nav back to 72px and re-measure) is what proved the new metric honest, and
+  it costs one extra evaluate.
+
+  ═══ GATE — deployed site, logged in ═══
+      nav ............. 101 → *** 264px ***, filling its track; content 592 → 787px
+      empty gap ....... 168 → 29px (the declared 1.8rem)
+      wrapping ........ 2 labels → 0; nav height 579 → 523
+      control ......... forcing 72px still reproduces the old wrap, so the metric is sound
+      «Изтегляния» .... absent · language all Bulgarian · mobile stacked, no overflow
+      a11y ............ 0 below threshold, logged in, for the first time ever
+      design audit .... 0 defects across all 36 combos
+
+  Slice 11 is the last named item in `WOO_PARITY_SWEEP.md`. Everything remaining there is
+  a QUESTION from the slice-4 gap table, not a known defect.
