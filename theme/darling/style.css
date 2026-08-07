@@ -1053,6 +1053,18 @@ body .darling-ambient i{will-change:auto}
    `.darling-season` keeps its own colour and margin by specificity. */
 .ds-eyebrow{ margin: 0 0 var(--space-3xs); }
 
+/* *** THE NEWSLETTER EYEBROW WAS TAKING THE SUB-COPY TINT, AND FAILING CONTRAST ON IT. ***
+   `.darling-news > p` paints every paragraph in that band with `--d-soft` - correct for
+   the line of sub-copy it was written for, wrong for a label, and it out-specifies the
+   role. Measured on the live band: `--d-soft` on `--d-cherry` is **4.11 : 1**, under the
+   4.5 that 17px normal-weight text needs. The section's own ink, `--d-cream`, is
+   **4.67 : 1** on the same background - so the correct colour and the accessible one are
+   the same colour, which is usually the sign that the tint was simply inherited by
+   accident.
+   An eyebrow is the SECTION's label and takes the SECTION's ink, never a neighbouring
+   paragraph's tint. */
+.darling-news .ds-eyebrow{ color: var(--d-cream); }
+
 /* Body measure: Bulgarian runs 10-15% longer than English, so cap by ch not px. */
 .darling-hero__sub,.dcb-desc,.darling-news>p{max-width:46ch}
 
