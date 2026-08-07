@@ -3151,3 +3151,78 @@ subscription plugins and solutions and wire them in."
   · The laptop bridge dropped mid-verification and the tools had to be re-loaded. The
     deploy was already green; the RESULT gate was simply re-run afterwards rather than
     assumed. Worth remembering that a dropped bridge looks exactly like a finished job.
+
+- 2026-08-07 sprint 68 — *** THE "OBVIOUS" LCP FIX WAS A REGRESSION, AND MEASURING IT IS THE
+  ONLY REASON IT DID NOT SHIP. THE BANNERS ARE DONE. ***
+  `0feb156`, deploy green, gated on the deployed site.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22), the four `boxnow` rows are still `enabled=0`.
+  O-4: no answer yet to the image-download ring (seq 51).
+
+  ═══ 1. THE LAZY-LCP "FIX" — NOT SHIPPED, AND THAT IS THE RESULT ═══
+  Sprint 67 recorded a finding: `loading="lazy"` sits on the LCP element (the first
+  category tile on home@mobile), so removing it should help. *** It does not. It hurts,
+  consistently. ***
+  Method: both conditions run ALTERNATING, n=7 each, medians — because sprint 67 saw
+  876 ms and 948 ms for the SAME condition and a single before/after pair proves
+  nothing. The "after" was produced by rewriting the HTML in flight with `page.route`,
+  not by deploying: `loading` is evaluated by the PARSER, so patching the document body
+  reproduces the real behaviour exactly and nothing has to ship to be measured.
+
+      trial 1   lazy 820 ms  ·  eager+high 888 ms                    +68 ms
+      trial 2   lazy 852 ms  ·  eager 1032 ms  ·  eager+high 888 ms  +180 / +36 ms
+
+  Byte transfer identical in every condition (162.5 KB), so this is scheduling, not
+  weight. Two independent trials, and `eager+high` landed on 888 ms in both.
+  *** The premise was wrong: `loading="lazy"` is not a defer for an IN-VIEWPORT image.
+  *** Chromium loads those immediately; what removing it changes is fetch scheduling,
+  and promoting the image appears to compete with the CSS the paint is actually waiting
+  on. The item is closed as WON'T DO rather than left in the queue to be "fixed" again
+  by the next person who reads the sprint 67 note.
+
+  ═══ 2. THE 11 CATEGORY BANNERS — SHIPPED ═══
+      measured before, live, cold cache
+      za-decata 413 KB · za-kuhnyata 364 KB · promocii 314 KB · za-gradinata 293 KB
+      8 landscape banners   1858 KB  ->  385 KB at 800w  /  885 KB at 1400w
+      izborat-na-lady-d       83 KB  ->    9 KB
+      promocii               314 KB  ->   30 KB
+
+  TIER MATHS, and it is NOT the box width — `background-size:cover` crops, so which edge
+  binds changes between phone and desktop:
+      mobile   234×260 box (0.90) vs a 3:2 source → HEIGHT binds → 389w dpr1, 778w dpr2
+      desktop  674×260 box (2.59) vs a 3:2 source → WIDTH binds  → 674w dpr1, 1348w dpr2
+  So 800w and 1400w cover all four cases, and the mobile block pins BOTH resolutions to
+  800w because a phone at dpr2 needs 778w and would otherwise take 1400w for nothing.
+
+  ═══ GATE — deployed site, four dpr/viewport combos ═══
+      za-decata mobile  dpr1 .... 413 → *** 100.6 KB *** (800w webp)
+      za-decata mobile  dpr2 .... 413 → 100.6 KB (800w — the mobile pin works)
+      za-decata desktop dpr1 .... 100.6 KB (800w)
+      za-decata desktop dpr2 .... 200.1 KB (1400w — correct tier for a 1348-device-px slot)
+      *** /shop/ (all.jpg) ...... 133.9 KB on ALL FOUR combos, unchanged *** — the proof
+                                  that the untouched rule stayed untouched
+      live files ................ 4 sampled webp md5-identical to local; live style.css
+                                  md5-identical to local, 20 image-set occurrences
+      design audit .............. 0 defects across all 36 combos (`audit_s9.js`)
+
+  ═══ TWO THINGS THE ENCODING EXPOSED ═══
+  · *** `promocii.webp` IS NOT A WEBP. *** `ffprobe` reports **png**. That is why a
+    650×650 square cost 314 KB. The extension is left alone — the CSS and any cached
+    HTML reference it — but the real webp tier is what gets served now.
+  · `izborat-na-lady-d.png` is 265×265 and `promocii` 650×650: squares that
+    `background-size:cover` already upscales into a 674px-wide band. No 800/1400 tier was
+    generated for them, because upscaling is inventing detail, not fixing weight. Both
+    categories need real photographs — that is O-4, still blocked.
+
+  ═══ METHOD NOTES ═══
+  · *** I corrupted a base64 chunk in transit again *** — chunk 1 of 4 came back with a
+    different tail and `FromBase64String` threw. Length and character-class checks BOTH
+    PASSED on the bad chunk; only per-chunk md5 against the source found it. Check md5
+    per chunk, not the concatenation, and not the length.
+  · PowerShell: a `$( ... )` interpolation containing parentheses inside a nested quoted
+    string trips the tokenizer — `"...$((Select-String -Pattern 'x\(' ).Count)"` is a
+    parse error. Compute into a variable first, interpolate the variable.
+  · PowerShell: `Write-Output` inside a function joins the function's RETURN VALUE. It
+    turned a string into an array mid-patch and made every subsequent match count
+    nonsense. Use `Write-Host` for progress inside functions.
