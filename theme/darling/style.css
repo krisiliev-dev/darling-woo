@@ -1041,6 +1041,18 @@ body .darling-ambient i{will-change:auto}
 .dcb-coming,.ds-eyebrow,.eyebrow{font-size:var(--fs-2xs);
 	letter-spacing:var(--ls-eyebrow);text-transform:uppercase;line-height:var(--lh-ui)}
 
+/* *** THE EYEBROW IS A ROLE, AND ONLY ONE SECTION WAS SUPPLYING HALF OF IT. ***
+   The rule above gives the role its TYPE - size, tracking, uppercase, leading. Its
+   SPACING and COLOUR lived only in the ported `.darling-season .ds-eyebrow`, which
+   is where the single existing eyebrow happens to sit. So an eyebrow written anywhere
+   else got the letterforms and then a paragraph's default margin above its own
+   heading, which reads as a stray line rather than a label.
+   Spacing now belongs to the role. Colour deliberately does NOT: an eyebrow inherits
+   its section's ink, which is the only choice that is correct on the cream page AND
+   on the cherry bands, where a fixed colour would be wrong on one of the two.
+   `.darling-season` keeps its own colour and margin by specificity. */
+.ds-eyebrow{ margin: 0 0 var(--space-3xs); }
+
 /* Body measure: Bulgarian runs 10-15% longer than English, so cap by ch not px. */
 .darling-hero__sub,.dcb-desc,.darling-news>p{max-width:46ch}
 
