@@ -35,18 +35,27 @@
 	</section>
 
 	<!-- Photo category cards, scroll-snap carousel like the live site. -->
+	<!--
+	  `sizes` is NOT the box width, and that is the whole trick. The tile is
+	  `clamp(160px,17vw,210px)` with `aspect-ratio:4/5` and `object-fit:cover`, and the
+	  sources are 3:2 landscape. Cover scales by HEIGHT here, so the browser needs an
+	  image about `box-height x 1.5` wide - roughly 300px on a phone and 400px on a
+	  desktop - not the 160/210 the box measures. Feed `sizes` the box width and a
+	  retina desktop picks the 440w file for a slot that needs 800w, and the tiles go
+	  soft. Measured: jpg set 792 KB -> 440w webp set 160 KB, 800w webp set 393 KB.
+	-->
 	<section class="darling-catsv2" aria-label="Категории">
 		<p class="ds-eyebrow">ЗА ЦЕЛИЯ ДОМ</p>
 		<h2 class="darling-section-title">Категории</h2>
 		<div class="darling-catsv2__row">
-			<a href="/product-category/za-kuhnyata/"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy"><span>За кухнята</span></a>
-			<a href="/product-category/za-banyata/"><img src="/wp-content/themes/darling/assets/img/categories/za-banyata.jpg" alt="" loading="lazy"><span>За банята</span></a>
-			<a href="/product-category/dekoraciya-za-doma/"><img src="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma.jpg" alt="" loading="lazy"><span>Декорация за дома</span></a>
-			<a href="/product-category/za-gradinata/"><img src="/wp-content/themes/darling/assets/img/categories/za-gradinata.jpg" alt="" loading="lazy"><span>За градината</span></a>
-			<a href="/product-category/pochistvane/"><img src="/wp-content/themes/darling/assets/img/categories/pochistvane.jpg" alt="" loading="lazy"><span>Почистване</span></a>
-			<a href="/product-category/parti/"><img src="/wp-content/themes/darling/assets/img/categories/parti.jpg" alt="" loading="lazy"><span>Парти и празници</span></a>
-			<a href="/product-category/za-decata/"><img src="/wp-content/themes/darling/assets/img/categories/za-decata.jpg" alt="" loading="lazy"><span>За децата</span></a>
-			<a href="/product-category/podaraci/"><img src="/wp-content/themes/darling/assets/img/categories/podaraci.jpg" alt="" loading="lazy"><span>Подаръци</span></a>
+			<a href="/product-category/za-kuhnyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-kuhnyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-kuhnyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За кухнята</span></a>
+			<a href="/product-category/za-banyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-banyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-banyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-banyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За банята</span></a>
+			<a href="/product-category/dekoraciya-za-doma/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma-440.webp 440w, /wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma.jpg" alt="" loading="lazy" decoding="async"></picture><span>Декорация за дома</span></a>
+			<a href="/product-category/za-gradinata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-gradinata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-gradinata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-gradinata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За градината</span></a>
+			<a href="/product-category/pochistvane/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/pochistvane-440.webp 440w, /wp-content/themes/darling/assets/img/categories/pochistvane-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/pochistvane.jpg" alt="" loading="lazy" decoding="async"></picture><span>Почистване</span></a>
+			<a href="/product-category/parti/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/parti-440.webp 440w, /wp-content/themes/darling/assets/img/categories/parti-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/parti.jpg" alt="" loading="lazy" decoding="async"></picture><span>Парти и празници</span></a>
+			<a href="/product-category/za-decata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-decata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-decata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-decata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За децата</span></a>
+			<a href="/product-category/podaraci/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/podaraci-440.webp 440w, /wp-content/themes/darling/assets/img/categories/podaraci-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/podaraci.jpg" alt="" loading="lazy" decoding="async"></picture><span>Подаръци</span></a>
 		</div>
 	</section>
 </main>
