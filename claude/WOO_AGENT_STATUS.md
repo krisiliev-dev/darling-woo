@@ -3040,3 +3040,57 @@ subscription plugins and solutions and wire them in."
   have blocked. Rung their doorbell (seq 50). It was worth checking the volume first: if
   the grid had been a field of placeholders, painting all of them as errors would have
   been worse than the grey slab, and that would have been a question for Kris.
+
+- 2026-08-07 sprint 66 — *** O-4 IS BLOCKED, AND CHECKING WHAT WAS ALREADY ON THE SITE
+  MATTERED MORE THAN THE SOURCING. ***
+  Nothing shipped. Full write-up: `claude/IMAGE_PROVENANCE_20260807.md`.
+
+  ═══ BOXNOW — STILL BLOCKED ═══
+  Doorbell unchanged since 22:56 (seq 22). The four live `boxnow` rate rows are still
+  `enabled=0` in the panel's DB. Storefront half stays built and waiting.
+
+  ═══ WHAT O-4 ACTUALLY FOUND ═══
+  The task said "source free-licence stock". Before sourcing I asked what is already
+  shipping, and the answer changed the sprint: **19 photographs, ~2.9 MB, all HTTP 200
+  live right now, and not one has a licence anyone can cite.**
+  · 18 of them carry NO provenance metadata at all — raw-byte scan for XMP packets, IPTC,
+    EXIF Copyright/Artist/Description and the strings unsplash|pexels|shutterstock|istock|
+    getty|adobe|freepik found nothing. Untraceable from the files.
+  · `banners/all.jpg` — the `/shop/` banner — carries an XMP `dc:rights` AND an EXIF
+    Copyright tag reading **vladimirtsarkov.com**, which is the live portfolio of a working
+    commercial photographer. *** AND THIS CORRECTS OUR OWN LOG: *** the sprint 11 entry
+    (line ~350) records this file as "/collections/all pexels pottery". The file says
+    otherwise. Whoever wrote that was reading the subject, not the metadata.
+
+  ═══ AGAINST THE SPEC ═══
+  O-4 wants ≥2000px, subject centred, safe area on the right third.
+      banners ................ 1400px — 30% under
+      izborat-na-lady-d.png .. 265×265, and promocii.webp 650×650 — never landscape at all,
+                               just small squares stretched by background-size:cover
+      category tiles ......... 800px (render at ~322, so the spec number was for banners)
+      hero ................... *** there is no hero photograph. *** `.darling-hero--red` is
+                               a cherry band with a CSS/SVG visual. The "right third" in the
+                               spec IS `grid-template-columns:1.15fr .85fr` — so the hero
+                               image is a NEW asset, not a replacement.
+
+  ═══ WHY I STOPPED INSTEAD OF SOURCING ═══
+  1. I cannot acquire image binaries. WebFetch reads pages, not files, and routing around
+     that with a shell downloader is not something I will do quietly.
+  2. Replacing `all.jpg` became a legal decision, not a design one. If Дарлинг commissioned
+     that photograph, replacing it throws away paid work; if not, it should come down today.
+     Only Kris knows which, and guessing has a wrong answer in both directions.
+  3. Choosing brand photography blind is the O-5 mistake in new clothes. A confident, wrong
+     photograph is worse than a gap.
+
+  ═══ RECORDED SO NOBODY LOOKS IT UP AGAIN ═══
+  Pexels licence (read 2026-08-07): free to use, **attribution not required**. Not allowed:
+  identifiable people shown badly, selling unaltered copies as prints, implying endorsement,
+  redistributing on other stock platforms, use in trademarks. *** Attribution is not
+  required by them but the source URL + photographer IS required by us *** — the record
+  exists so "where did this come from" never needs another investigation like this one.
+
+  ═══ FOR KRIS ═══
+  (a) Is Vladimir Tsarkov a photographer Дарлинг hired? (b) Is there any paper trail for the
+  other eighteen? (c) If someone else can download files — Kris, or the panel agent, which
+  has no such restriction — I will specify subject, crop, minimum pixels and the licence
+  text to record per image, and gate the result live as usual.
