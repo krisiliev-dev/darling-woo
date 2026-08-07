@@ -3673,3 +3673,70 @@ subscription plugins and solutions and wire them in."
   and re-running a 4-minute suite against an unchanged site would be a number, not evidence.
   The cart was seeded with one item to reach `/checkout/` and emptied again afterwards; no
   order was placed.
+
+- 2026-08-07 sprint 75 — *** THE CHECKOUT h1 IS BUILT, AND IT COST ONE LINE — BECAUSE THE
+  SHIPPED TEMPLATE TURNED OUT TO BE READABLE OVER HTTP. *** `a3afcaf`, deployed green, gated
+  on the live checkout plus both money-path suites.
+
+  ═══ *** STRIPE TEST MODE — FIFTH SPRINT, STILL LIVE, STILL UNANSWERED *** ═══
+  Re-measured this sprint: `/cart/` serves `pk_test_` ×4, `pk_live_` ×0. Doorbell still at
+  seq 22, last note 2026-08-06 22:56 — no reply to seq 52, 53, 54 or 55 in roughly thirteen
+  hours. *** The store's card money path has now been dead for five consecutive sprints and
+  nobody outside this log has acknowledged it. *** COD still takes real orders.
+  BoxNow: four rows still `enabled=0`. O-4: no answer.
+
+  ═══ WHAT SPRINT 74 COULD NOT DO, AND WHY IT COULD THIS TIME ═══
+  Sprint 74 found the defect and refused to fix it: overriding WooCommerce's checkout
+  template meant guessing its structure, on the money path, blind. *** The thing that
+  changed is not courage, it is evidence. *** WordPress block templates are plain `.html`
+  files inside the plugin, and the server serves them:
+      `/wp-content/plugins/woocommerce/templates/templates/page-checkout.html` .... 200, 428 B
+      `/wp-content/plugins/woocommerce/templates/templates/page-cart.html` ........ 200, 498 B
+  Read side by side, they answer the whole question in one line of difference:
+      page-cart ...... `<!-- wp:post-title {"align":"wide", "level":1} /-->`
+      page-checkout .. *** that line is simply absent ***
+  Checkout also uses WooCommerce's own `checkout-header` template part and ships **no
+  footer** — a deliberate distraction-free checkout, not an oversight.
+
+  ═══ AND THE CHECK THAT MADE THE OVERRIDE SAFE ═══
+  A theme file only wins if nothing in the DATABASE already overrides the template — a Site
+  Editor customisation beats both plugin and theme. Measured the live page before touching
+  anything, and it renders the shipped template verbatim:
+      theme nav ......... 0        footer ............ 0
+      `wc-block-cart-link` 1       `main` ............ 1 (`is-layout-constrained`)
+      post-content ...... 1        store-notices ..... 2
+  Nothing customised, so the theme file wins. The override is therefore a *byte-faithful
+  copy of the shipped 428-byte file with ONE line inserted*, not a reconstruction.
+
+  ═══ WHY THE HEADING IS INVISIBLE ═══
+  It would have been easy to copy `page-cart`'s visible title and call it consistency.
+  *** WooCommerce omits the checkout title on purpose — that is a conversion decision, and
+  the defect was never that people cannot SEE a heading. *** The defect was that the heading
+  tree had no root and a screen reader never announced the page. So the title carries
+  `className:"screen-reader-text"`: assistive technology gets the heading, the page looks
+  identical, and WooCommerce's intent is left intact. The absent footer and absent theme nav
+  are the same intent and were not touched either.
+
+  ═══ GATE — live checkout, after deploy, at 1440 and 390 ═══
+      template file ....... served md5 == local md5
+      h1 .................. 0 → *** 1 ***, «Плащане»
+      h1 box .............. *** 1x1, position absolute, clip rect(1px,1px,1px,1px),
+                            clip-path inset(50%) *** — genuinely screen-reader-only, and
+                            measured rather than assumed: had `.screen-reader-text` not been
+                            styled, the box would have shown a laid-out heading
+      first heading ....... `h2` «Бързо плащане» → *** `h1` «Плащане» *** — the tree has a root
+      template intact ..... theme nav 0 · footer 0 · cart link 1 · main 1 · skip target 1 ·
+                            checkout block 1 · place-order button present
+      overflow ............ none at 1440 or 390
+      MONEY PATH, unchanged:
+        `s62r.js` ......... 4 rates (speedy office/door, econt office/door), office picker
+                            5 options, office input present, place-order 789x51
+        `s73b.js` ......... cart and checkout 1 `darling-bgn` span each, 0 visible English
+      design audit ........ 0 defects across all 36 combos
+      cart ................ seeded to reach checkout, emptied afterwards; no order placed
+
+  ═══ NOTE FOR WHOEVER READS THIS NEXT ═══
+  *** Block templates being fetchable over HTTP is a general tool, not a one-off. *** Any
+  plugin-shipped block template can be read the same way before overriding it, which turns
+  "guess the structure" into "copy the file". That is what moved this item from refused to
+  done in one sprint.
