@@ -3305,7 +3305,7 @@ subscription plugins and solutions and wire them in."
 
 - 2026-08-07 sprint 70 — *** THE ACCESSIBILITY SWEEP CAME BACK CLEAN, AND TWO OF THE THREE
   THINGS THAT LOOKED LIKE DEFECTS WERE NOT. NOTHING SHIPPED, ON PURPOSE. ***
-  `69a12cf` (docs only). No code change was warranted.
+  `0fbf29d` (docs only). No code change was warranted.
 
   ═══ STILL BLOCKED ═══
   BoxNow: doorbell unchanged (seq 22), the four `boxnow` rows are still `enabled=0`.
