@@ -2911,3 +2911,58 @@ subscription plugins and solutions and wire them in."
   `_scratch_woo/sprint60/s62r.js` and confirm a `darling_boxnow:locker` rate appears, the
   picker lists автомати, and an order is refused without a locker id.
   Fuller write-up in the project doc `claude/WOO_AGENT_STATUS.md`.
+
+- 2026-08-07 sprint 64 — *** O-6 IS IN. FIVE EYEBROWS, AND TWO OF THEM WOULD HAVE BROKEN
+  SOMETHING THE MARKUP CHANGE ALONE COULD NOT SHOW. ***
+  `96db85e` + `f6ce5e1`. Kris's copy verbatim: Категории → ЗА ЦЕЛИЯ ДОМ · Изборът на
+  Lady D → ЛИЧНО ИЗБРАНО · Ново в Darling → ТОКУ-ЩО ПРИСТИГНА · Защо Darling →
+  ОБЕЩАНИЕТО НИ · Бюлетин → ОСТАНИ НАБЛИЗО. The seasonal band keeps the one it had.
+
+  ═══ 1. THE EYEBROW WAS ONLY HALF A ROLE ═══
+  `style.css` gives `.ds-eyebrow` its TYPE — size, tracking, uppercase, leading. Its
+  SPACING and COLOUR lived only in the ported `.darling-season .ds-eyebrow`, which is
+  exactly where the one existing eyebrow sits. So an eyebrow written anywhere else would
+  have got the letterforms and then a paragraph's default margin above its own heading —
+  a stray line rather than a label. Spacing now belongs to the role. *** Colour
+  deliberately does NOT: *** an eyebrow inherits its SECTION's ink, the only choice that
+  is right on the cream page AND on the cherry bands.
+
+  ═══ 2. THE TRUST EYEBROW HAD TO BE A SIBLING, NOT A CHILD ═══
+  `.darling-trust` is `display:grid; repeat(4,1fr)`. A `<p>` inside it is a GRID ITEM: it
+  takes the first cell and pushes the fourth promise onto a second row. And
+  `.darling-trust>div:nth-child(2|3|4)` carry the staggered sparkle delays — a new first
+  child shifts every one of them, so the first promise takes the second's delay and the
+  fourth loses its own. *** Neither is visible in a diff. *** Moved above the section: it
+  is still the section's label and nothing moves. Gated by counting the children (4, all
+  `div`) and their distinct row positions (1 at 1440, 2 at 390 — which is the CSS
+  collapsing to `repeat(2,1fr)`, not a break).
+  FOOTNOTE worth keeping: those delays all compute to `0s` anyway, because
+  `.darling-trust b:before` names a `<b>` and the live markup uses `<i>` and `<h3>`. The
+  stagger has been dead since the port. Same family as the `.d-metal` finding; harmless
+  here because the ✦ is a literal glyph in the markup, so nothing looks wrong.
+
+  ═══ 3. AND THE ONE I ACTUALLY BROKE, CAUGHT BY GATING RATHER THAN BY LOOKING ═══
+  `.darling-news > p` paints every paragraph in that band `--d-soft` — right for the
+  sub-copy it was written for, wrong for a label, and it out-specifies the role. Measured:
+      --d-soft  on --d-cherry ....... 4.11 : 1   ← what shipped, at 17px normal weight
+      --d-cream on --d-cherry ....... 4.67 : 1   ← the section's own ink
+  The correct colour and the accessible one turn out to be the same colour, which is
+  usually the sign a tint was inherited rather than chosen. Fixed in `f6ce5e1`.
+
+  *** METHOD NOTE, AND IT IS THE SAME TRAP AS THE 4.18. *** My first contrast pass
+  reported the SEASONAL eyebrow at 1.46 : 1. That number is wrong: `.darling-season`
+  paints itself with a `linear-gradient`, so its `background-color` is transparent and
+  walking up the tree found the cream page behind it. *** A contrast checker that reads
+  `background-color` only is blind to every gradient band on this site. *** Computed
+  against the real gradient, that eyebrow is 3.20 : 1 at the light end and 4.35 : 1 at
+  the dark end — under 4.5 across the whole band. PRE-EXISTING and NOT changed here:
+  `--d-honey-light` is a locked brand colour and that is a question for Kris, not a
+  unilateral edit. *** ASK HIM. ***
+
+  ═══ GATE ═══
+  6 eyebrows render, all visible, uppercase, tracked, at 1440 and 390 ·
+  contrast 14.25 on the four cream sections, 4.67 on the newsletter band ·
+  trust row 4 children, 1 row at 1440 / 2 at 390 ·
+  *** design audit 0 defects across all 36 combos *** (and note: the first audit run
+  reported "12 combos" only because I piped it through `Select-Object -Last 12` and
+  truncated my own evidence — the fix was to stop truncating, not to trust the 12).
