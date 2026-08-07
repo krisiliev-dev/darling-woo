@@ -3932,3 +3932,52 @@ subscription plugins and solutions and wire them in."
   Also answered their question: the image-less product is id 11, testova-taburetka, the only
   published product - a leftover test product, not Barsy. And their O-4 note is about PANEL
   product images from Barsy picture_url, which is a different problem from the theme banners.
+
+- 2026-08-07 sprint 77 ADDENDUM - Kris sent two decisions mid-sprint. Both shipped.
+  `1864fd4` (order-received guard) + `cb8afd0` (seasonal eyebrow), deployed green, gated.
+
+  === THE THANK-YOU PAGE IS NOW REACHABLE ONLY BY AN ORDER ===
+  Kris: "it might be good to have it unreachable anyway, only through an order."
+  *** DELIBERATELY NARROW, AND THE NARROWNESS IS THE POINT. *** The guard fires ONLY when
+  the endpoint carries no order id. Every real post-purchase URL is
+  /checkout/order-received/<id>/?key=wc_order_..., and those are left entirely to
+  WooCommerce own key validation. Guarding on the key too would have put a redirect in the
+  path of a customer returning from a payment provider - and Stripe went live TODAY. Tidying
+  a page nobody reaches on purpose is not worth standing in front of a returning payment.
+  Gate:
+      bare /checkout/order-received/ ............. 302 -> https://darlinghome.bg/shop/
+      /checkout/order-received/999/ .............. 200, guard did NOT fire
+      /checkout/order-received/999/?key=bogus .... 200, guard did NOT fire
+      home / shop / cart / category / my-account . all 200 (a functions.php fatal takes the
+                                                   whole site down, so these went first, and
+                                                   there is no PHP linter on this laptop)
+
+  === THE SEASONAL EYEBROW - AND THE BAND IS NOT THE COLOUR EVERYONE THOUGHT ===
+  Kris: "you can decide which colour from our design doc would fit best."
+  *** THE BAND IS A CHERRY GRADIENT, NOT A HONEY ONE. *** Measured stops #D42A3C and
+  #B01F30. The eyebrow never sat on cream at all, so the 1.46:1 that four sprints of notes
+  carried was scored against a background hidden behind an opaque gradient. Every candidate,
+  13px weight 300, against BOTH real stops:
+      --d-honey-light (was) .... 3.20 / 4.35   worst 3.20   fails
+      --d-cocoa ................ 3.05 / 2.24   worst 2.24   fails (dark ink on red)
+      --d-honey-dark ........... 1.69 / 2.29   fails
+      --d-honey-nav ............ 1.26 / 1.71   fails - *** and this is the token labelled
+                                 "small gold text - AA contrast". True on cream. Not on
+                                 cherry. A token comment is a claim about a context. ***
+      --d-vanilla .............. 4.23 / 5.75   worst 4.23   short
+      *** --d-cream ............ 4.67 / 6.36   worst 4.67   PASSES ***
+  No gold clears 4.5 on cherry. So the answer was not a new colour: the design system rule
+  300 lines up already says an eyebrow inherits its section ink, and the newsletter eyebrow
+  on the SAME cherry already renders cream at 4.67. `.darling-season` was the single element
+  opting out by specificity. *** The fix was deleting an exception, not choosing a colour. ***
+  Gate, after deploy:
+      seasonal eyebrow ink ...... rgb(246,201,92) -> *** rgb(255,246,233) ***
+      against the real stops .... 4.67 and 6.36
+      the five cream-page eyebrows unchanged at 14.25; newsletter unchanged at 4.67
+      design audit .............. 0 defects across all 36 combos
+
+  *** A TRAP LEFT FOR THE NEXT SPRINT, DELIBERATELY WRITTEN DOWN. *** `sprint76/eyebrow.js`
+  now reports the seasonal eyebrow at ratio 1.0. That is NOT a regression - it is cream ink
+  scored against the cream BODY, because that gate walks past the gradient it cannot see.
+  The element is correct at 4.67. Do not "fix" it. Score gradient stops with
+  `sprint77/gradpick.js` instead.
