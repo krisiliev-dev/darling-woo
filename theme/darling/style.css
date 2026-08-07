@@ -991,6 +991,17 @@ html.darling-a11y .darling-cart__qty,
 html.darling-a11y .dc-text,
 html.darling-a11y .darling-cart-trust{opacity:1}
 html.darling-a11y .dc-min{opacity:1}
+/* *** THE ACCESSIBILITY MODE WAS MAKING THE BIGGEST HEADING ON THE SITE WORSE. ***
+   The ported stylesheet has a protective rule that forces headings on coloured bands to
+   white - but its selector list is Shopify vocabulary (`[id*=hero_darling] h1`), and our
+   hero is `.darling-hero--red .darling-hero__title`. So the generic
+   `html.darling-a11y h1{color:var(--d-cocoa)!important}` won instead and painted cocoa
+   on cherry. Measured on the live home page, 60px title on solid --d-cherry:
+       normal (--d-vanilla) ......... 4.23 : 1
+       a11y as shipped (--d-cocoa) .. 3.05 : 1   <- the mode REDUCED contrast
+       a11y with #fff ............... 5.00 : 1
+   An accessibility mode is allowed to look different. It is not allowed to be worse. */
+html.darling-a11y .darling-hero--red .darling-hero__title{color:#fff!important}
 html.darling-a11y .darling-consent a,
 html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underline}
 

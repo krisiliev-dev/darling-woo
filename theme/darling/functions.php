@@ -175,12 +175,32 @@ add_action( 'wp_enqueue_scripts', function () {
  * [nextend_social_login] shortcode ships in free and renders the same buttons.
  * It outputs nothing while no provider is enabled, so this stays honest-dark
  * if providers are ever turned off.
+ *
+ * The buttons render in ENGLISH on a Bulgarian-only storefront - measured live:
+ * "Continue with Facebook" / "Continue with Google", in both the visible label and
+ * the aria-label, with the provider name wrapped in <b> in the aria-label only.
+ *
+ * Translated on the OUTPUT rather than through a gettext filter on purpose: the label
+ * comes out of Nextend's own catalogue and I could not verify the source string without
+ * guessing at its text domain. A string replace on the rendered markup is honest about
+ * what it knows - and if Nextend ever changes the wording, this no-ops and the button
+ * stays English rather than breaking.
  */
+function darling_nsl_bg( $html ) {
+	return str_replace(
+		// The aria-label wraps the provider in <b>; the prefix is the same string, so
+		// two entries cover both. A third 'Continue with <b>' pair would be dead:
+		// str_replace walks the array in order and the prefix has already matched.
+		array( 'Continue with ', 'Sign in with ' ),
+		array( 'Продължи с ', 'Влез с ' ),
+		$html
+	);
+}
 add_action( 'woocommerce_login_form_end', function () {
-	echo do_shortcode( '[nextend_social_login]' );
+	echo darling_nsl_bg( do_shortcode( '[nextend_social_login]' ) );
 } );
 add_action( 'woocommerce_register_form_end', function () {
-	echo do_shortcode( '[nextend_social_login]' );
+	echo darling_nsl_bg( do_shortcode( '[nextend_social_login]' ) );
 } );
 
 /**
