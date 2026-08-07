@@ -705,11 +705,15 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{background-image
    image-set() ignores every declaration here and keeps the original. The jpeg is
    also listed as a final option inside each image-set for the same reason.
 
-   *** banners/all.jpg (the /shop/ banner) is deliberately NOT in this block. *** It
-   is the only image on the site carrying provenance metadata (XMP dc:rights), and
-   re-encoding it would destroy the only evidence we have while the question of who
-   owns it is still open with the owner.
+   banners/all.jpg WAS held out of this block while its provenance was unresolved: it
+   carried XMP dc:rights = vladimirtsarkov.com and re-encoding would have destroyed the
+   only evidence. That question is now closed the other way - the file has been REPLACED
+   with a Pexels-licensed photograph, so it takes the same tiers as every other banner.
    ========================================================================== */
+body.post-type-archive-product .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/all-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/all-1400.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/all.jpg) type("image/jpeg") 1x)}
 body.tax-product_cat.term-za-kuhnyata .darling-cat-banner .dcb-img{
 	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-800.webp) type("image/webp") 1x,
 		url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-1400.webp) type("image/webp") 2x,
@@ -754,6 +758,10 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{
 	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/promocii-650.webp) type("image/webp"),
 		url(/wp-content/themes/darling/assets/img/banners/promocii.webp) type("image/png"))}
 @media (max-width:700px){
+body.post-type-archive-product .darling-cat-banner .dcb-img{
+	background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/all-800.webp) type("image/webp") 1x,
+		url(/wp-content/themes/darling/assets/img/banners/all-800.webp) type("image/webp") 2x,
+		url(/wp-content/themes/darling/assets/img/banners/all.jpg) type("image/jpeg") 1x)}
 	body.tax-product_cat.term-za-kuhnyata .darling-cat-banner .dcb-img{
 		background-image:image-set(url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-800.webp) type("image/webp") 1x,
 			url(/wp-content/themes/darling/assets/img/banners/za-kuhnyata-800.webp) type("image/webp") 2x,
