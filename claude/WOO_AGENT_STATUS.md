@@ -2863,3 +2863,51 @@ subscription plugins and solutions and wire them in."
   button re-querying with lat/lon + radius_km and showing `distance_km`. The `kinds` map
   and the i18n strings are already localized to the browser; only `office-picker.js`
   still needs writing. Then verify a real BoxNow rate once the panel enables the row.
+
+- 2026-08-07 sprint 63 — *** THE АВТОМАТ PICKER HAS SHIPPED, AND IT WAS INVISIBLE FOR AN
+  HOUR BECAUSE OF OUR OWN CACHE, NOT OUR OWN CODE. ***
+  `c49a579` (picker) + `dcc66ab` (cache). Each option now reads `[автомат]` or `[офис]`
+  from ITS OWN `kind`; carrier noun only as a fallback. Plus «Най-близките до мен», which
+  asks the browser for a position and re-queries with lat/lon + radius_km.
+
+  VERIFIED ON A LIVE CHECKOUT WITH THE POSITION GRANTED (Playwright can pin one, so this
+  is the render, not the code). Pinned at Свищов, BG-04:
+    city list (4)                    after the click, nearest first (5)
+    [офис]    СВИЩОВ                 [автомат] СВИЩОВ - БИЛЛА (АВТОМАТ)    · 220 м
+    [офис]    СВИЩОВ - ХАН БЪЧВА     [автомат] СВИЩОВ - Т МАРКЕТ (АВТОМАТ) · 530 м
+    [автомат] СВИЩОВ - БИЛЛА         [офис]    СВИЩОВ - ХАН БЪЧВА
+    [автомат] СВИЩОВ - Т МАРКЕТ      [офис]    СВИЩОВ                      · 790 м
+                                     [офис]    БЕЛЕНЕ                      · 18 км
+  *** THE FIFTH ROW IS THE WHOLE ARGUMENT. *** БЕЛЕНЕ is a different settlement, so
+  `city=Свищов` can NEVER return it. The position search finds MORE than the city list,
+  not fewer — which is why „list first, map as phase 2" was the wrong shape for a locker
+  carrier. Toggling back restores the settlement list; `stillCheckout: true`, URL
+  unchanged. Money path re-gated either side: rate ids unchanged, place-order 789x51.
+
+  *** `type="button"` IS NOT OPTIONAL ON THAT CONTROL. *** A `<button>` inside the
+  checkout form defaults to `type="submit"` — without it, „find the nearest one" would
+  try to PLACE THE ORDER. Asserted in the gate, not merely written in the code.
+
+  ═══ THE HOUR IT LOOKED BROKEN ═══
+  After the deploy the live options still read `[офис]` for the БИЛЛА автомат. The JS was
+  right; the DATA was stale. Office lists cache 12h keyed on the URL, so when the panel
+  began returning kind/lat/lon/distance_km, every ALREADY-CACHED url kept serving the OLD
+  SHAPE: `city=Свищов` answered `kind: ""` while never-queried `Велико Търново` answered
+  `kind: "office"`. The same staleness nearly had me report a working panel as broken
+  twice in one night. `dcc66ab` puts a SHAPE EPOCH in the cache key, bumped by hand when
+  the panel's response shape changes — not when its data changes, which is the TTL's job.
+
+  ═══ DESIGN NOTES, SO NOBODY UNDOES THEM ═══
+  • Position rounded to 3 decimals IN THE BROWSER too — a device reports a different
+    reading every time and unrounded it would never hit the cache.
+  • A nearest-first list SURVIVES block checkout's constant re-renders; only a change of
+    carrier or typed settlement drops back, or a DOM update would wipe the search.
+  • Geolocation missing, refused or timed out are all recoverable: the city list stays.
+  • ONE fetch path serves both lists. Same rule as the ONE motion list in §5 and the ONE
+    PICKUP_MODES list — three sprints running, the bug has been a second list that forgot.
+
+  STILL OPEN: BoxNow's rate row is not served yet („the four LIVE boxnow rows are still
+  enabled=0 in the DB"). Rung twice, seq 47/48. When flipped, re-run
+  `_scratch_woo/sprint60/s62r.js` and confirm a `darling_boxnow:locker` rate appears, the
+  picker lists автомати, and an order is refused without a locker id.
+  Fuller write-up in the project doc `claude/WOO_AGENT_STATUS.md`.
