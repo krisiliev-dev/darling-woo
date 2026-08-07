@@ -3421,3 +3421,88 @@ subscription plugins and solutions and wire them in."
 
   Slice 11 is the last named item in `WOO_PARITY_SWEEP.md`. Everything remaining there is
   a QUESTION from the slice-4 gap table, not a known defect.
+
+- 2026-08-07 sprint 72 — *** THE PRODUCT PAGE WAS NOT BROKEN. FOUR OF THE FIVE ALLEGATIONS
+  WERE ARTEFACTS OF MY OWN PROBE — AND SO WAS MY FIRST "FINDING". THE ONE REAL DEFECT WAS A
+  LANDMARK NOBODY CAN SEE. *** `57d35b5`, deployed green, gated on served HTML.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22 since 22:56), the four `boxnow` rows still `enabled=0`.
+  O-4: still no answer to the image-download question. Re-rang both (seq 52, 53).
+
+  ═══ WHAT SLICE 4 ALLEGED vs WHAT IS TRUE, MEASURED AT 1280 / 1440 / 390 ═══
+      duplicate Отзиви block ...... FALSE. `#tab-reviews` CONTAINS `#reviews`; one visible
+                                    «Отзиви» heading, one review form.
+      English "Uncategorized" ..... ABSENT — and the breadcrumb is gone ON PURPOSE. Both
+                                    `single-product.html` and `archive-product.html` carry
+                                    the decision in a comment: the live site has none, and
+                                    the one we rendered exposed the English term. *** That
+                                    is the seventh thing in four sprints that looked broken
+                                    and was a recorded decision. ***
+      raw „Налични 3" ×2 .......... FALSE. One `<p class="stock in-stock">` with
+                                    `display:none`, plus the same string inside a
+                                    `<script>` JSON blob. Zero visible to a customer.
+      SKU shown ................... FIXED. 0 visible.
+      tab/button overlap @1280 .... FALSE. 0 overlaps between non-pinned elements.
+      missing info panels ......... PRESENT: «Доставка», «Връщане и замяна», and the GPSR
+                                    «Безопасност и производител» tab.
+
+  ═══ *** AND THE FOUR NUMBERS THAT WERE MY OWN FAULT *** ═══
+      reviewBlocks: 2 ..... counted a tab panel and the section nested inside it. Nesting,
+                            not duplication. `contains()` answers it in one line.
+      overlaps: 3 ......... every partner was `position:fixed` — the cookie-consent buttons
+                            and the floating a11y button. An overlay overlapping the page
+                            IS the overlay working.
+      latinWords .......... "function", "documentElement", "classList". `textContent` does
+                            not skip `<script>`. I was reading my own JavaScript as page copy.
+      404 "promises suggestions and shows none" ....... I scoped the probe to `<main>`, and
+                            the discover section lives AFTER `</main>`. The scoping hid the
+                            section from me — and in hiding it, pointed straight at the real
+                            defect.
+  *** SPRINT 71'S LESSON WAS THAT A DERIVED NUMBER IS NOT A MEASUREMENT UNTIL YOU CHECK WHAT
+  IT COUNTS. THIS SPRINT SAYS THE SAME OF A SELECTOR: A COUNT IS NOT EVIDENCE UNTIL YOU CHECK
+  WHAT IT MATCHED AND WHERE IT WAS ALLOWED TO LOOK. *** Four for four, and every one of them
+  would have read as a defect in a commit message.
+
+  ═══ THE CATALOGUE — not my lane, but it changes which page matters ═══
+      sitemap ......... *** 1 product URL. *** /shop/ 1 tile; za-banyata, dekoraciya-za-doma
+                        and search results: 0.
+      that one product renders the O-5 missing-image state on its own tile — it is sellable
+      online with no image, which `SELLABLE_ONLINE_IMAGE_RULE_20260806.md` says is
+      unreachable by policy. Rung to the panel (seq 52). The theme is behaving correctly;
+      the data is not.
+      the empty states already carry it: «Тук още е празно, darling.» / «Нищо не намерихме,
+      darling.» / «Хм, тази страница я няма.» — Bulgarian, branded, each with a route out,
+      correct 404 status, no Latin, no overflow at 390 or 1280. The category copy even says
+      «Още 4 590 неща пътуват от магазина в Свищов». Nothing to build here.
+
+  ═══ THE REAL DEFECT — one bug, three templates, invisible ═══
+          page                            main elements    skip target id
+          every other surface (7) ............. 1                1
+          *** /product/... .................... 0                0 ***
+  WordPress puts the skip target id on the FIRST main element it finds. The product template
+  never declared one, so «Прескочи към съдържанието» pointed at an anchor that does not
+  exist on every product page, and landmark navigation had nothing to jump to.
+  Two more templates opened `<main>` in a raw block and closed it too early:
+      front page ...... *** 11 472 characters *** after `</main>` — the «Изборът на Lady D»
+                        and «Ново при нас» product sections and the seasonal band
+      404 ............. the «Открий нещо ново» heading and its product grid
+  *** Nothing is clipped, mispositioned or the wrong colour — which is exactly why 72
+  sprints of visual auditing never saw it. Same shape as the sprint-71 float bug: a defect
+  that breaks nothing a checker looks for. ***
+
+  ═══ GATE — served HTML, after deploy ═══
+      `<main>` / `</main>` / skip id .... 1 / 1 / 1 on all 9 surfaces measured
+                                         (/checkout/ 302s on an empty cart — expected)
+      content after `</main>` .......... 3 chars of whitespace everywhere, 18 on the PDP
+      PDP main ......................... `<main id="wp--skip-link--target"
+                                         class="darling-product-main">`, 9 506 chars,
+                                         containing the h1, `#reviews` and the add-to-cart
+      design audit ..................... 0 defects across all 36 combos
+
+  ═══ CAVEAT I AM NOT BURYING ═══
+  On the front page and the 404 the opening `<main>` now sits in one `wp:html` block and the
+  closing tag in another, with block markup between them. It renders correctly because
+  template blocks are emitted in order — but the Site Editor may flag those two blocks as
+  invalid HTML if anyone opens them there. The alternative was rebuilding both templates as
+  block groups, which is a much larger change than the defect justifies.

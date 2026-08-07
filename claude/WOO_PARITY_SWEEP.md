@@ -365,3 +365,23 @@ defect, which is the argument for gating rather than ticking.
   5.00–6.81 : 1 against the real `--d-cherry` → `--d-cherry-deep` stops).
 - The design audit is `_scratch_woo/sprint27/audit_s9.js`. `designpass/audit.js` is stale and
   reports a phantom 3–5 defects on every page.
+
+## Slice-4 product-page questions, answered by measurement - 2026-08-07 (sprint 72)
+
+Measured on the live product page at 1280 / 1440 / 390, with consent accepted:
+
+| slice-4 allegation | verdict |
+| --- | --- |
+| reviews block rendered twice | FALSE - #tab-reviews contains #reviews, one visible heading |
+| breadcrumb showing English "Uncategorized" | ABSENT - breadcrumb removed deliberately, decision recorded in both templates |
+| raw stock text twice | FALSE - one hidden p.stock plus a string inside a script; zero visible |
+| SKU shown | FIXED - zero visible |
+| tab/button overlap at 1280 | FALSE - zero overlaps between non-pinned elements |
+| missing info panels | PRESENT - delivery, returns, and the GPSR tab |
+
+Found instead, and fixed in 57d35b5: the product template declared no main element, so the
+skip link pointed at a missing anchor; the front page and 404 closed main before their last
+sections. All 9 measured surfaces now serve exactly one main element and one skip target id.
+
+Not a theme issue, rung to the panel (seq 52): the storefront publishes exactly one product,
+and it is sellable online with no image, which SELLABLE_ONLINE_IMAGE_RULE says cannot happen.
