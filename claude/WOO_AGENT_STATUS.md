@@ -3506,3 +3506,94 @@ subscription plugins and solutions and wire them in."
   template blocks are emitted in order — but the Site Editor may flag those two blocks as
   invalid HTML if anyone opens them there. The alternative was rebuilding both templates as
   block groups, which is a much larger change than the defect justifies.
+
+- 2026-08-07 sprint 73 — *** THE LIVE STORE IS IN STRIPE TEST MODE. THE ARITHMETIC IS PERFECT
+  AND THE MONEY CANNOT BE TAKEN. *** Rung to the panel (seq 54, 55). Two of our own defects
+  fixed on the way: `6b6b6d3` + `9fe557f`, deployed green, gated on the live checkout.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22 since 2026-08-06 22:56), four `boxnow` rows `enabled=0`.
+  O-4: still no answer to the image-download question.
+
+  ═══ *** THE FINDING THAT MATTERS *** ═══
+  Served HTML of `https://darlinghome.bg/cart/`, logged out:
+      `pk_test_` ......... 4 occurrences
+      `pk_live_` ......... *** 0 occurrences ***
+      wcSettings ......... `"testMode":true`
+      Stripe params ...... `"testMode":"1"`
+  *** The Stripe gateway is running on TEST keys on a LIVE storefront. Card payment cannot
+  take real money. *** The `span.wc-stripe-test-mode-badge` that would warn a customer
+  renders `display:none`, 0x0 — checked, and NOT our doing: the theme has no rule for that
+  class anywhere (`tests/stripe-config-check.php` is the only file in the repo that mentions
+  test mode at all). «Наложен платеж» is unaffected and takes real orders.
+  This is gateway configuration, not theme code, and it is not mine to flip — flipping
+  payment keys is a money decision. Rung, logged, and stated here rather than touched.
+
+  ═══ THE MONEY ARITHMETIC — sound, and now actually measured ═══
+  Method: the Store API cart is TRUTH (minor units as integer strings — integer arithmetic,
+  no float parsing, no locale guessing); the DOM is the CLAIM. Cart of 2 items, real address,
+  BG-04, four states (cart / checkout / after switching rate / after choosing COD):
+      items + tax + shipping + fees − discount == total ..... 4 of 4, *** off by 0 ***
+      EUR→BGN at the fixed 1.95583 .......................... *** 10 of 10 pairs exact ***
+      total moves with the rate ............................. €33.69 → €36.95 when the rate
+                                                              changed €6.69 → €9.95
+      COD ................................................... present, adds no fee (0), and
+                                                              the total does not move
+  Nothing to fix here. Worth having measured once, properly.
+
+  ═══ TWO DEFECTS OF OURS, BOTH REAL, BOTH FIXED ═══
+  **1. The BGN figure printed TWICE on the checkout grand total** (`6b6b6d3`).
+      «Общо €30.94 / 60,51 лв. / 60,51 лв.» — the single most important number in the store.
+      Walked node by node: `span.darling-bgn` 63x15 @1229 (inside the money-amount span) and
+      63x15 @1292 (after it, in the totals value span). Both visible, neither
+      screen-reader-only, neither `aria-hidden`. The CART page showed one.
+      *** Cause, and why only checkout: *** the plugin's SELECTORS name both
+      `.wc-block-components-formatted-money-amount` and `.wc-block-components-totals-item__value`.
+      On the cart page ONE element carries both classes, so the `dataset` guard fires once.
+      In the checkout totals footer they are two NESTED elements, and the guard is
+      per-element: `querySelectorAll` returns the ancestor first, it appends AFTER the
+      descendant, so the descendant's own `textContent` still contains no «лв.» and it gets
+      decorated too. Fixed by refusing anything nested inside an already-decorated element.
+  **2. Three English strings on the cart money path** (`9fe557f`), all visible, none
+      screen-reader-only:
+          `span.wc-block-components-totals-item__label` ......... 293x24  "Estimated total"
+          `p...totals-footer-item-shipping` .................... 427x20  "Shipping will be
+                                                                          calculated at checkout"
+          `div.wc-block-components-button__text` ............... 173x28  "Proceed to Checkout"
+      The last is the primary call to action on the cart of a Bulgarian-only storefront.
+      Added to the existing `checkout-i18n.js` map, not the PHP gettext filter beside it —
+      that filter is for strings arriving through the server-rendered asset data registry,
+      and per its own comment these are not.
+
+  ═══ *** AND THE CONTROL THAT SAVED ME FROM REPEATING SPRINT 71 *** ═══
+  I claimed in `9fe557f`'s message that the new Bulgarian CTA must not wrap, and went to
+  prove it with nowrap + `scrollWidth` vs `clientWidth` — the metric sprint 71 established.
+  *** Its control did not trip. *** Clamping the button to 60px still gave
+  needed == have == 226 at both viewports, because `.wc-block-components-button__text` is
+  sized BY its content: its scrollWidth and clientWidth are equal whether or not the text
+  wraps. The metric was structurally incapable of reporting a wrap.
+  *** THE SPRINT-71 METRIC IS NOT UNIVERSAL. IT IS ONLY VALID ON AN ELEMENT WHOSE WIDTH IS
+  CONSTRAINED FROM OUTSIDE. THE CONTROL IS WHAT TELLS YOU WHICH CASE YOU ARE IN. ***
+  Replaced with a differential: rendered height vs height with `white-space:nowrap`. Padding,
+  line-height and font are identical in both readings, so they cancel; only wrapping can make
+  the natural height larger. Control clamps the button to 80px.
+      live @1440 ...... 28.05 vs 28.05 → no wrap    control 84.14 vs 28.05 → *** trips ***
+      live @390 ....... 26.39 vs 26.39 → no wrap    control 79.17 vs 26.39 → *** trips ***
+
+  ═══ ONE MORE ARTEFACT, CAUGHT BEFORE IT WAS WRITTEN DOWN ═══
+  My first run reported 2 shipping rates where sprint 62 recorded 4, and «Наложен платеж»
+  twice. Neither was real: I filled the city as Latin "Svishtov" (the office rates need the
+  Cyrillic name — with «Свищов» all four rates return), and the duplicate COD was my selector
+  matching the same node by class and by id (6 by class, 5 by id, 4 nested-or-same; exactly
+  one leaf node carries the label). *** An input difference is not a regression. ***
+
+  ═══ GATE — live site, after deploy ═══
+      served assets ....... `checkout-i18n.js` and `dual-currency.js` both md5-match local
+      grand total ......... `darling-bgn` spans: checkout 2 → *** 1 ***, cart 1 → 1
+      cart totals ......... visible English nodes 3 → *** 0 ***; «Приблизително общо»,
+                            «Доставката се изчислява при поръчката», «Продължи към поръчката»
+      CTA wrap ............ 0 at 1440 and 390, on a metric whose control trips
+      rates ............... 4 (speedy office/door, econt office/door), picker lists
+                            [офис] and [автомат]
+      design audit ........ 0 defects across all 36 combos
+      cart left empty ..... yes; no order was ever placed
