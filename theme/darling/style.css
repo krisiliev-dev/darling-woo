@@ -307,8 +307,8 @@ a.button.alt:hover {
 .darling-product__price .darling-bgn{font-weight:500;opacity:.75}
 .darling-product__excerpt{margin-bottom:var(--space-s);line-height:var(--lh-body);opacity:.92}
 
-.darling-product__atc .quantity input{padding:var(--space-2xs);border:1.5px solid var(--d-sand);
-	border-radius:.6rem;background:#fff;width:4.5rem}
+.darling-product__atc .quantity input{padding:var(--space-2xs);border:1px solid rgb(58 29 32 / .55);
+	border-radius:.6rem;background:var(--d-page);width:4.5rem}
 .darling-product__atc button,
 .darling-product__atc .single_add_to_cart_button{padding:var(--space-xs) var(--space-s);border:0;border-radius:999px;
 	background:var(--d-honey);color:var(--d-cocoa);font-weight:700;cursor:pointer;
@@ -895,8 +895,8 @@ body.post-type-archive-product .darling-cat-banner .dcb-img{
 .woocommerce-account .woocommerce .form-row label{display:block;font-size:var(--fs-xs);
 	font-weight:600;margin:0 0 .3rem;color:var(--d-cocoa)}
 .woocommerce-account .woocommerce .form-row input.input-text{width:100%;
-	border:1px solid var(--d-sand-deep);border-radius:.65rem;padding:.65rem .8rem;
-	background:#fff;font:inherit}
+	border:1px solid rgb(58 29 32 / .55);border-radius:.65rem;padding:.65rem .8rem;
+	background:var(--d-page);font:inherit}
 .woocommerce-account .woocommerce .form-row input.input-text:focus{
 	border-color:var(--d-honey-dark)}
 .woocommerce-account .woocommerce button.button{background:var(--d-honey);
@@ -1755,7 +1755,7 @@ img[data-d-media-fail]{display:none!important}
 .comment-form input[type="url"],
 .comment-form textarea{width:100%;box-sizing:border-box;
 	font:inherit;font-size:var(--fs-base);color:var(--d-cocoa);
-	background:#fff;border:1px solid var(--d-sand-deep);border-radius:.65rem;
+	background:var(--d-page);border:1px solid rgb(58 29 32 / .55);border-radius:.65rem;
 	padding:var(--space-2xs) var(--space-xs)}
 .comment-form textarea{min-height:8rem;resize:vertical;line-height:var(--lh-body)}
 .comment-form input:focus-visible,
