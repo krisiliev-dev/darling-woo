@@ -3882,3 +3882,53 @@ subscription plugins and solutions and wire them in."
       template intact ....... theme nav 1, footer 1, main 1, confirmation blocks present
       overflow .............. none at either viewport
       design audit .......... 0 defects across all 36 combos
+
+- 2026-08-07 sprint 77 - *** STRIPE IS LIVE. SIX SPRINTS OF SAYING SO ENDED IN ONE NOTE. ***
+  No deploy this sprint; the work was verification of two money paths that changed under me.
+
+  === STRIPE - CLOSED, AND VERIFIED FROM MY SIDE ===
+      before ....... pk_test_ x4, pk_live_ x0   (sprints 73, 74, 75, 76)
+      NOW .......... pk_test_ x0, pk_live_ x4   measured on the served /cart/ HTML
+  The panel agent had been HUNG, not ignoring the doorbell - its own note says so, and it
+  confirmed the test-mode reading independently before fixing it. Keys were already on the
+  box; testmode was simply yes. Flipped, caches flushed. *** The blocker was never the
+  measurement or the escalation - it was that the party who could act could not read. ***
+  Doorbell moved seq 22 -> 28 and drained the whole backlog at once.
+
+  === BOXNOW - ENABLED THEIR SIDE, STILL NOT REACHING CHECKOUT ===
+  The panel enabled all four locker rows at 13:08 (1.54+0.10=1.64 EUR, COD fee 0) and asked
+  me to verify the rate appears. It does not.
+      Store API shipping_rates, 14:05 and again 14:13 UTC ..... 4 rates, NO darling_boxnow
+      s62r rate list .......................................... speedy office/door,
+                                                                econt office/door
+  *** AND THE THREE THINGS I RULED OUT BEFORE SAYING SO ***, because "it did not appear" is
+  not the same as "it is broken":
+      1. size/weight filtering .... product 11 has NO weight and NO dimensions. Nothing to
+                                    filter on. My own first hypothesis, killed by measuring.
+      2. not registered ........... darling_boxnow IS a registered WC shipping method. The
+                                    registry deliberately registers carriers the panel cannot
+                                    serve yet, so a carrier goes live with no deploy.
+      3. offices side broken ...... /darling/v1/offices?carrier=boxnow returns 6 lockers
+                                    within 25km of Svishtov, nearest 0.2km, kind=locker.
+  *** I DID NOT RING "TURN IT BACK OFF". *** That instruction exists for a rate that appears
+  and misbehaves. This one does not appear at all, which is safe: customers still get four
+  working rates and no locker order can be taken without a locker id because no locker rate
+  is offered. Turning off a row that is already invisible would have been theatre.
+  Rung as seq 62-64 with the evidence and one specific ask: confirm the BODY of
+  /api/public/shipping-rates contains the boxnow rows (401 unauthenticated from here).
+
+  === AND A HYPOTHESIS I TALKED MYSELF OUT OF ===
+  I was one command from bumping CACHE_EPOCH to flush a suspected 30-day stale rates cache.
+  Reading the constant first showed CACHE_KNOWN_GOOD is for carrier OUTAGE decisions, not
+  the rates payload - so the flush would have changed nothing and I would have shipped a
+  deploy to the money path on a wrong theory. *** A CONSTANT NAMED NEAR THE THING YOU SUSPECT
+  IS NOT THE THING YOU SUSPECT. *** The 1-hour carrier-probe TTL remains the live candidate,
+  and it costs nothing to wait: re-measure next sprint before touching any code.
+
+  === WHAT DID NOT HAPPEN, AND WHY ===
+  O-4 photography was the headline item and I did not start it. Two money paths changed
+  state thirty minutes before this sprint began and the panel explicitly asked for
+  verification of one of them. Verifying a live payment route beats sourcing banner images.
+  Also answered their question: the image-less product is id 11, testova-taburetka, the only
+  published product - a leftover test product, not Barsy. And their O-4 note is about PANEL
+  product images from Barsy picture_url, which is a different problem from the theme banners.
