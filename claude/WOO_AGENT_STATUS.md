@@ -3302,3 +3302,55 @@ subscription plugins and solutions and wire them in."
   was simply wrong, and would have shipped a PHP string of gibberish into the login form.
   Caught by reading the written line back instead of trusting the write. Build non-ASCII
   from `[char]0x....` code points on this box.
+
+- 2026-08-07 sprint 70 — *** THE ACCESSIBILITY SWEEP CAME BACK CLEAN, AND TWO OF THE THREE
+  THINGS THAT LOOKED LIKE DEFECTS WERE NOT. NOTHING SHIPPED, ON PURPOSE. ***
+  `69a12cf` (docs only). No code change was warranted.
+
+  ═══ STILL BLOCKED ═══
+  BoxNow: doorbell unchanged (seq 22), the four `boxnow` rows are still `enabled=0`.
+  O-4: no answer yet to the image-download ring (seq 51).
+
+  ═══ THE SWEEP — product · cart · my-account · /pomosht/ · 404 ═══
+  Sprint 69 found the home hero losing contrast under `html.darling-a11y` because the
+  ported protective rule uses Shopify selectors. The question was whether the hero was the
+  only miss. *** It was. *** Across all five remaining surfaces, no heading and no control
+  regresses. The mode's other two promises also hold:
+      focus outline ..... real Tab press lands on the header logo with `3px solid` cocoa,
+                          3px offset — the `:focus-visible` rule works
+      link underlines ... `.rte a, main p a` underlines prose links
+
+  ═══ TWO FALSE POSITIVES, BOTH WORTH THE CHECK ═══
+  1. *** A BUTTON reported 14.29 → 7.19 on EVERY page. *** It is `.darling-a11y-btn` — the
+     accessibility toggle itself, inverting to honey-on-cocoa to show it is ON. Deliberate,
+     and 7.19 is still far above 4.5. I only knew that because I printed the class instead
+     of trusting "a control got worse".
+  2. *** 4 links on /my-account/ and 1 on /cart/ stay un-underlined in a11y mode. *** They
+     are „Продължи с Facebook", „Продължи с Google" ×2 and „Добавяне в количката" — every
+     one an `<a>` styled as a BUTTON. Underlining them would be wrong. The ported selector
+     is behaving correctly; the count looked like a gap and was not.
+
+  ═══ AND ONE MORE, WHICH IS THE SAME MISTAKE IN A THIRD COSTUME ═══
+  A first pass reported the free-shipping bar on `/cart/` as present but EMPTY, which reads
+  like a broken component. It is not. *** The shipbar lives inside the cart DRAWER and is
+  filled by JS when the drawer opens. *** Opened for real, with one item:
+      „Още €63,50 / 124,20 лв. до безплатна доставка, darling"
+  Dual currency, and the €77 threshold Kris set (77 − 13.50 = 63.50). On `/cart/` the same
+  element sits in the closed drawer with empty text, which is CORRECT. Recorded in the
+  parity doc so the next probe does not file it as a defect.
+  Also re-confirmed in passing: slice 4's P0 (closed cart drawer visible on every page)
+  is still fixed — closed drawer measures `display:none`, 0×0.
+
+  ═══ THE DOC IS NOW HONEST ═══
+  `claude/WOO_PARITY_SWEEP.md` has a „Status as MEASURED on the live site" section marking
+  slices 12/13/14 done with their evidence, recording what was verified in passing, and
+  saying plainly what is NOT verified: *** slice 11 (My Account layout, „Изтегляния"
+  hidden) — the account nav only renders for a logged-in user and both sprints ran logged
+  out. It needs the `parity-customer` account. *** The slice-4 gap table is relabelled as a
+  list of QUESTIONS rather than a list of defects, because it is older than the site.
+
+  ═══ WHY NOTHING SHIPPED ═══
+  Three candidate defects, three explanations, zero code changes. Writing a fix for any of
+  them would have made the site worse: underlining buttons, un-inverting a state indicator,
+  or "repairing" a component that already works. *** The sprint's output is the evidence
+  and the corrected doc. *** Design audit 0/36 (unchanged — nothing was touched).

@@ -292,3 +292,76 @@ as the query-title prefix. Root-causing is now worthwhile and scheduled as slice
 12. Social login: Google + Facebook OAuth (plugin selection; owner-side API credentials).
 13. Cookie consent banner (lightweight, styled like the live site's).
 14. Accessibility widget (identify live site's vendor, replicate or equivalent).
+
+
+---
+
+## Status as MEASURED on the live site — 2026-08-07 (woo agent, sprints 69–70)
+
+> The slice list above was out of date and cost a sprint to discover. Everything below was
+> measured on darlinghome.bg, not read off a doc. Where a claim is unverified it says so.
+
+### Slices 12, 13, 14 — ✅ ALL THREE WERE ALREADY BUILT AND ARE NOW GATED
+
+They had been shipped in earlier sprints and never confirmed. Gating them found one real
+defect, which is the argument for gating rather than ticking.
+
+- **13 — cookie consent — ✅ VERIFIED, no change needed.** Shows on a first visit (368×120),
+  `role="region"`, aria-label „Бисквитки", text 15.26 : 1 on white, accept button is
+  keyboard-focusable, hides on accept, sets `darling_consent=all` · SameSite=Lax · Secure ·
+  180 days, does not reappear on reload. Lives in `parts/footer.html`, no plugin.
+- **14 — accessibility widget — ✅ VERIFIED, one defect found and FIXED (`418523e`).**
+  The mode delivers everything its aria-label promises: body 16→17px, ambient hidden,
+  `animation-name` → none, transitions 0.18s → 0s, card borders on, focus outline
+  `3px solid` cocoa at 3px offset (confirmed with a real Tab press), choice survives reload,
+  cookie clears on second press. Big wins: trust-row headings 2.35 → 12.08, shop and
+  category h1 3.20 → 5.00.
+  **The defect:** the ported protective rule that forces headings on coloured bands to white
+  uses Shopify selectors (`[id*=hero_darling] h1`), so it missed
+  `.darling-hero--red .darling-hero__title` and the generic cocoa rule won — the home hero
+  went 4.23 → **3.05 : 1**, i.e. the accessibility mode REDUCED contrast on the largest
+  heading on the site. Now forced to `#fff` = 5.00 : 1.
+  **Swept the rest** (product, cart, my-account, /pomosht/, 404) in sprint 70: no other
+  heading or control regresses. The only remaining "worse" reading is
+  `.darling-a11y-btn` itself, 14.29 → 7.19, which is the button inverting to show it is ON —
+  deliberate, and still far above 4.5.
+  Links: the ported `.rte a, main p a` underlines prose links and leaves button-links alone.
+  The four that stay un-underlined on /my-account/ are the social-login buttons and the
+  cart's „Добавяне в количката" — all `<a>` styled as buttons. Correct as-is.
+- **12 — social login — ✅ SHIPPED AND WORKING; one defect found and FIXED (`418523e`).**
+  Nextend renders 4 buttons across the login and register forms. They were in ENGLISH
+  („Continue with Facebook" / „Continue with Google") in both the visible label and the
+  aria-label, on a `lang="bg-BG"` storefront. Now „Продължи с", translated on the shortcode
+  output. Registration is enabled (register form present). **Owner-side OAuth credentials
+  are evidently already configured** — the buttons render, which the free plugin does not do
+  with no provider enabled.
+
+### Verified in passing, same two sprints
+
+- **Slice 10 — cart drawer shipbar: ✅ works.** Opens on the cart button, and with one item
+  reads „Още €63,50 / 124,20 лв. до безплатна доставка, darling" — dual currency and the
+  €77 threshold. NOTE for anyone probing it: the bar is inside the DRAWER and is filled by
+  JS when the drawer opens. On `/cart/` it exists in the DOM with empty text and that is
+  CORRECT, not broken — reading the empty one and calling it a defect is a trap.
+- **Slice 4's P0 (closed cart drawer visible on every page): ✅ still fixed.** Closed drawer
+  measures `display:none`, 0×0.
+- Cart page empty-state English strings: gone (`emptyEnglish: false`).
+- Design audit: 0 defects across all 36 page × viewport combos, twice.
+
+### Still genuinely open
+
+- **Slice 11 — My Account layout** and „Изтегляния" hidden: NOT verified. The account nav
+  only renders for a logged-in user and these sprints ran logged out. Needs the
+  `parity-customer` test account.
+- Everything in slice 4's gap table for surfaces nobody has re-measured since it was
+  written — treat the table as a list of QUESTIONS, not a list of defects.
+
+### Method notes worth keeping
+
+- **A contrast checker that reads `background-color` is blind to every gradient on this
+  site**, and a relative before/after comparison does NOT rescue it: the two inks can rank
+  differently against the wrong surface than against the right one. That is how sprint 69
+  nearly "fixed" the seasonal band's h3, which was actually improving (3.20–4.35 : 1 →
+  5.00–6.81 : 1 against the real `--d-cherry` → `--d-cherry-deep` stops).
+- The design audit is `_scratch_woo/sprint27/audit_s9.js`. `designpass/audit.js` is stale and
+  reports a phantom 3–5 defects on every page.
