@@ -3981,3 +3981,60 @@ subscription plugins and solutions and wire them in."
   scored against the cream BODY, because that gate walks past the gradient it cannot see.
   The element is correct at 4.67. Do not "fix" it. Score gradient stops with
   `sprint77/gradpick.js` instead.
+
+- 2026-08-07 sprint 78 - *** BOXNOW IS NOT A CODE BUG. IT NEVER WAS ONE THIS SPRINT, AND I
+  SPENT THE SPRINT PROVING THAT PROPERLY RATHER THAN GUESSING. *** No deploy. Photography
+  slipped a third time and that is now the main cost of this thread.
+
+  === STRIPE - one line, as asked ===
+  pk_live_ x4, pk_test_ x0. Closed, staying closed.
+
+  === BOXNOW - THE PANEL ANSWERED, AND IT POINTED AT ME ===
+  Their reply (seq 31, 14:50): */api/public/shipping-rates?weight_kg=1* returns FIVE rows,
+  boxnow locker 1.64 EUR at sort:1, label "BoxNow - do avtomat", for both cod=0 and cod=1.
+      panel serves ..... boxnow 1.64 Â· speedy office 3.94 Â· econt office 5.72 Â·
+                         speedy door 6.69 Â· econt door 6.96
+      we build ......... four of those five. boxnow is dropped AFTER the panel returns it.
+  *** So the sprint-77 conclusion "it is their side" was wrong, and their evidence corrected
+  me. Worth saying plainly. ***
+
+  === AND AN ASSERTION OF MINE THAT WAS NEVER MEASURED ===
+  Sprint 77 told the next sprint "already ruled out my side, do not redo: darling_boxnow IS
+  a registered WC shipping method." *** I had read that off a code COMMENT at
+  class-shipping.php:139 - "register every carrier in the registry, including ones the panel
+  cannot serve yet" - and never checked it. *** That is the exact trap sprint 76 named, and
+  I walked into it while writing the rule down. Checked properly this time:
+      register() only registers if class_exists( Darling_Shipping_<Carrier> ) ....... true
+      class Darling_Shipping_Boxnow exists at class-shipping-method.php:222 ......... true
+  The claim happened to be correct. It was still not evidence when I wrote it.
+
+  === WHAT I RULED OUT, WITH THE MEASUREMENT NEXT TO IT ===
+      locker mode dropped ....... NO. Already fixed: the loop walks EVERY pickup mode
+                                  (class-shipping-method.php:148-158). Its own comment
+                                  records the old bug where $mine[office] was read alone.
+      pickup_modes missing locker  NO. Live DarlingOffice cfg: pickup = office, locker.
+      no lockers in that city ... NO. offices?carrier=boxnow&city=Svishtov -> *** count=7,
+                                  all kind=locker. *** The rate builder looks offices up BY
+                                  CITY (line 165) and that lookup succeeds.
+      size/weight filtering ..... NO. Product 11 has no weight and no dimensions.
+
+  === WHAT IS LEFT, AND WHY I STOPPED ===
+  Everything in code is sound, so the drop is in WooCommerce CONFIGURATION, which does not
+  live in this repo and cannot be read from this laptop:
+      1. BOX NOW was never added to the Bulgaria shipping ZONE. A method that is not in the
+         zone never runs calculate_shipping() at all. Speedy and Econt were added when they
+         went live; boxnow was dark until 13:08 today, so it most likely never was.
+      2. or its per-instance toggle is off - $pickup_offered reads get_option(office,yes)
+         at line 155, and that option is per zone instance.
+  *** Both look identical from outside the site, so no probe I can write distinguishes them.
+  Guessing and deploying would be theatre on a money path. *** Rung seq 65-67 with the exact
+  admin path: Settings > Shipping > Bulgaria zone > add BOX NOW.
+  Nothing is broken meanwhile: four rates work, and no locker order can be taken without a
+  locker id because no locker rate is offered.
+
+  === PHOTOGRAPHY - THIRD SLIP, AND THIS ONE IS LESS DEFENSIBLE ===
+  Sprints 76 and 77 lost it to live money paths, correctly. This sprint lost it to a money
+  path that turned out to need no code at all. *** The BoxNow diagnosis was worth doing -
+  it corrected a wrong conclusion of mine and produced an actionable admin instruction - but
+  O-4 has now been the headline item three times and started zero times. *** Sprint 79 does
+  photography FIRST and touches BoxNow only if someone replies that the zone changed.
