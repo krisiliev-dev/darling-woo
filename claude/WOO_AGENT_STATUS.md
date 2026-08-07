@@ -3597,3 +3597,79 @@ subscription plugins and solutions and wire them in."
                             [офис] and [автомат]
       design audit ........ 0 defects across all 36 combos
       cart left empty ..... yes; no order was ever placed
+
+- 2026-08-07 sprint 74 — *** THE INVISIBLE-DEFECT SWEEP CAME BACK ALMOST EMPTY. ONE REAL
+  FINDING, STATED AND NOT BUILT. AND MY OWN FOCUS PROBE CORRUPTED THE THING IT WAS
+  MEASURING. *** No deploy this sprint; nothing was changed.
+
+  ═══ STILL BLOCKED ═══
+  *** STRIPE TEST MODE — RE-MEASURED, UNCHANGED. *** `/cart/` still serves `pk_test_` ×4,
+  `pk_live_` ×0, `testMode` set. Card payment on the live store still cannot take real
+  money. Doorbell unchanged at seq 22 — no reply to seq 52, 53, 54 or 55. COD still works.
+  BoxNow: four rows still `enabled=0`. O-4: no answer.
+
+  ═══ THE SWEEP — 8 surfaces × 6 structural checks ═══
+  home · shop · category · product · cart · checkout · my-account · 404
+      `lang` .......................... `bg-BG` on all 8
+      `<main>` landmarks .............. exactly 1 on all 8 — *** sprint 72's fix is holding ***
+      duplicate ids ................... *** 0 *** across all 8
+      `label[for]` resolving to nothing  *** 0 ***
+      visible controls with no
+        accessible name ............... *** 0 *** (text, aria-label, aria-labelledby,
+                                        title, and nested img alt all counted as names)
+      heading-level skips ............. *** 0 ***
+      images missing the alt ATTRIBUTE  *** 0 *** (`alt=""` is a decorative image correctly
+                                        marked and was NOT counted as a defect)
+  *** A NEGATIVE RESULT, AND IT IS WORTH HAVING. *** Three separate real defects came out of
+  this seam in sprints 71–73, so the question was well-founded — but the seam is now clean,
+  and that is a fact about the site rather than an absence of effort.
+
+  ═══ THE ONE REAL FINDING — checkout has no h1 at all ═══
+      surface        h1 elements (INCLUDING hidden)
+      home / shop / category / product / cart / account / 404 ....... 1 each
+      *** checkout ................................................. 0 ***
+  Not a visibility-filter artefact: re-queried counting hidden and clipped elements too, and
+  the count is genuinely zero. `<title>` is «Плащане – Дарлинг»; the first heading on the
+  page is `h2` «Бързо плащане», so the heading tree has no root and a screen-reader user
+  navigating by heading never hears the page's own name.
+  Traced in the served HTML:
+      `/cart/` ......... 1 `<h1>` «Количка»,     6 `wp-block-post-title` blocks
+      `/my-account/` ... 1 `<h1>` «Моят профил», 6 `wp-block-post-title` blocks
+      *** `/checkout/` .. 0 `<h1>`,               0 `wp-block-post-title` blocks ***
+
+  *** WHY I DID NOT FIX IT. *** The checkout page renders through WooCommerce's own shipped
+  block template, which deliberately omits the post title. Overriding it means adding
+  `templates/page-checkout.html` to the theme — and I cannot read WooCommerce's shipped
+  template from here (the plugin lives on the server; the repo has never overridden it and
+  has no copy). Writing one blind means guessing the wrapper structure of *** the checkout
+  page, on a store whose only working payment route is currently cash on delivery. *** That
+  is not a trade worth making for one heading. Stated, not half-built.
+  The fix when it is taken: a `page-checkout.html` of header + `main` + `wp:post-title` +
+  `wp:post-content` + footer, gated by re-running `s62r.js` (rates + office picker) and
+  `s73b.js` (totals, payment options, English strings) — both of which already exist and
+  would catch a broken checkout immediately.
+
+  ═══ *** AND THE INSTRUMENT THAT BROKE ITS OWN MEASUREMENT *** ═══
+  The focus pass reported *** 11 of 14 tab stops on checkout with no focus indicator ***,
+  every one an `<iframe>`. Two things were wrong with that, and only one was obvious.
+  The obvious one: tabbing to an iframe focuses the FRAME; the visible ring is drawn inside
+  the frame's own document, which cannot be read from the parent. Unmeasurable, not broken.
+  *** The one that matters: my probe called `el.blur()` then `el.focus()` on each stop to
+  compare the element against itself — and that reset the tab position, so the next Tab
+  re-entered the same frames instead of advancing. *** A clean run without the blur shows
+  the real sequence:
+      skip link → nav link → «Количка» → 3 Stripe express frames (252x56, on screen, titled
+      «Защитена рамка за експресно финализиране на плащане») → email → country → name →
+      surname → address → city → region → post code → phone
+  Three iframes, not eleven. All visible, all labelled in Bulgarian.
+  *** SPRINT 73 SAID EVERY METRIC NEEDS A CONTROL THAT TRIPS. THIS ONE HAD A CONTROL AND IT
+  DID TRIP — 12 OF 14 CHANGED ON THE PRODUCT PAGE — AND THE READING WAS STILL WRONG, BECAUSE
+  THE ACT OF MEASURING CHANGED THE STATE BEING MEASURED. A CONTROL PROVES THE METRIC CAN
+  DETECT THE THING. IT DOES NOT PROVE THE PROBE LEFT THE PAGE ALONE. *** Ninth item in six
+  sprints that looked broken and was not.
+
+  ═══ GATE ═══
+  Nothing deployed, so nothing to gate. The design audit was not re-run: no file changed,
+  and re-running a 4-minute suite against an unchanged site would be a number, not evidence.
+  The cart was seeded with one item to reach `/checkout/` and emptied again afterwards; no
+  order was placed.
