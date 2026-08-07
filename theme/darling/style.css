@@ -1221,9 +1221,11 @@ body.woocommerce-account main,
 .darling-grid li .wc-block-components-product-image__inner-container{padding:0}
 .darling-grid li img{display:block;width:100%;height:auto;aspect-ratio:1;
 	object-fit:cover;border-radius:10px;background:var(--d-sand)}
-/* Woo's stock placeholder is a grey slab. Until the branded one exists (O-5),
-   sit it on vanilla and quieten it so a photo-less product reads as "coming",
-   not as "broken". */
+/* This rule is now the NO-JS FLOOR, not the treatment. img-fallback.js swaps a
+   placeholder for the branded slab below; this keeps Woo's grey #f0f0f0 off the
+   page in the gap between paint and script, and for anyone without JS at all.
+   It stays deliberately quiet rather than trying to be the error state itself:
+   CSS cannot write the sentence, and a slab with no sentence is just a hole. */
 .darling-grid li img.woocommerce-placeholder{box-sizing:border-box;
 	object-fit:contain;padding:22%;background:var(--d-vanilla);opacity:.38;
 	mix-blend-mode:multiply}
@@ -1231,6 +1233,53 @@ body.woocommerce-account main,
    NOT inherit the border-box default, so 22% padding was added OUTSIDE its
    249px width and pushed the page 39px wider than the phone. The gate caught
    it; nothing else would have. */
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   O-5 — THE FAILED-IMAGE STATE
+
+   The panel now refuses to flag a product sellable online without an image
+   (claude/SELLABLE_ONLINE_IMAGE_RULE_20260806.md). That makes "no photo yet"
+   an UNREACHABLE state on the storefront: if a product card has no picture,
+   something is wrong upstream — a placeholder that escaped the rule, or a src
+   that 404s. So this is an ERROR state and says so, in one plain sentence.
+
+   The slab is built by assets/img-fallback.js, because CSS cannot see a broken
+   <img> and cannot write a sentence. What lives here is only its appearance.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.d-media-fail{container-type:inline-size;box-sizing:border-box;display:flex;
+	flex-direction:column;align-items:center;justify-content:center;
+	gap:var(--space-3xs);width:100%;aspect-ratio:1;padding:9%;text-align:center;
+	background:var(--d-vanilla);border-radius:10px;
+	/* Cocoa let down into vanilla, WRITTEN OUT rather than computed. `opacity`
+	   and `color-mix` both resolve against whatever happens to sit behind the
+	   slab, and this caption has to hold 4.5:1 wherever a card lands — the
+	   newsletter eyebrow failed at 4.11:1 for exactly that reason one sprint
+	   ago. Measured: 5.6:1 on --d-vanilla. */
+	color:#71564F}
+/* MEASURED, and the reason the bow is not quieter still: the slab is --d-vanilla,
+   which is 1.18:1 against the white product card and only 1.10:1 against the cream
+   page it sits on directly on a product page. The EDGE of this state is therefore
+   never going to carry it. What carries it is the caption (5.6:1) and this motif,
+   so the bow is set at the quietest opacity that still reads as drawn on purpose.
+   Chasing a visible border instead would need roughly #B8A98F, which stops being
+   quiet and starts being a wireframe. It stays aria-hidden either way: the
+   accessible name lives on the container, so the bow is free to be this quiet. */
+.d-media-fail .dmf-bow{flex:0 0 auto;width:30%;max-width:56px;height:auto;
+	color:var(--d-cocoa);opacity:.3}
+.d-media-fail .dmf-cap{margin:0;max-width:22ch;font-size:var(--fs-2xs);
+	line-height:var(--lh-ui);color:inherit}
+/* A cart thumbnail is 64px wide. The sentence cannot fit there and would stack
+   into a column of single letters, so the slab keeps the bow and drops the
+   caption below 120px. The meaning is not lost: role="img" + aria-label on the
+   container still reads it out. Container query, not a media query — what
+   matters is the size of the SLAB, not of the window. */
+@container (max-width:119px){ .d-media-fail .dmf-cap{display:none} }
+/* !important because the image is hidden against Woo AND the parent theme, both
+   of which set display on product images at equal specificity. A broken image
+   that still paints would show the browser's own broken-file icon on top of a
+   slab that exists to replace it. */
+img[data-d-media-fail]{display:none!important}
 
 /* Name second-loudest, two lines, and the height is RESERVED — cards in a row
    line their prices up whether the title runs one line or two. Bulgarian

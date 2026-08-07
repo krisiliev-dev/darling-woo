@@ -65,6 +65,23 @@ add_action( 'wp_enqueue_scripts', function () {
 			true
 		);
 	}
+
+	/*
+	 * O-5. Enqueued here rather than in the plugin because it is presentation:
+	 * it decides what a card LOOKS like when its photo is missing, and takes
+	 * nothing down if the theme is switched. No dependency — it only ever reads
+	 * <img> state, so it must not wait on anything.
+	 */
+	$imf = get_stylesheet_directory() . '/assets/img-fallback.js';
+	if ( file_exists( $imf ) ) {
+		wp_enqueue_script(
+			'darling-img-fallback',
+			get_stylesheet_directory_uri() . '/assets/img-fallback.js',
+			array(),
+			filemtime( $imf ),
+			true
+		);
+	}
 }, 20 );
 
 /**
