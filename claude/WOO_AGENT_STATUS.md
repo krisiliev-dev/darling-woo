@@ -4080,3 +4080,40 @@ subscription plugins and solutions and wire them in."
   locker, and that same path has protected the live office rates for many sprints. The locker
   rate reuses it with one more mode, it does not introduce an unguarded one.
   Still worth an explicit test the moment placing one order is authorised.
+
+- 2026-08-07 sprint 79 - *** O-4 IS STARTED. THE ONE IMAGE WITH A LIVE COPYRIGHT QUESTION IS
+  GONE, REPLACED BY A LICENSED ONE WITH THE LICENCE WRITTEN DOWN. *** `2b4c0c1`, deployed,
+  gated. Four sprints of slipping ended by doing it first instead of last.
+
+  === WHAT WENT LIVE ===
+      source ......... pexels.com/photo/earthenware-products-on-white-table-7674538/
+      photographer ... Pavel Danilyuk
+      licence ........ Pexels License, text quoted in full in the commit and in the
+                       project doc claude/IMAGE_LICENCE_REGISTER.md
+      source size .... 5591x3732, no rights metadata of its own (checked BEFORE encoding)
+      composition .... ceramics massed left and centre, plain wall across the RIGHT THIRD
+                       where the headline sits. Subject is literally home goods.
+  All five Pexels restrictions were checked against our ACTUAL use, not waved through: no
+  people in frame, not sold as a physical product, no endorsement implied, not redistributed
+  as stock, not part of any mark. Every one N/A for a banner background.
+
+  === AND IT GOT SMALLER, NOT JUST CLEANER ===
+      all.jpg ........ 136837 -> 71828 bytes (1400x934)
+      all-1400.webp .. new, 52970
+      all-800.webp ... new, 26752, pinned at BOTH resolutions under 700px
+  Encoded with -map_metadata -1 so we embed nothing. It also joins the webp tier pattern the
+  other banners use - the ONLY reason it was excluded was the provenance hold. That exclusion
+  comment was rewritten rather than deleted, so the history stays readable.
+
+  === GATE ===
+      served md5 == local ...... all three files
+      /shop/ banner ............ renders at 1440 AND 390, image-set resolving to the webp
+                                 tiers, *** zero failed image requests ***, no overflow
+      design audit ............. 0 defects across all 36 combos
+
+  === WHAT IS DELIBERATELY NOT CLAIMED ===
+  *** The other ten banners are NOT cleared. *** They carry no rights metadata, but that is an
+  absence of evidence, not evidence of a licence. They were never the urgent question and are
+  not known to be infringing. One image per commit, one register row each, when their turn
+  comes. Saying "the banners are fine now" would be exactly the kind of over-claim sprint 71
+  cost a whole sprint to learn not to make.
