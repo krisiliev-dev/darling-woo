@@ -12,6 +12,14 @@
 	if ( ! window.wp || ! wp.hooks || ! wp.i18n ) { return; }
 
 	var map = {
+		// Measured on the LIVE cart page, all three visible and none screen-reader-only:
+		//   span.wc-block-components-totals-item__label  293x24  'Estimated total'
+		//   p.wc-block-components-totals-footer-item-shipping  427x20
+		//   div.wc-block-components-button__text  173x28  the primary cart CTA
+		// The cart block renders these client-side, so only the JS hook reaches them.
+		'Estimated total': 'Приблизително общо',
+		'Shipping will be calculated at checkout': 'Доставката се изчислява при поръчката',
+		'Proceed to Checkout': 'Продължи към поръчката',
 		'Place Order': 'Поръчай',
 		'Contact information': 'Данни за контакт',
 		'Payment options': 'Начин на плащане',
