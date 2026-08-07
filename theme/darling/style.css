@@ -1198,6 +1198,20 @@ body .darling-ambient i{will-change:auto}
    paragraph's tint. */
 .darling-news .ds-eyebrow{ color: var(--d-cream); }
 
+/* *** THE SAME MISTAKE, ON THE SAME BACKGROUND, ONE BAND OVER. ***
+   The category banner eyebrow takes a cherry-family tint from the ported sheet:
+   measured live on /product-category/za-kuhnyata/, rgb(255,201,188) on the banner
+   cherry rgb(212,42,60) is **3.42 : 1** at 14px, under the 4.5 it needs.
+   The section ink, --d-cream, is **4.67 : 1** on that identical background - the same
+   number the newsletter eyebrow above already relies on, because it is the same
+   cherry and the same role.
+   Authorised by Kris (cherry eyebrow to cream). Scoped to THIS eyebrow on purpose:
+   measured at the same time, every other eyebrow is dark ink on the cream page at
+   14.25 : 1, where cream would be 1 : 1 and invisible. The seasonal band is a
+   separate open question and is NOT touched here - it is honey on a gradient, and a
+   surface walk cannot see gradients. */
+.darling-cat-banner .dcb-coming{ color: var(--d-cream); }
+
 /* Body measure: Bulgarian runs 10-15% longer than English, so cap by ch not px. */
 .darling-hero__sub,.dcb-desc,.darling-news>p{max-width:46ch}
 
