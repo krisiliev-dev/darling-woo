@@ -341,8 +341,8 @@ a.button.alt:hover {
 .darling-archive__side{position:sticky;top:5rem}
 .darling-archive__bar{margin-bottom:var(--space-xs);padding-bottom:var(--space-xs);border-bottom:1px solid var(--d-sand);
 	font-size:var(--fs-sm);gap:var(--space-xs);flex-wrap:wrap}
-.darling-archive__bar select{padding:var(--space-2xs) var(--space-2xs);border:1.5px solid var(--d-sand);
-	border-radius:.6rem;background:#fff;color:var(--d-cocoa)}
+.darling-archive__bar select{padding:var(--space-2xs) var(--space-2xs);border:1px solid rgb(58 29 32 / .55);
+	border-radius:.6rem;background:var(--d-page);color:var(--d-cocoa)}
 
 
 .darling-pagination{display:flex;gap:var(--space-2xs);justify-content:center;margin:var(--space-m) 0 0;flex-wrap:wrap}
@@ -415,8 +415,8 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .wc-block-components-select__container,
 .woocommerce-account input[type="text"],
 .woocommerce-account input[type="email"],
-.woocommerce-account input[type="password"]{border:1.5px solid var(--d-sand)!important;
-	border-radius:.6rem!important;background:#fff!important}
+.woocommerce-account input[type="password"]{border:1.5px solid rgb(58 29 32 / .55)!important;
+	border-radius:.6rem!important;background:var(--d-page)!important}
 .wc-block-components-text-input input:focus,
 .woocommerce-account input:focus{border-color:var(--d-honey-dark)!important;
 	/* The ring itself is the primitive above — this only tints the border so
@@ -460,8 +460,8 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
    ------------------------------------------------------------------ */
 .darling-search-form{max-width:34rem;margin:0 0 1.4rem}
 .darling-search-form .wp-block-search__inside-wrapper{display:flex;gap:.5rem}
-.darling-search-form .wp-block-search__input{flex:1;border:1px solid var(--d-sand);
-	border-radius:.7rem;background:#fff;color:var(--d-cocoa);padding:.65rem .9rem;font:inherit}
+.darling-search-form .wp-block-search__input{flex:1;border:1px solid rgb(58 29 32 / .55);
+	border-radius:.7rem;background:var(--d-page);color:var(--d-cocoa);padding:.65rem .9rem;font:inherit}
 .darling-search-form .wp-block-search__input:focus-visible{border-color:var(--d-honey-dark)}
 .darling-search-form .wp-block-search__button{border:0;border-radius:.7rem;cursor:pointer;
 	background:var(--d-cherry);color:var(--d-cream-text);padding:.65rem 1.1rem;font:inherit;font-weight:600}
@@ -487,8 +487,8 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .darling-contact-form{max-width:34rem;margin:2rem auto 0}
 .darling-contact-form p{margin:0 0 .8rem}
 .darling-contact-form input,
-.darling-contact-form textarea{width:100%;border:1px solid var(--d-sand);border-radius:.7rem;
-	background:#fff;color:var(--d-cocoa);padding:.65rem .9rem;font:inherit}
+.darling-contact-form textarea{width:100%;border:1px solid rgb(58 29 32 / .55);border-radius:.7rem;
+	background:var(--d-page);color:var(--d-cocoa);padding:.65rem .9rem;font:inherit}
 .darling-contact-form input:focus-visible,
 .darling-contact-form textarea:focus-visible{border-color:var(--d-honey-dark)}
 .darling-contact-form__row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
@@ -596,8 +596,8 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .darling-news h2 em{color:var(--d-honey-light)}
 .darling-news p{max-width:38rem;margin:.2rem auto;opacity:.95;font-size:var(--fs-base)}
 .darling-news__form{display:flex;gap:var(--space-2xs);justify-content:center;flex-wrap:wrap;margin:var(--space-s) 0 var(--space-2xs)}
-.darling-news__form input[type="email"]{width:min(22rem,80vw);border:0;border-radius:999px;
-	padding:var(--space-xs) var(--space-s);font:inherit;color:var(--d-cocoa);background:var(--d-cream)}
+.darling-news__form input[type="email"]{width:min(22rem,80vw);border:1px solid rgb(58 29 32 / .55);border-radius:999px;
+	padding:var(--space-xs) var(--space-s);font:inherit;color:var(--d-cocoa);background:var(--d-page)}
 .darling-news__hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 .darling-news__note{font-size:var(--fs-xs);opacity:.85}
 .darling-news__result{font-weight:600;color:var(--d-vanilla);margin-top:var(--space-2xs)}
@@ -802,8 +802,8 @@ body.post-type-archive-product .darling-cat-banner .dcb-img{
 .darling-archive__bar-right{align-items:center;gap:var(--space-2xs)}
 .darling-view-toggle{display:flex;gap:var(--space-3xs)}
 .darling-view-toggle button{display:inline-flex;align-items:center;justify-content:center;
-	width:2.1rem;height:2.1rem;border:1px solid var(--d-sand-deep);border-radius:.55rem;
-	background:#fff;color:var(--d-cocoa);cursor:pointer;opacity:.6}
+	width:2.1rem;height:2.1rem;border:1px solid rgb(58 29 32 / .55);border-radius:.55rem;
+	background:var(--d-page);color:var(--d-cocoa);cursor:pointer;opacity:.6}
 .darling-view-toggle button.is-active{opacity:1;border-color:var(--d-honey-dark);color:var(--d-honey-dark)}
 .darling-view-toggle svg{width:1.05rem;height:1.05rem}
 
@@ -852,8 +852,8 @@ body.post-type-archive-product .darling-cat-banner .dcb-img{
 	margin-top:.15rem}
 .darling-cart__stepper b{min-width:1.2rem;text-align:center;font-size:var(--fs-sm)}
 .darling-cart__qbtn{display:inline-flex;align-items:center;justify-content:center;
-	width:1.6rem;height:1.6rem;border:1px solid var(--d-sand-deep);border-radius:.5rem;
-	background:#fff;color:var(--d-cocoa);font-size:var(--fs-base);line-height:1;cursor:pointer;
+	width:1.6rem;height:1.6rem;border:1px solid rgb(58 29 32 / .55);border-radius:.5rem;
+	background:var(--d-page);color:var(--d-cocoa);font-size:var(--fs-base);line-height:1;cursor:pointer;
 	transition:border-color .2s ease,color .2s ease}
 .darling-cart__qbtn:hover{border-color:var(--d-honey-dark);color:var(--d-honey-dark)}
 .darling-cart__qbtn:disabled{opacity:.45;cursor:default}
