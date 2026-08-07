@@ -2188,3 +2188,25 @@ a.button.alt{
    The glints move contrast by 0.00–0.02, which is why §3 calls them ornament and
    why they can be dropped without consequence.
    Wordmark vs the grey page, with the §3 text band: 4.32 : 1. */
+
+/* *** THE SEASONAL EYEBROW WAS THE LAST ONE FAILING CONTRAST, AND IT WAS THE ONLY ONE
+   STILL CHOOSING ITS OWN COLOUR. ***
+   The rule three hundred lines up says an eyebrow inherits its section ink, because that is
+   the only choice correct on BOTH the cream page and the cherry bands. `.darling-season`
+   kept `--d-honey-light` by specificity and was the single exception.
+   The band is a CHERRY gradient, not a honey one - measured stops #D42A3C and #B01F30 - so
+   the eyebrow never sat on cream at all. Scored against both stops, 13px weight 300:
+       --d-honey-light (was) .... 3.20 / 4.35   worst 3.20   FAILS 4.5
+       --d-cocoa ................ 3.05 / 2.24   worst 2.24   FAILS (dark ink on red)
+       --d-honey-dark ........... 1.69 / 2.29   FAILS
+       --d-honey-nav ............ 1.26 / 1.71   FAILS - despite being the token labelled
+                                                "small gold text - AA contrast", which is
+                                                true on cream and not on cherry
+       --d-vanilla .............. 4.23 / 5.75   worst 4.23   still short
+       *** --d-cream ............ 4.67 / 6.36   worst 4.67   PASSES ***
+   No gold clears 4.5 on cherry. Cream does, and it is already what the newsletter eyebrow
+   on the very same cherry uses. So this is not a new colour: it is the section ink the
+   design system already prescribes, applied to the one element that opted out.
+   Specificity 0,3,0 on purpose - it must beat the ported `.darling-season .ds-eyebrow`
+   at 0,2,0 without depending on which stylesheet loads last. */
+.darling-home .darling-season .ds-eyebrow{ color: var(--d-cream); }
