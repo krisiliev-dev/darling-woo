@@ -67,6 +67,22 @@ add_action( 'wp_enqueue_scripts', function () {
 	}
 
 	/*
+	 * Category carousel controls. Injected by script rather than written into
+	 * front-page.html because that markup is rebuilt when the taxonomy category
+	 * feed lands; the buttons must survive that.
+	 */
+	$car = get_stylesheet_directory() . '/assets/carousel.js';
+	if ( file_exists( $car ) ) {
+		wp_enqueue_script(
+			'darling-carousel',
+			get_stylesheet_directory_uri() . '/assets/carousel.js',
+			array(),
+			filemtime( $car ),
+			true
+		);
+	}
+
+	/*
 	 * O-5. Enqueued here rather than in the plugin because it is presentation:
 	 * it decides what a card LOOKS like when its photo is missing, and takes
 	 * nothing down if the theme is switched. No dependency — it only ever reads
