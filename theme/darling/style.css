@@ -1411,7 +1411,7 @@ body.woocommerce-account main,
 	   slab, and this caption has to hold 4.5:1 wherever a card lands — the
 	   newsletter eyebrow failed at 4.11:1 for exactly that reason one sprint
 	   ago. Measured: 5.6:1 on --d-vanilla. */
-	color:var(--ink-2)}
+	color:#5F4442}
 /* MEASURED, and the reason the bow is not quieter still: the slab is --d-vanilla,
    which is 1.18:1 against the white product card and only 1.10:1 against the cream
    page it sits on directly on a product page. The EDGE of this state is therefore
