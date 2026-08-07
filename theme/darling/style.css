@@ -900,7 +900,10 @@ body.tax-product_cat.term-promocii .darling-cat-banner .dcb-img{
 
 /* ---- logged-in: two-column dashboard ---- */
 .woocommerce-account .woocommerce:has(.woocommerce-MyAccount-navigation){display:grid;
-	grid-template-columns:240px 1fr;gap:1.8rem;align-items:start}
+	grid-template-columns:264px 1fr;gap:1.8rem;align-items:start}
+/* 264, not 240, and the 24px is measured rather than chosen. With the track at 240 the
+   nav's .9rem padding leaves 211px for each link, and the longest label needs 222 - so
+   exactly one item wrapped, for the sake of 11px. 264 leaves 235. */
 .woocommerce-MyAccount-navigation{float:none;width:auto;background:#fff;
 	border-radius:16px;padding:.9rem;box-shadow:0 2px 12px rgb(var(--d-shadow)/.07)}
 .woocommerce-MyAccount-navigation ul{list-style:none;margin:0;padding:0}
