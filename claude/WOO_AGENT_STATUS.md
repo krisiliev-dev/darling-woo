@@ -3740,3 +3740,84 @@ subscription plugins and solutions and wire them in."
   plugin-shipped block template can be read the same way before overriding it, which turns
   "guess the structure" into "copy the file". That is what moved this item from refused to
   done in one sprint.
+
+- 2026-08-07 sprint 76 — *** THE BRIDGE DROPPED MID-SPRINT AND CAME BACK. KRIS UNBLOCKED FOUR
+  THINGS. ONE CONTRAST FIX SHIPPED — AND THE INSTRUCTION HAD TO BE MEASURED BEFORE IT COULD
+  BE OBEYED. *** `0c170f8`, deployed green, gated live.
+
+  ═══ STRIPE — SIXTH SPRINT, AND NOW EXPLAINED ═══
+  Re-measured: `pk_test_` ×4, `pk_live_` ×0. Rang once more (*** seq 56 ***) saying plainly
+  the card path has been dead six sprints. *** Kris then told us why: the panel agent was
+  erroring and never read any of the rings. *** It is running again and will drain its queue.
+  So this is now WAITING, not blocked — and no more ringing. BoxNow rows likewise.
+
+  ═══ THE THANK-YOU PAGE IS REACHABLE AFTER ALL — WITHOUT PLACING AN ORDER ═══
+  It has been listed as blocked-by-choice for two sprints because seeing it seemed to need a
+  real COD order, which would be a real obligation for Дарлинг. It does not:
+      `/checkout/order-received/` ......................... 200, 261 530 bytes
+      `/checkout/order-received/1/?key=wc_order_invalid` ... 200, identical
+  WooCommerce renders the confirmation template with no valid order. Measured there:
+      *** `h1` = 0 *** · `main` = 1 · six `order-confirmation-*` blocks present
+  *** So the page a customer lands on immediately after paying has no h1 — the same defect
+  fixed on checkout yesterday in `a3afcaf`. *** It is now confirmed and gateable rather than
+  hypothetical. Fix it exactly as checkout was fixed; the shipped template is 2 350 bytes,
+  uses the THEME's header and footer (unlike checkout), and has no `wp:post-title`.
+
+  ═══ THE SHIPPED-TEMPLATE INVENTORY (sprint 75's technique, generalised) ═══
+      shipped                       bytes   theme override
+      archive-product ............... 318   yes (6 707 B, bespoke)
+      single-product ................ 317   yes (5 057 B, bespoke)
+      product-search-results ........ 321   yes (3 874 B)
+      page-checkout ................. 428   yes (1 249 B — sprint 75)
+      *** page-cart ................. 498   NONE ***
+      *** order-confirmation ....... 2 350  NONE ***
+      taxonomy-product_attribute .... 329   none · coming-soon 55 · checkout-header (part)
+      636 · mini-cart (part) 2 267
+  Theme-only, no shipped counterpart: `404`, `front-page`, `home`, `search`.
+
+  ═══ *** KRIS SAID "CHANGE THE CHERRY EYEBROW TO CREAM". OBEYING IT LITERALLY WOULD HAVE
+  DESTROYED FIVE EYEBROWS TO FIX ONE. *** ═══
+  The stylesheet already carries a reasoned decision (L1177–1186): eyebrow COLOUR is
+  deliberately not part of the role, because each eyebrow must inherit its section's ink —
+  "correct on the cream page AND on the cherry bands". So there is no single global cherry
+  eyebrow to repaint. Measured every eyebrow on the site first:
+      dark ink `rgb(58,29,32)` on the cream page ×5 ..... 14.25 : 1  passes
+                                                          *** if cream: 1 : 1 — invisible ***
+      `.darling-news` eyebrow, cream on cherry ......... 4.67 : 1   passes (already cream)
+      `.darling-season`, honey-light, GRADIENT in chain . reads 1.46 against the wrong
+                                                          background — a surface walk cannot
+                                                          see gradients. Untouched.
+      *** `.darling-cat-banner .dcb-coming`, `rgb(255,201,188)` on cherry `rgb(212,42,60)`
+      ....................................................... 3.42 : 1 at 14px — FAILS ***
+  *** That last one is the only eyebrow that is both cherry-family AND failing, and cream is
+  exactly 4.67 : 1 on it — the identical number the newsletter eyebrow one band over already
+  relies on. Same cherry, same role, same fix; one had been done and one had been missed. ***
+  So the change landed on that one selector and nothing else.
+
+  ═══ GATE — live, after deploy ═══
+      `style.css` ............ served md5 == local md5
+      cat-banner eyebrow ..... `rgb(255,201,188)` 3.42 → *** `rgb(255,246,233)` 4.67, passes ***
+      every other eyebrow .... unchanged (5 × 14.25 on cream, news 4.67)
+      seasonal band .......... untouched, still the open question for Kris
+      design audit ........... 0 defects across all 36 combos
+
+  ═══ THE OTHER THREE DECISIONS, AND WHAT THEY ACTUALLY IMPLY ═══
+  **Delivery contract.** Kris authorised changing it and informing the panel. But
+  `class-office-field.php:301` says the reader at risk is *** Hermes, the CONNECTOR ***, not
+  the panel: "a FROZEN CONTRACT the connector reads… writing 'locker' here would break
+  Hermes's mapping. Widen this only WITH the connector session." *** Informing the panel
+  alone is not enough — the connector session has to be told or waybills break. *** Not made
+  this sprint: it also cannot be gated end-to-end while every `boxnow` row is `enabled=0`, so
+  no locker order is reachable. Low risk to make, zero ability to prove. Flagged to Kris.
+  **Photography (O-4).** Unblocked: commercially-licensed stock via Claude-in-Chrome, and
+  explicit permission to replace anything believed to carry copyright — which releases the
+  hold on `banners/all.jpg` (XMP `dc:rights = vladimirtsarkov.com`, never confirmed a hire).
+  Largest remaining piece of work; sprint 77's main task.
+
+  ═══ AND THE INTERRUPTION ═══
+  The laptop bridge disconnected mid-sprint, between running the eyebrow probe and reading
+  its output. *** The measurement was not lost because it had already been written to a file
+  on the laptop rather than held in the run's output *** — sprint 77 could have read
+  `_scratch_woo/sprint76/eyebrow.json` cold. The bridge returned and it was read in place.
+  Findings were also written to the project doc `claude/SPRINT76_HANDOFF_20260807.md` while
+  the shell was unreachable, so nothing depended on the laptop coming back.
