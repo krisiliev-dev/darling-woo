@@ -3821,3 +3821,64 @@ subscription plugins and solutions and wire them in."
   `_scratch_woo/sprint76/eyebrow.json` cold. The bridge returned and it was read in place.
   Findings were also written to the project doc `claude/SPRINT76_HANDOFF_20260807.md` while
   the shell was unreachable, so nothing depended on the laptop coming back.
+
+- 2026-08-07 sprint 76 ADDENDUM - Kris asked two follow-ups mid-sprint and both are answered.
+  `6f3402c`, deployed green, gated live.
+
+  === WHAT THE darling_dest CONTRACT ACTUALLY IS, AND WHO READS IT ===
+  Kris: "Hermes is an old Claude agent that might have worked on this before... investigate
+  what exactly that contract is and which parts it regards."
+  Exhaustive search of every .php/.js/.py/.ts on disk. `darling_dest` appears in exactly
+  four live places:
+      connector/woo_orders.py .......................... READS it  (the only consumer)
+      darling-woo/plugin/.../class-office-field.php .... WRITES it
+      darling-woo/tests/make-fallback-order.php ........ test fixture
+      _scratch_woo/... ................................. scratch copies
+  *** THE PANEL DOES NOT READ IT ANYWHERE. *** So "inform the panel" would not have
+  reached the party that matters; the connector would.
+  *** AND "HERMES" IS NOT A SERVICE. *** Every match is the path `~/.hermes/.env` - the
+  shared credentials directory ("shared with the rest of the Darling systems", config.py
+  line 2). Nothing called Hermes reads this contract, because nothing called Hermes runs.
+
+  === AND THE COMMENT OVERSTATES THE RISK - THE CONNECTOR ALREADY HANDLES LOCKERS ===
+  `connector/woo_orders.py` as it stands today:
+      L16   M_DEST = "darling_dest"   # office | door
+      L32   LOCKER_CARRIERS = {"boxnow", "sameday"}
+      L85   is_office_like = dest == "office" or carrier in LOCKER_CARRIERS
+      L151  "is_locker": carrier in LOCKER_CARRIERS
+  *** Line 85 is the answer. The waybill guard does NOT depend on dest alone - it ORs in
+  the carrier. If dest became "locker", is_office_like stays true for BoxNow and Sameday
+  and the guard still fires. *** The emitted payload already carries a separate `is_locker`
+  flag computed from the carrier, precisely because dest cannot express it.
+  So writing "locker" would NOT break the guard. What it WOULD change is narrower:
+      - `delivery.dest` in the payload gains a third value downstream may not expect
+      - `ship["mode"]` becomes "locker" when the line-item darling_mode meta is absent
+  No contract test pins the vocabulary: admin-panel/backend/tests/test_connector_contract.py
+  never mentions dest, locker or office.
+  *** The frozen-contract comment was written to protect a mapping that has since learned
+  to protect itself. It should be rewritten, not obeyed. *** Still not changed this sprint:
+  it remains ungateable end to end while every boxnow row is enabled=0, so there is no
+  locker order to prove it on. That is now the only reason to wait.
+
+  === THE ORDER-RECEIVED PAGE - FIXED, AND IT IS NOT A LEAK ===
+  Kris: "feel free to fix the thank-you page being reachable too."
+  What a stranger actually gets at /checkout/order-received/ with no order key, measured:
+      order number ......... 0 occurrences      order overview ....... 0
+      theme nav ............ present            footer ............... present
+  *** No order data is exposed. The reachability is not an information leak - it is
+  WooCommerce rendering a generic "check your email" fallback. *** Two real defects on it:
+      1. h1 = 0  -> FIXED (`6f3402c`), same one-line pattern as checkout in a3afcaf
+      2. the fallback copy is ENGLISH on a Bulgarian-only storefront:
+         "Please check your email for the order confirmation." /
+         "Have an account with us? Log in here to view your order details."
+         NOT fixed - the exact source strings have to be identified first, and a guessed
+         translation is a silent no-op. Captured verbatim above for sprint 77.
+
+  === GATE - live, after deploy ===
+      template file ......... served md5 == local md5
+      /checkout/order-received/ h1 ... 0 -> 1, "Poluchena porachka"
+      h1 box ................ 1x1, clip rect(1px,1px,1px,1px), srOnly at 1440 AND 390
+      first heading ......... now h1 rather than the status paragraph
+      template intact ....... theme nav 1, footer 1, main 1, confirmation blocks present
+      overflow .............. none at either viewport
+      design audit .......... 0 defects across all 36 combos
