@@ -552,7 +552,7 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 }
 
 /* Red hero band */
-.darling-hero--red{background:var(--d-cherry);color:var(--d-cream-text);
+.darling-hero--red{background:var(--d-claret);color:var(--d-cream-text);
 	border-radius:0;margin-left:calc(-1 * var(--d-margin));margin-right:calc(-1 * var(--d-margin));
 	padding:var(--space-l) var(--d-margin) var(--space-l)}
 .darling-hero--red .darling-hero__title{font-family:"Playfair Display",Georgia,serif;
@@ -589,7 +589,7 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 @media (max-width: 820px){.darling-trust{grid-template-columns:repeat(2,1fr)}}
 
 /* Newsletter band */
-.darling-news{background:var(--d-cherry);color:var(--d-cream-text);text-align:center;
+.darling-news{background:var(--d-claret);color:var(--d-cream-text);text-align:center;
 	margin-left:calc(-1 * var(--d-margin));margin-right:calc(-1 * var(--d-margin));
 	padding:3.2rem var(--d-margin) var(--space-l)}
 .darling-news h2{color:var(--d-vanilla);font-size:var(--fs-section);margin:0 0 var(--space-2xs)}
@@ -626,7 +626,7 @@ body.woocommerce-account main{max-width:var(--d-content,1280px);margin:0 auto;pa
 .darling-hero--red{margin-left:0;margin-right:0;padding:3.6rem clamp(1.5rem,4vw,4rem) 4rem}
 .darling-trust{margin-left:0;margin-right:0;padding:2.2rem clamp(1.5rem,4vw,4rem)}
 .darling-news{background:transparent;margin-left:auto;margin-right:auto;padding:0}
-.darling-news-band{background:var(--d-cherry);padding:var(--space-l) var(--space-xs) var(--space-l)}
+.darling-news-band{background:var(--d-claret);padding:var(--space-l) var(--space-xs) var(--space-l)}
 .darling-news-band .darling-news h3{color:var(--d-vanilla)}
 .darling-news-band .darling-news h3 em{color:var(--d-honey-light)}
 .df-legal{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;justify-content:space-between;
@@ -816,7 +816,7 @@ body.post-type-archive-product .darling-cat-banner .dcb-img{
 .darling-archive__filters-title{margin:0 0 var(--space-2xs)}
 
 /* The live red band is drawn by the Shopify SECTION wrapper (same as darling-news) - the ported component only lays out the grid. Our modifier supplies the band. */
-.darling-cat-banner--woo{background:var(--d-cherry);border-radius:16px;overflow:hidden;margin:var(--space-2xs) 0 var(--space-s);align-items:stretch}
+.darling-cat-banner--woo{background:var(--d-claret);border-radius:16px;overflow:hidden;margin:var(--space-2xs) 0 var(--space-s);align-items:stretch}
 .darling-cat-banner--woo .dcb-text{padding:2rem 2.2rem}
 .darling-cat-banner--woo .dcb-img{min-height:260px;height:100%}
 
@@ -1041,7 +1041,7 @@ html.darling-a11y .woocommerce-MyAccount-navigation li a{text-decoration:underli
    re-gains the constraint itself. */
 
 .darling-home--v2{max-width:none;padding:0}
-.darling-hero-band{background:var(--d-cherry)}
+.darling-hero-band{background:var(--d-claret)}
 .darling-hero-band .darling-hero--red{max-width:var(--d-content,1280px);
 	margin:0 auto;padding:3.6rem clamp(1.5rem,4vw,4rem) 4rem}
 .darling-home--v2 .darling-catsv2{max-width:var(--d-content,1280px);
@@ -2239,7 +2239,7 @@ a.button.alt{
 .darling-carousel-btn{
 	position:absolute; top:calc(50% + .5rem); transform:translateY(-50%);
 	width:44px; height:44px; border-radius:999px;
-	border:1px solid rgb(58 29 32 / .18);
+	border:1px solid rgb(58 29 32 / .55);
 	background:var(--d-page-mid); color:var(--d-cocoa);
 	display:grid; place-items:center; cursor:pointer; z-index:3; padding:0;
 	box-shadow:0 2px 10px rgb(58 29 32 / .16);
