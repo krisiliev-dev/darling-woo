@@ -163,57 +163,111 @@
    orbiting star, the excited ones - and two animations on one object compete.
    ========================================================================== */
 
-/* -- spinner: a trail, not a ring --------------------------------------------
-   The mark is no longer an SVG arc. A conic-gradient of currentColor fading to
-   nothing IS the trail - dense at the head, gone at the tail - and a radial
-   mask cuts it to a ring. Same idea as the panel's wake and the paginator's,
-   built out of the one thing a rotating element can carry for free. */
+/* -- spinner: the system trail, bent into a circle --------------------------
+   Gold by default, thicker, and slower - and the trail is deliberately the SAME
+   trail as the panel's wake, the paginator's and the slider's, so that a person
+   who has seen one recognises the others. The recipe is the one every other
+   wake in the system uses: a soft ramp that reaches full colour across the
+   middle and is gone at both ends. Here it is wrapped round a circle by
+   conic-gradient instead of run along a line by linear-gradient, and the sparks
+   are radial dots at the head, exactly as on the others.
+
+   1.2s rather than 820ms: a spinner is watched, and a fast one reads as
+   agitation on a page that is already making somebody wait.
+   ========================================================================== */
 .d-icon--spinner{
 	--icon:none;
+	--spin-trail: var(--trail-gold);
+	position:relative;
 	border-radius:var(--radius-circle);
 	background:conic-gradient(from 0turn,
 		transparent 0turn,
-		color-mix(in oklab, currentColor 12%, transparent) .30turn,
-		color-mix(in oklab, currentColor 45%, transparent) .58turn,
-		color-mix(in oklab, currentColor 82%, transparent) .78turn,
-		currentColor .90turn,
-		transparent .94turn);
-	mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
-	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
-	animation:d-icon-spin 820ms linear infinite;
+		color-mix(in oklab, var(--spin-trail) 14%, transparent) .18turn,
+		color-mix(in oklab, var(--spin-trail) 62%, transparent) .46turn,
+		color-mix(in oklab, var(--spin-trail) 92%, transparent) .68turn,
+		var(--spin-trail) .80turn,
+		var(--spin-trail) .88turn,
+		transparent .93turn);
+	/* thicker: a 3.4px ring instead of 2.5 */
+	mask-image:radial-gradient(farthest-side, transparent calc(100% - 3.4px), #000 calc(100% - 3.4px));
+	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 3.4px), #000 calc(100% - 3.4px));
+	animation:d-icon-spin 1.2s linear infinite;
 }
-/* The head of the comet: a dot brighter than the trail it drags. */
+/* The head, and one spark behind it - the same two things the other wakes have.
+   ::before is the spark so ::after can stay the bright head. */
 .d-icon--spinner::after{
 	content:"";
 	position:absolute;
 	top:0;
 	left:50%;
-	width:2.5px;
-	height:2.5px;
-	margin-left:-1.25px;
+	width:3.4px;
+	height:3.4px;
+	margin-left:-1.7px;
 	border-radius:var(--radius-circle);
-	background:currentColor;
+	background:var(--spin-trail);
+	box-shadow:0 0 4px color-mix(in oklab, var(--spin-trail) 70%, transparent);
 }
-.d-icon--spinner{ position:relative }
+.d-icon--spinner::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	border-radius:inherit;
+	background:
+		radial-gradient(circle at 50% 8%,  color-mix(in oklab, var(--spin-trail) 85%, transparent) 0 .8px, transparent 2px),
+		radial-gradient(circle at 78% 22%, color-mix(in oklab, var(--spin-trail) 60%, transparent) 0 .6px, transparent 1.6px),
+		radial-gradient(circle at 90% 52%, color-mix(in oklab, var(--spin-trail) 40%, transparent) 0 .5px, transparent 1.4px);
+	background-repeat:no-repeat;
+}
+/* Cocoa and cherry variants for the places gold would vanish. */
+.d-icon--spinner.d-icon--ink{ --spin-trail: var(--c-cocoa) }
+.d-icon--spinner.d-icon--cherry{ --spin-trail: var(--c-cherry) }
 
-/* -- cart: wheels that turn, and a streak behind the button -----------------
-   The body is the element's mask; each wheel is a pseudo with its own
-   transform-origin, because a single mask holding both wheels would ORBIT them
-   round the icon's centre rather than spin them on their own axles.
+/* -- cart: up on its back wheel ----------------------------------------------
+   *** THE WHEELS WERE INVISIBLE, AND THE CAUSE IS WORTH KEEPING. ***
+   A mask on an element clips EVERYTHING the element paints, including its
+   pseudo-elements. The cart body was the element's own mask, so the two wheels -
+   drawn on ::before and ::after, outside that silhouette - were masked away
+   completely. They were never missing; they were being cut off by their parent.
 
-   Triggered by [data-added] on the button, which darling-ui.js sets for 900ms
-   when WooCommerce says something went in. */
+   The owner's fix is better than mine would have been: tip the cart up onto its
+   back wheel and spin that one. It solves the clipping (the element carries no
+   mask at all now and is only a positioning box), it solves the two-pseudo
+   budget, and a cart doing a wheelie is a nicer thing than a cart rolling
+   politely on the spot.
+
+     the element   no mask, just the box
+     ::before      the whole cart, front wheel included, tipping back
+     ::after       the back wheel, spinning on its axle
+   ========================================================================== */
 .d-icon--cart{
-	--icon:var(--icon-cart-body);
+	--icon:none;
 	position:relative;
+	background:none;
 }
-.d-icon--cart::before,
+.d-icon--cart::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:currentColor;
+	mask-image:var(--icon-cart);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon-cart);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	/* the axle of the back wheel, so the tip pivots on the thing touching the
+	   ground rather than on the middle of the picture */
+	transform-origin:38% 86%;
+}
 .d-icon--cart::after{
 	content:"";
 	position:absolute;
-	bottom:0;
-	width:26%;
-	height:26%;
+	left:29%;
+	bottom:2%;
+	width:19%;
+	height:19%;
 	background:currentColor;
 	mask-image:var(--icon-wheel);
 	mask-size:contain;
@@ -222,47 +276,45 @@
 	-webkit-mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 }
-.d-icon--cart::before{ left:26% }
-.d-icon--cart::after{ left:62% }
-[data-added] .d-icon--cart::before,
-[data-added] .d-icon--cart::after{
-	animation:d-icon-roll 760ms var(--ease-float);
+[data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
+[data-added] .d-icon--cart::after{  animation:d-icon-roll 820ms var(--ease-float) }
+@keyframes d-icon-wheelie{
+	0%   { rotate:0deg }
+	30%  { rotate:-16deg }
+	62%  { rotate:-11deg }
+	100% { rotate:0deg }
 }
-[data-added] .d-icon--cart{ animation:d-icon-bump 760ms var(--ease-float) }
-@keyframes d-icon-roll{ to{ transform:rotate(540deg) } }
-@keyframes d-icon-bump{
-	0%   { transform:translateX(0) }
-	28%  { transform:translateX(-2.5px) }
-	64%  { transform:translateX(2px) }
-	100% { transform:translateX(0) }
-}
+@keyframes d-icon-roll{ to{ rotate:720deg } }
 /* The streak. It is on the BUTTON and not on the icon because the icon's two
-   pseudo-elements are the wheels and there is no third. Same gradient shape as
-   every other trail in the system, brightest through the middle. */
+   pseudo-elements are the body and the wheel, and there is no third. Same
+   gradient as every other trail in the system. */
 .d-icon-btn[data-added]::before{
 	content:"";
 	position:absolute;
-	top:50%;
-	inset-inline-end:1.55rem;
-	width:1.6rem;
-	height:.62rem;
+	top:58%;
+	inset-inline-end:1.5rem;
+	width:1.7rem;
+	height:.5rem;
 	transform:translateY(-50%);
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	background:linear-gradient(90deg,
-		transparent 0%,
-		color-mix(in oklab, var(--trail-gold) 20%, transparent) 22%,
-		color-mix(in oklab, var(--trail-gold) 70%, transparent) 42%,
-		var(--trail-gold) 52%,
-		transparent 100%);
-	animation:d-icon-streak 760ms var(--ease-float);
+	background:
+		radial-gradient(circle at 30% 42%, color-mix(in oklab, var(--trail-gold) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 62% 66%, color-mix(in oklab, var(--trail-gold) 60%, transparent) 0 .6px, transparent 1.6px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--trail-gold) 18%, transparent) 16%,
+			color-mix(in oklab, var(--trail-gold) 70%, transparent) 40%,
+			var(--trail-gold) 52%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	animation:d-icon-streak 820ms var(--ease-float);
 }
 @keyframes d-icon-streak{
 	0%   { opacity:0; scale:.2 1 }
 	35%  { opacity:1; scale:1 1 }
 	100% { opacity:0; scale:1.2 1; translate:-6px 0 }
 }
-
 /* -- user: a bow that lights up on hover ------------------------------------- */
 .d-icon--user{
 	--icon:var(--icon-person);

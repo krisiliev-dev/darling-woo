@@ -158,6 +158,55 @@
 		}
 	}
 
+	/* 6. LIGHT DISMISS. A <dialog> does not close when you click outside it -
+	      the backdrop is a pseudo-element and takes no events of its own. The
+	      HTML `closedby="any"` attribute does exactly this natively and is
+	      Chrome 134+; where it is supported we set it and do nothing else, and
+	      where it is not we fall back to hit-testing the click against the
+	      dialog's own box. Comparing e.target to the dialog is NOT enough on
+	      its own: a click on the dialog's padding also targets the dialog. */
+	function lightDismiss(dlg) {
+		if ('closedBy' in HTMLDialogElement.prototype) { dlg.setAttribute('closedby', 'any'); return; }
+		dlg.addEventListener('click', function (e) {
+			if (e.target !== dlg) return;
+			var r = dlg.getBoundingClientRect();
+			var inside = e.clientX >= r.left && e.clientX <= r.right &&
+			             e.clientY >= r.top && e.clientY <= r.bottom;
+			if (!inside) dlg.close();
+		});
+	}
+
+	/* 7. THE WIPE. The x sweeps the field and takes the text with it. CSS drives
+	      the whole animation off --wipe; the only things it cannot do are
+	      measure how far the button has to travel and empty the input at the
+	      end, so that is all this does. */
+	function wipe(wrap) {
+		var input = wrap.querySelector('.d-wipe__input');
+		var clear = wrap.querySelector('.d-wipe__clear');
+		if (!input || !clear) return;
+		clear.addEventListener('click', function () {
+			if (!input.value) return;
+			var travel = wrap.clientWidth - clear.offsetWidth - 12;
+			wrap.style.setProperty('--wipe-travel', travel + 'px');
+			wrap.setAttribute('data-wiping', '');
+			var done = function () {
+				input.value = '';
+				input.dispatchEvent(new Event('input', { bubbles: true }));
+				wrap.removeAttribute('data-wiping');
+				wrap.style.removeProperty('--wipe-travel');
+			};
+			/* Wait for the SWEEP, not for a guessed number: --wipe is the
+			   button's own transition, so its end is the moment the text is
+			   fully gone. transitionend fires per property, so filter. */
+			var fired = false;
+			wrap.addEventListener('transitionend', function h(e) {
+				if (e.propertyName !== '--wipe' || fired) return;
+				fired = true; wrap.removeEventListener('transitionend', h); done();
+			});
+			setTimeout(function () { if (!fired) { fired = true; done(); } }, 900);
+		});
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -166,6 +215,12 @@
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; scroller(el); }
 		});
 		(root || document).querySelectorAll('.d-progress[data-goal]').forEach(progress);
+		(root || document).querySelectorAll('dialog.d-drawer').forEach(function (el) {
+			if (!el.dataset.dDismiss) { el.dataset.dDismiss = '1'; lightDismiss(el); }
+		});
+		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
+			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
+		});
 	}
 
 	cartEvents();

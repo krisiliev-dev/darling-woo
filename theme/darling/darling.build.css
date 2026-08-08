@@ -570,6 +570,33 @@ body.woocommerce-order-received *, body.woocommerce-order-received *::before{
 	0%, 100% { background-position:0% 50% }
 	50%      { background-position:100% 50% }
 }
+/* -- the swoop --------------------------------------------------------------
+   *** A STAR THAT CIRCLES SOMETHING NEEDS A PATH, NOT A ROTATE. ***
+   rotate() sweeps a fixed radius about one centre, which is a satellite and not
+   a swoop - it appears at full radius, goes round, and vanishes at full radius.
+   The owner asked for stars that fly IN, circle the text, and fly OUT, which is
+   three different curves joined end to end.
+
+   offset-path draws that as one line. offset-distance animates 0 to 100% along
+   it, and offset-rotate:0deg keeps the star upright while it travels rather
+   than tumbling, which is the difference between a firefly and debris.
+
+   The coordinates are px in the element's own box. Rows in the drawer are about
+   320 wide and 44 tall, so the paths below enter left of -30, loop the label,
+   and leave past 350. A wider or narrower row shifts where the loop sits; it
+   does not break, because the path is drawn round the middle of the row and the
+   ends are off-screen either way.
+   ========================================================================== */
+@keyframes d-swoop{
+	0%   { offset-distance:0%;   opacity:0; scale:.3 }
+	9%   { opacity:1; scale:1 }
+	/* fast in, slow round, fast out - the easing is in the STOPS, because a
+	   single timing function cannot be fast, then slow, then fast again. */
+	18%  { offset-distance:26%;  animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	72%  { offset-distance:74%;  opacity:1; scale:1 }
+	91%  { opacity:0; scale:.4 }
+	100% { offset-distance:100%; opacity:0; scale:.3 }
+}
 }
 
 /* ==== base/elements.css ==== */
@@ -804,57 +831,111 @@ hr{
    orbiting star, the excited ones - and two animations on one object compete.
    ========================================================================== */
 
-/* -- spinner: a trail, not a ring --------------------------------------------
-   The mark is no longer an SVG arc. A conic-gradient of currentColor fading to
-   nothing IS the trail - dense at the head, gone at the tail - and a radial
-   mask cuts it to a ring. Same idea as the panel's wake and the paginator's,
-   built out of the one thing a rotating element can carry for free. */
+/* -- spinner: the system trail, bent into a circle --------------------------
+   Gold by default, thicker, and slower - and the trail is deliberately the SAME
+   trail as the panel's wake, the paginator's and the slider's, so that a person
+   who has seen one recognises the others. The recipe is the one every other
+   wake in the system uses: a soft ramp that reaches full colour across the
+   middle and is gone at both ends. Here it is wrapped round a circle by
+   conic-gradient instead of run along a line by linear-gradient, and the sparks
+   are radial dots at the head, exactly as on the others.
+
+   1.2s rather than 820ms: a spinner is watched, and a fast one reads as
+   agitation on a page that is already making somebody wait.
+   ========================================================================== */
 .d-icon--spinner{
 	--icon:none;
+	--spin-trail: var(--trail-gold);
+	position:relative;
 	border-radius:var(--radius-circle);
 	background:conic-gradient(from 0turn,
 		transparent 0turn,
-		color-mix(in oklab, currentColor 12%, transparent) .30turn,
-		color-mix(in oklab, currentColor 45%, transparent) .58turn,
-		color-mix(in oklab, currentColor 82%, transparent) .78turn,
-		currentColor .90turn,
-		transparent .94turn);
-	mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
-	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
-	animation:d-icon-spin 820ms linear infinite;
+		color-mix(in oklab, var(--spin-trail) 14%, transparent) .18turn,
+		color-mix(in oklab, var(--spin-trail) 62%, transparent) .46turn,
+		color-mix(in oklab, var(--spin-trail) 92%, transparent) .68turn,
+		var(--spin-trail) .80turn,
+		var(--spin-trail) .88turn,
+		transparent .93turn);
+	/* thicker: a 3.4px ring instead of 2.5 */
+	mask-image:radial-gradient(farthest-side, transparent calc(100% - 3.4px), #000 calc(100% - 3.4px));
+	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 3.4px), #000 calc(100% - 3.4px));
+	animation:d-icon-spin 1.2s linear infinite;
 }
-/* The head of the comet: a dot brighter than the trail it drags. */
+/* The head, and one spark behind it - the same two things the other wakes have.
+   ::before is the spark so ::after can stay the bright head. */
 .d-icon--spinner::after{
 	content:"";
 	position:absolute;
 	top:0;
 	left:50%;
-	width:2.5px;
-	height:2.5px;
-	margin-left:-1.25px;
+	width:3.4px;
+	height:3.4px;
+	margin-left:-1.7px;
 	border-radius:var(--radius-circle);
-	background:currentColor;
+	background:var(--spin-trail);
+	box-shadow:0 0 4px color-mix(in oklab, var(--spin-trail) 70%, transparent);
 }
-.d-icon--spinner{ position:relative }
+.d-icon--spinner::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	border-radius:inherit;
+	background:
+		radial-gradient(circle at 50% 8%,  color-mix(in oklab, var(--spin-trail) 85%, transparent) 0 .8px, transparent 2px),
+		radial-gradient(circle at 78% 22%, color-mix(in oklab, var(--spin-trail) 60%, transparent) 0 .6px, transparent 1.6px),
+		radial-gradient(circle at 90% 52%, color-mix(in oklab, var(--spin-trail) 40%, transparent) 0 .5px, transparent 1.4px);
+	background-repeat:no-repeat;
+}
+/* Cocoa and cherry variants for the places gold would vanish. */
+.d-icon--spinner.d-icon--ink{ --spin-trail: var(--c-cocoa) }
+.d-icon--spinner.d-icon--cherry{ --spin-trail: var(--c-cherry) }
 
-/* -- cart: wheels that turn, and a streak behind the button -----------------
-   The body is the element's mask; each wheel is a pseudo with its own
-   transform-origin, because a single mask holding both wheels would ORBIT them
-   round the icon's centre rather than spin them on their own axles.
+/* -- cart: up on its back wheel ----------------------------------------------
+   *** THE WHEELS WERE INVISIBLE, AND THE CAUSE IS WORTH KEEPING. ***
+   A mask on an element clips EVERYTHING the element paints, including its
+   pseudo-elements. The cart body was the element's own mask, so the two wheels -
+   drawn on ::before and ::after, outside that silhouette - were masked away
+   completely. They were never missing; they were being cut off by their parent.
 
-   Triggered by [data-added] on the button, which darling-ui.js sets for 900ms
-   when WooCommerce says something went in. */
+   The owner's fix is better than mine would have been: tip the cart up onto its
+   back wheel and spin that one. It solves the clipping (the element carries no
+   mask at all now and is only a positioning box), it solves the two-pseudo
+   budget, and a cart doing a wheelie is a nicer thing than a cart rolling
+   politely on the spot.
+
+     the element   no mask, just the box
+     ::before      the whole cart, front wheel included, tipping back
+     ::after       the back wheel, spinning on its axle
+   ========================================================================== */
 .d-icon--cart{
-	--icon:var(--icon-cart-body);
+	--icon:none;
 	position:relative;
+	background:none;
 }
-.d-icon--cart::before,
+.d-icon--cart::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:currentColor;
+	mask-image:var(--icon-cart);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon-cart);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	/* the axle of the back wheel, so the tip pivots on the thing touching the
+	   ground rather than on the middle of the picture */
+	transform-origin:38% 86%;
+}
 .d-icon--cart::after{
 	content:"";
 	position:absolute;
-	bottom:0;
-	width:26%;
-	height:26%;
+	left:29%;
+	bottom:2%;
+	width:19%;
+	height:19%;
 	background:currentColor;
 	mask-image:var(--icon-wheel);
 	mask-size:contain;
@@ -863,47 +944,45 @@ hr{
 	-webkit-mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 }
-.d-icon--cart::before{ left:26% }
-.d-icon--cart::after{ left:62% }
-[data-added] .d-icon--cart::before,
-[data-added] .d-icon--cart::after{
-	animation:d-icon-roll 760ms var(--ease-float);
+[data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
+[data-added] .d-icon--cart::after{  animation:d-icon-roll 820ms var(--ease-float) }
+@keyframes d-icon-wheelie{
+	0%   { rotate:0deg }
+	30%  { rotate:-16deg }
+	62%  { rotate:-11deg }
+	100% { rotate:0deg }
 }
-[data-added] .d-icon--cart{ animation:d-icon-bump 760ms var(--ease-float) }
-@keyframes d-icon-roll{ to{ transform:rotate(540deg) } }
-@keyframes d-icon-bump{
-	0%   { transform:translateX(0) }
-	28%  { transform:translateX(-2.5px) }
-	64%  { transform:translateX(2px) }
-	100% { transform:translateX(0) }
-}
+@keyframes d-icon-roll{ to{ rotate:720deg } }
 /* The streak. It is on the BUTTON and not on the icon because the icon's two
-   pseudo-elements are the wheels and there is no third. Same gradient shape as
-   every other trail in the system, brightest through the middle. */
+   pseudo-elements are the body and the wheel, and there is no third. Same
+   gradient as every other trail in the system. */
 .d-icon-btn[data-added]::before{
 	content:"";
 	position:absolute;
-	top:50%;
-	inset-inline-end:1.55rem;
-	width:1.6rem;
-	height:.62rem;
+	top:58%;
+	inset-inline-end:1.5rem;
+	width:1.7rem;
+	height:.5rem;
 	transform:translateY(-50%);
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	background:linear-gradient(90deg,
-		transparent 0%,
-		color-mix(in oklab, var(--trail-gold) 20%, transparent) 22%,
-		color-mix(in oklab, var(--trail-gold) 70%, transparent) 42%,
-		var(--trail-gold) 52%,
-		transparent 100%);
-	animation:d-icon-streak 760ms var(--ease-float);
+	background:
+		radial-gradient(circle at 30% 42%, color-mix(in oklab, var(--trail-gold) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 62% 66%, color-mix(in oklab, var(--trail-gold) 60%, transparent) 0 .6px, transparent 1.6px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--trail-gold) 18%, transparent) 16%,
+			color-mix(in oklab, var(--trail-gold) 70%, transparent) 40%,
+			var(--trail-gold) 52%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	animation:d-icon-streak 820ms var(--ease-float);
 }
 @keyframes d-icon-streak{
 	0%   { opacity:0; scale:.2 1 }
 	35%  { opacity:1; scale:1 1 }
 	100% { opacity:0; scale:1.2 1; translate:-6px 0 }
 }
-
 /* -- user: a bow that lights up on hover ------------------------------------- */
 .d-icon--user{
 	--icon:var(--icon-person);
@@ -1286,50 +1365,53 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	position:relative;
 	display:inline-flex;
 	align-items:center;
+	position:relative;
 	padding:6px 18px 6px 0;
 	color:var(--ink);
 	text-decoration:none;
 	white-space:nowrap;
 	transition:color var(--dur-ui) var(--ease-float);
 }
+/* *** THEY HAVE TO LEAVE THE FLOW TO FLY. ***
+   The first version had ::before as an inline-block with a margin, so it was a
+   character sitting in front of the label - it could pulse, which is exactly
+   what the owner saw, but it could not go anywhere without shoving the text.
+   Absolute, and offset-path does the rest. */
 .d-mega__link::before,
 .d-mega__link::after{
 	content:"";
-	display:inline-block;
-	background:currentColor;
+	position:absolute;
+	top:0;
+	left:0;
+	background:var(--g-core);
+	mask-image:var(--icon-star-4);
 	mask-size:contain;
 	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
 	-webkit-mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	opacity:0;
-	transition:opacity 150ms var(--ease-float);
+	pointer-events:none;
+	offset-rotate:0deg;
+	offset-anchor:50% 50%;
 }
 .d-mega__link::before{
-	width:.72em;
-	height:.72em;
-	margin-inline-end:8px;
-	mask-image:var(--icon-star-4);
-	-webkit-mask-image:var(--icon-star-4);
-	color:var(--g-core);
+	width:.62em;
+	height:.62em;
+	offset-path:path("M -26 12 C 10 -12, 60 -14, 100 2 C 132 16, 110 30, 74 26 C 40 22, 46 8, 96 8 C 150 8, 180 14, 220 12");
 }
 .d-mega__link::after{
-	position:absolute;
-	top:2px;
-	inset-inline-end:2px;
 	width:.5em;
 	height:.5em;
-	mask-image:var(--icon-star-4);
-	-webkit-mask-image:var(--icon-star-4);
-	color:var(--c-cherry);
+	background:var(--c-cherry);
+	offset-path:path("M -26 22 C 20 34, 70 34, 108 20 C 140 8, 116 -4, 80 2 C 48 8, 58 24, 110 24 C 168 24, 190 20, 220 20");
 }
 .d-mega__link:hover{ color:var(--c-cherry-deep) }
-.d-mega__link:hover::before,
-.d-mega__link:hover::after{ opacity:1 }
-.d-mega__link:hover::before{ animation:d-twinkle 1.5s var(--ease-float) infinite }
-.d-mega__link:hover::after{  animation:d-twinkle 1.5s var(--ease-float) infinite .4s }
-/* d-twinkle now lives in tokens/motion.css - three components use it. */
-
-.d-mega__link:focus-visible{
+/* The same flight as the drawer rows, on a shorter path because a mega link is
+   a word and not a full-width row. */
+.d-mega__link:hover::before{ animation:d-swoop 2.2s linear infinite }
+.d-mega__link:hover::after{  animation:d-swoop 2.2s linear infinite .55s }
+/* d-twinkle now lives in tokens/motion.css - three components use it. */.d-mega__link:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 	border-radius:var(--radius-xs);
@@ -1663,11 +1745,13 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
    ========================================================================== */
 .d-drawer__nav li{ position:relative }
 .d-drawer__nav li::before,
-.d-drawer__nav li::after{
+.d-drawer__nav li::after,
+.d-drawer__nav a::before,
+.d-drawer__nav a::after{
 	content:"";
 	position:absolute;
-	top:50%;
-	left:50%;
+	top:0;
+	left:0;
 	width:.5rem;
 	height:.5rem;
 	margin:-.25rem 0 0 -.25rem;
@@ -1680,27 +1764,40 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	-webkit-mask-repeat:no-repeat;
 	opacity:0;
 	pointer-events:none;
+	offset-rotate:0deg;
+	offset-anchor:50% 50%;
 }
-.d-drawer__nav li:hover::before,
-.d-drawer__nav li:focus-within::before{ animation:d-orbit 2.4s var(--ease-float) infinite }
-.d-drawer__nav li:hover::after,
-.d-drawer__nav li:focus-within::after{
-	animation:d-orbit 2.4s var(--ease-float) infinite 1.2s;
+/* Four stars, four paths, four delays. They enter from the left, loop the
+   label at different heights, and leave to the right. The two on the <a> are
+   cherry so the flight reads as a pair of pairs rather than as a swarm. */
+.d-drawer__nav li::before{
+	offset-path:path("M -40 22 C 30 -14, 120 -18, 190 6 C 250 26, 210 46, 140 40 C 70 34, 60 8, 150 6 C 250 4, 330 22, 400 20");
+}
+.d-drawer__nav li::after{
+	offset-path:path("M -40 30 C 40 46, 130 48, 200 30 C 260 14, 220 -2, 150 4 C 90 10, 100 34, 200 36 C 300 38, 350 26, 400 28");
 	background:var(--c-cherry);
 }
-/* --orbit-r is in the keyframe rather than a token because it is the row's own
-   half-width plus a margin, and a row is as wide as the drawer. */
-@keyframes d-orbit{
-	0%   { opacity:0; rotate:0deg;   translate:0 0;      scale:.4 }
-	18%  { opacity:1; rotate:65deg;  translate:5.5rem 0; scale:1 }
-	72%  { opacity:1; rotate:295deg; translate:5.5rem 0; scale:1 }
-	88%  { opacity:0; rotate:340deg; translate:7.5rem 0; scale:.5 }
-	100% { opacity:0; rotate:360deg; translate:0 0;      scale:.4 }
+.d-drawer__nav a::before{
+	offset-path:path("M -40 10 C 50 -20, 150 -14, 220 12 C 270 32, 230 44, 170 36 C 120 30, 130 12, 210 14 C 300 16, 350 8, 400 12");
+	width:.38rem; height:.38rem;
 }
+.d-drawer__nav a::after{
+	offset-path:path("M -40 36 C 60 52, 160 40, 230 20 C 280 6, 240 -6, 180 2 C 130 10, 150 30, 240 30 C 320 30, 360 34, 400 32");
+	width:.42rem; height:.42rem;
+	background:var(--c-cherry);
+}
+.d-drawer__nav li:hover::before,
+.d-drawer__nav li:focus-within::before{ animation:d-swoop 2.6s linear infinite }
+.d-drawer__nav li:hover::after,
+.d-drawer__nav li:focus-within::after{ animation:d-swoop 2.6s linear infinite .35s }
+.d-drawer__nav li:hover a::before,
+.d-drawer__nav li:focus-within a::before{ animation:d-swoop 2.6s linear infinite .8s }
+.d-drawer__nav li:hover a::after,
+.d-drawer__nav li:focus-within a::after{ animation:d-swoop 2.6s linear infinite 1.3s }
 @media (prefers-reduced-motion: reduce){
-	.d-drawer__nav li::before, .d-drawer__nav li::after{ display:none }
+	.d-drawer__nav li::before, .d-drawer__nav li::after,
+	.d-drawer__nav a::before, .d-drawer__nav a::after{ display:none }
 }
-
 /* -- the cart list ------------------------------------------------------------
    Rows were flush against each other and read as one block. They now have air,
    a hairline between them, and a star for a bullet - a list of things somebody
@@ -1730,7 +1827,10 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	content:"";
 	width:.62rem;
 	height:.62rem;
-	margin-top:.34em;
+	/* aligned to the first line's optical centre. .34em put it on the cap
+	   height rather than the x-height and it read as sitting above the text. */
+	align-self:center;
+	margin-top:0;
 	background:var(--g-core);
 	mask-image:var(--icon-star-4);
 	mask-size:contain;
@@ -1740,7 +1840,8 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	-webkit-mask-repeat:no-repeat;
 	flex:none;
 }
-.d-drawer__line:hover::before{ animation:d-twinkle 1.6s var(--ease-float) infinite }
+/* No hover animation here, on the owner's note: this is a BULLET. A list of
+   things somebody already chose is not a control and should not react. */
 .d-drawer__line__name{ color:var(--ink); line-height:var(--lh-title) }
 .d-drawer__line__meta{
 	display:block;
@@ -2328,6 +2429,127 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 @media (prefers-reduced-motion: reduce){
 	.d-progress__bar{ transition:none }
 	.d-progress__bar::after{ display:none }
+}
+}
+
+/* ==== patterns/wipe.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / WIPE
+   The clear button sweeps across the field and takes the text with it.
+
+   The owner's idea, and it earns its place: pressing a small x and having the
+   text simply be gone gives no feedback that anything was YOURS. Watching it be
+   swept away does, and it costs one custom property.
+
+   *** ONE CLOCK DRIVES THE BUTTON AND THE ERASURE. ***
+   --wipe goes 1 to 0 and back. The x sits at calc(--wipe * travel), and the
+   input is masked with a hard-edged gradient whose stop is at the same place -
+   so the text cannot survive the sweep or vanish ahead of it. They are the same
+   number, not two animations that agree.
+
+   *** "LETTER BY LETTER" IS WHAT A HARD EDGE LOOKS LIKE, NOT WHAT IT IS. ***
+   Being honest about this: the mask edge moves continuously. It crosses one
+   glyph at a time, so letters do go out one after another - but a letter is
+   clipped mid-stroke as the edge passes rather than disappearing whole. Making
+   it snap per character means wrapping every character in its own element,
+   which for a search field means rebuilding the input's contents in script on
+   every keystroke. Not worth it; the read is right as it is.
+
+   *** AND THE TRAIL IS THE SYSTEM TRAIL. *** Two clocks again: --wipe is the
+   button, --wipe-b lags it, and the streak spans between them - the same shape
+   as the panel's wake, the paginator's and the slider's.
+   ========================================================================== */
+
+@property --wipe{   syntax:"<number>"; inherits:true; initial-value:1 }
+@property --wipe-b{ syntax:"<number>"; inherits:true; initial-value:1 }
+
+.d-wipe{
+	--wipe: 1;
+	--wipe-b: 1;
+	--wipe-trail: var(--trail-gold);
+	position:relative;
+}
+/* Set by darling-ui.js for the length of the sweep, then removed. */
+.d-wipe[data-wiping]{
+	--wipe: 0;
+	--wipe-b: 0;
+	transition:--wipe   var(--dur-panel) var(--ease-float),
+	           --wipe-b var(--dur-wake)  var(--ease-wake);
+}
+/* The text is masked to the LEFT of the button's position, so everything the
+   button has already passed is gone. */
+.d-wipe[data-wiping] .d-wipe__input{
+	mask-image:linear-gradient(90deg, #000 0 calc(var(--wipe) * 100%), transparent calc(var(--wipe) * 100%));
+	-webkit-mask-image:linear-gradient(90deg, #000 0 calc(var(--wipe) * 100%), transparent calc(var(--wipe) * 100%));
+}
+/* The button rides the same number. --wipe-travel is how far it has to go: the
+   field's width less its own box, set by the shim because CSS cannot measure a
+   sibling. */
+.d-wipe__clear{
+	position:relative;
+	z-index:2;
+	display:grid;
+	place-items:center;
+	width:1.75rem;
+	height:1.75rem;
+	flex:none;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--ink-quiet);
+	cursor:pointer;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-wipe__clear:hover{ color:var(--c-claret); background:var(--tint-gold) }
+.d-wipe__clear:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+.d-wipe__clear .d-icon{ width:.85rem; height:.85rem }
+.d-wipe:not(:has(.d-wipe__input:not(:placeholder-shown))) .d-wipe__clear{
+	opacity:0;
+	pointer-events:none;
+}
+.d-wipe[data-wiping] .d-wipe__clear{
+	translate:calc((var(--wipe) - 1) * var(--wipe-travel, 0px)) 0;
+	rotate:calc((1 - var(--wipe)) * -220deg);
+}
+/* The streak, between the button and its ghost. */
+.d-wipe::after{
+	content:"";
+	position:absolute;
+	z-index:1;
+	top:50%;
+	inset-inline-end:2.1rem;
+	height:.55rem;
+	border-radius:var(--radius-pill);
+	pointer-events:none;
+	opacity:0;
+	background:
+		radial-gradient(circle at 26% 38%, color-mix(in oklab, var(--wipe-trail) 85%, transparent) 0 .8px, transparent 2px),
+		radial-gradient(circle at 58% 66%, color-mix(in oklab, var(--wipe-trail) 60%, transparent) 0 .6px, transparent 1.7px),
+		radial-gradient(circle at 80% 30%, color-mix(in oklab, var(--wipe-trail) 45%, transparent) 0 .5px, transparent 1.5px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--wipe-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--wipe-trail) 62%, transparent) 34%,
+			var(--wipe-trail) 50%,
+			color-mix(in oklab, var(--wipe-trail) 62%, transparent) 66%,
+			color-mix(in oklab, var(--wipe-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	transform:translateY(-50%);
+}
+.d-wipe[data-wiping]::after{
+	width:0;
+	width:calc(abs(var(--wipe) - var(--wipe-b)) * var(--wipe-travel, 0px) + 1.2rem);
+	opacity:0;
+	opacity:clamp(0, calc(abs(var(--wipe) - var(--wipe-b)) * 3.2), 1);
+	translate:calc((var(--wipe-b) - 1) * var(--wipe-travel, 0px)) 0;
+}
+
+@media (prefers-reduced-motion: reduce){
+	.d-wipe[data-wiping]{ transition:none }
+	.d-wipe::after{ display:none }
 }
 }
 

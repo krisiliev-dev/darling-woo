@@ -168,50 +168,53 @@
 	position:relative;
 	display:inline-flex;
 	align-items:center;
+	position:relative;
 	padding:6px 18px 6px 0;
 	color:var(--ink);
 	text-decoration:none;
 	white-space:nowrap;
 	transition:color var(--dur-ui) var(--ease-float);
 }
+/* *** THEY HAVE TO LEAVE THE FLOW TO FLY. ***
+   The first version had ::before as an inline-block with a margin, so it was a
+   character sitting in front of the label - it could pulse, which is exactly
+   what the owner saw, but it could not go anywhere without shoving the text.
+   Absolute, and offset-path does the rest. */
 .d-mega__link::before,
 .d-mega__link::after{
 	content:"";
-	display:inline-block;
-	background:currentColor;
+	position:absolute;
+	top:0;
+	left:0;
+	background:var(--g-core);
+	mask-image:var(--icon-star-4);
 	mask-size:contain;
 	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
 	-webkit-mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	opacity:0;
-	transition:opacity 150ms var(--ease-float);
+	pointer-events:none;
+	offset-rotate:0deg;
+	offset-anchor:50% 50%;
 }
 .d-mega__link::before{
-	width:.72em;
-	height:.72em;
-	margin-inline-end:8px;
-	mask-image:var(--icon-star-4);
-	-webkit-mask-image:var(--icon-star-4);
-	color:var(--g-core);
+	width:.62em;
+	height:.62em;
+	offset-path:path("M -26 12 C 10 -12, 60 -14, 100 2 C 132 16, 110 30, 74 26 C 40 22, 46 8, 96 8 C 150 8, 180 14, 220 12");
 }
 .d-mega__link::after{
-	position:absolute;
-	top:2px;
-	inset-inline-end:2px;
 	width:.5em;
 	height:.5em;
-	mask-image:var(--icon-star-4);
-	-webkit-mask-image:var(--icon-star-4);
-	color:var(--c-cherry);
+	background:var(--c-cherry);
+	offset-path:path("M -26 22 C 20 34, 70 34, 108 20 C 140 8, 116 -4, 80 2 C 48 8, 58 24, 110 24 C 168 24, 190 20, 220 20");
 }
 .d-mega__link:hover{ color:var(--c-cherry-deep) }
-.d-mega__link:hover::before,
-.d-mega__link:hover::after{ opacity:1 }
-.d-mega__link:hover::before{ animation:d-twinkle 1.5s var(--ease-float) infinite }
-.d-mega__link:hover::after{  animation:d-twinkle 1.5s var(--ease-float) infinite .4s }
-/* d-twinkle now lives in tokens/motion.css - three components use it. */
-
-.d-mega__link:focus-visible{
+/* The same flight as the drawer rows, on a shorter path because a mega link is
+   a word and not a full-width row. */
+.d-mega__link:hover::before{ animation:d-swoop 2.2s linear infinite }
+.d-mega__link:hover::after{  animation:d-swoop 2.2s linear infinite .55s }
+/* d-twinkle now lives in tokens/motion.css - three components use it. */.d-mega__link:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 	border-radius:var(--radius-xs);

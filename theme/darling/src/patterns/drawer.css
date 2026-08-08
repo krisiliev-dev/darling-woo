@@ -237,11 +237,13 @@
    ========================================================================== */
 .d-drawer__nav li{ position:relative }
 .d-drawer__nav li::before,
-.d-drawer__nav li::after{
+.d-drawer__nav li::after,
+.d-drawer__nav a::before,
+.d-drawer__nav a::after{
 	content:"";
 	position:absolute;
-	top:50%;
-	left:50%;
+	top:0;
+	left:0;
 	width:.5rem;
 	height:.5rem;
 	margin:-.25rem 0 0 -.25rem;
@@ -254,27 +256,40 @@
 	-webkit-mask-repeat:no-repeat;
 	opacity:0;
 	pointer-events:none;
+	offset-rotate:0deg;
+	offset-anchor:50% 50%;
 }
-.d-drawer__nav li:hover::before,
-.d-drawer__nav li:focus-within::before{ animation:d-orbit 2.4s var(--ease-float) infinite }
-.d-drawer__nav li:hover::after,
-.d-drawer__nav li:focus-within::after{
-	animation:d-orbit 2.4s var(--ease-float) infinite 1.2s;
+/* Four stars, four paths, four delays. They enter from the left, loop the
+   label at different heights, and leave to the right. The two on the <a> are
+   cherry so the flight reads as a pair of pairs rather than as a swarm. */
+.d-drawer__nav li::before{
+	offset-path:path("M -40 22 C 30 -14, 120 -18, 190 6 C 250 26, 210 46, 140 40 C 70 34, 60 8, 150 6 C 250 4, 330 22, 400 20");
+}
+.d-drawer__nav li::after{
+	offset-path:path("M -40 30 C 40 46, 130 48, 200 30 C 260 14, 220 -2, 150 4 C 90 10, 100 34, 200 36 C 300 38, 350 26, 400 28");
 	background:var(--c-cherry);
 }
-/* --orbit-r is in the keyframe rather than a token because it is the row's own
-   half-width plus a margin, and a row is as wide as the drawer. */
-@keyframes d-orbit{
-	0%   { opacity:0; rotate:0deg;   translate:0 0;      scale:.4 }
-	18%  { opacity:1; rotate:65deg;  translate:5.5rem 0; scale:1 }
-	72%  { opacity:1; rotate:295deg; translate:5.5rem 0; scale:1 }
-	88%  { opacity:0; rotate:340deg; translate:7.5rem 0; scale:.5 }
-	100% { opacity:0; rotate:360deg; translate:0 0;      scale:.4 }
+.d-drawer__nav a::before{
+	offset-path:path("M -40 10 C 50 -20, 150 -14, 220 12 C 270 32, 230 44, 170 36 C 120 30, 130 12, 210 14 C 300 16, 350 8, 400 12");
+	width:.38rem; height:.38rem;
 }
+.d-drawer__nav a::after{
+	offset-path:path("M -40 36 C 60 52, 160 40, 230 20 C 280 6, 240 -6, 180 2 C 130 10, 150 30, 240 30 C 320 30, 360 34, 400 32");
+	width:.42rem; height:.42rem;
+	background:var(--c-cherry);
+}
+.d-drawer__nav li:hover::before,
+.d-drawer__nav li:focus-within::before{ animation:d-swoop 2.6s linear infinite }
+.d-drawer__nav li:hover::after,
+.d-drawer__nav li:focus-within::after{ animation:d-swoop 2.6s linear infinite .35s }
+.d-drawer__nav li:hover a::before,
+.d-drawer__nav li:focus-within a::before{ animation:d-swoop 2.6s linear infinite .8s }
+.d-drawer__nav li:hover a::after,
+.d-drawer__nav li:focus-within a::after{ animation:d-swoop 2.6s linear infinite 1.3s }
 @media (prefers-reduced-motion: reduce){
-	.d-drawer__nav li::before, .d-drawer__nav li::after{ display:none }
+	.d-drawer__nav li::before, .d-drawer__nav li::after,
+	.d-drawer__nav a::before, .d-drawer__nav a::after{ display:none }
 }
-
 /* -- the cart list ------------------------------------------------------------
    Rows were flush against each other and read as one block. They now have air,
    a hairline between them, and a star for a bullet - a list of things somebody
@@ -304,7 +319,10 @@
 	content:"";
 	width:.62rem;
 	height:.62rem;
-	margin-top:.34em;
+	/* aligned to the first line's optical centre. .34em put it on the cap
+	   height rather than the x-height and it read as sitting above the text. */
+	align-self:center;
+	margin-top:0;
 	background:var(--g-core);
 	mask-image:var(--icon-star-4);
 	mask-size:contain;
@@ -314,7 +332,8 @@
 	-webkit-mask-repeat:no-repeat;
 	flex:none;
 }
-.d-drawer__line:hover::before{ animation:d-twinkle 1.6s var(--ease-float) infinite }
+/* No hover animation here, on the owner's note: this is a BULLET. A list of
+   things somebody already chose is not a control and should not react. */
 .d-drawer__line__name{ color:var(--ink); line-height:var(--lh-title) }
 .d-drawer__line__meta{
 	display:block;
