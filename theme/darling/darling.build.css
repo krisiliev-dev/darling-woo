@@ -528,6 +528,31 @@ body.woocommerce-checkout *, body.woocommerce-checkout *::before,
 body.woocommerce-order-received *, body.woocommerce-order-received *::before{
 	animation:none !important;
 }
+/* -- the small movements ----------------------------------------------------
+   Ported out of the legacy stylesheets, where they were four keyframes with
+   three different naming conventions and no shared home. They are here because
+   more than one component uses each of them, and a keyframe defined inside a
+   component is a keyframe the next component copies.
+
+   d-bob      a 7px rise and fall. The hero bow, the empty-state bow, the footer
+              bow. NOT the same as d-float, which travels 96px and belongs to
+              the one big hero object.
+   d-twinkle  a star catching the light: it scales and turns rather than just
+              fading, because a pure opacity blink reads as a fault.
+   d-drift    a slow pan of a background gradient across a wide band.   ========================================================================== */
+
+@keyframes d-bob{
+	0%, 100% { transform:translateY(0) }
+	50%      { transform:translateY(-7px) }
+}
+@keyframes d-twinkle{
+	0%, 100% { opacity:.35; transform:scale(.85) rotate(0deg) }
+	50%      { opacity:1;   transform:scale(1.15) rotate(18deg) }
+}
+@keyframes d-drift{
+	0%, 100% { background-position:0% 50% }
+	50%      { background-position:100% 50% }
+}
 }
 
 /* ==== base/elements.css ==== */
@@ -929,10 +954,8 @@ hr{
 .d-mega__link:hover::after{ opacity:1 }
 .d-mega__link:hover::before{ animation:d-twinkle 1.5s var(--ease-float) infinite }
 .d-mega__link:hover::after{  animation:d-twinkle 1.5s var(--ease-float) infinite .4s }
-@keyframes d-twinkle{
-	0%,100% { transform:scale(1)    rotate(0deg) }
-	50%     { transform:scale(1.35) rotate(18deg) }
-}
+/* d-twinkle now lives in tokens/motion.css - three components use it. */
+
 .d-mega__link:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
@@ -1043,8 +1066,20 @@ hr{
 	background:var(--surface-raised);
 	color:var(--ink);
 	overflow:hidden;
-	display:flex;
 	flex-direction:column;
+
+	/* *** display:flex HERE WAS A BUG, AND A LOUD ONE. ***
+	   The UA hides a closed <dialog> with dialog:not([open]){display:none}.
+	   Setting display:flex on the base class overrode that, so BOTH drawers
+	   were laid out at all times, translated off-screen by -100% - and a
+	   translated element still contributes to scrollable overflow. MEASURED:
+	   the document was 1532px wide inside a 1180px viewport, 352px too far,
+	   which is exactly one drawer. Every page on the site would have had a
+	   horizontal scrollbar.
+	   So the base stays hidden and [open] does the displaying. The transition
+	   still works because display is in the transition list with
+	   allow-discrete - that is the whole reason that keyword exists. */
+	display:none;
 
 	translate:-100% 0;
 	opacity:0;
@@ -1053,7 +1088,7 @@ hr{
 	           display   var(--dur-panel) allow-discrete,
 	           overlay   var(--dur-panel) allow-discrete;
 }
-.d-drawer[open]{ translate:0 0; opacity:1 }
+.d-drawer[open]{ display:flex; translate:0 0; opacity:1 }
 @starting-style{
 	.d-drawer[open]{ translate:-100% 0; opacity:0 }
 }
@@ -1263,6 +1298,353 @@ hr{
 .d-band--quiet{ background:var(--surface-quiet); color:var(--ink) }
 .d-band--page{  background:var(--surface-page);  color:var(--ink) }
 
+}
+
+/* ==== patterns/hero.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / HERO
+   The top of the home page, in two forms: on the grey page, and as a claret
+   band that runs edge to edge.
+
+   PORTED FROM style.css .darling-hero / --red / -band and darling.css
+   .darling-hero-visual. What changed, and why:
+
+     --d-vanilla      -> --g-vanilla   the title on claret. Same colour, but now
+                                       it comes off the metal ramp, so changing
+                                       the three gold numbers moves it too.
+     --d-honey-light  -> --g-hi        the italic accent. Honey was retired.
+     "Playfair Display", Georgia, serif
+                      -> --font-display  it was typed out in eleven places.
+     .d-btn--primary with its own metal
+                      -> .d-btn.d-finish  the hero's CTA had a FULL COPY of the
+                                       metal treatment - drift, grain, glow,
+                                       breathe, all of it - living inside the
+                                       hero rules. That is the finish, and the
+                                       finish is a leaf we already own. Forty
+                                       lines deleted rather than ported.
+
+   *** THE FULL-BLEED IS A GRID, NOT A NEGATIVE MARGIN. ***
+   The old rule reached out of its wrapper with margin-inline:calc(50% - 50vw).
+   That works until the page has a scrollbar, at which point 100vw is wider than
+   the document and the band pushes a horizontal scrollbar at exactly one
+   viewport width. Same decision as the band pattern, same reason.
+   ========================================================================== */
+
+.d-hero{
+	position:relative;
+	display:grid;
+	grid-template-columns:1.15fr .85fr;
+	gap:var(--space-m);
+	align-items:center;
+	min-height:min(66vh, 30rem);
+	padding:var(--space-m) 0;
+	max-width:var(--page-max);
+	margin-inline:auto;
+}
+.d-hero > *{ min-width:0 }   /* grid children default to min-content, not 0 */
+
+.d-hero__eyebrow{
+	margin:0 0 var(--space-3xs);
+	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
+	letter-spacing:.2em;
+	text-transform:uppercase;
+	color:var(--ink-quiet);
+}
+.d-hero__title{
+	margin:0 0 var(--space-xs);
+	font:var(--type-hero);
+	color:var(--ink);
+}
+.d-hero__title em{ font-style:italic }
+.d-hero__sub{
+	margin:0 0 var(--space-s);
+	max-width:46ch;
+	font:var(--type-lede);
+	color:var(--ink-quiet);
+}
+.d-hero__actions{
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-2xs);
+	margin:0;
+}
+
+/* -- the claret form ---------------------------------------------------------
+   A band, so it uses the band's full-bleed grid rather than inventing a second
+   way to reach the edge of the page. */
+.d-hero-band{
+	display:grid;
+	grid-template-columns:1fr min(var(--page-max), 100%) 1fr;
+	background:var(--surface-band);
+}
+.d-hero-band > *{ grid-column:2 }
+.d-hero-band .d-hero{
+	padding:var(--space-2xl) var(--gutter) calc(var(--space-2xl) + var(--space-2xs));
+	max-width:none;
+}
+.d-hero--red .d-hero__title{
+	font:var(--type-hero);
+	font-weight:var(--fw-regular);
+	color:var(--g-vanilla);
+}
+.d-hero--red .d-hero__title em{ color:var(--g-hi) }
+.d-hero--red .d-hero__eyebrow{ color:var(--g-hi); opacity:.9 }
+.d-hero--red .d-hero__sub{
+	color:var(--ink-on-dark);
+	opacity:.96;
+}
+.d-hero--red .d-hero__copy{ max-width:44rem }
+
+/* *** THE ACCESSIBILITY TOGGLE'S HOOK, KEPT DELIBERATELY. ***
+   The site has a high-contrast switch that sets html.darling-a11y, and the old
+   rule forced this title to pure white under it. That is not decoration: gold
+   on claret is the lowest-contrast pair in the whole design, and this is the
+   escape hatch for anyone who cannot read it. Ported with the class renamed,
+   and it keeps its !important because it is overriding the variant above it. */
+html.d-a11y .d-hero--red .d-hero__title,
+html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
+
+/* -- the visual --------------------------------------------------------------
+   A glow, a bow and a scatter of stars. The bow is an <svg> in the markup
+   because it is the brand mark and wants to be a real shape rather than a mask;
+   everything around it is ours. */
+.d-hero__visual{
+	position:relative;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	width:100%;
+	min-height:300px;
+}
+.d-hero__visual .d-hero__glow{
+	position:absolute;
+	width:280px;
+	height:280px;
+	border-radius:var(--radius-circle);
+	background:radial-gradient(circle,
+		color-mix(in oklab, var(--g-light) 34%, transparent) 0%,
+		transparent 68%);
+	pointer-events:none;
+}
+.d-hero__visual .d-hero__bow{
+	position:relative;
+	width:150px;
+	height:auto;
+	color:var(--c-cherry);
+	filter:drop-shadow(0 4px 10px color-mix(in oklab, var(--c-cherry) 22%, transparent));
+	animation:d-bob 5.5s var(--ease-float) infinite;
+}
+.d-hero--red .d-hero__bow{ color:var(--c-white) }
+/* The stars. Marks rather than dingbats, and each one carries its own delay so
+   the sky does not blink in unison - the same rule the finish's fireflies
+   follow. */
+.d-hero__visual .d-hero__star{
+	position:absolute;
+	display:block;
+	width:.9rem;
+	height:.9rem;
+	background:var(--g-hi);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	animation:d-twinkle 2.8s var(--ease-float) infinite;
+	pointer-events:none;
+}
+.d-hero__visual .d-hero__star:nth-child(2){ top:12%; left:18%; animation-delay:0s }
+.d-hero__visual .d-hero__star:nth-child(3){ top:26%; right:14%; width:.6rem; height:.6rem; animation-delay:.7s }
+.d-hero__visual .d-hero__star:nth-child(4){ bottom:20%; left:26%; width:.7rem; height:.7rem; animation-delay:1.4s }
+.d-hero__visual .d-hero__star:nth-child(5){ bottom:12%; right:22%; animation-delay:2.1s }
+
+/* -- narrow ------------------------------------------------------------------
+   820px, the old breakpoint exactly, so nothing shifts at the cutover. The
+   visual goes rather than shrinking: at 400px it is a 150px bow in a 300px box
+   pushing the copy off the fold. */
+@media (max-width: 820px){
+	.d-hero{
+		grid-template-columns:1fr;
+		min-height:0;
+		padding:var(--space-l) 0;
+		text-align:center;
+	}
+	.d-hero__sub{ margin-inline:auto }
+	.d-hero__actions{ justify-content:center }
+	.d-hero__visual{ display:none }
+}
+
+/* =============================================================================
+   PATTERN / SEASON
+   The claret promo panel: a rounded band with a drifting gradient, a heading in
+   gold, and one cream pill.
+   ========================================================================== */
+
+.d-season{
+	position:relative;
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	justify-content:space-between;
+	gap:var(--space-m);
+	padding:var(--space-l) calc(var(--space-l) + var(--space-3xs));
+	border-radius:var(--radius-l);
+	background:linear-gradient(120deg, var(--c-claret), var(--c-cherry-deep));
+	background-size:180% 180%;
+	color:var(--ink-on-dark);
+	animation:d-drift 16s var(--ease-float) infinite;
+}
+.d-season__eyebrow{
+	margin:0 0 var(--space-3xs);
+	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
+	letter-spacing:.2em;
+	text-transform:uppercase;
+	color:var(--g-hi);
+}
+.d-season__title{
+	margin:0 0 var(--space-3xs);
+	font:var(--type-section);
+	font-weight:var(--fw-regular);
+	color:var(--g-hi);
+}
+.d-season p{
+	margin:0;
+	max-width:48ch;
+	opacity:.9;
+}
+/* Cream on claret, and the ink is cherry-deep rather than cherry: this pill sits
+   ON the brand colour, so the label has to be darker than the field behind it. */
+.d-season__cta{
+	flex:none;
+	padding:.75rem 1.6rem;
+	border-radius:var(--radius-pill);
+	background:var(--c-cream);
+	color:var(--c-cherry-deep);
+	font-weight:var(--fw-medium);
+	text-decoration:none;
+	white-space:nowrap;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-season__cta:hover{ background:var(--g-vanilla) }
+.d-season__cta:focus-visible{
+	outline:2px solid var(--c-white);
+	outline-offset:3px;
+}
+/* The corner star. Was content:"\2726" - a dingbat missing from Inter. */
+.d-season::after{
+	content:"";
+	position:absolute;
+	top:14px;
+	inset-inline-end:20px;
+	width:1rem;
+	height:1rem;
+	background:var(--g-hi);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	animation:d-twinkle 3s var(--ease-float) infinite .6s;
+	pointer-events:none;
+}
+html.d-a11y .d-season__title{ color:var(--c-white) !important }
+
+/* =============================================================================
+   PATTERN / EMPTY
+   Nothing here yet - a bow, a line, and a way out. Used by the empty cart, an
+   empty search and an empty category.
+
+   *** IT ALWAYS OFFERS SOMEWHERE TO GO. *** An empty state that only says
+   "empty" is a dead end on the one screen where somebody has already failed to
+   find something.
+   ========================================================================== */
+
+.d-empty{
+	display:grid;
+	justify-items:center;
+	gap:var(--space-2xs);
+	padding:var(--space-2xl) var(--space-s);
+	text-align:center;
+}
+.d-empty__bow{
+	width:52px;
+	height:auto;
+	margin-bottom:var(--space-2xs);
+	color:var(--c-cherry);
+	filter:drop-shadow(0 2px 6px color-mix(in oklab, var(--c-cherry) 18%, transparent));
+	animation:d-bob 5.5s var(--ease-float) infinite;
+}
+.d-empty__title{
+	margin:0;
+	font:var(--type-section);
+	font-weight:var(--fw-regular);
+	color:var(--ink);
+}
+.d-empty__sub{
+	margin:0;
+	max-width:46ch;
+	font-size:var(--fs-meta);
+	line-height:var(--lh-body);
+	color:var(--ink-quiet);
+}
+.d-empty__actions{
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-2xs);
+	justify-content:center;
+	margin-top:var(--space-2xs);
+}
+
+/* =============================================================================
+   PATTERN / COLLECTION CARD
+   A category tile: an image with a label over it. Not the product card - it has
+   no price, no basket, and its whole surface is one link.
+   ========================================================================== */
+
+.d-collection{
+	position:relative;
+	display:block;
+	overflow:hidden;
+	border-radius:var(--radius-m);
+	background:var(--placeholder-category);
+	color:var(--ink-on-dark);
+	text-decoration:none;
+	aspect-ratio:1 / 1;
+	box-shadow:var(--shadow-card);
+	transition:box-shadow var(--dur-ui) var(--ease-float);
+}
+.d-collection:hover{ box-shadow:var(--shadow-card-hover) }
+.d-collection img{
+	width:100%;
+	height:100%;
+	object-fit:cover;
+	display:block;
+	transition:scale 420ms var(--ease-float);
+}
+.d-collection:hover img{ scale:1.06 }
+.d-collection:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:3px;
+}
+/* The scrim - the one non-text use of cocoa in the system, and it exists so a
+   label can be read over a photograph. A gradient rather than a flat wash, so
+   the top of the image is untouched. */
+.d-collection__label{
+	position:absolute;
+	inset-inline:0;
+	bottom:0;
+	padding:var(--space-m) var(--space-s) var(--space-xs);
+	background:linear-gradient(180deg, transparent, var(--scrim) 62%);
+	font:var(--fw-medium) var(--fs-lede)/var(--lh-title) var(--font-ui);
+}
+.d-collection__count{
+	display:block;
+	font-size:var(--fs-fine);
+	font-weight:var(--fw-regular);
+	opacity:.85;
+}
 }
 
 /* ==== patterns/button.css ==== */

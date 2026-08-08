@@ -106,3 +106,28 @@ body.woocommerce-checkout *, body.woocommerce-checkout *::before,
 body.woocommerce-order-received *, body.woocommerce-order-received *::before{
 	animation:none !important;
 }
+/* -- the small movements ----------------------------------------------------
+   Ported out of the legacy stylesheets, where they were four keyframes with
+   three different naming conventions and no shared home. They are here because
+   more than one component uses each of them, and a keyframe defined inside a
+   component is a keyframe the next component copies.
+
+   d-bob      a 7px rise and fall. The hero bow, the empty-state bow, the footer
+              bow. NOT the same as d-float, which travels 96px and belongs to
+              the one big hero object.
+   d-twinkle  a star catching the light: it scales and turns rather than just
+              fading, because a pure opacity blink reads as a fault.
+   d-drift    a slow pan of a background gradient across a wide band.   ========================================================================== */
+
+@keyframes d-bob{
+	0%, 100% { transform:translateY(0) }
+	50%      { transform:translateY(-7px) }
+}
+@keyframes d-twinkle{
+	0%, 100% { opacity:.35; transform:scale(.85) rotate(0deg) }
+	50%      { opacity:1;   transform:scale(1.15) rotate(18deg) }
+}
+@keyframes d-drift{
+	0%, 100% { background-position:0% 50% }
+	50%      { background-position:100% 50% }
+}

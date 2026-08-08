@@ -33,8 +33,20 @@
 	background:var(--surface-raised);
 	color:var(--ink);
 	overflow:hidden;
-	display:flex;
 	flex-direction:column;
+
+	/* *** display:flex HERE WAS A BUG, AND A LOUD ONE. ***
+	   The UA hides a closed <dialog> with dialog:not([open]){display:none}.
+	   Setting display:flex on the base class overrode that, so BOTH drawers
+	   were laid out at all times, translated off-screen by -100% - and a
+	   translated element still contributes to scrollable overflow. MEASURED:
+	   the document was 1532px wide inside a 1180px viewport, 352px too far,
+	   which is exactly one drawer. Every page on the site would have had a
+	   horizontal scrollbar.
+	   So the base stays hidden and [open] does the displaying. The transition
+	   still works because display is in the transition list with
+	   allow-discrete - that is the whole reason that keyword exists. */
+	display:none;
 
 	translate:-100% 0;
 	opacity:0;
@@ -43,7 +55,7 @@
 	           display   var(--dur-panel) allow-discrete,
 	           overlay   var(--dur-panel) allow-discrete;
 }
-.d-drawer[open]{ translate:0 0; opacity:1 }
+.d-drawer[open]{ display:flex; translate:0 0; opacity:1 }
 @starting-style{
 	.d-drawer[open]{ translate:-100% 0; opacity:0 }
 }

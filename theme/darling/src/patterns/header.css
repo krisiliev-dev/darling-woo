@@ -189,10 +189,8 @@
 .d-mega__link:hover::after{ opacity:1 }
 .d-mega__link:hover::before{ animation:d-twinkle 1.5s var(--ease-float) infinite }
 .d-mega__link:hover::after{  animation:d-twinkle 1.5s var(--ease-float) infinite .4s }
-@keyframes d-twinkle{
-	0%,100% { transform:scale(1)    rotate(0deg) }
-	50%     { transform:scale(1.35) rotate(18deg) }
-}
+/* d-twinkle now lives in tokens/motion.css - three components use it. */
+
 .d-mega__link:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
