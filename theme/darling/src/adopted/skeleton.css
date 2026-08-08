@@ -1,0 +1,46 @@
+/* =============================================================================
+   ADOPTED / skeleton
+   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+
+   It styles markup WooCommerce and Stripe emit, which we cannot add classes to.
+   Their stylesheets are unlayered, and unlayered CSS beats layered CSS however
+   specific the layered selector is - so a rule that has to overrule them cannot
+   live in @layer patterns. Measured on the live checkout: identical rules moved
+   here went from losing on border-radius, background and border colour to
+   winning all three.
+
+   The trade is real and worth stating. Nothing in this file participates in the
+   layer order, so it also outranks OUR patterns - which means anything here that
+   is not actually contested by a third party is a rule quietly beating our own
+   system for no reason. collide.js measures the contested set; keep this file
+   inside it.
+
+   Moved out of patterns/skeleton.css, not copied. There is one definition.
+   ========================================================================== */
+
+/* -- ADOPTED: WooCommerce's loading states ---------------------------------- */
+.wc-block-components-skeleton__element,
+.wc-block-components-skeleton .wc-block-components-skeleton__element{
+	position:relative;
+	overflow:hidden;
+	border-radius:var(--radius-s);
+	background:var(--c-grey-300);
+}
+/* Woo dims a whole region while it refreshes. Dim it, do not hide it: the
+   numbers underneath are still the last true ones and hiding them makes a cart
+   feel like it lost the order. */
+.wc-block-components-loading-mask{
+	position:relative;
+	opacity:.55;
+	pointer-events:none;
+	transition:opacity var(--dur-ui) var(--ease-float);
+}
+.wc-block-components-loading-mask .wc-block-components-spinner{
+	color:var(--c-cocoa);
+}
+.is-loading .wc-block-components-product-title,
+.is-loading .wc-block-components-product-price{
+	color:transparent;
+	background:var(--c-grey-300);
+	border-radius:var(--radius-pill);
+}

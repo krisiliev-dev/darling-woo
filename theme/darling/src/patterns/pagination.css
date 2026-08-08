@@ -1,0 +1,76 @@
+/* =============================================================================
+   PATTERN / PAGINATION
+
+   *** THE CURRENT PAGE IS A STATE, NOT AN ACTION. ***
+   So it is cocoa, not amber. Amber means "do this"; filling the page you are
+   already on with the same colour as the buy button teaches people that amber
+   sometimes means nothing.
+
+   *** EVERY TARGET IS 44px. ***
+   These sit at the bottom of a long scroll, are used most on a phone, and are
+   the last thing between someone and the rest of the catalogue.
+
+   The ellipsis is not a link and never looks like one. It has no border, no
+   hover and no cursor, because a target that does nothing when pressed is worse
+   than no target.
+   ========================================================================== */
+
+.d-pagination{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-3xs);
+	margin:var(--section-y) 0;
+	font-size:var(--fs-meta);
+}
+.d-pagination__item{
+	display:grid;
+	place-items:center;
+	min-width:2.75em;
+	min-height:2.75em;
+	padding:0 .55em;
+	border-radius:var(--radius-pill);
+	color:var(--c-cocoa);
+	text-decoration:none;
+	font-variant-numeric:tabular-nums;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-pagination__item:hover{ background:var(--surface-quiet) }
+.d-pagination__item:focus-visible{
+	outline:2px solid var(--c-cocoa);
+	outline-offset:2px;
+}
+.d-pagination__item--current{
+	background:var(--c-cocoa);
+	color:var(--ink-on-dark);
+	font-weight:var(--fw-medium);
+	cursor:default;
+}
+.d-pagination__item--current:hover{ background:var(--c-cocoa) }
+/* Not a link. No border, no hover, no cursor. */
+.d-pagination__dots{
+	display:grid;
+	place-items:center;
+	min-width:1.6em;
+	min-height:2.75em;
+	color:var(--ink-quiet);
+	user-select:none;
+}
+/* Prev and next carry a drawn chevron rather than a glyph, for the same reason
+   the stars are drawn: an arrow character is missing from more fonts than
+   people expect and falls back to a box. */
+.d-pagination__item--prev::before,
+.d-pagination__item--next::before{
+	content:"";
+	width:.46em;
+	height:.46em;
+	border-right:2px solid currentColor;
+	border-bottom:2px solid currentColor;
+}
+.d-pagination__item--prev::before{ transform:rotate(135deg); margin-left:.2em }
+.d-pagination__item--next::before{ transform:rotate(-45deg); margin-right:.2em }
+.d-pagination__item[aria-disabled="true"]{
+	color:var(--ink-placeholder);
+	pointer-events:none;
+}

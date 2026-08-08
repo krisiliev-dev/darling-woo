@@ -1,0 +1,60 @@
+/* =============================================================================
+   PATTERN / SKELETON
+   The shape of content that has not arrived.
+
+   *** IT MUST READ WITH THE ANIMATION SWITCHED OFF. ***
+   motion.css kills every animation on cart, checkout and order-received, and
+   under prefers-reduced-motion - and those are precisely the pages that show
+   skeletons. So the resting tone IS the design and the shimmer is a bonus. A
+   skeleton built as nothing but a moving highlight is invisible on the one page
+   it exists for.
+
+   *** IT IS THE SHAPE OF THE THING, NOT A GREY BOX. ***
+   A skeleton whose proportions do not match what replaces it causes a jump on
+   arrival, which is worse than a blank space: the eye had already settled.
+
+   *** AND IT IS ANNOUNCED. *** aria-hidden on the shape, aria-busy on the
+   region. A screen reader should hear "loading", not a list of empty
+   paragraphs.
+   ========================================================================== */
+
+.d-skeleton{
+	position:relative;
+	display:block;
+	overflow:hidden;
+	border-radius:var(--radius-s);
+	/* The resting tone. Two steps darker than the surface it sits on, so it is
+	   visible without the shimmer. */
+	background:var(--c-grey-300);
+}
+.d-skeleton--text{
+	height:.85em;
+	margin:.34em 0;
+	border-radius:var(--radius-pill);
+}
+.d-skeleton--text:last-child{ width:62% }   /* a paragraph never ends flush */
+.d-skeleton--title{ height:1.3em; width:52%; border-radius:var(--radius-pill) }
+.d-skeleton--media{ aspect-ratio:4 / 3; border-radius:var(--radius-s) }
+.d-skeleton--pill{ height:2.6em; border-radius:var(--radius-pill) }
+.d-skeleton--circle{ aspect-ratio:1; border-radius:var(--radius-circle) }
+
+/* The shimmer. A TRANSFORM on a pseudo-element, not an animated background
+   position: transform is composited, and a skeleton grid is the worst possible
+   place to repaint twenty elements every frame - the page is already busy
+   fetching the thing the skeleton stands in for. */
+.d-skeleton::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	transform:translateX(-100%);
+	background:linear-gradient(90deg,
+		transparent 0%,
+		color-mix(in oklab, var(--c-white) 55%, transparent) 50%,
+		transparent 100%);
+	animation:d-skeleton-sweep 1.6s var(--ease-float) infinite;
+}
+@keyframes d-skeleton-sweep{
+	0%   { transform:translateX(-100%) }
+	60%  { transform:translateX(100%) }
+	100% { transform:translateX(100%) }
+}

@@ -53,6 +53,8 @@
 @import url("patterns/rating.css")  layer(patterns);
 @import url("patterns/field.css")   layer(patterns);
 @import url("patterns/table.css")   layer(patterns);
+@import url("patterns/skeleton.css") layer(patterns);
+@import url("patterns/pagination.css") layer(patterns);
 @import url("patterns/panel.css")      layer(patterns);
 @import url("patterns/badge.css")      layer(patterns);
 @import url("patterns/quantity.css")   layer(patterns);
@@ -70,3 +72,5 @@
 @import url("adopted/badge.css");
 @import url("adopted/panel.css");
 @import url("adopted/quantity.css");
+@import url("adopted/pagination.css");
+@import url("adopted/skeleton.css");
