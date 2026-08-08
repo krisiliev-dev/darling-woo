@@ -26,3 +26,7 @@ node_modules
 tests/*.png
 tests/_diag*.js
 .shopify-capture/
+
+# build machinery: local machine state, not source
+scripts/.watch.log
+scripts/.build-cache.json
