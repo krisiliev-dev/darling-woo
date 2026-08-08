@@ -48,8 +48,13 @@
 	position:absolute;
 	top:50%;
 	left:50%;
-	width:var(--bs, .6rem);
-	height:var(--bs, .6rem);
+	/* *** SIZE IS A BASE TIMES A MULTIPLIER, NOT A SECOND SET OF NUMBERS. ***
+	   The owner wants the click burst four times bigger. Writing four-times
+	   values into the pop would mean nine more lengths that have to be kept in
+	   step with the nine above, and the first person to change a hover offset
+	   would silently not change the pop. One multiplier, set by the host. */
+	width:calc(var(--bs, .6rem) * var(--burst-scale, 1));
+	height:calc(var(--bs, .6rem) * var(--burst-scale, 1));
 	translate:-50% -50%;
 	scale:0;
 	opacity:0;
@@ -78,11 +83,27 @@
 .d-burst i:nth-child(3){ --bx: 4.6rem; --by:-1.2rem; --bs:.7rem  }
 .d-burst i:nth-child(4){ --bx: 3.1rem; --by: 1.7rem; --bs:.5rem  }
 .d-burst i:nth-child(5){ --bx:-3.4rem; --by: 1.6rem; --bs:.56rem }
+/* Four more, for the click burst - "make more of them". They are placed wider
+   and lower than the first five rather than filling the gaps between them,
+   because a burst wants to look scattered and a ring wants to look drawn. The
+   hover version only ever has five in its markup, so these cost it nothing. */
+.d-burst i:nth-child(6){ --bx:-6.1rem; --by: 0.4rem; --bs:.52rem }
+.d-burst i:nth-child(7){ --bx: 6.3rem; --by: 1.9rem; --bs:.58rem }
+.d-burst i:nth-child(8){ --bx: 0.9rem; --by:-3.3rem; --bs:.66rem }
+.d-burst i:nth-child(9){ --bx:-0.7rem; --by: 2.9rem; --bs:.44rem }
 .d-burst i:nth-child(2),
-.d-burst i:nth-child(5){ background:var(--burst-alt, var(--c-cream)) }
+.d-burst i:nth-child(5),
+.d-burst i:nth-child(8){ background:var(--burst-alt, var(--c-cream)) }
 
-:hover > .d-burst i,
-:focus-visible > .d-burst i{
+/* *** SCOPED AWAY FROM THE CLICK HOSTS, AND THIS WAS A REAL BUG. ***
+   These were bare `:hover > .d-burst i`, which was correct while hover was the
+   only trigger. The moment a button popped the same stars on click it did both:
+   stars out on hover, then thrown again on the click - two bursts for one
+   intention, which is exactly what the owner saw.
+   :not(.d-burst-host) keeps hover for the season banner, where hovering IS the
+   interaction, and takes it away from anything whose event is a click. */
+:not(.d-burst-host):hover > .d-burst i,
+:not(.d-burst-host):focus-visible > .d-burst i{
 	translate:calc(-50% + var(--bx)) calc(-50% + var(--by));
 	scale:1;
 	opacity:1;
@@ -92,10 +113,10 @@
 	           opacity   200ms linear;
 	animation:d-burst-spin var(--bspin, 4s) linear infinite;
 }
-:hover > .d-burst i:nth-child(2), :focus-visible > .d-burst i:nth-child(2){ transition-delay:60ms;  --bspin:5.4s }
-:hover > .d-burst i:nth-child(3), :focus-visible > .d-burst i:nth-child(3){ transition-delay:120ms; --bspin:3.1s }
-:hover > .d-burst i:nth-child(4), :focus-visible > .d-burst i:nth-child(4){ transition-delay:180ms; --bspin:6.2s }
-:hover > .d-burst i:nth-child(5), :focus-visible > .d-burst i:nth-child(5){ transition-delay:240ms; --bspin:4.7s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(2), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(2){ transition-delay:60ms;  --bspin:5.4s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(3), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(3){ transition-delay:120ms; --bspin:3.1s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(4), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(4){ transition-delay:180ms; --bspin:6.2s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(5), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(5){ transition-delay:240ms; --bspin:4.7s }
 /* Spinning about its own centre while sitting at an offset means the rotation
    cannot live in `translate` - which is exactly why these are separate
    properties and not one `transform`. */
@@ -120,23 +141,39 @@
    can be re-added immediately for a second click.
    ========================================================================== */
 .d-burst[data-pop] i{
-	animation:d-burst-pop 720ms var(--ease-star) 1 both;
+	animation:d-burst-pop 1.5s var(--ease-star) 1 both;
 }
 .d-burst[data-pop] i:nth-child(2){ animation-delay:40ms }
 .d-burst[data-pop] i:nth-child(3){ animation-delay:80ms }
 .d-burst[data-pop] i:nth-child(4){ animation-delay:25ms }
 .d-burst[data-pop] i:nth-child(5){ animation-delay:65ms }
+.d-burst[data-pop] i:nth-child(6){ animation-delay:15ms }
+.d-burst[data-pop] i:nth-child(7){ animation-delay:95ms }
+.d-burst[data-pop] i:nth-child(8){ animation-delay:50ms }
+.d-burst[data-pop] i:nth-child(9){ animation-delay:110ms }
+/* *** IT ENDS AT FULL SIZE AND ZERO OPACITY, NOT AT SCALE 0. ***
+   The first version shrank them away, which at the old size read as "going
+   back". Four times bigger, shrinking to nothing reads as a mistake - so they
+   keep their size and fade. Safe to do because the RESTING rule above is
+   scale:0, so the instant the attribute comes off they are invisible again with
+   nothing to see. */
 @keyframes d-burst-pop{
 	0%{
 		translate:-50% -50%;
 		scale:0; opacity:0; rotate:0deg;
 	}
-	14%{ opacity:1; scale:1.15 }
+	12%{ opacity:1; scale:1 }
 	100%{
-		translate:calc(-50% + var(--bx) * 1.9) calc(-50% + var(--by) * 1.9);
-		scale:0; opacity:0; rotate:220deg;
+		translate:calc(-50% + var(--bx) * var(--burst-reach, 1.9))
+		          calc(-50% + var(--by) * var(--burst-reach, 1.9));
+		scale:1; opacity:0; rotate:240deg;
 	}
 }
+/* The host's settings. Four times the size and twice the distance the first
+   version threw them, both on the owner's call. Everything else about the
+   component - the destinations, the colours, the spin - is untouched, which is
+   the point of putting them here rather than in the keyframe. */
+.d-burst-host{ --burst-scale:4; --burst-reach:3.8 }
 /* The button has to let them out. .d-finish clips its own texture, and a burst
    inside a clipped box is five stars nobody sees. */
 .d-burst-host{ position:relative; overflow:visible }

@@ -358,3 +358,84 @@
 .woocommerce form .form-row.woocommerce-validated input.input-text{
 	border-color:color-mix(in oklab, var(--g-core) 60%, var(--edge-field));
 }
+
+/* =============================================================================
+   ADOPTED / THE REVIEW FORM'S FIELDS
+   *** NOT ONE RULE IN THIS FILE WAS SELECTING THEM. ***
+
+   Owner: "the Отзиви form needs to use our fields, right now it is using some
+   sort of default fields." He is right, and the reason is exact rather than
+   sloppy: everything above targets either the block checkout
+   (.wc-block-components-*) or the classic checkout (form .form-row
+   input.input-text). WooCommerce's review form is NEITHER. It is WordPress's
+   comment form - <p class="comment-form-comment"> wrapped around a bare
+   <textarea id="comment"> with no .input-text, no .form-row and no wrapper
+   class of its own. So the fields were not styled badly. They were not styled.
+
+   They cannot be given our classes either: the markup comes out of
+   comment_form(), and while its fields ARE filterable in PHP, a stylesheet
+   should not depend on a filter existing. So they are matched on what they
+   actually are.
+   ========================================================================== */
+#review_form .comment-form input[type="text"],
+#review_form .comment-form input[type="email"],
+#review_form .comment-form input[type="url"],
+#review_form .comment-form textarea,
+#respond.comment-respond .comment-form input[type="text"],
+#respond.comment-respond .comment-form input[type="email"],
+#respond.comment-respond .comment-form textarea{
+	box-sizing:border-box;
+	width:100%;
+	padding:var(--space-2xs) var(--space-xs);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-s);
+	background:var(--surface-raised);
+	color:var(--ink);
+	font:var(--type-body);
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
+}
+#review_form .comment-form input[type="text"]:hover,
+#review_form .comment-form input[type="email"]:hover,
+#review_form .comment-form textarea:hover{ border-color:var(--c-mauve-light) }
+/* Cocoa, not cherry. --action is #D42A3C and a red ring on a field you are
+   typing in reads as an error - the owner caught exactly this on the quantity
+   stepper, and the same trap is here. */
+#review_form .comment-form input[type="text"]:focus,
+#review_form .comment-form input[type="email"]:focus,
+#review_form .comment-form textarea:focus,
+#review_form .comment-form input:focus-visible,
+#review_form .comment-form textarea:focus-visible{
+	outline:none;
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
+}
+#review_form .comment-form textarea,
+#respond.comment-respond .comment-form textarea{
+	min-height:8rem;
+	resize:vertical;
+	line-height:var(--lh-body);
+}
+#review_form .comment-form label,
+#respond.comment-respond .comment-form label{
+	display:block;
+	margin:0 0 var(--space-3xs);
+	font:var(--fw-medium) var(--fs-fine)/1.3 var(--font-ui);
+	color:var(--ink);
+}
+/* The consent line is a checkbox and a sentence, not a field and a label, so it
+   is the one row here that is not the pattern above. */
+#review_form .comment-form-cookies-consent label{
+	display:inline;
+	margin:0;
+	font:var(--type-body);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+}
+#review_form .comment-form input[type="checkbox"]{
+	width:1.15rem;
+	height:1.15rem;
+	margin:.15rem 0 0;
+	accent-color:var(--action);
+	flex:none;
+}

@@ -556,10 +556,15 @@
 }
 .woocommerce #review_form #respond p{ margin:0 0 var(--space-s) }
 .woocommerce #review_form #respond p:last-child{ margin-bottom:0 }
+/* *** .comment-form-rating IS A <div>, NOT A <p>. *** The rule above gives every
+   <p> in the form its bottom margin, and this row is the one child that is not
+   one - so the stars sat flush against the Отзив label with nothing between
+   them. Same margin, stated once more, because the element is different. */
 .woocommerce #review_form #respond .comment-form-rating{
 	display:flex;
 	align-items:center;
 	gap:var(--space-2xs);
+	margin:0 0 var(--space-s);
 }
 .woocommerce #review_form #respond .comment-form-rating label{
 	margin:0;

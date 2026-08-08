@@ -693,6 +693,22 @@ h4{ font:var(--fw-bold) var(--fs-body)/var(--lh-title) var(--font-display) }
 
 p{ margin:0 0 var(--stack); max-width:var(--measure-lede) }
 p:last-child{ margin-bottom:0 }
+/* *** A PARAGRAPH HOLDING A CONTROL IS A ROW, NOT A SENTENCE. ***
+   The measure above is right for prose and wrong for the <p> that WordPress's
+   comment form and WooCommerce's CLASSIC checkout wrap around every field:
+   <p class="form-row form-row-wide">. Measured in the review form - a 676px
+   card with a 380px textarea in it, 380px being 44ch at 16px. No rule in
+   adopted/field.css can fix that from the input, because the input already IS
+   width:100%; of a parent the base layer has capped.
+
+   Asking what the paragraph CONTAINS beats listing the classes that happen to
+   be form rows today - the next plugin brings its own. :has() is Chrome 105+
+   and the floor here is 141.
+
+   Deliberately NOT including <a>: p.stars is five anchors and is an inline-flex
+   row of masks about 110px wide, so the cap costs it nothing, while a paragraph
+   of prose with a link in it is still prose. */
+p:has(input, textarea, select){ max-width:none }
 
 a{ color:inherit; text-underline-offset:.18em }
 
@@ -2492,8 +2508,13 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	position:absolute;
 	top:50%;
 	left:50%;
-	width:var(--bs, .6rem);
-	height:var(--bs, .6rem);
+	/* *** SIZE IS A BASE TIMES A MULTIPLIER, NOT A SECOND SET OF NUMBERS. ***
+	   The owner wants the click burst four times bigger. Writing four-times
+	   values into the pop would mean nine more lengths that have to be kept in
+	   step with the nine above, and the first person to change a hover offset
+	   would silently not change the pop. One multiplier, set by the host. */
+	width:calc(var(--bs, .6rem) * var(--burst-scale, 1));
+	height:calc(var(--bs, .6rem) * var(--burst-scale, 1));
 	translate:-50% -50%;
 	scale:0;
 	opacity:0;
@@ -2522,11 +2543,27 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 .d-burst i:nth-child(3){ --bx: 4.6rem; --by:-1.2rem; --bs:.7rem  }
 .d-burst i:nth-child(4){ --bx: 3.1rem; --by: 1.7rem; --bs:.5rem  }
 .d-burst i:nth-child(5){ --bx:-3.4rem; --by: 1.6rem; --bs:.56rem }
+/* Four more, for the click burst - "make more of them". They are placed wider
+   and lower than the first five rather than filling the gaps between them,
+   because a burst wants to look scattered and a ring wants to look drawn. The
+   hover version only ever has five in its markup, so these cost it nothing. */
+.d-burst i:nth-child(6){ --bx:-6.1rem; --by: 0.4rem; --bs:.52rem }
+.d-burst i:nth-child(7){ --bx: 6.3rem; --by: 1.9rem; --bs:.58rem }
+.d-burst i:nth-child(8){ --bx: 0.9rem; --by:-3.3rem; --bs:.66rem }
+.d-burst i:nth-child(9){ --bx:-0.7rem; --by: 2.9rem; --bs:.44rem }
 .d-burst i:nth-child(2),
-.d-burst i:nth-child(5){ background:var(--burst-alt, var(--c-cream)) }
+.d-burst i:nth-child(5),
+.d-burst i:nth-child(8){ background:var(--burst-alt, var(--c-cream)) }
 
-:hover > .d-burst i,
-:focus-visible > .d-burst i{
+/* *** SCOPED AWAY FROM THE CLICK HOSTS, AND THIS WAS A REAL BUG. ***
+   These were bare `:hover > .d-burst i`, which was correct while hover was the
+   only trigger. The moment a button popped the same stars on click it did both:
+   stars out on hover, then thrown again on the click - two bursts for one
+   intention, which is exactly what the owner saw.
+   :not(.d-burst-host) keeps hover for the season banner, where hovering IS the
+   interaction, and takes it away from anything whose event is a click. */
+:not(.d-burst-host):hover > .d-burst i,
+:not(.d-burst-host):focus-visible > .d-burst i{
 	translate:calc(-50% + var(--bx)) calc(-50% + var(--by));
 	scale:1;
 	opacity:1;
@@ -2536,10 +2573,10 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	           opacity   200ms linear;
 	animation:d-burst-spin var(--bspin, 4s) linear infinite;
 }
-:hover > .d-burst i:nth-child(2), :focus-visible > .d-burst i:nth-child(2){ transition-delay:60ms;  --bspin:5.4s }
-:hover > .d-burst i:nth-child(3), :focus-visible > .d-burst i:nth-child(3){ transition-delay:120ms; --bspin:3.1s }
-:hover > .d-burst i:nth-child(4), :focus-visible > .d-burst i:nth-child(4){ transition-delay:180ms; --bspin:6.2s }
-:hover > .d-burst i:nth-child(5), :focus-visible > .d-burst i:nth-child(5){ transition-delay:240ms; --bspin:4.7s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(2), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(2){ transition-delay:60ms;  --bspin:5.4s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(3), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(3){ transition-delay:120ms; --bspin:3.1s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(4), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(4){ transition-delay:180ms; --bspin:6.2s }
+:not(.d-burst-host):hover > .d-burst i:nth-child(5), :not(.d-burst-host):focus-visible > .d-burst i:nth-child(5){ transition-delay:240ms; --bspin:4.7s }
 /* Spinning about its own centre while sitting at an offset means the rotation
    cannot live in `translate` - which is exactly why these are separate
    properties and not one `transform`. */
@@ -2564,23 +2601,39 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
    can be re-added immediately for a second click.
    ========================================================================== */
 .d-burst[data-pop] i{
-	animation:d-burst-pop 720ms var(--ease-star) 1 both;
+	animation:d-burst-pop 1.5s var(--ease-star) 1 both;
 }
 .d-burst[data-pop] i:nth-child(2){ animation-delay:40ms }
 .d-burst[data-pop] i:nth-child(3){ animation-delay:80ms }
 .d-burst[data-pop] i:nth-child(4){ animation-delay:25ms }
 .d-burst[data-pop] i:nth-child(5){ animation-delay:65ms }
+.d-burst[data-pop] i:nth-child(6){ animation-delay:15ms }
+.d-burst[data-pop] i:nth-child(7){ animation-delay:95ms }
+.d-burst[data-pop] i:nth-child(8){ animation-delay:50ms }
+.d-burst[data-pop] i:nth-child(9){ animation-delay:110ms }
+/* *** IT ENDS AT FULL SIZE AND ZERO OPACITY, NOT AT SCALE 0. ***
+   The first version shrank them away, which at the old size read as "going
+   back". Four times bigger, shrinking to nothing reads as a mistake - so they
+   keep their size and fade. Safe to do because the RESTING rule above is
+   scale:0, so the instant the attribute comes off they are invisible again with
+   nothing to see. */
 @keyframes d-burst-pop{
 	0%{
 		translate:-50% -50%;
 		scale:0; opacity:0; rotate:0deg;
 	}
-	14%{ opacity:1; scale:1.15 }
+	12%{ opacity:1; scale:1 }
 	100%{
-		translate:calc(-50% + var(--bx) * 1.9) calc(-50% + var(--by) * 1.9);
-		scale:0; opacity:0; rotate:220deg;
+		translate:calc(-50% + var(--bx) * var(--burst-reach, 1.9))
+		          calc(-50% + var(--by) * var(--burst-reach, 1.9));
+		scale:1; opacity:0; rotate:240deg;
 	}
 }
+/* The host's settings. Four times the size and twice the distance the first
+   version threw them, both on the owner's call. Everything else about the
+   component - the destinations, the colours, the spin - is untouched, which is
+   the point of putting them here rather than in the keyframe. */
+.d-burst-host{ --burst-scale:4; --burst-reach:3.8 }
 /* The button has to let them out. .d-finish clips its own texture, and a burst
    inside a clipped box is five stars nobody sees. */
 .d-burst-host{ position:relative; overflow:visible }
@@ -7870,6 +7923,87 @@ li.product .wp-block-button__link{
 	border-color:color-mix(in oklab, var(--g-core) 60%, var(--edge-field));
 }
 
+/* =============================================================================
+   ADOPTED / THE REVIEW FORM'S FIELDS
+   *** NOT ONE RULE IN THIS FILE WAS SELECTING THEM. ***
+
+   Owner: "the Отзиви form needs to use our fields, right now it is using some
+   sort of default fields." He is right, and the reason is exact rather than
+   sloppy: everything above targets either the block checkout
+   (.wc-block-components-*) or the classic checkout (form .form-row
+   input.input-text). WooCommerce's review form is NEITHER. It is WordPress's
+   comment form - <p class="comment-form-comment"> wrapped around a bare
+   <textarea id="comment"> with no .input-text, no .form-row and no wrapper
+   class of its own. So the fields were not styled badly. They were not styled.
+
+   They cannot be given our classes either: the markup comes out of
+   comment_form(), and while its fields ARE filterable in PHP, a stylesheet
+   should not depend on a filter existing. So they are matched on what they
+   actually are.
+   ========================================================================== */
+#review_form .comment-form input[type="text"],
+#review_form .comment-form input[type="email"],
+#review_form .comment-form input[type="url"],
+#review_form .comment-form textarea,
+#respond.comment-respond .comment-form input[type="text"],
+#respond.comment-respond .comment-form input[type="email"],
+#respond.comment-respond .comment-form textarea{
+	box-sizing:border-box;
+	width:100%;
+	padding:var(--space-2xs) var(--space-xs);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-s);
+	background:var(--surface-raised);
+	color:var(--ink);
+	font:var(--type-body);
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
+}
+#review_form .comment-form input[type="text"]:hover,
+#review_form .comment-form input[type="email"]:hover,
+#review_form .comment-form textarea:hover{ border-color:var(--c-mauve-light) }
+/* Cocoa, not cherry. --action is #D42A3C and a red ring on a field you are
+   typing in reads as an error - the owner caught exactly this on the quantity
+   stepper, and the same trap is here. */
+#review_form .comment-form input[type="text"]:focus,
+#review_form .comment-form input[type="email"]:focus,
+#review_form .comment-form textarea:focus,
+#review_form .comment-form input:focus-visible,
+#review_form .comment-form textarea:focus-visible{
+	outline:none;
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
+}
+#review_form .comment-form textarea,
+#respond.comment-respond .comment-form textarea{
+	min-height:8rem;
+	resize:vertical;
+	line-height:var(--lh-body);
+}
+#review_form .comment-form label,
+#respond.comment-respond .comment-form label{
+	display:block;
+	margin:0 0 var(--space-3xs);
+	font:var(--fw-medium) var(--fs-fine)/1.3 var(--font-ui);
+	color:var(--ink);
+}
+/* The consent line is a checkbox and a sentence, not a field and a label, so it
+   is the one row here that is not the pattern above. */
+#review_form .comment-form-cookies-consent label{
+	display:inline;
+	margin:0;
+	font:var(--type-body);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+}
+#review_form .comment-form input[type="checkbox"]{
+	width:1.15rem;
+	height:1.15rem;
+	margin:.15rem 0 0;
+	accent-color:var(--action);
+	flex:none;
+}
+
 
 /* ==== adopted/notice.css ==== */
 /* =============================================================================
@@ -8043,6 +8177,73 @@ li.product .wp-block-button__link{
 .woocommerce p.stars a.active,
 .woocommerce p.stars a.active ~ a{ background:var(--g-core) }
 .woocommerce p.stars a:hover ~ a{ background:var(--c-ash-300) }
+
+/* -- THE LIFT AND THE SWEEP -------------------------------------------------
+   Owner: "shouldn't the review stars be there? The ones that raise up and
+   sheen?" They should. .d-rating-input has both and this had neither - it only
+   ever got the shape and the fill.
+
+   *** TWO SELECTORS, NOT FIFTEEN. *** patterns/rating.css enumerates every
+   combination because its stars are radios wrapped in labels and it needs
+   :has() on the CONTAINER to read forwards. Woo's are five plain siblings, so
+   the same question - "is this star at or before the hovered one" - is just
+   "am I hovered, or does a hovered star come after me": a:hover, and
+   a:has(~ a:hover).
+
+   Woo emits <p class="stars"><span><a>...</a></span></p>, so the SPAN is the
+   flex line, not the p. Missing that is why the picker rendered as five bare
+   links reading "1 2 3 4 5" - which is the "button next to the label" the owner
+   saw. */
+.woocommerce p.stars span{ display:inline-flex; gap:.12em; align-items:flex-end }
+.woocommerce p.stars a{
+	position:relative;
+	overflow:hidden;
+	transition:background 120ms var(--ease-float),
+	           translate 160ms var(--ease-float),
+	           scale 160ms var(--ease-float);
+}
+.woocommerce p.stars a:hover,
+.woocommerce p.stars a:has(~ a:hover){
+	translate:0 -.16em;
+	scale:1.08;
+}
+/* The sheen. A band of light swept across the star - and it is clipped to the
+   star's silhouette for free, because the mask on the <a> clips everything that
+   element paints, its own pseudo-element included. The same fact that made the
+   cart's wheels invisible is the one that makes this work.
+   The animation runs from page load rather than from hover, so five stars
+   hovered in sequence stay in step with each other instead of each starting its
+   own timer; hover only reveals it. */
+.woocommerce p.stars a::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	opacity:0;
+	background:linear-gradient(105deg,
+		transparent 36%, color-mix(in oklab, var(--c-white) 85%, transparent) 50%,
+		transparent 64%);
+	translate:-115% 0;
+	animation:d-star-sweep 2.4s linear infinite;
+}
+.woocommerce p.stars a:hover::after,
+.woocommerce p.stars a:has(~ a:hover)::after{ opacity:1 }
+.woocommerce p.stars a:nth-child(2)::after{ animation-delay:300ms }
+.woocommerce p.stars a:nth-child(3)::after{ animation-delay:600ms }
+.woocommerce p.stars a:nth-child(4)::after{ animation-delay:900ms }
+.woocommerce p.stars a:nth-child(5)::after{ animation-delay:1200ms }
+@media (prefers-reduced-motion: reduce){
+	.woocommerce p.stars a::after{ display:none }
+	.woocommerce p.stars a:hover,
+	.woocommerce p.stars a:has(~ a:hover){ translate:none; scale:1 }
+}
+/* *** AND A NOTE ON WHAT THIS STILL IS NOT. ***
+   These are anchors. Woo's picker needs JavaScript to record a choice, cannot
+   be operated from the keyboard, and announces nothing useful to a screen
+   reader. .d-rating-input is five real radios in a fieldset and has none of
+   those problems. Replacing the markup is a PHP change - the review form's
+   rating field is printed by woocommerce_comment_form_rating() and is
+   replaceable - and until somebody makes it, this is a good-looking control
+   that half the people using it cannot operate. Worth doing properly. */
 
 
 /* ==== adopted/table.css ==== */
@@ -9395,10 +9596,15 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 .woocommerce #review_form #respond p{ margin:0 0 var(--space-s) }
 .woocommerce #review_form #respond p:last-child{ margin-bottom:0 }
+/* *** .comment-form-rating IS A <div>, NOT A <p>. *** The rule above gives every
+   <p> in the form its bottom margin, and this row is the one child that is not
+   one - so the stars sat flush against the Отзив label with nothing between
+   them. Same margin, stated once more, because the element is different. */
 .woocommerce #review_form #respond .comment-form-rating{
 	display:flex;
 	align-items:center;
 	gap:var(--space-2xs);
+	margin:0 0 var(--space-s);
 }
 .woocommerce #review_form #respond .comment-form-rating label{
 	margin:0;
@@ -10220,7 +10426,11 @@ that is the next component.</div>
 	function burstHost(el) {
 		var burst = el.querySelector('.d-burst');
 		if (!burst) return;
-		el.addEventListener('click', function () { bump(burst, 'data-pop', 900); });
+		/* 1700, not 900: the pop is 1.5s plus up to 110ms of stagger, and bump
+		   takes the attribute off after its timeout - so 900 cut the animation
+		   in half, mid-flight, with the stars still visible. The timeout has to
+		   outlast the longest star. */
+		el.addEventListener('click', function () { bump(burst, 'data-pop', 1700); });
 	}
 
 	function init(root) {
@@ -10772,7 +10982,7 @@ fixture. Re-check them the day a photographed product with a review exists.</p>
         <button class="d-qty__button" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
       </div>
       <button class="d-btn d-finish d-burst-host">Добавяне в количката<span
-        class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button>
+        class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
     </div>
     <div class="d-product__express">
       <div style="display:grid;gap:8px">
@@ -10882,17 +11092,21 @@ trail lags behind it</p>
       <p class="woocommerce-noreviews">Все още няма отзиви.</p>
       <div id="review_form_wrapper"><div id="review_form"><div id="respond" class="comment-respond">
         <span id="reply-title" class="comment-reply-title">Напиши отзив</span>
-        <form class="comment-form">
-          <p class="comment-form-rating"><label>Твоята оценка</label>
-            <span class="stars"><a href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a></span></p>
-          <p class="comment-form-comment"><label class="d-field__label" for="comment">Отзив</label>
-            <textarea id="comment" class="d-field__input" rows="4"></textarea></p>
-          <p class="comment-form-author"><label class="d-field__label" for="author">Име</label>
-            <input id="author" class="d-field__input" type="text"></p>
+        <form id="commentform" class="comment-form">
+          <div class="comment-form-rating"><label for="rating">Твоята оценка</label>
+            <p class="stars"><span><a class="star-1" href="#">1</a><a class="star-2" href="#">2</a><a
+              class="star-3" href="#">3</a><a class="star-4" href="#">4</a><a class="star-5" href="#">5</a></span></p>
+          </div>
+          <p class="comment-form-comment"><label for="comment">Отзив <span class="required">*</span></label>
+            <textarea id="comment" name="comment" cols="45" rows="8" required></textarea></p>
+          <p class="comment-form-author"><label for="author">Име <span class="required">*</span></label>
+            <input id="author" name="author" type="text" size="30" required></p>
+          <p class="comment-form-email"><label for="email">Имейл <span class="required">*</span></label>
+            <input id="email" name="email" type="email" size="30" required></p>
           <p class="comment-form-cookies-consent">
-            <input id="wp-comment-cookies-consent" type="checkbox">
+            <input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes">
             <label for="wp-comment-cookies-consent">Запомни името ми за следващия път</label></p>
-          <p class="form-submit"><input type="submit" id="submit" class="submit" value="Изпрати"></p>
+          <p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Изпрати"></p>
         </form>
       </div></div></div>
     </div>
@@ -10900,7 +11114,32 @@ trail lags behind it</p>
 </div>
 
 </div></div>
-<div class="todo"><b>The travelling underline is not a background on the active
+<div class="todo"><b>The stars come out on the click and only on the click.</b>
+They were doing both &mdash; out on hover, then thrown again on the click &mdash;
+because <code>burst.css</code>&rsquo;s hover rules were written as a bare
+<code>:hover</code> back when hover was the only trigger. They are scoped away
+from click hosts now, so the season banner keeps its hover and the buy button
+has one event. Four times the size, nine of them, 1.5s, and twice as far as the
+first attempt threw them.<br><br>
+<b>The review form was not styled badly &mdash; it was not styled at all.</b>
+Everything in <code>adopted/field.css</code> targets either the block checkout or
+the classic checkout, and WooCommerce&rsquo;s review form is neither: it is
+WordPress&rsquo;s comment form, a bare <code>&lt;textarea id="comment"&gt;</code>
+with no <code>.input-text</code> and no <code>.form-row</code>. Not one rule was
+selecting it.<br><br>
+<b>The rating picker had the shape but not the behaviour.</b> Woo emits
+<code>&lt;p class="stars"&gt;&lt;span&gt;</code> and my fixture said
+<code>&lt;span class="stars"&gt;</code>, so <code>p.stars</code> never matched and
+five bare links rendered as the text &ldquo;1 2 3 4 5&rdquo;. Now they lift and a
+band of light sweeps across them, the same as <code>.d-rating-input</code> &mdash;
+in two selectors rather than fifteen, by asking <em>&ldquo;does a hovered star
+come after me?&rdquo;</em> instead of enumerating every combination.
+<em>Still not right:</em> these are anchors. Woo&rsquo;s picker needs JavaScript,
+cannot be operated from the keyboard and tells a screen reader nothing.
+<code>.d-rating-input</code> is five real radios and has none of those problems;
+swapping them is a PHP change to
+<code>woocommerce_comment_form_rating()</code>.<br><br>
+<b>The travelling underline is not a background on the active
 tab.</b> A background cannot move between two elements, and moving is the whole
 point. It is two bars on one pair of values &mdash; <code>--tab-x</code> and
 <code>--tab-w</code> &mdash; transitioned on two different clocks: the cherry

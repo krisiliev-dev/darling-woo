@@ -1351,7 +1351,7 @@ A('''</ol>
         <button class="d-qty__button" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
       </div>
       <button class="d-btn d-finish d-burst-host">Добавяне в количката<span
-        class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button>
+        class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
     </div>
     <div class="d-product__express">
       <div style="display:grid;gap:8px">
@@ -1461,17 +1461,21 @@ trail lags behind it</p>
       <p class="woocommerce-noreviews">Все още няма отзиви.</p>
       <div id="review_form_wrapper"><div id="review_form"><div id="respond" class="comment-respond">
         <span id="reply-title" class="comment-reply-title">Напиши отзив</span>
-        <form class="comment-form">
-          <p class="comment-form-rating"><label>Твоята оценка</label>
-            <span class="stars"><a href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a></span></p>
-          <p class="comment-form-comment"><label class="d-field__label" for="comment">Отзив</label>
-            <textarea id="comment" class="d-field__input" rows="4"></textarea></p>
-          <p class="comment-form-author"><label class="d-field__label" for="author">Име</label>
-            <input id="author" class="d-field__input" type="text"></p>
+        <form id="commentform" class="comment-form">
+          <div class="comment-form-rating"><label for="rating">Твоята оценка</label>
+            <p class="stars"><span><a class="star-1" href="#">1</a><a class="star-2" href="#">2</a><a
+              class="star-3" href="#">3</a><a class="star-4" href="#">4</a><a class="star-5" href="#">5</a></span></p>
+          </div>
+          <p class="comment-form-comment"><label for="comment">Отзив <span class="required">*</span></label>
+            <textarea id="comment" name="comment" cols="45" rows="8" required></textarea></p>
+          <p class="comment-form-author"><label for="author">Име <span class="required">*</span></label>
+            <input id="author" name="author" type="text" size="30" required></p>
+          <p class="comment-form-email"><label for="email">Имейл <span class="required">*</span></label>
+            <input id="email" name="email" type="email" size="30" required></p>
           <p class="comment-form-cookies-consent">
-            <input id="wp-comment-cookies-consent" type="checkbox">
+            <input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes">
             <label for="wp-comment-cookies-consent">Запомни името ми за следващия път</label></p>
-          <p class="form-submit"><input type="submit" id="submit" class="submit" value="Изпрати"></p>
+          <p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Изпрати"></p>
         </form>
       </div></div></div>
     </div>
@@ -1479,7 +1483,32 @@ trail lags behind it</p>
 </div>
 
 </div></div>
-<div class="todo"><b>The travelling underline is not a background on the active
+<div class="todo"><b>The stars come out on the click and only on the click.</b>
+They were doing both &mdash; out on hover, then thrown again on the click &mdash;
+because <code>burst.css</code>&rsquo;s hover rules were written as a bare
+<code>:hover</code> back when hover was the only trigger. They are scoped away
+from click hosts now, so the season banner keeps its hover and the buy button
+has one event. Four times the size, nine of them, 1.5s, and twice as far as the
+first attempt threw them.<br><br>
+<b>The review form was not styled badly &mdash; it was not styled at all.</b>
+Everything in <code>adopted/field.css</code> targets either the block checkout or
+the classic checkout, and WooCommerce&rsquo;s review form is neither: it is
+WordPress&rsquo;s comment form, a bare <code>&lt;textarea id="comment"&gt;</code>
+with no <code>.input-text</code> and no <code>.form-row</code>. Not one rule was
+selecting it.<br><br>
+<b>The rating picker had the shape but not the behaviour.</b> Woo emits
+<code>&lt;p class="stars"&gt;&lt;span&gt;</code> and my fixture said
+<code>&lt;span class="stars"&gt;</code>, so <code>p.stars</code> never matched and
+five bare links rendered as the text &ldquo;1 2 3 4 5&rdquo;. Now they lift and a
+band of light sweeps across them, the same as <code>.d-rating-input</code> &mdash;
+in two selectors rather than fifteen, by asking <em>&ldquo;does a hovered star
+come after me?&rdquo;</em> instead of enumerating every combination.
+<em>Still not right:</em> these are anchors. Woo&rsquo;s picker needs JavaScript,
+cannot be operated from the keyboard and tells a screen reader nothing.
+<code>.d-rating-input</code> is five real radios and has none of those problems;
+swapping them is a PHP change to
+<code>woocommerce_comment_form_rating()</code>.<br><br>
+<b>The travelling underline is not a background on the active
 tab.</b> A background cannot move between two elements, and moving is the whole
 point. It is two bars on one pair of values &mdash; <code>--tab-x</code> and
 <code>--tab-w</code> &mdash; transitioned on two different clocks: the cherry

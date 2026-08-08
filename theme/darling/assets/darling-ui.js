@@ -290,7 +290,11 @@
 	function burstHost(el) {
 		var burst = el.querySelector('.d-burst');
 		if (!burst) return;
-		el.addEventListener('click', function () { bump(burst, 'data-pop', 900); });
+		/* 1700, not 900: the pop is 1.5s plus up to 110ms of stagger, and bump
+		   takes the attribute off after its timeout - so 900 cut the animation
+		   in half, mid-flight, with the stars still visible. The timeout has to
+		   outlast the longest star. */
+		el.addEventListener('click', function () { bump(burst, 'data-pop', 1700); });
 	}
 
 	function init(root) {
