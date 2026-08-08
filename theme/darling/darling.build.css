@@ -1453,10 +1453,17 @@ hr{
 		background:var(--surface-raised);
 		box-shadow:var(--shadow-card);
 	}
+	/* *** THE INNER RADIUS IS THE OUTER RADIUS MINUS THE PADDING. ***
+	   The options were --radius-xs (3px) inside a --radius-m (14px) picker, and
+	   a nearly-square highlight sitting inside a well-rounded menu reads as a
+	   mistake the moment a row lights up. Concentric curves need
+	   inner = outer - gap: the picker's padding is --space-3xs (about 4px), so
+	   14 - 4 lands on --radius-s. That is arithmetic, not taste - if the picker
+	   padding changes, this has to move with it. */
 	.d-field option,
 	.d-select option{
 		padding:.52em .7em;
-		border-radius:var(--radius-xs);
+		border-radius:var(--radius-s);
 		color:var(--c-cocoa);
 		background:transparent;
 		font:var(--type-body);
@@ -2530,7 +2537,7 @@ li.product .wp-block-button__link{
 	}
 	.wc-block-components-form option{
 		padding:.52em .7em;
-		border-radius:var(--radius-xs);
+		border-radius:var(--radius-s);   /* concentric with the picker; see above */
 		color:var(--c-cocoa);
 		background:transparent;
 	}

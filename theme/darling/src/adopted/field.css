@@ -173,7 +173,7 @@
 	}
 	.wc-block-components-form option{
 		padding:.52em .7em;
-		border-radius:var(--radius-xs);
+		border-radius:var(--radius-s);   /* concentric with the picker; see above */
 		color:var(--c-cocoa);
 		background:transparent;
 	}
