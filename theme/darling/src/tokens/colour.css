@@ -123,9 +123,8 @@
 	   NEW and is a proposal, not a decision - see patterns/notice.css. A notice
 	   is a tinted surface with a solid edge, never a solid block: a full-bleed
 	   red panel on a checkout reads as a crash rather than as a correction. */
-	--c-sage: #4F6B55;                    /* PROPOSED - awaiting the owner */
 	--notice-error-edge:   var(--c-claret);
 	--notice-warning-edge: var(--g-shadow);
-	--notice-success-edge: var(--c-sage);
+	--notice-success-edge: var(--g-core);   /* gold. The owner ruled out green. */
 	--notice-info-edge:    var(--c-mauve);
 }

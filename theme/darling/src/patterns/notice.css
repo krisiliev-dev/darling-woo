@@ -2,114 +2,228 @@
    PATTERN / NOTICE
    Error, warning, success, info - plus the dismiss and the store-wide bar.
 
-   A NOTICE IS A TINTED SURFACE WITH A SOLID EDGE, NEVER A SOLID BLOCK. A
-   full-bleed red panel across a checkout reads as a crash rather than as a
-   correction, and the one place notices matter most is the place a customer is
-   most likely to abandon.
+   A NOTICE IS A TINTED SURFACE, never a solid block: a full-bleed red panel
+   across a checkout reads as a crash rather than as a correction, and the
+   checkout is where a customer is most likely to abandon. No left rim - the
+   owner reviewed it and it read as an admin panel rather than as us. The tint
+   and the star carry the state instead, plus a soft ring in the state colour so
+   the shape still holds on a busy page.
 
-   *** THE COLOUR IS NOT THE MESSAGE. *** Every state carries an icon as well as
-   a tint, because roughly one man in twelve cannot separate the red one from the
-   green one, and because a tint this light is doing almost no work on a bad
-   screen in daylight. The icon is a pseudo-element so the markup does not have
-   to carry it - WooCommerce emits these notices and we cannot add an <svg>.
+   *** THE STAR IS THE ICON, AND IT IS DRAWN, NOT TYPED. ***
+   The star is the brand's one recurring mark, so the state indicator is a star
+   behaving differently rather than a different glyph. clip-path draws it:
+   U+2726 is missing from plenty of system fonts and falls back to tofu, and a
+   missing glyph on an error message is the worst place to discover that.
 
-   *** SUCCESS HAS NO BRAND COLOUR YET. *** claret, the amber ramp and mauve
-   cover error, warning and info. Nothing in the palette says "this went right".
-   --c-sage is a proposal awaiting the owner; changing it is one line in
-   tokens/colour.css and nothing here needs to move.
+   *** EVERY ANIMATION HERE IS OFF ON THE MONEY PATH. ***
+   motion.css kills animation on cart, checkout and order-received and under
+   prefers-reduced-motion - and notices appear MORE on those pages than anywhere
+   else. So the resting frame is the actual design and the motion is a bonus:
+   each state is composed to read at frame zero, with the stars already in
+   position rather than starting stacked at the centre.
+
+   *** SUCCESS IS GOLD, AND IT CARRIES THE FINISH. ***
+   The owner: "we shouldn't introduce green... even the texture can work for
+   us." So success has no colour of its own - it is the amber ramp, and its star
+   is a real .d-finish object with the plywood on it. The happiest state is the
+   one that carries the material.
    ========================================================================== */
 
 .d-notice{
+	position:relative;
 	display:grid;
 	grid-template-columns:auto 1fr auto;
 	align-items:start;
-	gap:var(--inline);
+	gap:var(--space-2xs);
 	padding:var(--space-2xs) var(--space-xs);
 	border-radius:var(--radius-m);
-	border-left:3px solid var(--notice-info-edge);
 	background:color-mix(in oklab, var(--notice-info-edge) 9%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-info-edge) 22%, transparent);
 	color:var(--ink);
 	font-size:var(--fs-meta);
 	line-height:var(--lh-body);
-}
-.d-notice::before{
-	content:"i";
-	display:grid;
-	place-items:center;
-	width:1.45em;
-	height:1.45em;
-	border-radius:var(--radius-circle);
-	background:var(--notice-info-edge);
-	color:var(--c-white);
-	font:var(--fw-bold) .82em/1 var(--font-ui);
-	font-style:normal;
+	/* NOT overflow:hidden. The stars orbit and fly, and a clip at the box edge
+	   turns a star leaving the frame into a star being sliced in half. */
 }
 .d-notice__title{ display:block; font-weight:var(--fw-medium) }
 .d-notice a{ color:inherit }
 
-.d-notice--error{
-	border-left-color:var(--notice-error-edge);
-	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
-}
-.d-notice--error::before{ content:"!"; background:var(--notice-error-edge) }
-
-.d-notice--warning{
-	border-left-color:var(--notice-warning-edge);
-	background:color-mix(in oklab, var(--notice-warning-edge) 11%, var(--surface-raised));
-}
-.d-notice--warning::before{ content:"!"; background:var(--notice-warning-edge) }
-
-.d-notice--success{
-	border-left-color:var(--notice-success-edge);
-	background:color-mix(in oklab, var(--notice-success-edge) 10%, var(--surface-raised));
-}
-/* A tick, drawn rather than typed: the check glyph is missing from plenty of
-   fonts and falls back to a box. */
-.d-notice--success::before{
+/* -- the star ---------------------------------------------------------------
+   One shape, four behaviours. The icon box is the first star; its two
+   pseudo-elements are the second and third, so a state can have up to three
+   without asking the markup for anything. */
+.d-notice__icon,
+.d-notice__icon::before,
+.d-notice__icon::after{
 	content:"";
-	background:var(--notice-success-edge);
-	background-image:
-		linear-gradient(45deg, transparent 44%, var(--c-white) 44% 56%, transparent 56%),
-		linear-gradient(-45deg, transparent 52%, var(--c-white) 52% 64%, transparent 64%);
-	background-size:.55em .55em, .8em .8em;
-	background-position:32% 62%, 58% 44%;
-	background-repeat:no-repeat;
+	display:block;
+	width:1.02em;
+	height:1.02em;
+	background:var(--notice-info-edge);
+	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+}
+.d-notice__icon{
+	position:relative;
+	margin:.16em .25em 0 .1em;
+	width:2em;
+	height:2em;
+	background:none;
+	clip-path:none;
+}
+.d-notice__icon::before{ position:absolute; left:.16em; top:.20em }
+.d-notice__icon::after{  position:absolute; left:.92em; top:.86em; width:.68em; height:.68em }
+
+/* -- error: the stars fall, go dark, and go out ---------------------------- */
+.d-notice--error{
+	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-error-edge) 22%, transparent);
+}
+.d-notice--error .d-notice__icon::before,
+.d-notice--error .d-notice__icon::after{
+	background:var(--notice-error-edge);
+	animation:d-star-die 3.2s var(--ease-float) infinite;
+}
+.d-notice--error .d-notice__icon::after{ animation-delay:1.1s; animation-duration:3.9s }
+@keyframes d-star-die{
+	0%   { transform:translateY(-.34em) scale(1);   background:var(--notice-error-edge); opacity:1 }
+	62%  { transform:translateY(.30em)  scale(.82); background:var(--c-cocoa); opacity:.85 }
+	100% { transform:translateY(.62em)  scale(.34); background:var(--c-cocoa); opacity:0 }
 }
 
+/* -- warning: one star orbits ---------------------------------------------- */
+.d-notice--warning{
+	background:color-mix(in oklab, var(--notice-warning-edge) 11%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-warning-edge) 24%, transparent);
+}
+.d-notice--warning .d-notice__icon::before{
+	background:var(--notice-warning-edge);
+	left:.38em; top:.38em;
+	/* The orbit is a rotation about a point OUTSIDE the star, which is what
+	   transform-origin is for - no wrapper element and no second animation. */
+	transform-origin:-.05em .51em;
+	animation:d-star-orbit 5.5s linear infinite;
+}
+.d-notice--warning .d-notice__icon::after{
+	background:var(--notice-warning-edge); opacity:.45;
+	left:.2em; top:.9em; width:.5em; height:.5em;
+}
+@keyframes d-star-orbit{ to{ transform:rotate(360deg) } }
+
+/* -- success: gold, textured, and the stars are pleased -------------------- */
+.d-notice--success{
+	background:color-mix(in oklab, var(--g-core) 13%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--g-core) 30%, transparent);
+}
+/* *** .d-finish OWNS BOTH PSEUDO-ELEMENTS - ::before is its fireflies and
+   ::after is its grain. *** So the success icon cannot be a finished object AND
+   carry star pseudos; they collided and the stars vanished behind the disc.
+   The stars move onto the NOTICE's own pseudo-elements instead, which is closer
+   to what was asked for anyway - "stars flying around the message" rather than
+   around the icon. Any future pattern that wants .d-finish and its own
+   pseudo-elements hits this same wall: the finish is a leaf, not a mixin. */
+.d-notice--success .d-notice__icon{
+	--firefly-reach:0em;
+	--grain-size:5em;
+	border-radius:var(--radius-circle);
+	width:1.7em; height:1.7em;
+	margin-top:.24em;
+}
+.d-notice--success::before,
+.d-notice--success::after{
+	content:"";
+	position:absolute;
+	width:.62em;
+	height:.62em;
+	background:var(--g-core);
+	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+	pointer-events:none;
+	animation:d-star-cheer 2.6s var(--ease-float) infinite;
+}
+.d-notice--success::before{ left:2.3em;  top:.5em }
+.d-notice--success::after{  left:1.15em; top:2.1em; animation-delay:.9s; opacity:.7 }
+@keyframes d-star-cheer{
+	0%, 100% { transform:translate(0,0) scale(.7) rotate(0deg);      opacity:.55 }
+	40%      { transform:translate(.1em,-.3em) scale(1.15) rotate(28deg); opacity:1 }
+	70%      { transform:translate(-.08em,-.1em) scale(.9) rotate(-14deg); opacity:.8 }
+}
+
+/* -- info: the star leans in and pokes ------------------------------------- */
+.d-notice--info .d-notice__icon::before{
+	animation:d-star-poke 3.4s var(--ease-float) infinite;
+}
+/* The boing: overshoot past the target, then settle back through it. The
+   settle is what makes it read as springy rather than as a slide. */
+@keyframes d-star-poke{
+	0%, 52%, 100% { transform:translateX(0) }
+	62%           { transform:translateX(.34em) scale(1.1) }
+	70%           { transform:translateX(-.10em) }
+	78%           { transform:translateX(.14em) }
+	86%           { transform:translateX(-.04em) }
+}
+
+/* -- the dismiss ------------------------------------------------------------
+   Cocoa at rest, not the state colour: closing a notice is not an action anyone
+   should be drawn to, and a red X on an error message reads as a second error.
+   On hover it turns claret and the star behind it flares - so the one brand
+   flourish here happens on intent, not on arrival. */
 .d-notice__dismiss{
+	position:relative;
 	grid-column:3;
 	appearance:none;
 	border:0;
 	background:none;
-	color:var(--ink-quiet);
-	font-size:1.15em;
-	line-height:1;
-	padding:.15em .3em;
+	width:1.7em;
+	height:1.7em;
+	padding:0;
+	color:var(--c-cocoa);
+	font:400 1.2em/1 var(--font-ui);
 	cursor:pointer;
-	border-radius:var(--radius-xs);
+	border-radius:var(--radius-circle);
+	transition:color var(--dur-ui) var(--ease-float),
+	           transform var(--dur-ui) var(--ease-float);
 }
-.d-notice__dismiss:hover{ color:var(--ink); background:var(--surface-quiet) }
+.d-notice__dismiss::before{
+	content:"";
+	position:absolute;
+	inset:-.1em;
+	border-radius:inherit;
+	background:var(--g-vanilla);
+	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+	opacity:0;
+	transform:scale(.4) rotate(-30deg);
+	transition:opacity 260ms var(--ease-float), transform 260ms var(--ease-float);
+}
+.d-notice__dismiss:hover,
+.d-notice__dismiss:focus-visible{
+	color:var(--c-claret);
+	transform:rotate(90deg);
+}
+.d-notice__dismiss:hover::before,
+.d-notice__dismiss:focus-visible::before{
+	opacity:.85;
+	transform:scale(1.25) rotate(20deg);
+}
 
 /* -- the store-wide bar -----------------------------------------------------
-   Full bleed, claret, above everything. It is the only notice that is a solid
-   block, because it is not reporting on an action - it is the shop talking. */
+   The only notice that IS a solid block, because it is not reporting on an
+   action - it is the shop talking. */
 .d-notice--bar{
 	display:block;
 	border-radius:0;
-	border:0;
+	box-shadow:none;
 	padding:var(--space-2xs) var(--gutter);
 	text-align:center;
 	background:var(--surface-band);
 	color:var(--ink-on-dark);
 	font-size:var(--fs-fine);
 }
-.d-notice--bar::before{ content:none }
 
 /* -- ADOPTED: WooCommerce's notices -----------------------------------------
-   Both generations of them. The block notices come from
-   wc-blocks-style-store-notices and wc-blocks-packages-style; the woocommerce-*
-   ones come from woocommerce-general and appear on the classic templates.
-   Listed here so that dequeuing either handle has one place to check. */
+   Both generations. *** THESE GET THE TINT AND THE SHAPE, NOT THE STARS. ***
+   Woo emits its own SVG inside the block banners and we cannot remove it, so a
+   star of ours would be a SECOND icon in the same box. The classic notices have
+   no icon at all and get a single static star. When the handles are dequeued
+   and we own the markup, they move to .d-notice and inherit everything. */
 .wc-block-components-notice-banner,
 .woocommerce-message,
 .woocommerce-error,
@@ -117,50 +231,45 @@
 	display:grid;
 	grid-template-columns:auto 1fr auto;
 	align-items:start;
-	gap:var(--inline);
+	gap:var(--space-2xs);
 	padding:var(--space-2xs) var(--space-xs);
 	margin:0 0 var(--stack);
 	border:0;
-	border-left:3px solid var(--notice-info-edge);
 	border-radius:var(--radius-m);
 	background:color-mix(in oklab, var(--notice-info-edge) 9%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-info-edge) 22%, transparent);
 	color:var(--ink);
 	font-size:var(--fs-meta);
 	list-style:none;
 }
 .wc-block-components-notice-banner.is-error,
 .woocommerce-error{
-	border-left-color:var(--notice-error-edge);
 	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-error-edge) 22%, transparent);
 }
 .wc-block-components-notice-banner.is-warning{
-	border-left-color:var(--notice-warning-edge);
 	background:color-mix(in oklab, var(--notice-warning-edge) 11%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-warning-edge) 24%, transparent);
 }
 .wc-block-components-notice-banner.is-success,
 .woocommerce-message{
-	border-left-color:var(--notice-success-edge);
-	background:color-mix(in oklab, var(--notice-success-edge) 10%, var(--surface-raised));
+	background:color-mix(in oklab, var(--g-core) 13%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--g-core) 30%, transparent);
 }
-/* Woo ships its own SVG in the banner, so we do NOT add a pseudo icon here -
-   two icons is worse than one. The classic notices have none, and get ours. */
 .woocommerce-message::before,
 .woocommerce-error::before,
 .woocommerce-info::before{
-	content:"i";
-	display:grid;
-	place-items:center;
+	content:"";
+	display:block;
 	position:static;
-	width:1.45em;
-	height:1.45em;
-	margin:0;
-	border-radius:var(--radius-circle);
+	width:.8em;
+	height:.8em;
+	margin:.5em .2em 0 0;
 	background:var(--notice-info-edge);
-	color:var(--c-white);
-	font:var(--fw-bold) .82em/1 var(--font-ui);
+	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
 }
-.woocommerce-error::before{ content:"!"; background:var(--notice-error-edge) }
-.woocommerce-message::before{ content:"+"; background:var(--notice-success-edge) }
+.woocommerce-error::before{ background:var(--notice-error-edge) }
+.woocommerce-message::before{ background:var(--g-core) }
 
 .woocommerce-store-notice,
 .demo_store{
