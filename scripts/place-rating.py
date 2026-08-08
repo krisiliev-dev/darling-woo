@@ -1,0 +1,232 @@
+"""patterns/rating.css - the star rating, read-only and interactive.
+
+The obvious next pattern: it is stars, which the brand already owns, and it
+appears on the catalogue, the product page and the review form - three of the
+surfaces the WooCommerce dequeue is waiting on.
+
+*** ONE STAR SHAPE, MASKED AND REPEATED - NOT FIVE ELEMENTS. ***
+A rating is 4.3 stars as often as it is 4, so the fill has to be able to stop
+part way through a star. Five separate elements cannot do that without a sixth
+overlay per star. Instead the whole strip is a two-stop gradient - gold up to
+the percentage, ash after it - and a mask of the star shape repeated five times
+punches the stars out of it. The percentage is one custom property, the shape is
+one SVG, and a half star costs nothing extra.
+
+The SVG path is the same eight-point polygon as the clip-path used everywhere
+else, so the rating star and the notice star are the same star.
+
+*** WOO'S OWN RATING IS A FONT GLYPH AND MUST BE SILENCED. ***
+.star-rating renders black stars via ::before content, sized in em against a
+font we do not load. Left alone it shows THROUGH our mask as a row of black
+stars behind gold ones. font-size:0 on the content is what stops it.
+"""
+import io, os, re, sys
+
+ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
+SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
+
+STAR_SVG = ("url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
+            "viewBox='0 0 100 100'%3E%3Cpath d='M50 0 L60 40 L100 50 L60 60 L50 100 "
+            "L40 60 L0 50 L40 40 Z' fill='%23000'/%3E%3C/svg%3E\")")
+
+RATING = '''/* =============================================================================
+   PATTERN / RATING
+   Five stars, read-only and interactive.
+
+   *** ONE SHAPE, MASKED AND REPEATED - NOT FIVE ELEMENTS. ***
+   A rating is 4.3 as often as it is 4, so the fill must be able to stop part way
+   through a star. Five elements cannot do that without a sixth overlay each.
+   Instead the strip is a two-stop gradient - gold up to --rating, ash after it -
+   and a mask punches five stars out of it. A half star costs nothing.
+
+   The mask is the same eight-point star as the clip-path used in notice.css and
+   on the dismiss, so every star on the site is the same star.
+
+   *** WOO'S RATING IS A FONT GLYPH AND HAS TO BE SILENCED. ***
+   .star-rating renders black stars as ::before text content, in a font we do not
+   load. Left alone they show through our mask as black stars behind gold ones.
+   font-size:0 is what stops it - display:none would collapse the width Woo uses
+   to express the value.
+   ========================================================================== */
+
+.d-rating{
+	--rating: 0%;         /* the component sets this, as a percentage of five */
+	display:inline-block;
+	vertical-align:-.12em;
+	width:5.6em;
+	height:1.12em;
+	font-size:var(--fs-fine);
+	background:linear-gradient(90deg,
+		var(--g-core) 0 var(--rating),
+		var(--c-ash-300) var(--rating) 100%);
+	-webkit-mask-image:%(star)s;
+	        mask-image:%(star)s;
+	/* 20% rather than 1.12em: a length has to divide the width EXACTLY or
+	   subpixel rounding paints a sixth, clipped star. The box is 5.6 x 1.12em,
+	   so 20% by 100% is both square and exactly five. */
+	-webkit-mask-size:20% 100%;
+	        mask-size:20% 100%;
+	-webkit-mask-repeat:repeat-x;
+	        mask-repeat:repeat-x;
+}
+
+/* The count beside it. Not inside .d-rating - the mask would eat it. */
+.d-rating-row{ display:inline-flex; align-items:center; gap:var(--inline) }
+.d-rating-row__count{ font-size:var(--fs-fine); color:var(--ink-quiet) }
+
+/* -- interactive: the review form -------------------------------------------
+   A real radio group under the stars, because a rating is an INPUT and has to
+   be reachable by keyboard and announced by a screen reader. The stars are the
+   visible layer; the radios sit on top at zero opacity so a click and a tap land
+   on the control rather than on a decoration.
+
+   The fill follows :hover and :has(:checked) rather than a class, so it needs
+   no script at all. */
+.d-rating-input{
+	position:relative;
+	display:inline-grid;
+	grid-template-columns:repeat(5, 1.12em);
+	width:5.6em;
+	height:1.12em;
+	font-size:var(--fs-lede);
+}
+.d-rating-input::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:linear-gradient(90deg,
+		var(--g-core) 0 var(--rating, 0%),
+		var(--c-ash-300) var(--rating, 0%) 100%);
+	-webkit-mask-image:%(star)s;
+	        mask-image:%(star)s;
+	/* 20% rather than 1.12em: a length has to divide the width EXACTLY or
+	   subpixel rounding paints a sixth, clipped star. The box is 5.6 x 1.12em,
+	   so 20% by 100% is both square and exactly five. */
+	-webkit-mask-size:20% 100%;
+	        mask-size:20% 100%;
+	-webkit-mask-repeat:repeat-x;
+	        mask-repeat:repeat-x;
+	transition:background 120ms var(--ease-float);
+}
+.d-rating-input input{
+	appearance:none;
+	margin:0;
+	height:100%;
+	opacity:0;
+	cursor:pointer;
+}
+/* Checked state, then hover on top of it. Later rules win, so hovering a lower
+   star previews DOWN from a higher checked one, which is what a person expects. */
+.d-rating-input:has(input:nth-child(1):checked){ --rating:20% }
+.d-rating-input:has(input:nth-child(2):checked){ --rating:40% }
+.d-rating-input:has(input:nth-child(3):checked){ --rating:60% }
+.d-rating-input:has(input:nth-child(4):checked){ --rating:80% }
+.d-rating-input:has(input:nth-child(5):checked){ --rating:100% }
+.d-rating-input:has(input:nth-child(1):hover){ --rating:20% }
+.d-rating-input:has(input:nth-child(2):hover){ --rating:40% }
+.d-rating-input:has(input:nth-child(3):hover){ --rating:60% }
+.d-rating-input:has(input:nth-child(4):hover){ --rating:80% }
+.d-rating-input:has(input:nth-child(5):hover){ --rating:100% }
+.d-rating-input:focus-within::before{
+	outline:2px solid var(--action);
+	outline-offset:3px;
+	border-radius:var(--radius-xs);
+}
+
+/* -- ADOPTED: WooCommerce's ratings -----------------------------------------
+   Two of them. The block one exposes the value as a CSS variable, which is a
+   gift; the classic one expresses it as the width of an inner span, which is
+   why the outer element cannot simply be masked and be done with. */
+.wc-block-components-product-rating-stars,
+.wc-block-components-product-rating__stars,
+.star-rating{
+	position:relative;
+	display:inline-block;
+	width:5.6em;
+	height:1.12em;
+	font-size:var(--fs-fine);
+	overflow:hidden;
+	background:var(--c-ash-300);
+	-webkit-mask-image:%(star)s;
+	        mask-image:%(star)s;
+	/* 20% rather than 1.12em: a length has to divide the width EXACTLY or
+	   subpixel rounding paints a sixth, clipped star. The box is 5.6 x 1.12em,
+	   so 20% by 100% is both square and exactly five. */
+	-webkit-mask-size:20% 100%;
+	        mask-size:20% 100%;
+	-webkit-mask-repeat:repeat-x;
+	        mask-repeat:repeat-x;
+}
+/* Silence the glyphs. font-size:0 rather than display:none, because Woo uses the
+   span's WIDTH to express the value and display:none collapses it. */
+.star-rating::before,
+.star-rating span::before,
+.wc-block-components-product-rating-stars::before{
+	font-size:0;
+	content:"";
+}
+/* The classic markup: an inner span whose width IS the rating. Painting it gold
+   inside the masked parent turns that width into a partial fill for free. */
+.star-rating span{
+	position:absolute;
+	inset:0 auto 0 0;
+	display:block;
+	height:100%;
+	background:var(--g-core);
+	overflow:hidden;
+	text-indent:-999em;
+}
+
+/* The review form's star picker. Woo emits five nested <a> elements; they get
+   the shape, and the fill follows hover left to right. */
+.woocommerce p.stars{ display:inline-flex; gap:.1em; margin:0 }
+.woocommerce p.stars a{
+	display:block;
+	width:1.3em;
+	height:1.3em;
+	text-indent:-999em;
+	background:var(--c-ash-300);
+	-webkit-mask-image:%(star)s;
+	        mask-image:%(star)s;
+	-webkit-mask-size:100% 100%;
+	        mask-size:100% 100%;
+	transition:background 120ms var(--ease-float);
+}
+.woocommerce p.stars:hover a,
+.woocommerce p.stars a.active,
+.woocommerce p.stars a.active ~ a{ background:var(--g-core) }
+.woocommerce p.stars a:hover ~ a{ background:var(--c-ash-300) }
+'''.replace('%(star)s', STAR_SVG)
+
+
+def main():
+    p = os.path.join(SRC, 'patterns', 'rating.css')
+    assert all(ord(ch) < 128 for ch in RATING)
+    io.open(p, 'w', encoding='ascii', newline='\n').write(RATING)
+    print('wrote  patterns/rating.css %5d bytes' % len(RATING))
+
+    ip = os.path.join(SRC, 'index.css')
+    index = io.open(ip, encoding='utf-8').read()
+    if 'patterns/rating.css' not in index:
+        anchor = next(l for l in index.splitlines()
+                      if 'patterns/notice.css' in l and '@import' in l)
+        index = index.replace(anchor,
+                              anchor + '\n@import url("patterns/rating.css")  layer(patterns);', 1)
+        io.open(ip, 'w', encoding='utf-8', newline='\n').write(index)
+        print('index.css: registered patterns/rating.css')
+
+    declared = set()
+    for dp, _, names in os.walk(SRC):
+        for n in names:
+            if n.endswith('.css'):
+                t = io.open(os.path.join(dp, n), encoding='utf-8').read()
+                declared |= set(re.findall(r'^\s*(--[a-z0-9-]+)\s*:', t, re.M))
+    missing = sorted({m for m in re.findall(r'var\(\s*(--[a-z0-9-]+)\s*\)', RATING)
+                      if m not in declared})
+    if missing:
+        print('MISSING TOKENS: ' + ', '.join(missing))
+        raise SystemExit(1)
+    print('token check: ok')
+
+
+main()

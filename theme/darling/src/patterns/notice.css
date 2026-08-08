@@ -229,33 +229,30 @@
 	92%           { transform:translateX(.05em) }
 }
 
-/* -- the dismiss: a star, rotated so it reads as a close --------------------
-   *** THE 45 DEGREES IS NOT DECORATION. *** A four-point star sitting square is
-   a plus sign, and a plus sign in the corner of a notice means "add", not
-   "close". Turned 45 degrees the same shape reads as an X. Hover adds one
-   quiet half-turn on top of that - no scale, no flare, per the owner. */
+/* -- the dismiss ------------------------------------------------------------
+   A plain X. It was a star, and then a spinning star, and the owner is right
+   that it was too much: closing a notice is the least important thing anyone
+   will do on the page, and it was carrying the loudest gesture on it. Cocoa to
+   claret and nothing else. Cocoa rather than the state colour, because a red X
+   sitting on an error message reads as a second error. */
 .d-notice__dismiss{
 	grid-column:2;
 	position:relative;
 	z-index:2;
 	appearance:none;
 	border:0;
-	background:var(--c-cocoa);
-	width:.95em;
-	height:.95em;
-	margin:.35em .1em 0 0;
+	background:none;
+	width:1.6em;
+	height:1.6em;
 	padding:0;
-	font-size:inherit;
+	color:var(--c-cocoa);
+	font:400 1.2em/1 var(--font-ui);
 	cursor:pointer;
-	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
-	transform:rotate(45deg);
-	transition:background 240ms var(--ease-float), transform 420ms var(--ease-float);
+	border-radius:var(--radius-xs);
+	transition:color var(--dur-ui) var(--ease-float);
 }
 .d-notice__dismiss:hover,
-.d-notice__dismiss:focus-visible{
-	background:var(--c-claret);
-	transform:rotate(225deg);
-}
+.d-notice__dismiss:focus-visible{ color:var(--c-claret) }
 
 /* -- the store-wide bar -----------------------------------------------------
    The only notice that IS a solid block, because it is not reporting on an

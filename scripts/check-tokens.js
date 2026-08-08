@@ -23,7 +23,11 @@ const path = require('path');
 
 const file = process.argv[2] ||
   path.join(__dirname, '..', 'theme', 'darling', 'darling.build.css');
-const css = fs.readFileSync(file, 'utf8');
+// Comments are stripped FIRST. A var() inside a comment is documentation, not a
+// reference, and failing the build on one teaches people to distrust the gate -
+// which is worse than not having it. Caught by rating.css explaining its own
+// --rating with a worked example.
+const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
 const declared = new Set();
 for (const m of css.matchAll(/(?:^|[{;\s])(--[a-z0-9-]+)\s*:/gi)) declared.add(m[1]);
