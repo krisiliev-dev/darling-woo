@@ -1141,8 +1141,11 @@ buttons your <code>carousel.js</code> already drives</p>
 <div class="d-carousel"><div class="d-carousel__row" id="carauto">''')
 for n in ('За кухнята','За банята','За децата','За градината','Подаръци','Промоции','Парти','Почистване'):
     A('<a class="d-carousel__tile" href="#"><span>%s</span></a>' % n)
+# The buttons are absolutely positioned against .d-carousel, so they have to be
+# INSIDE it. An extra </div> after the row put them outside, where they anchored
+# to whatever was positioned further up and vanished - and that same stray close
+# is what was orphaning every later section from .wrap.
 A('''</div>
-</div>
 <button class="d-carousel__btn d-carousel__btn--prev" aria-label="Назад"
   onclick="document.getElementById('carauto').scrollBy({left:-420,behavior:'smooth'})"><span class="d-icon d-icon--chevron-left"></span></button>
 <button class="d-carousel__btn d-carousel__btn--next" aria-label="Напред"
@@ -1152,14 +1155,20 @@ A('''</div>
 was, and that was the right call: a real overflow container can be swiped,
 flicked, trackpad-dragged, tabbed through and navigated by a screen reader. A
 translated strip does none of those and has to reimplement every one in script.
-<br><br><b>And the buttons can now be free.</b> Your Chrome supports
-<code>::scroll-button()</code> and <code>::scroll-marker</code>, which give a
-scroll container real prev/next controls and dot indicators with <em>no
-JavaScript at all</em> &mdash; disabled at the ends and generated only when there
-is somewhere to scroll, which is exactly what <code>carousel.js</code> was
-written to do. Both are in the file: the scriptless version behind
-<code>@supports</code>, and the button markup for now. Add
-<code>.d-carousel--auto</code> to try it.</div>
+Only the two arrows need <code>carousel.js</code>.<br><br>
+<b>The scriptless version is parked, and I would rather say why than leave a
+tempting comment.</b> <code>::scroll-button()</code> and
+<code>::scroll-marker</code> would give this row prev/next controls and dot
+indicators with no JavaScript at all, and both report as supported in your
+Chrome. But <code>::scroll-marker</code> <em>crashes the renderer</em> with this
+stylesheet &mdash; &ldquo;Target crashed&rdquo; before first paint, bisected on
+the real page, and five hand-written minimal reproductions did <em>not</em>
+reproduce it, so I know what to remove and not yet why. And
+<code>::scroll-button()</code> rendered but would not place:
+<code>anchor(top) + 50%</code> is not the anchor&rsquo;s middle, and
+<code>anchor(center)</code>, which is, computed to <code>top: auto</code> and
+dropped the button in the bottom-left corner. Two failures and a browser crash
+on one feature is where to stop.</div>
 </section>''')
 
 A('''<section class="sec" id="next"><h2>Status</h2>

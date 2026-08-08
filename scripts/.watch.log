@@ -1,0 +1,48 @@
+﻿--- watcher started 2026-08-08 13:55:34 ---
+
+=== darling build   [tokens unchanged]
+-- category banners
+gen-category-banners: 11 banners -> 11 rules, 9 narrow overrides
+  written to theme\darling\src\generated\category-banners.css
+-- stylesheet
+built darling.build.css  333.6 KB  from 43 file(s)
+token check: 277 declared, 5 referenced-with-fallback, 12 unused
+  unused (not fatal): --c-ash-100, --c-ash-200, --notice-success-edge, --measure-hero, --space-3xl, --icon-cart-body, --float-cycle, --float-up, --float-travel, --star-life-min, --star-life-max, --ease-star
+-- theme.json
+node.exe :   theme.json: RETIRED palette slugs honey, honey-dark, vanilla, sand - any saved block content using has-<sl
+ug>-color or --wp--preset--color--<slug> loses its colour. Check before the cutover.
+At C:\Users\lora_\darling\darling-woo\scripts\watch.ps1:4 char:1
++ & 'C:\Users\lora_\AppData\Local\hermes\node\node.exe' 'scripts\build. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  theme.json: R...re the cutover.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+theme.json: 17 colours, 10 sizes, 2 families (7 font files kept), 9 spacing steps, content 660px / wide 1120px
+-- resolved tokens: skipped, tokens unchanged
+-- stripe appearance: skipped, tokens unchanged
+-- gallery
+gen-gallery: 17 sections, 558.6 KB -> theme\darling\gallery.html
+=== done in 3.3s
+watching:
+  theme\darling\src
+  theme\darling\assets\img\banners
+  theme\darling\assets
+  (ctrl-c to stop)
+
+=== darling build  (patterns\badge.css)   [tokens unchanged]
+-- category banners
+gen-category-banners: 11 banners -> 11 rules, 9 narrow overrides
+  written to theme\darling\src\generated\category-banners.css
+-- stylesheet
+built darling.build.css  333.6 KB  from 43 file(s)
+token check: 277 declared, 5 referenced-with-fallback, 12 unused
+  unused (not fatal): --c-ash-100, --c-ash-200, --notice-success-edge, --measure-hero, --space-3xl, --icon-cart-body, --float-cycle, --float-up, --float-travel, --star-life-min, --star-life-max, --ease-star
+-- theme.json
+  theme.json: RETIRED palette slugs honey, honey-dark, vanilla, sand - any saved block content using has-<slug>-color o
+r --wp--preset--color--<slug> loses its colour. Check before the cutover.
+theme.json: 17 colours, 10 sizes, 2 families (7 font files kept), 9 spacing steps, content 660px / wide 1120px
+-- resolved tokens: skipped, tokens unchanged
+-- stripe appearance: skipped, tokens unchanged
+-- gallery
+gen-gallery: 17 sections, 558.6 KB -> theme\darling\gallery.html
+=== done in 2.1s
