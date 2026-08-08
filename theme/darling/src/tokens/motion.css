@@ -52,6 +52,20 @@
 	--dur-panel: 420ms;
 	--dur-turn:  240ms;
 	--delay-turn: 260ms;
+	/* The wake's own clock, and it is DELIBERATELY slower than the swim. The
+	   first version tied the trail to a single value, so it died the instant
+	   the arrow landed and the owner said it needed to linger. A second, slower
+	   copy of the same position is what makes a trail outlive the thing that
+	   made it.
+
+	   *** THE GHOST'S CURVE MUST BE SLOW AT THE START OR IT IS NOT A GHOST. ***
+	   First attempt used cubic-bezier(.16,1,.3,1) - a fast-out ease - and
+	   MEASURED it leading rather than trailing: 110ms in, swim was 0.004 and
+	   the "ghost" was already 0.112, so the wake pointed the wrong way. This
+	   curve barely moves for the first third and then has a very long tail,
+	   which is a lag on the way out and a linger on the way in. */
+	--dur-wake: 900ms;
+	--ease-wake: cubic-bezier(.33, 0, .07, 1);
 }
 
 /* -- the float, and the glow locked to it ------------------------------------

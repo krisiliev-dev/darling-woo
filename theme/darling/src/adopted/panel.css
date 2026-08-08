@@ -29,17 +29,28 @@
 	--panel-edge:    var(--tint-grey-edge);
 	--panel-mark:    var(--tint-grey-mark);
 	--panel-trail:   var(--trail-gold);
-	--panel-head: 1.6em;
+	/* *** WHERE THE ARROW RESTS, COMPUTED RATHER THAN GUESSED. ***
+	   This was 1.6em and it was wrong in both states - too low when closed, too
+	   high when open - because em on .d-panel resolves against the PANEL's font
+	   size, while the summary sets its own (--fs-meta: 14px). Measured: the
+	   arrow sat at 25.6px in a summary row whose centre is 19px.
+	   It is now the summary's actual half-height - its padding plus half its
+	   line box. Closed, the arrow is centred in the summary row; open, it sits
+	   the same distance off the bottom edge. Symmetric by construction. */
+	--panel-head: calc(var(--space-2xs) + var(--fs-meta) * var(--lh-title) / 2);
 	--swim: 0;
+	--swim-b: 0;
 	position:relative;
 	border:1px solid var(--panel-edge);
 	border-radius:var(--radius-m);
 	background:var(--panel-surface);
 	color:var(--ink);
-	transition:--swim var(--dur-panel) var(--ease-float);
+	transition:--swim   var(--dur-panel) var(--ease-float),
+	           --swim-b var(--dur-wake)  var(--ease-wake);
 }
 .wc-block-components-panel.wc-block-components-panel:has(> .wc-block-components-panel__button[aria-expanded="true"]){
 	--swim: 1;
+	--swim-b: 1;
 }
 
 .wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button{
@@ -76,7 +87,7 @@
 	color:var(--ink);
 }
 
-.wc-block-components-panel.wc-block-components-panel::after{
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::after{
 	content:"";
 	position:absolute;
 	inset-inline-end:calc(var(--space-xs) + .1em);
@@ -87,37 +98,58 @@
 	border-bottom:2px solid var(--panel-mark);
 	transform:translateY(-50%) rotate(45deg);
 	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
-	pointer-events:none;
+	z-index:2;
 }
-.wc-block-components-panel.wc-block-components-panel:has(> .wc-block-components-panel__button[aria-expanded="true"])::after{
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button[aria-expanded="true"]::after{
 	transform:translateY(-50%) rotate(225deg);
 }
-.wc-block-components-panel.wc-block-components-panel::before{
+/* The hit pad: 40px of target around 7px of chevron, and it belongs to the
+   BUTTON, so pressing near the arrow toggles the panel even when the arrow has
+   swum out of the button's own box. This is the whole reason the arrow is drawn
+   on the button's pseudo rather than the panel's - a pseudo-element hit-tests
+   as its originating element, and the panel is not the control. */
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::before{
 	content:"";
 	position:absolute;
-	inset-inline-end:calc(var(--space-xs) - .04em);
+	z-index:2;
+	inset-inline-end:calc(var(--space-xs) + .1em - 1.2em);
 	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
-	width:.9em;
-	/* Proportional to the swim, not a fixed length: a streak that is 3.9em on a
-	   40px-of-travel panel is nearly the whole pool and reads as a painted bar
-	   rather than as motion. This one is always about half the distance the
-	   swimmer covers. */
-	height:calc(1.5em + .52 * (100% - 2 * var(--panel-head)));
+	width:2.9em;
+	height:2.9em;
+	transform:translateY(-50%);
+	border-radius:var(--radius-circle);
+	cursor:pointer;
+}
+/* The button is static so both pseudos resolve against the panel; the arrow has
+   to be able to leave the button entirely on its way down. */
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button{
+	position:static;
+}
+.wc-block-components-panel.wc-block-components-panel::before{
+	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
+	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
+	content:"";
+	position:absolute;
+	z-index:1;
+	inset-inline-end:calc(var(--space-xs) - .16em);
+	width:1.3em;
 	border-radius:var(--radius-pill);
 	background:linear-gradient(180deg,
 		transparent 0%,
-		color-mix(in oklab, var(--panel-trail) 14%, transparent) 22%,
-		color-mix(in oklab, var(--panel-trail) 60%, transparent) 41%,
+		color-mix(in oklab, var(--panel-trail) 22%, transparent) 18%,
+		color-mix(in oklab, var(--panel-trail) 70%, transparent) 38%,
 		var(--panel-trail) 50%,
-		color-mix(in oklab, var(--panel-trail) 60%, transparent) 59%,
-		color-mix(in oklab, var(--panel-trail) 14%, transparent) 78%,
+		color-mix(in oklab, var(--panel-trail) 70%, transparent) 62%,
+		color-mix(in oklab, var(--panel-trail) 22%, transparent) 82%,
 		transparent 100%);
-	filter:blur(3px);
+	filter:blur(3.4px);
 	pointer-events:none;
+	top:0;
+	top:calc(min(var(--pos-a), var(--pos-b)) - 1.1em);
+	height:0;
+	height:calc(abs(var(--pos-a) - var(--pos-b)) + 2.2em);
 	opacity:0;
-	opacity:calc(1 * (1 - 2 * abs(var(--swim) - .5)));
-	transform:translateY(-50%) scaleY(.4);
-	transform:translateY(-50%) scaleY(calc(.42 + 1.1 * (1 - 2 * abs(var(--swim) - .5))));
+	opacity:clamp(0, calc(abs(var(--swim) - var(--swim-b)) * 2.8), 1);
 }
 /* Atmosphere off on the money path - and since the only two panels Woo renders
    ARE on the money path, this rule decides that the adopted trail never shows.

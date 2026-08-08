@@ -1,0 +1,191 @@
+/* =============================================================================
+   PATTERN / SLIDER
+   A range input, three colour families, and a wake behind the thumb.
+
+   *** WHAT THE BROWSER ACTUALLY SUPPORTS, PROBED NOT ASSUMED (Chrome 141). ***
+     appearance:base on <input type=range>   NO
+     ::slider-fill / ::slider-track / ::slider-thumb   NO
+     ::-webkit-slider-thumb / -runnable-track          yes
+     ::-moz-range-progress                             yes (Firefox only)
+   So the customisable-range spec is NOT here yet, even in the version the owner
+   is running. Firefox gets its fill for nothing from ::-moz-range-progress;
+   Chrome has no way to paint the filled part of the track from CSS alone,
+   because CSS cannot read an input's value.
+
+   *** THEREFORE --val, AND THEREFORE FOUR LINES OF SCRIPT. ***
+   The slider works with no script at all: track, thumb, focus ring, keyboard,
+   every colour. What the script adds is the FILL and the WAKE, by mirroring the
+   value into a custom property:
+
+       el.style.setProperty('--val', (el.value - el.min) / (el.max - el.min))
+
+   on 'input'. Without it --val stays 0, the fill reads empty and the wake never
+   appears - degraded, never broken. I am not going to claim a pure-CSS fill in
+   Chrome; there is not one.
+
+   *** THE WAKE IS THE SAME TWO CLOCKS AS THE PAGINATOR, AND HERE IT IS BETTER.
+   --val is set raw on every input event, so the thumb never lags the pointer.
+   --sl-a is a registered copy of it with a transition, so it chases. During a
+   drag the transition restarts every frame and the ghost trails the thumb by a
+   real, velocity-dependent distance - drag fast and the streak is long, nudge
+   it with an arrow key and it is short. That is what a motion trail is, and it
+   falls out of the two clocks rather than being faked.
+   ========================================================================== */
+
+@property --sl-a{ syntax:"<number>"; inherits:true; initial-value:0 }
+
+.d-slider{
+	--sl-track: var(--tint-grey-quiet);
+	--sl-fill:  var(--c-cocoa);
+	--sl-thumb: var(--c-cocoa);
+	--sl-trail: var(--trail-gold);
+
+	--val: 0;              /* 0..1, mirrored from the input by the shim */
+	--sl-a: var(--val);    /* the ghost */
+	--rail: .5em;
+	--thumb: 1.5em;
+
+	position:relative;
+	display:block;
+	height:var(--thumb);
+	transition:--sl-a 260ms var(--ease-float);
+}
+.d-slider--cherry{
+	--sl-track: var(--tint-cherry-quiet);
+	--sl-fill:  var(--c-cherry-deep);
+	--sl-thumb: var(--c-cherry-deep);
+	--sl-trail: var(--trail-gold);
+}
+.d-slider--gold{
+	--sl-track: var(--tint-gold-quiet);
+	--sl-fill:  var(--tint-gold-mark);
+	--sl-thumb: var(--tint-gold-mark);
+	--sl-trail: var(--trail-cherry);
+}
+
+.d-slider__input{
+	-webkit-appearance:none;
+	appearance:none;
+	position:relative;
+	z-index:2;
+	display:block;
+	width:100%;
+	height:var(--thumb);
+	margin:0;
+	background:none;
+	cursor:pointer;
+}
+.d-slider__input:focus{ outline:none }   /* the ring goes on the thumb */
+
+/* -- the rail ---------------------------------------------------------------
+   One gradient rather than two elements: the stop sits at --val, so the fill
+   and the track can never disagree about where the boundary is. */
+.d-slider__input::-webkit-slider-runnable-track{
+	height:var(--rail);
+	border-radius:var(--radius-pill);
+	background:linear-gradient(90deg,
+		var(--sl-fill) 0 calc(var(--val) * 100%),
+		var(--sl-track) calc(var(--val) * 100%) 100%);
+}
+.d-slider__input::-moz-range-track{
+	height:var(--rail);
+	border-radius:var(--radius-pill);
+	background:var(--sl-track);
+}
+/* Firefox paints the filled part itself and needs no --val at all. */
+.d-slider__input::-moz-range-progress{
+	height:var(--rail);
+	border-radius:var(--radius-pill);
+	background:var(--sl-fill);
+}
+
+/* -- the thumb --------------------------------------------------------------
+   1.5em is about 24px of paint inside a 2.75em row of pointer target: the input
+   itself is the full height, so the tappable area is 44px even though the dot
+   is small. A 24px dot with a 24px target is the single most-missed control on
+   a phone. */
+.d-slider__input::-webkit-slider-thumb{
+	-webkit-appearance:none;
+	appearance:none;
+	width:var(--thumb);
+	height:var(--thumb);
+	margin-top:calc((var(--rail) - var(--thumb)) / 2);
+	border:2px solid var(--c-grey-050);
+	border-radius:var(--radius-circle);
+	background:var(--sl-thumb);
+	box-shadow:var(--shadow-card);
+	transition:transform var(--dur-ui) var(--ease-float);
+}
+.d-slider__input::-moz-range-thumb{
+	width:var(--thumb);
+	height:var(--thumb);
+	border:2px solid var(--c-grey-050);
+	border-radius:var(--radius-circle);
+	background:var(--sl-thumb);
+	box-shadow:var(--shadow-card);
+}
+.d-slider__input:active::-webkit-slider-thumb{ transform:scale(1.12) }
+.d-slider__input:focus-visible::-webkit-slider-thumb{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+.d-slider__input:focus-visible::-moz-range-thumb{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+
+/* -- the wake ---------------------------------------------------------------
+   Spans from the ghost to the thumb, so it is zero at rest and as long as the
+   gesture was fast. Behind the input, which is why the input carries z-index 2.
+
+   abs() is Chrome 133+; the pair pattern means an older browser gets no trail
+   rather than a stuck bar. */
+.d-slider__wake{
+	--x-a: calc(var(--val)  * (100% - var(--thumb)) + var(--thumb) / 2);
+	--x-b: calc(var(--sl-a) * (100% - var(--thumb)) + var(--thumb) / 2);
+	position:absolute;
+	z-index:1;
+	top:50%;
+	left:0;
+	height:var(--thumb);
+	border-radius:var(--radius-pill);
+	pointer-events:none;
+	filter:blur(3px);
+	background:linear-gradient(90deg,
+		transparent 0%,
+		color-mix(in oklab, var(--sl-trail) 14%, transparent) 20%,
+		color-mix(in oklab, var(--sl-trail) 62%, transparent) 42%,
+		var(--sl-trail) 50%,
+		color-mix(in oklab, var(--sl-trail) 62%, transparent) 58%,
+		color-mix(in oklab, var(--sl-trail) 14%, transparent) 80%,
+		transparent 100%);
+	width:0;
+	width:calc(abs(var(--x-a) - var(--x-b)) + var(--thumb));
+	opacity:0;
+	opacity:clamp(0, calc(abs(var(--x-a) - var(--x-b)) / var(--thumb) * 1.5), .95);
+	transform:translate(calc(min(var(--x-a), var(--x-b)) - var(--thumb) / 2), -50%);
+}
+
+/* -- the pair, for a min/max range -------------------------------------------
+   Two inputs stacked on one rail is the only accessible way to do a two-handle
+   range: each handle stays a real focusable control with its own value. A
+   single div with two draggable spans is not reachable by keyboard, which is
+   how price filters routinely end up unusable. */
+.d-slider--pair{ height:calc(var(--thumb) * 2) }
+.d-slider--pair .d-slider__input{ position:absolute; top:0; left:0 }
+.d-slider--pair .d-slider__input + .d-slider__input{ top:var(--thumb) }
+
+/* -- ADOPTED-adjacent: the values row --------------------------------------- */
+.d-slider__values{
+	display:flex;
+	justify-content:space-between;
+	margin-top:var(--space-3xs);
+	font-size:var(--fs-fine);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink-quiet);
+}
+
+/* -- the money path --------------------------------------------------------- */
+body.woocommerce-cart .d-slider__wake,
+body.woocommerce-checkout .d-slider__wake,
+body.woocommerce-order-received .d-slider__wake{ opacity:0 }

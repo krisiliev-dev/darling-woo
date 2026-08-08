@@ -1,0 +1,107 @@
+/* =============================================================================
+   ADOPTED / SLIDER   -   the WooCommerce price filter
+   UNLAYERED ON PURPOSE. See index.css.
+
+   MEASURED 2026-08-08: the price filter is NOT currently rendered anywhere on
+   darlinghome.bg - no .price_slider, no .ui-slider, no .wc-block-price-filter
+   on home, shop, product or cart. It appears the moment a filter widget or the
+   price-filter block is placed, so this is written now rather than discovered
+   later, and it is flagged as unverified against live markup.
+
+   *** THIS ONE NEEDS NO SHIM. *** jQuery UI builds the fill as a real element -
+   .ui-slider-range, with inline left/width - so unlike a native <input
+   type=range> the filled part is in the DOM and CSS can paint it. The handles
+   are real elements too. What is still missing is the wake: their positions are
+   inline styles updated during the drag, and CSS has nowhere to keep a lagging
+   copy of an inline style.
+
+   *** AND IT IS NOT KEYBOARD REACHABLE BY DEFAULT. *** jQuery UI handles are
+   <span>s; WooCommerce does not give them tabindex or a role. We cannot fix
+   that from a stylesheet, so it is recorded here: if this widget ships, the
+   number inputs beside it are the only way a keyboard user sets a price, and
+   they must not be hidden.
+   ========================================================================== */
+
+.woocommerce .price_slider_wrapper .ui-slider,
+.wc-block-price-filter .ui-slider{
+	--sl-track: var(--tint-grey-quiet);
+	--sl-fill:  var(--c-cocoa);
+	--sl-thumb: var(--c-cocoa);
+	--rail: .5em;
+	--thumb: 1.5em;
+	position:relative;
+	height:var(--rail);
+	margin:var(--space-s) 0 var(--space-xs);
+	border:0;
+	border-radius:var(--radius-pill);
+	background:var(--sl-track);
+	text-align:start;
+}
+.woocommerce .price_slider_wrapper .ui-slider .ui-slider-range,
+.wc-block-price-filter .ui-slider .ui-slider-range{
+	position:absolute;
+	top:0;
+	height:100%;
+	border:0;
+	border-radius:var(--radius-pill);
+	background:var(--sl-fill);
+	display:block;
+}
+.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,
+.wc-block-price-filter .ui-slider .ui-slider-handle{
+	position:absolute;
+	top:50%;
+	width:var(--thumb);
+	height:var(--thumb);
+	margin-inline-start:calc(var(--thumb) / -2);
+	border:2px solid var(--c-grey-050);
+	border-radius:var(--radius-circle);
+	background:var(--sl-thumb);
+	box-shadow:var(--shadow-card);
+	transform:translateY(-50%);
+	cursor:ew-resize;
+	outline:none;
+}
+.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle:focus-visible,
+.wc-block-price-filter .ui-slider .ui-slider-handle:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+.woocommerce .price_slider_amount,
+.wc-block-price-filter .price_slider_amount{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--inline);
+	font-size:var(--fs-meta);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink);
+}
+.woocommerce .price_slider_amount .price_label{
+	order:1;
+	margin-inline-end:auto;
+	color:var(--ink-quiet);
+}
+.woocommerce .price_slider_amount .button{ order:2 }
+
+/* -- ADOPTED: any scroll region Woo makes -----------------------------------
+   Woo's block sheets set overflow on the shipping-rates control and the
+   mini-cart drawer. Measured: neither currently overflows on this site, but
+   both will the moment there are more than a couple of rates or items. Branded
+   here so a scrollbar never appears in system chrome grey inside our panel. */
+.wc-block-components-shipping-rates-control,
+.wc-block-mini-cart__items,
+.wc-block-components-order-summary__content{
+	scrollbar-width:thin;
+	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+}
+.wc-block-components-shipping-rates-control::-webkit-scrollbar,
+.wc-block-mini-cart__items::-webkit-scrollbar,
+.wc-block-components-order-summary__content::-webkit-scrollbar{ width:10px }
+.wc-block-components-shipping-rates-control::-webkit-scrollbar-thumb,
+.wc-block-mini-cart__items::-webkit-scrollbar-thumb,
+.wc-block-components-order-summary__content::-webkit-scrollbar-thumb{
+	background:var(--c-grey-400);
+	border:2px solid var(--tint-grey);
+	border-radius:var(--radius-pill);
+}
