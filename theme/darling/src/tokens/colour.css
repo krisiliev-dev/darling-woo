@@ -87,4 +87,13 @@
 	/* -- an absent image is still designed: a ramp, never a flat fill ------- */
 	--placeholder-product:  linear-gradient(150deg, var(--c-ash-100), var(--c-ash-200));
 	--placeholder-category: linear-gradient(160deg, var(--c-ash-300), var(--c-ash-400));
+
+	/* -- the second action ---------------------------------------------------
+	   Amber is "look at this"; cherry is "put it in the basket". Two accents is
+	   the most a page can carry, and they must never appear on the same control.
+	   MEASURED: cherry #D42A3C against white is 4.99:1, which clears AA for the
+	   15px semibold label. cherry-deep is the fallback if the label ever gets
+	   smaller or lighter - do not switch the ink to cocoa, that measures 3.1:1. */
+	--action-cart: var(--c-cherry);
+	--action-cart-ink: var(--c-white);
 }
