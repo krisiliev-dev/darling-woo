@@ -272,89 +272,50 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 	box-shadow:none;
 }
 .d-carousel__btn[hidden]{ display:none }
-.d-carousel__btn--prev{ inset-inline-start:-6px }
-.d-carousel__btn--next{ inset-inline-end:-6px }
+/* *** INSIDE THE ROW, NOT HANGING OFF IT. *** -6px put the next button six
+   pixels past the page's own content box, which is six pixels of horizontal
+   scrollbar on the whole document - measured, doc 1186 against a 1180 viewport.
+   It only shows up where the carousel sits in a container with no spare gutter,
+   which is exactly where it sits on a phone.
+   scroll-padding keeps the snapping honest: without it a tile can snap flush to
+   the edge and sit underneath a button. */
+.d-carousel__row{ scroll-padding-inline:3.25rem }
+.d-carousel__btn--prev{ inset-inline-start:.25rem }
+.d-carousel__btn--next{ inset-inline-end:.25rem }
 .d-carousel__btn .d-icon{ width:1.15rem; height:1.15rem }
 
-/* -- the scriptless version --------------------------------------------------
-   ::scroll-button() only generates a button when there is somewhere to scroll,
-   and disables itself at the ends, which is the exact behaviour carousel.js was
-   written to provide. */
-@supports selector(::scroll-button(right)){
-	/* The scriptless controls replace the hand-driven ones entirely - two sets of
-	   prev/next on one row is two tab stops that do the same thing. */
-	.d-carousel--auto .d-carousel__btn{ display:none }
-	.d-carousel--auto{ anchor-name:--d-carousel }
-	.d-carousel--auto .d-carousel__row::scroll-button(left),
-	.d-carousel--auto .d-carousel__row::scroll-button(right){
-		position:absolute;
-		position-anchor:--d-carousel;
-		top:calc(anchor(top) + 50%);
-		translate:0 -50%;
-		z-index:3;
-		display:grid;
-		place-items:center;
-		width:2.75rem;
-		height:2.75rem;
-		border:1px solid var(--edge-field);
-		border-radius:var(--radius-circle);
-		background-color:var(--surface-raised);
-		color:var(--ink);
-		cursor:pointer;
-		box-shadow:var(--shadow-card);
-	}
-	.d-carousel--auto .d-carousel__row::scroll-button(left){
-		content:"";
-		inset-inline-start:calc(anchor(left) - 6px);
-		background-image:var(--icon-chevron-left);
-		background-repeat:no-repeat;
-		background-position:center;
-		background-size:1.15rem 1.15rem;
-	}
-	.d-carousel--auto .d-carousel__row::scroll-button(right){
-		content:"";
-		inset-inline-end:calc(anchor(right) - 6px);
-		background-image:var(--icon-chevron-right);
-		background-repeat:no-repeat;
-		background-position:center;
-		background-size:1.15rem 1.15rem;
-	}
-	.d-carousel--auto .d-carousel__row::scroll-button(left):disabled,
-	.d-carousel--auto .d-carousel__row::scroll-button(right):disabled{
-		opacity:.32;
-		cursor:default;
-		box-shadow:none;
-	}
-	/* *** ::scroll-marker IS REMOVED, AND IT IS NOT A TASTE DECISION - IT
-	   CRASHES THE RENDERER. ***
+/* -- the scriptless version: PARKED, AND HERE IS THE HONEST STATE OF IT -------
+   ::scroll-button() and ::scroll-marker would give this row real prev/next
+   controls and dot indicators with no JavaScript at all. Both are supported in
+   Chrome 141 - CSS.supports says yes for each. Neither is shippable yet, for
+   two separate reasons, and I would rather write both down than leave a
+   plausible-looking block that nobody dares turn on.
 
-	   MEASURED, Chromium 141.0.7390.37, the version the owner is on. Loading
-	   the component gallery with .d-carousel--auto took the tab down with
-	   "Target crashed" before first paint. Bisected on the real page:
+   1. ::scroll-marker CRASHES THE RENDERER with this stylesheet. "Target
+      crashed" before first paint, Chromium 141.0.7390.37. Bisected on the real
+      page: removing the marker rules fixes it; removing the buttons, the
+      anchor-name, the header's scroll timeline, timeline-scope, or every
+      offset-path does not. Full stylesheet plus only the carousel markup still
+      crashes. Five hand-written minimal reproductions did NOT crash - markers
+      alone, with :target-current, with a transition, with scale, and all of it
+      together with buttons and anchor positioning - so the trigger is an
+      interaction with something else in this sheet that I have not pinned down.
+      I know what to remove, not yet why.
 
-	     remove the ::scroll-marker rules      -> loads, 17 sections   OK
-	     remove the ::scroll-button rules      -> still crashes
-	     remove anchor-name                    -> still crashes
-	     remove the header's scroll timeline   -> still crashes
-	     remove timeline-scope / scroll-timeline -> still crashes
-	     remove every offset-path              -> still crashes
-	     full stylesheet + ONLY the carousel markup -> still crashes
+   2. ::scroll-button() renders, but I could not place it. anchor(top) + 50% is
+      not the anchor's middle - anchor(top) is its top edge and the 50% is of
+      the CONTAINING BLOCK - and anchor(center), which is the correct function,
+      computed to `top: auto` here, so the button fell to the bottom-left corner
+      of the row. That is the single misplaced button the owner saw.
 
-	   So the markers are necessary and sufficient for it, in the context of
-	   this stylesheet. Five hand-written minimal reproductions did NOT crash -
-	   markers alone, markers with :target-current, with a transition, with
-	   scale, and all of it together with the buttons and anchor positioning -
-	   so the trigger is an interaction with something else in the sheet that I
-	   have not pinned down. That is worth saying plainly rather than dressing
-	   up: I know what to remove, not yet why.
+   THE SHIPPING PATH IS THE BUTTON MARKUP ABOVE, driven by assets/carousel.js.
+   It works, it is measured, and the row is a real scroller either way - swipe,
+   flick, trackpad and keyboard all work with no script at all; only the two
+   arrows need one.
 
-	   THE BUTTONS ARE FINE and stay - the no-marker build keeps them, anchor
-	   positioning and all, and loads clean. Dots come back when this is
-	   understood or a later Chrome fixes it; until then the row is scrollable,
-	   swipeable and has working prev/next, which is the part that matters.
-
-	   The near miss is the point: this would have shipped as "look, a carousel
-	   with no JavaScript" and taken out the tab on every catalogue page. */
+   Worth revisiting when the crash is understood or Chrome moves. Two failures
+   and a browser crash on one experimental feature is where to stop, not where
+   to keep pushing. */
 /* -- the tile ---------------------------------------------------------------- */
 .d-carousel__tile{
 	position:relative;

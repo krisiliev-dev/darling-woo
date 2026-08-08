@@ -71,7 +71,15 @@
 	display:inline-flex;
 	align-items:center;
 	gap:.4rem;
-	flex:none;
+	/* *** IT HAS TO BE ALLOWED TO SHRINK. *** flex:none plus flex:none on the
+	   actions means nothing in the bar can give, and at 390px the wordmark plus
+	   five 44px buttons is wider than the phone: MEASURED 22px of horizontal
+	   scrollbar on the whole document, caused by the header alone. */
+	flex:0 1 auto;
+	min-width:0;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
 	color:var(--ink);
 	text-decoration:none;
 	font:var(--type-wordmark);
@@ -309,4 +317,16 @@
 	.d-search{ display:none }
 	.d-header__burger,
 	.d-header__search-sm{ display:grid }
+}
+/* Under 600 the bar is logo, search, cart, burger and nothing else. The account
+   and wishlist buttons are not dropped, they MOVE - both are in the drawer the
+   burger opens, which is where a thumb can reach them anyway. */
+@media (max-width: 600px){
+	.d-header__inner{
+		gap:var(--space-2xs);
+		padding-inline:var(--space-xs);
+	}
+	.d-header__logo{ font-size:var(--fs-lede) }
+	.d-header__actions .d-icon-btn:not(.d-header__burger):not(.d-header__search-sm):not([data-cart-button]),
+	.d-header__actions .d-heart{ display:none }
 }
