@@ -28,14 +28,17 @@
    was more animation than the thing deserved.
    ========================================================================== */
 
+/* *** EDGE TO EDGE. *** Owner's call. It was max-width:1120px centred, so the
+   grey stopped short of the window and the footer read as one more card rather
+   than as the bottom of the page. The COLOUR now runs the full width; the
+   CONTENT still gets a gutter, because text against the glass is not what
+   "edge to edge" means. Same split as .d-band. */
 .d-footer{
 	display:grid;
 	grid-template-columns:1fr auto 1fr;
 	gap:var(--space-l);
 	align-items:start;
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-xl) var(--gutter) var(--space-s);
+	padding:var(--space-xl) var(--gutter) var(--space-m);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
@@ -112,19 +115,22 @@
    Its own band under the footer, not a row inside it: it has a different
    background and runs the full width, and making it a grid child would mean
    fighting the three columns to span them. */
+/* *** THE SAME COLOUR, AND MUCH TIGHTER. *** It was a gold band with its own
+   padding, which made it a second footer under the footer. It is one line of
+   small print: same grey, a hairline above it, and about a third of the height.
+   The links that used to live here now live in the footer's own policy list,
+   one column up - the copyright line is the only thing left. */
 .d-footer__legal{
 	display:flex;
 	flex-wrap:wrap;
 	justify-content:space-between;
 	align-items:baseline;
-	gap:var(--space-2xs) var(--space-m);
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-s) var(--gutter) var(--space-m);
+	gap:var(--space-3xs) var(--space-m);
+	padding:var(--space-2xs) var(--gutter) var(--space-s);
 	border-top:1px solid var(--hairline);
-	background:var(--tint-gold);
+	background:var(--surface-quiet);
 	font-size:var(--fs-fine);
-	color:var(--ink);
+	color:var(--ink-quiet);
 }
 .d-footer__legal p{ margin:0; max-width:none; line-height:1.7 }
 @media (max-width: 720px){
@@ -340,15 +346,37 @@
 }
 .d-news__result:empty{ display:none }
 
-/* Two stars in the band's corners. The legacy pair were dingbat characters in
-   `content`, which meant they were text: selectable, copied with the page, and
-   read out by a screen reader as "black four pointed star". Masks are not. */
-.d-news::before,
-.d-news::after{
-	content:"";
+/* -- the stars lead the eye to the field ------------------------------------
+   Owner: "not 2 static stars but rather some that are flowing in from both
+   sides and towards the middle, getting smaller as they reach the middle. This
+   will lead the user's eye towards the field."
+
+   That is a better idea than what was there, and for a reason worth writing
+   down: two twinkling corners are DECORATION - they sit where nothing is
+   happening and ask to be looked at. A drift inward is DIRECTION. It ends where
+   the thing you want is.
+
+   *** ONE SPEED, MANY START TIMES. *** Also the owner's call, and it is what
+   makes it read as a current rather than as nine separate animations: every
+   star takes the same 2.6s, and they differ only in when they set off, how big
+   they start and which side they come from.
+
+   *** THE TRAVEL IS A LENGTH, NOT A PERCENTAGE. *** A percentage in `translate`
+   resolves against the element's OWN border box, so `--from:-50%` on a 14px
+   star moves it seven pixels. That mistake has cost this project two separate
+   afternoons - the slider wake and the first burst - so: rem. */
+.d-news__flow{
 	position:absolute;
-	width:.95rem;
-	height:.95rem;
+	inset:-1.5rem 0;
+	overflow:hidden;
+	pointer-events:none;
+}
+.d-news__flow i{
+	position:absolute;
+	top:var(--y, 50%);
+	left:50%;
+	width:calc(.8rem * var(--s, 1));
+	height:calc(.8rem * var(--s, 1));
 	background:var(--g-hi);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
@@ -356,12 +384,19 @@
 	        mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	        mask-repeat:no-repeat;
-	animation:d-twinkle 3.6s var(--ease-float) infinite;
-	pointer-events:none;
+	opacity:0;
+	animation:d-news-drift 2.6s linear infinite;
+	animation-delay:var(--d, 0s);
 }
-.d-news::before{ top:-.5rem; inset-inline-start:8% }
-.d-news::after{ bottom:-.75rem; inset-inline-end:7%; width:1.2rem; height:1.2rem; animation-delay:1.4s }
+/* Shrinking to a quarter rather than to nothing: a star that vanishes at full
+   size reads as switched off, and one that shrinks to zero reads as falling
+   into the field, which is the sentence this is trying to say. */
+@keyframes d-news-drift{
+	0%   { translate:var(--from, 0px) 0; scale:1;    opacity:0 }
+	14%  { opacity:.95 }
+	78%  { opacity:.55 }
+	100% { translate:0 0;           scale:.22;  opacity:0 }
+}
 @media (prefers-reduced-motion: reduce){
-	.d-news::before,
-	.d-news::after{ animation:none }
+	.d-news__flow{ display:none }
 }

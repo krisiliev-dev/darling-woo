@@ -33,7 +33,14 @@
 @property --swim{   syntax:"<number>"; inherits:true; initial-value:0 }
 @property --swim-b{ syntax:"<number>"; inherits:true; initial-value:0 }
 
-.d-panel{
+/* *** AND WORDPRESS'S OWN DETAILS BLOCK IS THIS PANEL. ***
+   `.wp-block-details` is what the block editor emits when somebody writes a FAQ
+   on a CMS page. It joins the selector lists below rather than being given a
+   lookalike in page.css - one disclosure in the system, and an author does not
+   have to remember a class for it. It takes the quiet family, because a page of
+   prose is not the place for the cherry one. */
+.d-panel,
+.d-prose .wp-block-details{
 	/* The three families. A variant sets these five and nothing else. */
 	--panel-surface: var(--tint-grey);
 	--panel-quiet:   var(--tint-grey-quiet);
@@ -105,7 +112,8 @@
    The right-hand padding keeps a lane free for the arrow, which is positioned
    against the PANEL and not the summary: it has to leave the summary entirely
    on its way down. */
-.d-panel__summary{
+.d-panel__summary,
+.d-prose .wp-block-details > summary{
 	display:grid;
 	grid-template-columns:1fr;
 	align-items:center;
@@ -116,9 +124,12 @@
 	list-style:none;
 	transition:background var(--dur-ui) var(--ease-float);
 }
-.d-panel__summary::-webkit-details-marker{ display:none }
-.d-panel__summary::marker{ content:"" }
-.d-panel__summary:hover{ background:var(--panel-quiet) }
+.d-panel__summary::-webkit-details-marker,
+.d-prose .wp-block-details > summary::-webkit-details-marker{ display:none }
+.d-panel__summary::marker,
+.d-prose .wp-block-details > summary::marker{ content:"" }
+.d-panel__summary:hover,
+.d-prose .wp-block-details > summary:hover{ background:var(--panel-quiet) }
 .d-panel__summary:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:-2px;
@@ -155,7 +166,8 @@
 
    45deg is a v; 225deg is the same v having turned a full half-circle, which is
    a tumble turn rather than a mirror flip. */
-.d-panel__summary::after{
+.d-panel__summary::after,
+.d-prose .wp-block-details > summary::after{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -168,11 +180,13 @@
 	transform:translateY(-50%) rotate(45deg);
 	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
 }
-.d-panel[open] > .d-panel__summary::after{ transform:translateY(-50%) rotate(225deg) }
+.d-panel[open] > .d-panel__summary::after,
+.d-prose .wp-block-details[open] > summary::after{ transform:translateY(-50%) rotate(225deg) }
 
 /* The chevron is 7px of paint. This is the 40px of TARGET around it, and it is
    the summary's too, so pressing anywhere near the arrow toggles the panel. */
-.d-panel__summary::before{
+.d-panel__summary::before,
+.d-prose .wp-block-details > summary::before{
 	content:"";
 	position:absolute;
 	z-index:2;

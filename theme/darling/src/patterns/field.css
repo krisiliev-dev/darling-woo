@@ -104,21 +104,39 @@
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
 }
 
-.d-field--invalid .d-field__control,
-.d-field--invalid input,
-.d-field--invalid select,
-.d-field--invalid textarea{
+/* *** THE BASE RULE WAS MORE SPECIFIC THAN THIS STATE, AND FOR TEXT INPUTS
+   THIS NEVER APPLIED. ***
+   The base control above is a selector LIST, and `.d-field input[type="text"]`
+   is (0,2,1). This was (0,2,0). So for every text input in the system the red
+   border lost to the grey one, silently, since the day the pattern was written
+   - the error MESSAGE showed, because nothing competes for that, so the field
+   just never turned red and nobody noticed a thing that was not there.
+   Doubling the class makes it (0,3,0), which beats (0,2,1) on class count with
+   no new ancestor and no !important. Matching the base list selector-for-
+   selector would also work and would have to be edited every time an input type
+   is added to that list - and forgetting is how this happened. */
+.d-field--invalid.d-field--invalid .d-field__control,
+.d-field--invalid.d-field--invalid input,
+.d-field--invalid.d-field--invalid select,
+.d-field--invalid.d-field--invalid textarea{
 	border-width:2px;
 	border-color:var(--notice-error-edge);
 	background:color-mix(in oklab, var(--notice-error-edge) 5%, var(--surface-raised));
 }
-.d-field--invalid .d-field__control:focus,
-.d-field--invalid input:focus{
+.d-field--invalid.d-field--invalid .d-field__control:focus,
+.d-field--invalid.d-field--invalid input:focus{
 	box-shadow:0 0 0 3px color-mix(in oklab, var(--notice-error-edge) 26%, transparent);
 }
 
-.d-field--disabled .d-field__control,
-.d-field :disabled{
+/* Same arithmetic, same fix: (0,2,0) against a (0,2,1) base. `.d-field
+   :disabled` is (0,1,1) and loses too. */
+.d-field--disabled.d-field--disabled .d-field__control,
+.d-field--disabled.d-field--disabled input,
+.d-field--disabled.d-field--disabled select,
+.d-field--disabled.d-field--disabled textarea,
+.d-field input:disabled,
+.d-field select:disabled,
+.d-field textarea:disabled{
 	background:var(--surface-quiet);
 	color:var(--ink-quiet);
 	cursor:not-allowed;

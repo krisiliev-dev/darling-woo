@@ -44,6 +44,35 @@ for (const im of imports) {
   }
 }
 
+/* *** BRACE BALANCE, PER FILE AND ON THE OUTPUT, BEFORE ANYTHING IS WRITTEN. ***
+   An unbalanced brace does not fail loudly. This script wraps each file in
+   `@layer <name>{ ... }`, so one stray `}` closes the layer early and hands the
+   rest of the sheet to the browser's error recovery, which decides for itself
+   which rules survive.
+   It cost four rounds of debugging once: `.d-field--invalid .d-field__control`
+   was present in the built CSS, matched its element according to
+   element.matches(), sat in the right layer - and never reached the CSSOM,
+   because a stray brace in footer.css three files earlier had ended the layer.
+   Same argument as the undefined-property check below: silence is the problem.
+   Comments are stripped first, because a brace in a comment is not a brace. */
+const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '');
+const braces = (s) => [(s.match(/\{/g) || []).length, (s.match(/\}/g) || []).length];
+const unbalanced = [];
+for (const im of imports) {
+  const p = path.join(SRC, im.file);
+  if (!fs.existsSync(p)) continue;
+  const [o, c] = braces(strip(fs.readFileSync(p, 'utf8')));
+  if (o !== c) unbalanced.push('  ' + im.file + '   ' + o + ' open, ' + c + ' close');
+}
+const [bo, bc] = braces(strip(out));
+if (bo !== bc) unbalanced.push('  (built output)   ' + bo + ' open, ' + bc + ' close');
+if (unbalanced.length) {
+  console.error('\nBRACE BALANCE FAILED - a stray brace closes an @layer early and the\n'
+    + 'browser then drops rules silently from that point on:\n'
+    + unbalanced.join('\n') + '\n\nNothing was written; the previous build is still on disk.\n');
+  process.exit(1);
+}
+
 fs.writeFileSync(OUT, out);
 const kb = (Buffer.byteLength(out) / 1024).toFixed(1);
 console.log('built ' + path.basename(OUT) + '  ' + kb + ' KB  from ' + imports.length + ' file(s)' +

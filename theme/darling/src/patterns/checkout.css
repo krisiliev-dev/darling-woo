@@ -1,0 +1,107 @@
+/* =============================================================================
+   PATTERN / CHECKOUT ADD-ONS
+   The VAT-invoice block and the courier office picker - the two things the
+   darling-checkout plugin puts on the checkout that WooCommerce does not.
+
+   *** THIS FILE IS SHORT BECAUSE MOST OF THE PORT WAS DELETION. ***
+   The legacy versions of these two blocks carried 28 rules, and all but a
+   handful were re-declarations of things the system already has:
+
+     .di-fields input      border, radius, padding, width, box-sizing
+                           -> .d-field__control, which says all of it once
+     .di-fields input:focus-visible
+                           -> the field's own focus ring, and it was AMBER here
+                              while every other field in the system is cocoa
+     .di-invalid           -> .d-field--invalid
+     .di-note / .dc-hint   -> .d-field__hint
+     .di-error             -> .d-field__error
+     .darling-backorder    -> .d-notice--warning
+     .dc-carriers label    -> .d-check, which already does radios
+
+   What is left is a card, a grid and a disabled state. If a rule below looks
+   like it should be in field.css, it probably should be - check before adding.
+
+   *** AND NOTHING HERE ANIMATES, DELIBERATELY. ***
+   motion.css kills every animation and transition on body.woocommerce-checkout.
+   These two blocks live nowhere else, so a transition written here is dead code
+   that looks alive. Do not add one and then debug why it does not run.
+   ========================================================================== */
+
+.d-intake,
+.d-courier{
+	margin-block:var(--space-s) var(--space-m);
+	padding:var(--space-s) var(--space-m);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+
+/* The toggle that reveals each block. .d-check does the box and the tick; this
+   only makes the label read as a heading, because it IS one - it is the only
+   thing naming the block. */
+.d-intake__toggle,
+.d-courier__toggle{
+	font-weight:var(--fw-medium);
+	font-size:var(--fs-ui);
+	color:var(--ink);
+}
+
+/* -- the field grid ----------------------------------------------------------
+   Two columns, and the long ones span both.
+
+   *** SPANNING BY CLASS, NOT BY ID. *** Legacy did
+   `.di-fields #di-company, .di-fields #di-address { grid-column:1/-1 }` - the
+   layout keyed to two specific fields by name, so adding a third long field
+   means editing CSS, and renaming one silently drops it back into a half
+   column. A modifier says what it means and survives both. */
+.d-fieldgrid{
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	gap:var(--space-xs);
+	margin-top:var(--space-s);
+}
+.d-fieldgrid > .d-field--wide,
+.d-fieldgrid > .d-field__error,
+.d-fieldgrid > .d-field__hint{ grid-column:1 / -1 }
+@media (max-width: 600px){
+	.d-fieldgrid{ grid-template-columns:1fr }
+}
+
+/* The courier block is a stack rather than a grid: city, then office, then the
+   hint. They are dependent - you cannot pick an office before a city - and
+   putting a dependent pair side by side invites filling the second one first. */
+.d-courier__fields{
+	display:flex;
+	flex-direction:column;
+	gap:var(--space-xs);
+	margin-top:var(--space-s);
+}
+.d-courier__carriers{
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-s);
+}
+
+/* -- the blocked submit ------------------------------------------------------
+   Set by the checkout plugin on the Place Order button when the invoice fields
+   are incomplete, so the button says "not yet" rather than failing after a
+   click. Greyscale as well as opacity: a cherry button at 50% is still cherry,
+   still reads as the live action, and on a plywood button opacity alone barely
+   registers at all. */
+.d-blocked,
+button.d-blocked[disabled],
+.d-btn.d-blocked{
+	opacity:.5;
+	filter:grayscale(35%);
+	cursor:not-allowed;
+}
+/* *** AND IT MUST STILL BE FOCUSABLE AND ANNOUNCED. ***
+   A disabled button cannot be focused, so a keyboard user tabbing to the end of
+   the checkout finds nothing and no explanation. The plugin should mark it
+   aria-disabled and leave it enabled, with the reason in the field error - this
+   rule styles that state so there is no reason to reach for `disabled`. */
+.d-btn[aria-disabled="true"]{
+	opacity:.5;
+	filter:grayscale(35%);
+	cursor:not-allowed;
+}

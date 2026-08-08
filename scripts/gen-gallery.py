@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1624,6 +1624,7 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
 <div class="d-band" style="--surface-band:var(--c-claret)">
   <div class="d-news">
+    <span class="d-news__flow" aria-hidden="true"><i style="--from:-26rem;--y:18%;--s:1.2;--d:0s"></i><i style="--from:26rem;--y:74%;--s:1.0;--d:.35s"></i><i style="--from:-30rem;--y:62%;--s:.85;--d:.7s"></i><i style="--from:30rem;--y:26%;--s:1.35;--d:1.05s"></i><i style="--from:-24rem;--y:88%;--s:1.05;--d:1.4s"></i><i style="--from:28rem;--y:46%;--s:.9;--d:1.75s"></i><i style="--from:-32rem;--y:38%;--s:1.15;--d:2.1s"></i><i style="--from:24rem;--y:8%;--s:.8;--d:2.45s"></i><i style="--from:-28rem;--y:54%;--s:1.3;--d:1.2s"></i></span>
     <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
     <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
     дома. Без спам, обещаваме.</p>
@@ -1664,7 +1665,6 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
   <div>
     <h2 class="d-footer__head">Дарлинг 7 ООД</h2>
-    <p class="d-footer__pledge">Всяка поръчка се опакова на ръка в София.</p>
     <div class="d-footer__policies">
       <a href="#">Общи условия</a><a href="#">Поверителност</a><a href="#">Бисквитки</a>
     </div>
@@ -1673,7 +1673,6 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 </footer>
 <div class="d-footer__legal">
   <p>&copy; 2026 Дарлинг 7 ООД &middot; ЕИК 000000000</p>
-  <p><a href="#">Условия</a> &middot; <a href="#">Поверителност</a></p>
 </div>
 
 <div class="wrap" style="padding-top:0">
@@ -1733,17 +1732,17 @@ disclosure and a warning, and we already have <code>.d-panel</code> and
 <code>.d-notice</code>. The legacy stylesheet wrote a third disclosure and a
 fourth notice for it. Both are gone.</p>
 
-<p class="lbl">Prose page &mdash; and an authored &lt;details&gt;, which gets the
-floor treatment rather than the panel</p>
+<p class="lbl">Prose page &mdash; and an authored &lt;details&gt;, which IS the
+quiet panel</p>
 <div class="d-prose d-prose--card">
   <h2>Доставка и плащане</h2>
   <p>Изпращаме с Еконт и Спиди, до адрес или до офис. Поръчките, направени до
   16:00 в работен ден, обикновено тръгват същия ден.</p>
   <ul><li>Безплатна доставка над 77&nbsp;&euro;</li><li>Наложен платеж или карта</li>
   <li>14 дни за връщане</li></ul>
-  <details><summary>Колко време отнема доставката?</summary>
+  <details class="wp-block-details"><summary>Колко време отнема доставката?</summary>
   <p>До офис обикновено един работен ден, до адрес един до два.</p></details>
-  <details><summary>Мога ли да сменя адреса след поръчка?</summary>
+  <details class="wp-block-details"><summary>Мога ли да сменя адреса след поръчка?</summary>
   <p>Да, ако пратката още не е предадена на куриера. <a href="#">Пишете ни</a>.</p></details>
 </div>
 
@@ -1770,7 +1769,6 @@ floor treatment rather than the panel</p>
   Ето откъде да продължиш.</p>
   <div class="d-404__actions">
     <a class="d-btn d-finish" href="#">Към магазина</a>
-    <a class="d-btn d-btn--quiet" href="#">Начало</a>
   </div>
 </div>
 
@@ -1793,11 +1791,13 @@ shown here in place rather than fixed to the window</p>
     <p>Използваме бисквитки, за да работи количката и да разберем кое си струва.
     <a href="#">Повече</a></p>
     <div class="d-consent__actions">
-      <button class="d-btn d-finish">Приемам</button>
+      <button class="d-btn">Приемам</button>
       <button class="d-btn d-btn--quiet">Само необходимите</button>
     </div>
   </div>
-  <button class="d-fab d-fab--a11y" style="position:absolute" aria-label="Достъпност">
+  <button class="d-fab d-fab--a11y" style="position:absolute" aria-label="Достъпен режим"
+    aria-pressed="false"
+    onclick="var on=document.documentElement.classList.toggle('d-a11y');this.setAttribute('aria-pressed',on)">
     <span class="d-icon d-icon--user"></span></button>
   <a class="d-fab d-fab--lang" style="position:absolute" href="#" aria-label="English">EN</a>
 </div>
@@ -1824,6 +1824,84 @@ turning it on. Worth a look with the switch flipped before it ships.</div>
 
 # -------------------------------------------------------------------- pages ---
 A(PAGES_MARKUP)
+
+
+CHECKOUT_MARKUP = '''<section class="sec" id="checkout"><h2>Patterns</h2>
+<h3>Checkout add-ons &mdash; VAT invoice and courier office</h3>
+<p class="note"><b>This one is mostly a deletion.</b> The two blocks carried 28
+legacy rules and all but a handful were the system saying something twice: field
+borders and radii, a focus ring (amber &mdash; every other field in the system is
+cocoa), an invalid state, a hint, an error, a warning notice and a radio. They
+are <code>.d-field__control</code>, <code>.d-field--invalid</code>,
+<code>.d-field__hint</code>, <code>.d-field__error</code>,
+<code>.d-notice--warning</code> and <code>.d-check</code>. What is left is a
+card, a grid and a disabled state.</p>
+<p class="note"><b>Nothing here animates, deliberately.</b>
+<code>motion.css</code> kills every animation and transition on
+<code>body.woocommerce-checkout</code>, and these two blocks live nowhere else
+&mdash; so a transition written here is dead code that looks alive.</p>
+
+<div class="d-intake">
+  <label class="d-check d-intake__toggle">
+    <input type="checkbox" checked><span>Фактура на фирма</span></label>
+  <div class="d-fieldgrid">
+    <div class="d-field d-field--wide"><label class="d-field__label" for="di-company">Фирма</label>
+      <input class="d-field__control" id="di-company" type="text" value="Пример ЕООД"></div>
+    <div class="d-field"><label class="d-field__label" for="di-vat">ЕИК / ДДС №</label>
+      <input class="d-field__control" id="di-vat" type="text" value="000000000"></div>
+    <div class="d-field d-field--invalid"><label class="d-field__label" for="di-mol">МОЛ</label>
+      <input class="d-field__control" id="di-mol" type="text" aria-invalid="true">
+      <p class="d-field__error">Полето е задължително за фактура.</p></div>
+    <div class="d-field d-field--wide"><label class="d-field__label" for="di-address">Адрес по регистрация</label>
+      <input class="d-field__control" id="di-address" type="text"></div>
+    <p class="d-field__hint">Фактурата се издава след потвърждаване на поръчката.</p>
+  </div>
+</div>
+
+<div class="d-courier">
+  <label class="d-check d-courier__toggle">
+    <input type="checkbox" checked><span>Доставка до офис на куриер</span></label>
+  <div class="d-courier__fields">
+    <div class="d-courier__carriers">
+      <label class="d-check"><input type="radio" name="dcdemo" checked><span>Еконт</span></label>
+      <label class="d-check"><input type="radio" name="dcdemo"><span>Спиди</span></label>
+    </div>
+    <div class="d-field"><label class="d-field__label" for="dc-city">Град</label>
+      <input class="d-field__control" id="dc-city" type="text" value="София"></div>
+    <div class="d-field"><label class="d-field__label" for="dc-office">Офис</label>
+      <select class="d-field__control" id="dc-office">
+        <option>София, ул. Пример 12</option><option>София, бул. Пример 44</option></select></div>
+    <p class="d-field__hint">Изберете град, за да видите офисите наблизо.</p>
+  </div>
+</div>
+
+<div class="d-notice d-notice--warning" style="margin-top:14px">
+  <p class="d-notice__body">Един артикул е по заявка &mdash; поръчката тръгва до
+  5 работни дни.</p>
+</div>
+<p class="lbl" style="margin-top:22px">The submit, blocked</p>
+<button class="d-btn d-finish d-blocked" aria-disabled="true">Поръчай</button>
+
+<div class="todo"><b>The layout spans by class, not by id.</b> Legacy said
+<code>.di-fields #di-company, .di-fields #di-address{ grid-column:1/-1 }</code>
+&mdash; the layout keyed to two specific fields by name, so a third long field
+means editing CSS and renaming one silently drops it back into half a column.
+<br><br>
+<b>The courier block is a stack, not a grid.</b> City and office are dependent
+&mdash; you cannot pick an office before a city &mdash; and putting a dependent
+pair side by side invites filling the second one first.<br><br>
+<b>The blocked button keeps its focus.</b> A <code>disabled</code> button cannot
+be focused, so a keyboard user tabbing to the end of the checkout finds nothing
+and no explanation of why. The style is on <code>aria-disabled</code> as well, so
+the plugin can leave the button enabled and put the reason in the field error
+&mdash; which is where somebody is actually looking.<br><br>
+<b>Greyscale as well as opacity.</b> A cherry button at 50% is still cherry and
+still reads as the live action; on the plywood button opacity alone barely
+registers.</div>
+</section>'''
+
+# ----------------------------------------------------------------- checkout ---
+A(CHECKOUT_MARKUP)
 
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>

@@ -52,23 +52,20 @@ main .entry-content{
 .d-prose li + li{ margin-top:var(--space-3xs) }
 .d-prose a{ color:var(--c-cherry-deep); text-decoration:underline }
 
-/* *** AUTHORED <details> GETS A PLAIN TREATMENT, AND THAT IS DELIBERATE. ***
-   .d-panel is the disclosure component and it is what a TEMPLATE should emit.
-   But this is CMS content: somebody writes a FAQ in the editor and gets a bare
-   <details> with no classes on it. Styling it plainly here is not a second
-   panel - it is the floor under content we do not control, the same job
-   base/elements.css does for <p>. */
-.d-prose details{
-	border-bottom:1px solid var(--hairline);
-	padding-block:var(--space-2xs);
-}
-.d-prose summary{
-	cursor:pointer;
-	font-weight:var(--fw-medium);
-	padding-block:var(--space-3xs);
-}
-.d-prose summary:hover{ color:var(--c-cherry-deep) }
-.d-prose details p{ margin:var(--space-2xs) 0 var(--space-xs); color:var(--ink-quiet) }
+/* *** AN AUTHORED <details> IS THE PANEL, NOT A SECOND DISCLOSURE. ***
+   The first version of this file styled bare <details> here - its own border,
+   its own summary padding, its own hover - and argued that CMS content has no
+   classes so it needs a floor. The owner: "the panel inside the cards should be
+   our panel component, not make a new one. We had a quiet version of the panel
+   right?" We do, and he is right: a floor that looks like a worse copy of a
+   component IS a second component, whatever the comment above it says.
+
+   So there is nothing here. patterns/panel.css now names WordPress's own
+   details block - `.wp-block-details`, which is what the editor emits - in the
+   same selector lists that draw .d-panel, and gives it the quiet family. A
+   FAQ written in the editor comes out as the panel, arrow and all, with no
+   class for the author to remember and no second implementation to drift.
+   ========================================================================== */
 
 /* =============================================================================
    THE BLOG LIST

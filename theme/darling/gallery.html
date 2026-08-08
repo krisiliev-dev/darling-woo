@@ -4280,21 +4280,39 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
 }
 
-.d-field--invalid .d-field__control,
-.d-field--invalid input,
-.d-field--invalid select,
-.d-field--invalid textarea{
+/* *** THE BASE RULE WAS MORE SPECIFIC THAN THIS STATE, AND FOR TEXT INPUTS
+   THIS NEVER APPLIED. ***
+   The base control above is a selector LIST, and `.d-field input[type="text"]`
+   is (0,2,1). This was (0,2,0). So for every text input in the system the red
+   border lost to the grey one, silently, since the day the pattern was written
+   - the error MESSAGE showed, because nothing competes for that, so the field
+   just never turned red and nobody noticed a thing that was not there.
+   Doubling the class makes it (0,3,0), which beats (0,2,1) on class count with
+   no new ancestor and no !important. Matching the base list selector-for-
+   selector would also work and would have to be edited every time an input type
+   is added to that list - and forgetting is how this happened. */
+.d-field--invalid.d-field--invalid .d-field__control,
+.d-field--invalid.d-field--invalid input,
+.d-field--invalid.d-field--invalid select,
+.d-field--invalid.d-field--invalid textarea{
 	border-width:2px;
 	border-color:var(--notice-error-edge);
 	background:color-mix(in oklab, var(--notice-error-edge) 5%, var(--surface-raised));
 }
-.d-field--invalid .d-field__control:focus,
-.d-field--invalid input:focus{
+.d-field--invalid.d-field--invalid .d-field__control:focus,
+.d-field--invalid.d-field--invalid input:focus{
 	box-shadow:0 0 0 3px color-mix(in oklab, var(--notice-error-edge) 26%, transparent);
 }
 
-.d-field--disabled .d-field__control,
-.d-field :disabled{
+/* Same arithmetic, same fix: (0,2,0) against a (0,2,1) base. `.d-field
+   :disabled` is (0,1,1) and loses too. */
+.d-field--disabled.d-field--disabled .d-field__control,
+.d-field--disabled.d-field--disabled input,
+.d-field--disabled.d-field--disabled select,
+.d-field--disabled.d-field--disabled textarea,
+.d-field input:disabled,
+.d-field select:disabled,
+.d-field textarea:disabled{
 	background:var(--surface-quiet);
 	color:var(--ink-quiet);
 	cursor:not-allowed;
@@ -5494,7 +5512,14 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 @property --swim{   syntax:"<number>"; inherits:true; initial-value:0 }
 @property --swim-b{ syntax:"<number>"; inherits:true; initial-value:0 }
 
-.d-panel{
+/* *** AND WORDPRESS'S OWN DETAILS BLOCK IS THIS PANEL. ***
+   `.wp-block-details` is what the block editor emits when somebody writes a FAQ
+   on a CMS page. It joins the selector lists below rather than being given a
+   lookalike in page.css - one disclosure in the system, and an author does not
+   have to remember a class for it. It takes the quiet family, because a page of
+   prose is not the place for the cherry one. */
+.d-panel,
+.d-prose .wp-block-details{
 	/* The three families. A variant sets these five and nothing else. */
 	--panel-surface: var(--tint-grey);
 	--panel-quiet:   var(--tint-grey-quiet);
@@ -5566,7 +5591,8 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
    The right-hand padding keeps a lane free for the arrow, which is positioned
    against the PANEL and not the summary: it has to leave the summary entirely
    on its way down. */
-.d-panel__summary{
+.d-panel__summary,
+.d-prose .wp-block-details > summary{
 	display:grid;
 	grid-template-columns:1fr;
 	align-items:center;
@@ -5577,9 +5603,12 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	list-style:none;
 	transition:background var(--dur-ui) var(--ease-float);
 }
-.d-panel__summary::-webkit-details-marker{ display:none }
-.d-panel__summary::marker{ content:"" }
-.d-panel__summary:hover{ background:var(--panel-quiet) }
+.d-panel__summary::-webkit-details-marker,
+.d-prose .wp-block-details > summary::-webkit-details-marker{ display:none }
+.d-panel__summary::marker,
+.d-prose .wp-block-details > summary::marker{ content:"" }
+.d-panel__summary:hover,
+.d-prose .wp-block-details > summary:hover{ background:var(--panel-quiet) }
 .d-panel__summary:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:-2px;
@@ -5616,7 +5645,8 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 
    45deg is a v; 225deg is the same v having turned a full half-circle, which is
    a tumble turn rather than a mirror flip. */
-.d-panel__summary::after{
+.d-panel__summary::after,
+.d-prose .wp-block-details > summary::after{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -5629,11 +5659,13 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	transform:translateY(-50%) rotate(45deg);
 	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
 }
-.d-panel[open] > .d-panel__summary::after{ transform:translateY(-50%) rotate(225deg) }
+.d-panel[open] > .d-panel__summary::after,
+.d-prose .wp-block-details[open] > summary::after{ transform:translateY(-50%) rotate(225deg) }
 
 /* The chevron is 7px of paint. This is the 40px of TARGET around it, and it is
    the summary's too, so pressing anywhere near the arrow toggles the panel. */
-.d-panel__summary::before{
+.d-panel__summary::before,
+.d-prose .wp-block-details > summary::before{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -6647,14 +6679,17 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    was more animation than the thing deserved.
    ========================================================================== */
 
+/* *** EDGE TO EDGE. *** Owner's call. It was max-width:1120px centred, so the
+   grey stopped short of the window and the footer read as one more card rather
+   than as the bottom of the page. The COLOUR now runs the full width; the
+   CONTENT still gets a gutter, because text against the glass is not what
+   "edge to edge" means. Same split as .d-band. */
 .d-footer{
 	display:grid;
 	grid-template-columns:1fr auto 1fr;
 	gap:var(--space-l);
 	align-items:start;
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-xl) var(--gutter) var(--space-s);
+	padding:var(--space-xl) var(--gutter) var(--space-m);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
@@ -6731,19 +6766,22 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    Its own band under the footer, not a row inside it: it has a different
    background and runs the full width, and making it a grid child would mean
    fighting the three columns to span them. */
+/* *** THE SAME COLOUR, AND MUCH TIGHTER. *** It was a gold band with its own
+   padding, which made it a second footer under the footer. It is one line of
+   small print: same grey, a hairline above it, and about a third of the height.
+   The links that used to live here now live in the footer's own policy list,
+   one column up - the copyright line is the only thing left. */
 .d-footer__legal{
 	display:flex;
 	flex-wrap:wrap;
 	justify-content:space-between;
 	align-items:baseline;
-	gap:var(--space-2xs) var(--space-m);
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-s) var(--gutter) var(--space-m);
+	gap:var(--space-3xs) var(--space-m);
+	padding:var(--space-2xs) var(--gutter) var(--space-s);
 	border-top:1px solid var(--hairline);
-	background:var(--tint-gold);
+	background:var(--surface-quiet);
 	font-size:var(--fs-fine);
-	color:var(--ink);
+	color:var(--ink-quiet);
 }
 .d-footer__legal p{ margin:0; max-width:none; line-height:1.7 }
 @media (max-width: 720px){
@@ -6959,15 +6997,37 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 }
 .d-news__result:empty{ display:none }
 
-/* Two stars in the band's corners. The legacy pair were dingbat characters in
-   `content`, which meant they were text: selectable, copied with the page, and
-   read out by a screen reader as "black four pointed star". Masks are not. */
-.d-news::before,
-.d-news::after{
-	content:"";
+/* -- the stars lead the eye to the field ------------------------------------
+   Owner: "not 2 static stars but rather some that are flowing in from both
+   sides and towards the middle, getting smaller as they reach the middle. This
+   will lead the user's eye towards the field."
+
+   That is a better idea than what was there, and for a reason worth writing
+   down: two twinkling corners are DECORATION - they sit where nothing is
+   happening and ask to be looked at. A drift inward is DIRECTION. It ends where
+   the thing you want is.
+
+   *** ONE SPEED, MANY START TIMES. *** Also the owner's call, and it is what
+   makes it read as a current rather than as nine separate animations: every
+   star takes the same 2.6s, and they differ only in when they set off, how big
+   they start and which side they come from.
+
+   *** THE TRAVEL IS A LENGTH, NOT A PERCENTAGE. *** A percentage in `translate`
+   resolves against the element's OWN border box, so `--from:-50%` on a 14px
+   star moves it seven pixels. That mistake has cost this project two separate
+   afternoons - the slider wake and the first burst - so: rem. */
+.d-news__flow{
 	position:absolute;
-	width:.95rem;
-	height:.95rem;
+	inset:-1.5rem 0;
+	overflow:hidden;
+	pointer-events:none;
+}
+.d-news__flow i{
+	position:absolute;
+	top:var(--y, 50%);
+	left:50%;
+	width:calc(.8rem * var(--s, 1));
+	height:calc(.8rem * var(--s, 1));
 	background:var(--g-hi);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
@@ -6975,14 +7035,21 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	        mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	        mask-repeat:no-repeat;
-	animation:d-twinkle 3.6s var(--ease-float) infinite;
-	pointer-events:none;
+	opacity:0;
+	animation:d-news-drift 2.6s linear infinite;
+	animation-delay:var(--d, 0s);
 }
-.d-news::before{ top:-.5rem; inset-inline-start:8% }
-.d-news::after{ bottom:-.75rem; inset-inline-end:7%; width:1.2rem; height:1.2rem; animation-delay:1.4s }
+/* Shrinking to a quarter rather than to nothing: a star that vanishes at full
+   size reads as switched off, and one that shrinks to zero reads as falling
+   into the field, which is the sentence this is trying to say. */
+@keyframes d-news-drift{
+	0%   { translate:var(--from, 0px) 0; scale:1;    opacity:0 }
+	14%  { opacity:.95 }
+	78%  { opacity:.55 }
+	100% { translate:0 0;           scale:.22;  opacity:0 }
+}
 @media (prefers-reduced-motion: reduce){
-	.d-news::before,
-	.d-news::after{ animation:none }
+	.d-news__flow{ display:none }
 }
 
 }
@@ -7043,23 +7110,20 @@ main .entry-content{
 .d-prose li + li{ margin-top:var(--space-3xs) }
 .d-prose a{ color:var(--c-cherry-deep); text-decoration:underline }
 
-/* *** AUTHORED <details> GETS A PLAIN TREATMENT, AND THAT IS DELIBERATE. ***
-   .d-panel is the disclosure component and it is what a TEMPLATE should emit.
-   But this is CMS content: somebody writes a FAQ in the editor and gets a bare
-   <details> with no classes on it. Styling it plainly here is not a second
-   panel - it is the floor under content we do not control, the same job
-   base/elements.css does for <p>. */
-.d-prose details{
-	border-bottom:1px solid var(--hairline);
-	padding-block:var(--space-2xs);
-}
-.d-prose summary{
-	cursor:pointer;
-	font-weight:var(--fw-medium);
-	padding-block:var(--space-3xs);
-}
-.d-prose summary:hover{ color:var(--c-cherry-deep) }
-.d-prose details p{ margin:var(--space-2xs) 0 var(--space-xs); color:var(--ink-quiet) }
+/* *** AN AUTHORED <details> IS THE PANEL, NOT A SECOND DISCLOSURE. ***
+   The first version of this file styled bare <details> here - its own border,
+   its own summary padding, its own hover - and argued that CMS content has no
+   classes so it needs a floor. The owner: "the panel inside the cards should be
+   our panel component, not make a new one. We had a quiet version of the panel
+   right?" We do, and he is right: a floor that looks like a worse copy of a
+   component IS a second component, whatever the comment above it says.
+
+   So there is nothing here. patterns/panel.css now names WordPress's own
+   details block - `.wp-block-details`, which is what the editor emits - in the
+   same selector lists that draw .d-panel, and gives it the quiet family. A
+   FAQ written in the editor comes out as the panel, arrow and all, with no
+   class for the author to remember and no second implementation to drift.
+   ========================================================================== */
 
 /* =============================================================================
    THE BLOG LIST
@@ -7195,6 +7259,118 @@ main .entry-content{
    most products and a table for three lines is furniture. */
 .d-gpsr p{ margin:0 0 var(--space-2xs); font-size:var(--fs-meta) }
 .d-gpsr p:last-child{ margin-bottom:0 }
+
+}
+
+/* ==== patterns/checkout.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / CHECKOUT ADD-ONS
+   The VAT-invoice block and the courier office picker - the two things the
+   darling-checkout plugin puts on the checkout that WooCommerce does not.
+
+   *** THIS FILE IS SHORT BECAUSE MOST OF THE PORT WAS DELETION. ***
+   The legacy versions of these two blocks carried 28 rules, and all but a
+   handful were re-declarations of things the system already has:
+
+     .di-fields input      border, radius, padding, width, box-sizing
+                           -> .d-field__control, which says all of it once
+     .di-fields input:focus-visible
+                           -> the field's own focus ring, and it was AMBER here
+                              while every other field in the system is cocoa
+     .di-invalid           -> .d-field--invalid
+     .di-note / .dc-hint   -> .d-field__hint
+     .di-error             -> .d-field__error
+     .darling-backorder    -> .d-notice--warning
+     .dc-carriers label    -> .d-check, which already does radios
+
+   What is left is a card, a grid and a disabled state. If a rule below looks
+   like it should be in field.css, it probably should be - check before adding.
+
+   *** AND NOTHING HERE ANIMATES, DELIBERATELY. ***
+   motion.css kills every animation and transition on body.woocommerce-checkout.
+   These two blocks live nowhere else, so a transition written here is dead code
+   that looks alive. Do not add one and then debug why it does not run.
+   ========================================================================== */
+
+.d-intake,
+.d-courier{
+	margin-block:var(--space-s) var(--space-m);
+	padding:var(--space-s) var(--space-m);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+
+/* The toggle that reveals each block. .d-check does the box and the tick; this
+   only makes the label read as a heading, because it IS one - it is the only
+   thing naming the block. */
+.d-intake__toggle,
+.d-courier__toggle{
+	font-weight:var(--fw-medium);
+	font-size:var(--fs-ui);
+	color:var(--ink);
+}
+
+/* -- the field grid ----------------------------------------------------------
+   Two columns, and the long ones span both.
+
+   *** SPANNING BY CLASS, NOT BY ID. *** Legacy did
+   `.di-fields #di-company, .di-fields #di-address { grid-column:1/-1 }` - the
+   layout keyed to two specific fields by name, so adding a third long field
+   means editing CSS, and renaming one silently drops it back into a half
+   column. A modifier says what it means and survives both. */
+.d-fieldgrid{
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	gap:var(--space-xs);
+	margin-top:var(--space-s);
+}
+.d-fieldgrid > .d-field--wide,
+.d-fieldgrid > .d-field__error,
+.d-fieldgrid > .d-field__hint{ grid-column:1 / -1 }
+@media (max-width: 600px){
+	.d-fieldgrid{ grid-template-columns:1fr }
+}
+
+/* The courier block is a stack rather than a grid: city, then office, then the
+   hint. They are dependent - you cannot pick an office before a city - and
+   putting a dependent pair side by side invites filling the second one first. */
+.d-courier__fields{
+	display:flex;
+	flex-direction:column;
+	gap:var(--space-xs);
+	margin-top:var(--space-s);
+}
+.d-courier__carriers{
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-s);
+}
+
+/* -- the blocked submit ------------------------------------------------------
+   Set by the checkout plugin on the Place Order button when the invoice fields
+   are incomplete, so the button says "not yet" rather than failing after a
+   click. Greyscale as well as opacity: a cherry button at 50% is still cherry,
+   still reads as the live action, and on a plywood button opacity alone barely
+   registers at all. */
+.d-blocked,
+button.d-blocked[disabled],
+.d-btn.d-blocked{
+	opacity:.5;
+	filter:grayscale(35%);
+	cursor:not-allowed;
+}
+/* *** AND IT MUST STILL BE FOCUSABLE AND ANNOUNCED. ***
+   A disabled button cannot be focused, so a keyboard user tabbing to the end of
+   the checkout finds nothing and no explanation. The plugin should mark it
+   aria-disabled and leave it enabled, with the reason in the field error - this
+   rule styles that state so there is no reason to reach for `disabled`. */
+.d-btn[aria-disabled="true"]{
+	opacity:.5;
+	filter:grayscale(35%);
+	cursor:not-allowed;
+}
 
 }
 
@@ -10436,7 +10612,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -12002,6 +12178,7 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
 <div class="d-band" style="--surface-band:var(--c-claret)">
   <div class="d-news">
+    <span class="d-news__flow" aria-hidden="true"><i style="--from:-26rem;--y:18%;--s:1.2;--d:0s"></i><i style="--from:26rem;--y:74%;--s:1.0;--d:.35s"></i><i style="--from:-30rem;--y:62%;--s:.85;--d:.7s"></i><i style="--from:30rem;--y:26%;--s:1.35;--d:1.05s"></i><i style="--from:-24rem;--y:88%;--s:1.05;--d:1.4s"></i><i style="--from:28rem;--y:46%;--s:.9;--d:1.75s"></i><i style="--from:-32rem;--y:38%;--s:1.15;--d:2.1s"></i><i style="--from:24rem;--y:8%;--s:.8;--d:2.45s"></i><i style="--from:-28rem;--y:54%;--s:1.3;--d:1.2s"></i></span>
     <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
     <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
     дома. Без спам, обещаваме.</p>
@@ -12042,7 +12219,6 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
   <div>
     <h2 class="d-footer__head">Дарлинг 7 ООД</h2>
-    <p class="d-footer__pledge">Всяка поръчка се опакова на ръка в София.</p>
     <div class="d-footer__policies">
       <a href="#">Общи условия</a><a href="#">Поверителност</a><a href="#">Бисквитки</a>
     </div>
@@ -12051,7 +12227,6 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 </footer>
 <div class="d-footer__legal">
   <p>&copy; 2026 Дарлинг 7 ООД &middot; ЕИК 000000000</p>
-  <p><a href="#">Условия</a> &middot; <a href="#">Поверителност</a></p>
 </div>
 
 <div class="wrap" style="padding-top:0">
@@ -12105,17 +12280,17 @@ disclosure and a warning, and we already have <code>.d-panel</code> and
 <code>.d-notice</code>. The legacy stylesheet wrote a third disclosure and a
 fourth notice for it. Both are gone.</p>
 
-<p class="lbl">Prose page &mdash; and an authored &lt;details&gt;, which gets the
-floor treatment rather than the panel</p>
+<p class="lbl">Prose page &mdash; and an authored &lt;details&gt;, which IS the
+quiet panel</p>
 <div class="d-prose d-prose--card">
   <h2>Доставка и плащане</h2>
   <p>Изпращаме с Еконт и Спиди, до адрес или до офис. Поръчките, направени до
   16:00 в работен ден, обикновено тръгват същия ден.</p>
   <ul><li>Безплатна доставка над 77&nbsp;&euro;</li><li>Наложен платеж или карта</li>
   <li>14 дни за връщане</li></ul>
-  <details><summary>Колко време отнема доставката?</summary>
+  <details class="wp-block-details"><summary>Колко време отнема доставката?</summary>
   <p>До офис обикновено един работен ден, до адрес един до два.</p></details>
-  <details><summary>Мога ли да сменя адреса след поръчка?</summary>
+  <details class="wp-block-details"><summary>Мога ли да сменя адреса след поръчка?</summary>
   <p>Да, ако пратката още не е предадена на куриера. <a href="#">Пишете ни</a>.</p></details>
 </div>
 
@@ -12142,7 +12317,6 @@ floor treatment rather than the panel</p>
   Ето откъде да продължиш.</p>
   <div class="d-404__actions">
     <a class="d-btn d-finish" href="#">Към магазина</a>
-    <a class="d-btn d-btn--quiet" href="#">Начало</a>
   </div>
 </div>
 
@@ -12165,11 +12339,13 @@ shown here in place rather than fixed to the window</p>
     <p>Използваме бисквитки, за да работи количката и да разберем кое си струва.
     <a href="#">Повече</a></p>
     <div class="d-consent__actions">
-      <button class="d-btn d-finish">Приемам</button>
+      <button class="d-btn">Приемам</button>
       <button class="d-btn d-btn--quiet">Само необходимите</button>
     </div>
   </div>
-  <button class="d-fab d-fab--a11y" style="position:absolute" aria-label="Достъпност">
+  <button class="d-fab d-fab--a11y" style="position:absolute" aria-label="Достъпен режим"
+    aria-pressed="false"
+    onclick="var on=document.documentElement.classList.toggle('d-a11y');this.setAttribute('aria-pressed',on)">
     <span class="d-icon d-icon--user"></span></button>
   <a class="d-fab d-fab--lang" style="position:absolute" href="#" aria-label="English">EN</a>
 </div>
@@ -12192,6 +12368,78 @@ turning it on. Worth a look with the switch flipped before it ships.</div>
 <p class="lbl" style="margin-top:22px">Flip the mode on this page</p>
 <button class="d-btn d-btn--quiet" onclick="document.documentElement.classList.toggle('d-a11y')">
   Превключи достъпен режим</button>
+</section><section class="sec" id="checkout"><h2>Patterns</h2>
+<h3>Checkout add-ons &mdash; VAT invoice and courier office</h3>
+<p class="note"><b>This one is mostly a deletion.</b> The two blocks carried 28
+legacy rules and all but a handful were the system saying something twice: field
+borders and radii, a focus ring (amber &mdash; every other field in the system is
+cocoa), an invalid state, a hint, an error, a warning notice and a radio. They
+are <code>.d-field__control</code>, <code>.d-field--invalid</code>,
+<code>.d-field__hint</code>, <code>.d-field__error</code>,
+<code>.d-notice--warning</code> and <code>.d-check</code>. What is left is a
+card, a grid and a disabled state.</p>
+<p class="note"><b>Nothing here animates, deliberately.</b>
+<code>motion.css</code> kills every animation and transition on
+<code>body.woocommerce-checkout</code>, and these two blocks live nowhere else
+&mdash; so a transition written here is dead code that looks alive.</p>
+
+<div class="d-intake">
+  <label class="d-check d-intake__toggle">
+    <input type="checkbox" checked><span>Фактура на фирма</span></label>
+  <div class="d-fieldgrid">
+    <div class="d-field d-field--wide"><label class="d-field__label" for="di-company">Фирма</label>
+      <input class="d-field__control" id="di-company" type="text" value="Пример ЕООД"></div>
+    <div class="d-field"><label class="d-field__label" for="di-vat">ЕИК / ДДС №</label>
+      <input class="d-field__control" id="di-vat" type="text" value="000000000"></div>
+    <div class="d-field d-field--invalid"><label class="d-field__label" for="di-mol">МОЛ</label>
+      <input class="d-field__control" id="di-mol" type="text" aria-invalid="true">
+      <p class="d-field__error">Полето е задължително за фактура.</p></div>
+    <div class="d-field d-field--wide"><label class="d-field__label" for="di-address">Адрес по регистрация</label>
+      <input class="d-field__control" id="di-address" type="text"></div>
+    <p class="d-field__hint">Фактурата се издава след потвърждаване на поръчката.</p>
+  </div>
+</div>
+
+<div class="d-courier">
+  <label class="d-check d-courier__toggle">
+    <input type="checkbox" checked><span>Доставка до офис на куриер</span></label>
+  <div class="d-courier__fields">
+    <div class="d-courier__carriers">
+      <label class="d-check"><input type="radio" name="dcdemo" checked><span>Еконт</span></label>
+      <label class="d-check"><input type="radio" name="dcdemo"><span>Спиди</span></label>
+    </div>
+    <div class="d-field"><label class="d-field__label" for="dc-city">Град</label>
+      <input class="d-field__control" id="dc-city" type="text" value="София"></div>
+    <div class="d-field"><label class="d-field__label" for="dc-office">Офис</label>
+      <select class="d-field__control" id="dc-office">
+        <option>София, ул. Пример 12</option><option>София, бул. Пример 44</option></select></div>
+    <p class="d-field__hint">Изберете град, за да видите офисите наблизо.</p>
+  </div>
+</div>
+
+<div class="d-notice d-notice--warning" style="margin-top:14px">
+  <p class="d-notice__body">Един артикул е по заявка &mdash; поръчката тръгва до
+  5 работни дни.</p>
+</div>
+<p class="lbl" style="margin-top:22px">The submit, blocked</p>
+<button class="d-btn d-finish d-blocked" aria-disabled="true">Поръчай</button>
+
+<div class="todo"><b>The layout spans by class, not by id.</b> Legacy said
+<code>.di-fields #di-company, .di-fields #di-address{ grid-column:1/-1 }</code>
+&mdash; the layout keyed to two specific fields by name, so a third long field
+means editing CSS and renaming one silently drops it back into half a column.
+<br><br>
+<b>The courier block is a stack, not a grid.</b> City and office are dependent
+&mdash; you cannot pick an office before a city &mdash; and putting a dependent
+pair side by side invites filling the second one first.<br><br>
+<b>The blocked button keeps its focus.</b> A <code>disabled</code> button cannot
+be focused, so a keyboard user tabbing to the end of the checkout finds nothing
+and no explanation of why. The style is on <code>aria-disabled</code> as well, so
+the plugin can leave the button enabled and put the reason in the field error
+&mdash; which is where somebody is actually looking.<br><br>
+<b>Greyscale as well as opacity.</b> A cherry button at 50% is still cherry and
+still reads as the live action; on the plywood button opacity alone barely
+registers.</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>
 <p class="note">card, button, band, notice, rating, field, table, quantity, badge,
