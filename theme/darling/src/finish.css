@@ -19,7 +19,7 @@
                           --firefly-reach so the swarm surrounds it. Drifts,
                           twinkles, and breathes.
      ::after              the plywood grain. Inside the box, blended, masked.
-     box-shadow           the rim and the outer glow.
+     box-shadow           the rim, the inner glow and the outer glow.
 
    *** CONTAINER QUERIES CANNOT SIZE ANY OF IT. MEASURED, DO NOT RETRY. ***
    container-type:inline-size applies inline-size containment, so an element
@@ -117,6 +117,16 @@
 	   occluded by the element's own opaque background - the buttons shipped
 	   with no glow at all. A box-shadow never contributes to scrollable
 	   overflow, which is the other half of the same problem. */
+	/* THREE PARTS, THREE TOKENS, EACH ONE SWITCHABLE ON ITS OWN.
+	   v5 folded the inner glow into a background gradient, so --glow-inner
+	   stopped existing as a knob and the rim / inner / outer comparison showed
+	   the same button three times. Inset shadows also pool light against the
+	   edge more convincingly than a vignette, because they follow the
+	   border-radius exactly instead of approximating it with an ellipse. */
+	--glow-inner:
+		inset 0 0 11px -1px hsl(from var(--g-light)   h s l / calc(.62 * var(--glow-k))),
+		inset 0 0 28px -7px hsl(from var(--g-vanilla) h s l / calc(.55 * var(--glow-k)));
+
 	--glow-outer:
 		0 0    0    1px  hsl(from var(--g-light) h s l / calc(.30 * var(--glow-k))),
 		0 2px  10px -2px hsl(from var(--g-core)  h s l / calc(.55 * var(--glow-k))),
@@ -169,7 +179,20 @@
 	background-position: center, center, center, center, center, center;
 	background-repeat:no-repeat;
 
-	box-shadow:var(--rim), var(--glow-outer), var(--lift);
+	box-shadow:var(--rim), var(--glow-inner), var(--glow-outer), var(--lift);
+	/* *** THE OBJECT BREATHES, NOT JUST THE SWARM. ***
+	   v5 put the breathe on ::before's opacity, and once the flairs moved to
+	   the element background ::before carried nothing but fireflies - so the
+	   BUTTON never breathed at all and the owner could not tell whether the
+	   animation was running. It was right: it wasn't.
+	   This animates --glow-k, which all three of rim / inner / outer read, so
+	   they swell and settle together. It costs a shadow repaint per frame; the
+	   budget is on the keyframe. */
+	animation-name: d-finish-breathe-glow;
+	animation-duration: var(--breathe-cycle, 9s);
+	animation-timing-function: var(--ease-float);
+	animation-iteration-count: infinite;
+
 	transition: --glow-hover var(--dur-ui) var(--ease-float);
 }
 
@@ -568,21 +591,17 @@
 	}
 }
 
-/* -- the hero exception ----------------------------------------------------
-   The full-fat version: the outer halo breathes too, because --glow-k itself is
-   animated. Costs a whole-shadow repaint per frame per element, so this is for
-   the ONE object a page is built around - the main banner button - and it is
-   opt-in for exactly that reason. Two elements is free; thirty is 15 fps. */
-.d-finish--hero{
-	animation-name: d-finish-breathe-glow;
-	animation-duration: var(--breathe-cycle, 9s);
-	animation-timing-function: var(--ease-float);
-	animation-iteration-count: infinite;
-}
+/* The amplitude the owner asked for - "more pronounced. I am not even sure if
+   it's there." .70 to 1.24 is a swing that cannot be missed on a dark ground. */
 @keyframes d-finish-breathe-glow{
-	0%, 100% { --glow-breathe: .84 }
-	42%      { --glow-breathe: 1.12 }
+	0%, 100% { --glow-breathe: .70 }
+	42%      { --glow-breathe: 1.24 }
 }
+
+/* -- still -----------------------------------------------------------------
+   For a grid past the frame budget: keeps every glow, stops the breathing. */
+.d-finish--still{ animation-name:none }
+.d-finish--still::before{ animation-name:d-firefly-twinkle }
 
 /* -- no swarm ---------------------------------------------------------------
    For anything flush to the viewport edge, and for dense grids past the frame
