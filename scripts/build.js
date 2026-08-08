@@ -17,6 +17,29 @@
      node scripts/build.js --watch    and keep doing it as src/ changes
      node scripts/build.js --force    ignore the cache, rebuild the lot
 
+   *** ON THE BOX: ENABLE A CRON FOR THE WATCHER AT CUTOVER. ***
+   Nothing schedules this yet. It is a laptop-side convenience today and the
+   day the theme is deployed it has to become a real job on the server, or the
+   first person to edit a token over SSH ships a stylesheet that disagrees with
+   theme.json and a Stripe appearance object nobody regenerated.
+
+   The RIGHT answer on a server is a deploy step - build once, on push, before
+   the files are live - because a watcher on a production box rebuilds at
+   whatever moment somebody happens to save, which is not a moment anybody
+   chose. The cron is the belt to that braces: it catches an edit made directly
+   on the box, which is exactly the edit nobody remembers.
+
+     # /etc/cron.d/darling-build   - every 15 minutes, only if src/ moved
+     */15 * * * * www-data cd /srv/darling/darling-woo && node scripts/build.js >> /var/log/darling-build.log 2>&1
+
+   build.js is already safe to run on a timer: it skips the browser step when
+   src/tokens is unchanged, so an idle run is under three seconds and writes
+   byte-identical output.
+
+   If a watcher is wanted instead of a timer, it is the same command with
+   --watch under systemd rather than cron - Restart=always, and it must NOT run
+   as root.
+
    *** THE ORDER IS NOT ARBITRARY AND IS WORTH READING. ***
    gen-category-banners writes INTO src/, so it must run before anything reads
    src/. resolve-tokens needs the BUILT stylesheet, because the only honest way
