@@ -44,8 +44,12 @@
 @import url("tokens/type.css")   layer(tokens);
 @import url("tokens/space.css")  layer(tokens);
 @import url("tokens/radius.css") layer(tokens);
+@import url("tokens/icon.css")   layer(tokens);
 @import url("tokens/motion.css") layer(motion);
 @import url("base/elements.css")    layer(base);
+@import url("patterns/icon.css")   layer(patterns);
+@import url("patterns/header.css") layer(patterns);
+@import url("patterns/drawer.css") layer(patterns);
 @import url("patterns/band.css")    layer(patterns);
 @import url("patterns/button.css")  layer(patterns);
 @import url("patterns/card.css")    layer(patterns);
@@ -66,6 +70,7 @@
 /* -- ADOPTED, UNLAYERED --------------------------------------------------
    These have to outrank WooCommerce, and only unlayered CSS can. Last on
    purpose, and no layer() on purpose. */
+@import url("adopted/icon.css");
 @import url("adopted/card.css");
 @import url("adopted/field.css");
 @import url("adopted/notice.css");

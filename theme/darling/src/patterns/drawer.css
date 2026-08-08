@@ -1,0 +1,205 @@
+/* =============================================================================
+   PATTERN / DRAWER
+   The nav drawer and the cart drawer. Both are <dialog>.
+
+   *** <dialog> IS THE PATTERN, AND IT IS NOT A STYLE CHOICE. ***
+   The old markup already used it, which was the right call and worth keeping
+   for reasons that are easy to lose in a rewrite: a real dialog traps focus,
+   returns focus to whatever opened it, closes on Escape, is inert to the page
+   behind it, and gets ::backdrop for free. A <div class="drawer"> gets none of
+   that and every one of them has to be re-implemented in script, badly.
+
+   *** THE OPEN ANIMATION IS @starting-style, NOT A KEYFRAME. ***
+   The old rule was `animation: darling-drawer-in .22s ease-out` on [open]. An
+   animation keyed to an attribute plays once on open and cannot play backwards
+   on close - so the drawer slid in and then vanished. @starting-style gives the
+   transition a from-value for an element that has just been displayed, and
+   transition-behavior:allow-discrete keeps `display` and `overlay` animating
+   with it, so the close is the same transition run the other way. Same trick as
+   the panel's swim: transitions reverse, animations do not.
+
+   Chrome 117+ / Safari 17.4+. Behind that the drawer opens and closes
+   instantly, which is correct behaviour and not a broken one.
+   ========================================================================== */
+
+.d-drawer{
+	width:min(88vw, 22rem);
+	max-width:none;
+	height:100%;
+	max-height:100%;
+	margin:0 auto 0 0;          /* left edge by default */
+	padding:0;
+	border:0;
+	background:var(--surface-raised);
+	color:var(--ink);
+	overflow:hidden;
+	display:flex;
+	flex-direction:column;
+
+	translate:-100% 0;
+	opacity:0;
+	transition:translate var(--dur-panel) var(--ease-float),
+	           opacity   var(--dur-panel) var(--ease-float),
+	           display   var(--dur-panel) allow-discrete,
+	           overlay   var(--dur-panel) allow-discrete;
+}
+.d-drawer[open]{ translate:0 0; opacity:1 }
+@starting-style{
+	.d-drawer[open]{ translate:-100% 0; opacity:0 }
+}
+/* Opens from the right instead. The cart lives on the right because that is
+   where its button is, and a panel that arrives from the opposite side of the
+   screen from the thing you pressed reads as a different surface. */
+.d-drawer--end{
+	margin:0 0 0 auto;
+	translate:100% 0;
+}
+@starting-style{
+	.d-drawer--end[open]{ translate:100% 0 }
+}
+
+.d-drawer::backdrop{
+	background:var(--scrim);
+	opacity:0;
+	transition:opacity var(--dur-panel) var(--ease-float),
+	           display var(--dur-panel) allow-discrete,
+	           overlay var(--dur-panel) allow-discrete;
+}
+.d-drawer[open]::backdrop{ opacity:1 }
+@starting-style{
+	.d-drawer[open]::backdrop{ opacity:0 }
+}
+
+/* -- head -------------------------------------------------------------------- */
+.d-drawer__head{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:var(--inline);
+	flex:none;
+	padding:var(--space-s);
+	border-bottom:1px solid var(--hairline);
+	font:var(--fw-bold) var(--fs-lede)/var(--lh-title) var(--font-display);
+}
+/* Not a star, and not a spin. That was settled on the notice: a close button is
+   the most-pressed control in the drawer and the least interesting. */
+.d-drawer__close{
+	display:grid;
+	place-items:center;
+	width:2.75rem;
+	height:2.75rem;
+	margin:-.5rem -.5rem -.5rem 0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--c-cocoa);
+	cursor:pointer;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-drawer__close:hover{ color:var(--c-claret); background:var(--tint-gold) }
+.d-drawer__close:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+.d-drawer__close .d-icon{ width:1.15rem; height:1.15rem }
+
+/* -- body: scrolls, and it is the branded bar ------------------------------- */
+.d-drawer__body{
+	flex:1 1 auto;
+	min-height:0;
+	overflow:auto;
+	overscroll-behavior:contain;
+	scrollbar-width:thin;
+	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+}
+.d-drawer__body::-webkit-scrollbar{ width:10px }
+.d-drawer__body::-webkit-scrollbar-track{ background:var(--tint-grey) }
+.d-drawer__body::-webkit-scrollbar-thumb{
+	background:var(--c-grey-400);
+	border:2px solid var(--tint-grey);
+	border-radius:var(--radius-pill);
+}
+
+/* -- the nav list ------------------------------------------------------------
+   44px minimum on every row. This is the one navigation surface that is only
+   ever used with a thumb. */
+.d-drawer__nav ul{
+	margin:0;
+	padding:var(--space-2xs);
+	list-style:none;
+}
+.d-drawer__nav a{
+	display:flex;
+	align-items:center;
+	gap:var(--inline);
+	min-height:44px;
+	padding:var(--space-3xs) var(--space-xs);
+	border-radius:var(--radius-s);
+	color:var(--ink);
+	text-decoration:none;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-drawer__nav a:hover,
+.d-drawer__nav a:focus-visible{
+	background:var(--tint-gold);
+	color:var(--c-cherry-deep);
+}
+.d-drawer__nav a:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+.d-drawer__nav a[aria-current="page"]{
+	color:var(--c-cherry-deep);
+	font-weight:var(--fw-medium);
+}
+.d-drawer__nav hr{
+	border:0;
+	border-top:1px solid var(--hairline);
+	margin:.5rem 1rem;
+}
+.d-drawer__secondary a{ font-size:var(--fs-meta); color:var(--ink-quiet) }
+.d-drawer__secondary a:hover{ color:var(--c-cherry-deep) }
+
+/* -- foot: totals and the two buttons, pinned ------------------------------- */
+.d-drawer__foot{
+	flex:none;
+	padding:var(--space-s);
+	border-top:1px solid var(--hairline);
+	background:var(--surface-raised);
+	display:grid;
+	gap:var(--space-2xs);
+}
+.d-drawer__total{
+	display:flex;
+	align-items:baseline;
+	justify-content:space-between;
+	font:var(--fw-medium) var(--fs-lede)/var(--lh-title) var(--font-ui);
+	font-variant-numeric:tabular-nums;
+}
+.d-drawer__total b{ color:var(--price) }
+.d-drawer__note{ font-size:var(--fs-fine); color:var(--ink-quiet) }
+
+/* -- empty ------------------------------------------------------------------- */
+.d-drawer__empty{
+	display:grid;
+	place-items:center;
+	gap:var(--space-2xs);
+	padding:var(--space-2xl) var(--space-s);
+	text-align:center;
+	color:var(--ink-quiet);
+}
+.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
+
+/* -- reduced motion ----------------------------------------------------------
+   motion.css kills animations, not transitions, and this drawer is transitions
+   all the way down - so it needs its own line. A drawer that slides is the one
+   piece of movement someone with vestibular sensitivity is most likely to be
+   hurt by, because it is large and it crosses the whole screen. */
+@media (prefers-reduced-motion: reduce){
+	.d-drawer, .d-drawer--end{ translate:none }
+	@starting-style{
+		.d-drawer[open], .d-drawer--end[open]{ translate:none }
+	}
+}

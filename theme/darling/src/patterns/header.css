@@ -1,0 +1,266 @@
+/* =============================================================================
+   PATTERN / HEADER
+   The bar that is on every page: wordmark, nav, mega menu, search, actions.
+
+   PORTED FROM style.css .darling-header--v2, and the port is not a copy. What
+   changed and why:
+
+     --d-honey-light  ->  --tint-gold      honey was retired; the hover tint is
+                                           now the same one the panel uses, so a
+                                           hovered nav link and a hovered panel
+                                           row are the same colour by token.
+     background:#fff  ->  --surface-raised the search pill was the last hard
+                                           white on the page after we moved to
+                                           grey-050.
+     .6rem / .7rem    ->  --radius-*       three different hand-typed radii for
+                                           the same job.
+     .18s ease        ->  --dur-ui         the de-facto standard, now a token.
+     inline SVG       ->  .d-icon          the icons were duplicated in the
+                                           template; one token now.
+
+   *** THE NAV IS A <nav> WITH A LIST, AND THE MEGA IS A DISCLOSURE. ***
+   The old mega opened on :hover and :focus-within only. Hover-only submenus are
+   unreachable on a touch screen that does not emulate hover, and focus-within
+   means the panel opens while a keyboard user is only passing through. Both are
+   kept - they are the desktop behaviour people expect - but the trigger is now
+   a real <button aria-expanded> as well, so the panel has a state that can be
+   read, toggled and closed with Escape.
+   ========================================================================== */
+
+.d-header{
+	position:sticky;
+	top:0;
+	z-index:50;
+	background:var(--surface-page);
+	border-bottom:1px solid var(--hairline);
+}
+.d-header__inner{
+	display:flex;
+	align-items:center;
+	gap:var(--space-s);
+	max-width:var(--page-max);
+	margin:0 auto;
+	padding:var(--space-2xs) var(--space-s);
+}
+
+/* -- the wordmark -----------------------------------------------------------
+   Its own type role, not a heading: it is the same size on every page and must
+   not move when a page's h1 scale changes. */
+.d-header__logo{
+	position:relative;
+	display:inline-flex;
+	align-items:center;
+	gap:.4rem;
+	flex:none;
+	color:var(--ink);
+	text-decoration:none;
+	font:var(--type-wordmark);
+	letter-spacing:.01em;
+}
+.d-header__logo:hover{ color:var(--c-cherry-deep) }
+.d-header__logo img{ max-height:52px; width:auto }
+.d-header__logo:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:4px;
+	border-radius:var(--radius-s);
+}
+
+/* -- the nav ---------------------------------------------------------------- */
+.d-nav{ flex:1 1 auto; min-width:0 }
+.d-nav > ul{
+	display:flex;
+	flex-wrap:nowrap;
+	gap:var(--space-3xs);
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+.d-nav a,
+.d-nav__trigger{
+	position:relative;
+	display:block;
+	padding:.45rem .6rem;
+	border:0;
+	border-radius:var(--radius-s);
+	background:none;
+	color:var(--ink);
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
+	white-space:nowrap;
+	text-decoration:none;
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-nav a:hover, .d-nav a:focus-visible,
+.d-nav__trigger:hover, .d-nav__trigger[aria-expanded="true"]{
+	background:var(--tint-gold);
+	color:var(--c-cherry-deep);
+}
+.d-nav a:focus-visible,
+.d-nav__trigger:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+/* The current page is stated, not just coloured: a colour alone is the one cue
+   a colour-blind visitor does not get. */
+.d-nav a[aria-current="page"]{
+	color:var(--c-cherry-deep);
+	text-decoration:underline;
+	text-underline-offset:.35em;
+	text-decoration-thickness:2px;
+}
+
+/* -- the mega menu -----------------------------------------------------------
+   Full-bleed under the header, three columns of links. Opens on hover and on
+   focus-within for the pointer, and on aria-expanded for everyone else. */
+.d-nav__mega{ position:static }
+.d-mega{
+	position:absolute;
+	left:0;
+	right:0;
+	top:100%;
+	z-index:49;
+	display:none;
+	padding:var(--space-m) var(--space-s) var(--space-l);
+	background:var(--surface-raised);
+	border-bottom:1px solid var(--hairline);
+	box-shadow:var(--shadow-card);
+}
+.d-nav__mega:hover > .d-mega,
+.d-nav__mega:focus-within > .d-mega,
+.d-nav__trigger[aria-expanded="true"] + .d-mega{ display:block }
+.d-mega__list{
+	display:grid;
+	grid-template-columns:repeat(3, 1fr);
+	gap:12px 48px;
+	max-width:var(--page-max);
+	margin:0 auto;
+	padding:0;
+	list-style:none;
+}
+/* *** THE FLOURISH IS TWO STARS, AND THEY ARE MARKS RATHER THAN CHARACTERS. ***
+   The old rule used content:"\2726" and content:"\2727" - two Unicode dingbats
+   that are missing from Inter and fall back to whatever the system has, which
+   on Windows is a different weight and on Android is often nothing at all. Same
+   reason the rating stars are drawn: a mark that is a character is at the mercy
+   of a font stack we do not control. */
+.d-mega__link{
+	position:relative;
+	display:inline-flex;
+	align-items:center;
+	padding:6px 18px 6px 0;
+	color:var(--ink);
+	text-decoration:none;
+	white-space:nowrap;
+	transition:color var(--dur-ui) var(--ease-float);
+}
+.d-mega__link::before,
+.d-mega__link::after{
+	content:"";
+	display:inline-block;
+	background:currentColor;
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	opacity:0;
+	transition:opacity 150ms var(--ease-float);
+}
+.d-mega__link::before{
+	width:.72em;
+	height:.72em;
+	margin-inline-end:8px;
+	mask-image:var(--icon-star-4);
+	-webkit-mask-image:var(--icon-star-4);
+	color:var(--g-core);
+}
+.d-mega__link::after{
+	position:absolute;
+	top:2px;
+	inset-inline-end:2px;
+	width:.5em;
+	height:.5em;
+	mask-image:var(--icon-star-4);
+	-webkit-mask-image:var(--icon-star-4);
+	color:var(--c-cherry);
+}
+.d-mega__link:hover{ color:var(--c-cherry-deep) }
+.d-mega__link:hover::before,
+.d-mega__link:hover::after{ opacity:1 }
+.d-mega__link:hover::before{ animation:d-twinkle 1.5s var(--ease-float) infinite }
+.d-mega__link:hover::after{  animation:d-twinkle 1.5s var(--ease-float) infinite .4s }
+@keyframes d-twinkle{
+	0%,100% { transform:scale(1)    rotate(0deg) }
+	50%     { transform:scale(1.35) rotate(18deg) }
+}
+.d-mega__link:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+	border-radius:var(--radius-xs);
+}
+
+/* -- the search pill --------------------------------------------------------- */
+.d-search{
+	flex:1 1 auto;
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+	min-width:0;
+	padding:var(--space-2xs) var(--space-s);
+	border-radius:var(--radius-pill);
+	background:var(--surface-raised);
+	box-shadow:var(--shadow-card);
+	color:var(--ink-placeholder);
+}
+.d-search:focus-within{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+	box-shadow:0 0 0 3px var(--focus-halo), var(--shadow-card);
+}
+.d-search .d-icon{ width:1.1rem; height:1.1rem; flex:none }
+.d-search input[type="search"]{
+	flex:1 1 auto;
+	min-width:0;
+	border:0;
+	outline:0;
+	background:none;
+	font:inherit;
+	color:var(--ink);
+}
+.d-search input[type="search"]::placeholder{
+	color:var(--ink-placeholder);
+	opacity:1;   /* Firefox dims placeholders by default; the token already is dim */
+}
+.d-search input[type="search"]::-webkit-search-cancel-button{
+	appearance:none;
+	width:.9em;
+	height:.9em;
+	background:currentColor;
+	mask-image:var(--icon-close);
+	mask-size:contain;
+	-webkit-mask-image:var(--icon-close);
+	-webkit-mask-size:contain;
+	cursor:pointer;
+}
+
+/* -- the actions ------------------------------------------------------------- */
+.d-header__actions{
+	display:flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	margin-inline-start:auto;
+	flex:none;
+}
+
+/* -- narrow -----------------------------------------------------------------
+   900px, matching the old breakpoint exactly so nothing shifts at the cutover.
+   The full nav and the search pill go; the burger and the small search button
+   arrive. */
+@media (max-width: 900px){
+	.d-nav{ display:none }
+	.d-search{ display:none }
+	.d-header__burger,
+	.d-header__search-sm{ display:grid }
+}
+.d-header__burger,
+.d-header__search-sm{ display:none }

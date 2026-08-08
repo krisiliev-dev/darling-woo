@@ -1,0 +1,162 @@
+/* =============================================================================
+   ADOPTED / ICON  -  replacing the WooCommerce icon font
+   UNLAYERED ON PURPOSE. See index.css.
+
+   *** THIS FILE IS WHAT UNBLOCKS STAGE 4 OF THE DEQUEUE. ***
+   MEASURED, not assumed: woocommerce.css declares @font-face for `star` and
+   `WooCommerce`, both pointing at WooCommerce.woff2, and paints 12 distinct
+   private-use glyphs from them across 19 rules. The font loads on all four page
+   types and 5 glyphs render on the product page. Dequeue woocommerce-general
+   with those rules unanswered and every one becomes an empty box.
+
+   Each rule below replaces one glyph with the same mark drawn as a mask. The
+   `content` stays - it has to, or the pseudo-element does not generate - but it
+   becomes an empty string and the mark is painted as a masked background.
+
+   THE GLYPH TABLE, so the next person can check the work rather than trust it:
+     \e00a  digital downloads list          -> --icon-download
+     \e013  remove a chosen layered filter  -> --icon-close
+     \e015  message notice                  -> --icon-check
+     \e016  error notice                    -> --icon-error
+     \e017  add-to-cart button, added state -> --icon-check
+     \e019  shipping-calculator toggle      -> --icon-chevron-down
+     \e01c  button loading state            -> --icon-spinner
+     \e020  stars picker, filled            -> handled by patterns/rating.css
+     \e021  stars picker, empty             -> handled by patterns/rating.css
+     \e028  info notice                     -> --icon-info
+     \e02d  customer details, email         -> --icon-mail
+     \e037  customer details, phone         -> --icon-phone
+
+   The two star glyphs are deliberately NOT here. rating.css already draws stars
+   with clip-path, font-independently, and has been reviewed; pointing them at a
+   mask would be a second implementation of a solved thing.
+   ========================================================================== */
+
+/* The shared shape. Every rule below only picks a mark. */
+.woocommerce .woocommerce-customer-details--email::before,
+.woocommerce .woocommerce-customer-details--phone::before,
+.woocommerce-account ul.digital-downloads li::before,
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,
+.woocommerce-message::before,
+.woocommerce-error::before,
+.woocommerce-info::before,
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
+	content:"";
+	display:inline-block;
+	flex:none;
+	width:1.05em;
+	height:1.05em;
+	vertical-align:-.18em;
+	margin-inline-end:.45em;
+	/* *** THE FONT DECLARATIONS HAVE TO BE UNSET, NOT JUST OVERPAINTED. ***
+	   Woo sets font-family:WooCommerce on these. If the sheet is still enqueued
+	   while we are testing, an un-reset font-family plus an empty content is a
+	   zero-width nothing in some of them and a stray glyph in others. */
+	font-family:inherit;
+	background:currentColor;
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+}
+.woocommerce .woocommerce-customer-details--email::before{ mask-image:var(--icon-mail); -webkit-mask-image:var(--icon-mail) }
+.woocommerce .woocommerce-customer-details--phone::before{ mask-image:var(--icon-phone); -webkit-mask-image:var(--icon-phone) }
+.woocommerce-account ul.digital-downloads li::before{ mask-image:var(--icon-download); -webkit-mask-image:var(--icon-download) }
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before{
+	mask-image:var(--icon-close); -webkit-mask-image:var(--icon-close);
+	color:var(--c-claret);
+}
+.woocommerce-message::before{ mask-image:var(--icon-check); -webkit-mask-image:var(--icon-check) }
+.woocommerce-error::before{   mask-image:var(--icon-error); -webkit-mask-image:var(--icon-error) }
+.woocommerce-info::before{    mask-image:var(--icon-info);  -webkit-mask-image:var(--icon-info) }
+/* An ::after that points DOWN when the calculator is shut and up when it is
+   open, matching the panel's chevron rather than inventing a third convention. */
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
+	mask-image:var(--icon-chevron-down); -webkit-mask-image:var(--icon-chevron-down);
+	margin-inline:.35em 0;
+	transition:transform var(--dur-ui) var(--ease-float);
+}
+.woocommerce .cart-collaterals .shipping-calculator-button[aria-expanded="true"]::after{
+	transform:rotate(180deg);
+}
+
+/* The loading button. Woo spins \e01c; we spin the ring. The ::after carries
+   the mark so the button's own label stays put rather than being replaced. */
+.woocommerce button.button.loading::after,
+.woocommerce input.button.loading::after,
+.woocommerce a.button.loading::after{
+	content:"";
+	display:inline-block;
+	width:1em;
+	height:1em;
+	margin-inline-start:.5em;
+	vertical-align:-.15em;
+	font-family:inherit;
+	background:currentColor;
+	mask-image:var(--icon-spinner);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-spinner);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	animation:d-icon-spin 900ms linear infinite;
+}
+.woocommerce button.button.added::after,
+.woocommerce a.button.added::after{
+	content:"";
+	display:inline-block;
+	width:1em;
+	height:1em;
+	margin-inline-start:.5em;
+	vertical-align:-.15em;
+	font-family:inherit;
+	background:currentColor;
+	mask-image:var(--icon-check);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-check);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+}
+
+/* =============================================================================
+   FUNCTIONAL, NOT COSMETIC - AND THAT IS WHY IT IS WRITTEN DOWN HERE
+
+   Two rules on this site are printed as INLINE styles against WooCommerce
+   handles. wp_add_inline_style attaches CSS to a handle, so dequeuing the
+   handle takes them with it, silently. Neither is decoration:
+
+   1. form.has-custom-place-order-button #place_order { display:none!important }
+      Hides the duplicate Place Order button when a gateway supplies its own.
+      Lose it and the checkout shows TWO place-order buttons. The class is added
+      by the gateway's script, not by us, so this rule is a contract with code we
+      do not own - which is the argument for keeping the handle rather than
+      copying the rule. It is copied here anyway so that the copy exists and is
+      reviewed; the deciding test is a real order in Stripe test mode, before and
+      after, not a screenshot.
+
+   2. .woocommerce form .form-row .required { visibility: visible }
+      Makes the required-field asterisk visible. Woo prints it to defeat themes
+      that hide abbr[title]. Ours does not, but the day someone adds a reset that
+      does, an invisible required marker on a checkout is a real problem and not
+      an obvious one.
+
+   Both stay OUT of patterns/ deliberately: they style markup we do not own, so
+   they belong with the rest of the adopted rules and must be dropped the day
+   the markup changes.
+   ========================================================================== */
+form.has-custom-place-order-button #place_order{ display:none !important }
+.woocommerce form .form-row .required{
+	visibility:visible;
+	color:var(--c-claret);
+	font-weight:var(--fw-medium);
+	border:0;
+	text-decoration:none;
+}
+.woocommerce form .form-row .optional{ color:var(--ink-quiet) }

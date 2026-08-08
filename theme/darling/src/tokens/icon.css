@@ -1,0 +1,70 @@
+/* =============================================================================
+   TOKENS / ICON
+   The mark set, as masks rather than as a font.
+
+   *** THIS EXISTS BECAUSE OF A MEASUREMENT. ***
+   woocommerce.css declares two @font-face families - `star` and `WooCommerce`,
+   both pointing at WooCommerce.woff2 - and paints 12 distinct private-use
+   glyphs from them across 19 rules. Dequeue woocommerce-general before we own
+   those marks and the product page renders empty boxes. So the icon set is not
+   decoration: it is the thing stage 4 of the cutover is blocked on.
+
+   *** MASKS, NOT A FONT, AND NOT INLINE SVG. ***
+   A font makes every icon a character: it inherits letter-spacing, it can be
+   selected and copied into an order note, it falls back to a box when the font
+   fails, and it cannot be half a colour. Inline SVG means the mark lives in the
+   markup, so a mark used in forty places is forty copies and changing it is a
+   template edit.
+   A mask is neither. `background: currentColor` means the mark IS the ink, so
+   it inherits colour from whatever it sits in - including :hover, including
+   forced-colors - and one token changes every instance.
+
+   *** ALL ASCII, ALL SINGLE-QUOTED. *** The data URIs use %3C / %3E and
+   single quotes inside url("...") so the file stays 7-bit and survives the
+   PowerShell round trip that mangled Cyrillic in the first preview.
+
+   The nine marked WOO are the replacements for the icon font. The rest are the
+   ones our own chrome already draws as inline SVG and should stop duplicating.
+   ========================================================================== */
+
+:root{
+	/* -- the WooCommerce twelve ---------------------------------------------- */
+	/* \e015 message, \e017 added-to-cart */
+	--icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.5l5 5 10-11'/%3E%3C/svg%3E");
+	/* \e013 remove a chosen filter */
+	--icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+	/* \e016 error */
+	--icon-error: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8.5 8.5l7 7M15.5 8.5l-7 7'/%3E%3C/svg%3E");
+	/* \e028 info */
+	--icon-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6'/%3E%3Ccircle cx='12' cy='7.4' r='1.15' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+	/* warning, which the font has no glyph for - Woo reuses info. We do not. */
+	--icon-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2L22 20H2z'/%3E%3Cpath d='M12 9.5v5'/%3E%3Ccircle cx='12' cy='17.4' r='1.1' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+	/* \e019 shipping-calculator toggle */
+	--icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+	--icon-chevron-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+	/* \e00a digital downloads */
+	--icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5v11M7.5 10l4.5 4.5L16.5 10M4.5 19.5h15'/%3E%3C/svg%3E");
+	/* \e02d customer email */
+	--icon-mail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='5' width='19' height='14' rx='2.5'/%3E%3Cpath d='M3.5 7l8.5 6 8.5-6'/%3E%3C/svg%3E");
+	/* \e037 customer phone */
+	--icon-phone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 3.5h-2A2.5 2.5 0 0 0 3 6.2C3 14 10 21 17.8 21a2.5 2.5 0 0 0 2.7-2.5v-2l-4.5-1.6-2 2.3a15 15 0 0 1-5.2-5.2l2.3-2z'/%3E%3C/svg%3E");
+	/* \e01c the loading button. A ring with a gap; the spin is in patterns. */
+	--icon-spinner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 3a9 9 0 1 1-6.4 2.65'/%3E%3C/svg%3E");
+	/* \e020 \e021 the two stars. The rating pattern draws its own with clip-path
+	   and stays that way - these are for the places a star is an ICON rather
+	   than a score: the mega-menu flourish, an empty-state, a wishlist. */
+	--icon-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.6l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.9l7.1-.7z'/%3E%3C/svg%3E");
+	--icon-star-4: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.5c.7 5.3 4.7 9.3 10 10-5.3.7-9.3 4.7-10 10-.7-5.3-4.7-9.3-10-10 5.3-.7 9.3-4.7 10-10z'/%3E%3C/svg%3E");
+
+	/* -- our own chrome, currently inline SVG in the templates ---------------- */
+	--icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
+	--icon-cart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='9.5' cy='20' r='1.4'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E");
+	--icon-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E");
+	--icon-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 20.3l-7.3-7A4.6 4.6 0 1 1 12 7.1a4.6 4.6 0 1 1 7.3 6.2z'/%3E%3C/svg%3E");
+	--icon-menu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E");
+	--icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+	--icon-minus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+	--icon-truck: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 6.5h12v9h-12z'/%3E%3Cpath d='M13.8 9.5h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='1.7'/%3E%3Ccircle cx='17' cy='18' r='1.7'/%3E%3C/svg%3E");
+	--icon-return: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5h11a5.5 5.5 0 1 1 0 11H8'/%3E%3Cpath d='M7 4.5l-3.5 4L7 12.5'/%3E%3C/svg%3E");
+	--icon-shield: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.6l8 3v6c0 5-3.4 8.7-8 9.8-4.6-1.1-8-4.8-8-9.8v-6z'/%3E%3Cpath d='M8.5 12l2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+}

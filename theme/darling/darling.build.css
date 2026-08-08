@@ -344,6 +344,80 @@
 }
 }
 
+/* ==== tokens/icon.css ==== */
+@layer tokens{
+/* =============================================================================
+   TOKENS / ICON
+   The mark set, as masks rather than as a font.
+
+   *** THIS EXISTS BECAUSE OF A MEASUREMENT. ***
+   woocommerce.css declares two @font-face families - `star` and `WooCommerce`,
+   both pointing at WooCommerce.woff2 - and paints 12 distinct private-use
+   glyphs from them across 19 rules. Dequeue woocommerce-general before we own
+   those marks and the product page renders empty boxes. So the icon set is not
+   decoration: it is the thing stage 4 of the cutover is blocked on.
+
+   *** MASKS, NOT A FONT, AND NOT INLINE SVG. ***
+   A font makes every icon a character: it inherits letter-spacing, it can be
+   selected and copied into an order note, it falls back to a box when the font
+   fails, and it cannot be half a colour. Inline SVG means the mark lives in the
+   markup, so a mark used in forty places is forty copies and changing it is a
+   template edit.
+   A mask is neither. `background: currentColor` means the mark IS the ink, so
+   it inherits colour from whatever it sits in - including :hover, including
+   forced-colors - and one token changes every instance.
+
+   *** ALL ASCII, ALL SINGLE-QUOTED. *** The data URIs use %3C / %3E and
+   single quotes inside url("...") so the file stays 7-bit and survives the
+   PowerShell round trip that mangled Cyrillic in the first preview.
+
+   The nine marked WOO are the replacements for the icon font. The rest are the
+   ones our own chrome already draws as inline SVG and should stop duplicating.
+   ========================================================================== */
+
+:root{
+	/* -- the WooCommerce twelve ---------------------------------------------- */
+	/* \e015 message, \e017 added-to-cart */
+	--icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.5l5 5 10-11'/%3E%3C/svg%3E");
+	/* \e013 remove a chosen filter */
+	--icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+	/* \e016 error */
+	--icon-error: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8.5 8.5l7 7M15.5 8.5l-7 7'/%3E%3C/svg%3E");
+	/* \e028 info */
+	--icon-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6'/%3E%3Ccircle cx='12' cy='7.4' r='1.15' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+	/* warning, which the font has no glyph for - Woo reuses info. We do not. */
+	--icon-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2L22 20H2z'/%3E%3Cpath d='M12 9.5v5'/%3E%3Ccircle cx='12' cy='17.4' r='1.1' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+	/* \e019 shipping-calculator toggle */
+	--icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+	--icon-chevron-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+	/* \e00a digital downloads */
+	--icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5v11M7.5 10l4.5 4.5L16.5 10M4.5 19.5h15'/%3E%3C/svg%3E");
+	/* \e02d customer email */
+	--icon-mail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='5' width='19' height='14' rx='2.5'/%3E%3Cpath d='M3.5 7l8.5 6 8.5-6'/%3E%3C/svg%3E");
+	/* \e037 customer phone */
+	--icon-phone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 3.5h-2A2.5 2.5 0 0 0 3 6.2C3 14 10 21 17.8 21a2.5 2.5 0 0 0 2.7-2.5v-2l-4.5-1.6-2 2.3a15 15 0 0 1-5.2-5.2l2.3-2z'/%3E%3C/svg%3E");
+	/* \e01c the loading button. A ring with a gap; the spin is in patterns. */
+	--icon-spinner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 3a9 9 0 1 1-6.4 2.65'/%3E%3C/svg%3E");
+	/* \e020 \e021 the two stars. The rating pattern draws its own with clip-path
+	   and stays that way - these are for the places a star is an ICON rather
+	   than a score: the mega-menu flourish, an empty-state, a wishlist. */
+	--icon-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.6l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.9l7.1-.7z'/%3E%3C/svg%3E");
+	--icon-star-4: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.5c.7 5.3 4.7 9.3 10 10-5.3.7-9.3 4.7-10 10-.7-5.3-4.7-9.3-10-10 5.3-.7 9.3-4.7 10-10z'/%3E%3C/svg%3E");
+
+	/* -- our own chrome, currently inline SVG in the templates ---------------- */
+	--icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
+	--icon-cart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='9.5' cy='20' r='1.4'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E");
+	--icon-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E");
+	--icon-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 20.3l-7.3-7A4.6 4.6 0 1 1 12 7.1a4.6 4.6 0 1 1 7.3 6.2z'/%3E%3C/svg%3E");
+	--icon-menu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E");
+	--icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+	--icon-minus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+	--icon-truck: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 6.5h12v9h-12z'/%3E%3Cpath d='M13.8 9.5h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='1.7'/%3E%3Ccircle cx='17' cy='18' r='1.7'/%3E%3C/svg%3E");
+	--icon-return: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5h11a5.5 5.5 0 1 1 0 11H8'/%3E%3Cpath d='M7 4.5l-3.5 4L7 12.5'/%3E%3C/svg%3E");
+	--icon-shield: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.6l8 3v6c0 5-3.4 8.7-8 9.8-4.6-1.1-8-4.8-8-9.8v-6z'/%3E%3Cpath d='M8.5 12l2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+}
+}
+
 /* ==== tokens/motion.css ==== */
 @layer motion{
 /* =============================================================================
@@ -519,6 +593,626 @@ hr{
 	border-radius:var(--radius-xs);
 }
 
+}
+
+/* ==== patterns/icon.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / ICON
+   One element, one token, and the mark is the ink.
+
+   *** THE MARK IS A MASK OVER currentColor, WHICH IS THE WHOLE DESIGN. ***
+   background:currentColor behind a mask means the icon takes the colour of the
+   text it sits with - on hover, on :focus-visible, inside a cherry button, in
+   forced-colors mode - without a single extra rule. An <svg> with a hard-coded
+   fill cannot do that, and an icon font can only do it by being text, which
+   brings letter-spacing, selection and copy-paste with it.
+
+   *** SIZE COMES FROM THE FONT, NOT FROM A MODIFIER. ***
+   1em square by default, so an icon beside a label is the size of that label
+   and stays that size when the label's size changes. The --sm / --lg modifiers
+   exist for standalone marks that have no text next to them.
+
+   *** EVERY ICON IS DECORATIVE UNTIL PROVEN OTHERWISE. ***
+   A <span class="d-icon"> has no text, so a screen reader announces nothing -
+   which is correct beside a visible label and WRONG when the icon IS the
+   button. .d-icon-btn therefore requires an aria-label, and the pattern below
+   makes that visible in review rather than leaving it to be remembered.
+   ========================================================================== */
+
+.d-icon{
+	display:inline-block;
+	flex:none;
+	width:1em;
+	height:1em;
+	vertical-align:-.125em;   /* sits on the text baseline, not below it */
+	background:currentColor;
+	mask-image:var(--icon, none);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon, none);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+}
+.d-icon--sm{ width:.85em; height:.85em }
+.d-icon--lg{ width:1.4em; height:1.4em }
+.d-icon--xl{ width:2em;   height:2em }
+
+/* The spinner is the one mark that moves. Killed on the money path and under
+   reduced motion by motion.css, where it becomes a static ring - which still
+   reads as "waiting" because it is a ring with a gap, not a blank square. */
+.d-icon--spin{ animation:d-icon-spin 900ms linear infinite }
+@keyframes d-icon-spin{ to{ transform:rotate(360deg) } }
+
+/* -- an icon that is itself the control -------------------------------------
+   44px of target around 1.25em of mark. These are the header's search, cart and
+   account buttons, the drawer's close, and every place a mark is pressable. */
+.d-icon-btn{
+	display:grid;
+	place-items:center;
+	width:2.75rem;
+	height:2.75rem;
+	padding:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--ink);
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-icon-btn:hover{
+	background:var(--tint-gold);
+	color:var(--c-cherry-deep);
+}
+.d-icon-btn:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+.d-icon-btn .d-icon{ width:1.25rem; height:1.25rem }
+/* A count riding on the cart button. Cocoa rather than cherry: cherry is the
+   basket BUTTON's colour, and a number that matches the buy button reads as an
+   action rather than as a fact. */
+.d-icon-btn__count{
+	position:absolute;
+	top:.25rem;
+	inset-inline-end:.25rem;
+	min-width:1.15rem;
+	height:1.15rem;
+	padding:0 .25rem;
+	border-radius:var(--radius-pill);
+	background:var(--c-cocoa);
+	color:var(--ink-on-dark);
+	font:var(--fw-medium) var(--fs-fine)/1.15rem var(--font-ui);
+	text-align:center;
+	font-variant-numeric:tabular-nums;
+}
+.d-icon-btn{ position:relative }
+.d-icon-btn__count:empty,
+.d-icon-btn__count[data-count="0"]{ display:none }
+
+/* -- the named marks ---------------------------------------------------------
+   A class per mark so markup asks for a NAME and never for a data URI. Adding
+   an icon is one token and one line here. */
+.d-icon--check{ --icon:var(--icon-check) }
+.d-icon--close{ --icon:var(--icon-close) }
+.d-icon--error{ --icon:var(--icon-error) }
+.d-icon--info{ --icon:var(--icon-info) }
+.d-icon--warning{ --icon:var(--icon-warning) }
+.d-icon--chevron-down{ --icon:var(--icon-chevron-down) }
+.d-icon--chevron-right{ --icon:var(--icon-chevron-right) }
+.d-icon--download{ --icon:var(--icon-download) }
+.d-icon--mail{ --icon:var(--icon-mail) }
+.d-icon--phone{ --icon:var(--icon-phone) }
+.d-icon--spinner{ --icon:var(--icon-spinner) }
+.d-icon--star{ --icon:var(--icon-star) }
+.d-icon--star-4{ --icon:var(--icon-star-4) }
+.d-icon--search{ --icon:var(--icon-search) }
+.d-icon--cart{ --icon:var(--icon-cart) }
+.d-icon--user{ --icon:var(--icon-user) }
+.d-icon--heart{ --icon:var(--icon-heart) }
+.d-icon--menu{ --icon:var(--icon-menu) }
+.d-icon--plus{ --icon:var(--icon-plus) }
+.d-icon--minus{ --icon:var(--icon-minus) }
+.d-icon--truck{ --icon:var(--icon-truck) }
+.d-icon--return{ --icon:var(--icon-return) }
+.d-icon--shield{ --icon:var(--icon-shield) }
+
+/* -- forced colours ----------------------------------------------------------
+   Windows High Contrast strips background images, and this mark IS a
+   background. Without this every icon in the system vanishes silently - the
+   element is still there, still 1em, still takes space, and paints nothing.
+   forced-color-adjust:none keeps the mask; the colour is then forced by the OS
+   through currentColor, which is exactly what we want. */
+@media (forced-colors: active){
+	.d-icon{
+		forced-color-adjust:none;
+		background:CanvasText;
+	}
+	.d-icon-btn:hover .d-icon,
+	.d-icon-btn:focus-visible .d-icon{ background:Highlight }
+}
+}
+
+/* ==== patterns/header.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / HEADER
+   The bar that is on every page: wordmark, nav, mega menu, search, actions.
+
+   PORTED FROM style.css .darling-header--v2, and the port is not a copy. What
+   changed and why:
+
+     --d-honey-light  ->  --tint-gold      honey was retired; the hover tint is
+                                           now the same one the panel uses, so a
+                                           hovered nav link and a hovered panel
+                                           row are the same colour by token.
+     background:#fff  ->  --surface-raised the search pill was the last hard
+                                           white on the page after we moved to
+                                           grey-050.
+     .6rem / .7rem    ->  --radius-*       three different hand-typed radii for
+                                           the same job.
+     .18s ease        ->  --dur-ui         the de-facto standard, now a token.
+     inline SVG       ->  .d-icon          the icons were duplicated in the
+                                           template; one token now.
+
+   *** THE NAV IS A <nav> WITH A LIST, AND THE MEGA IS A DISCLOSURE. ***
+   The old mega opened on :hover and :focus-within only. Hover-only submenus are
+   unreachable on a touch screen that does not emulate hover, and focus-within
+   means the panel opens while a keyboard user is only passing through. Both are
+   kept - they are the desktop behaviour people expect - but the trigger is now
+   a real <button aria-expanded> as well, so the panel has a state that can be
+   read, toggled and closed with Escape.
+   ========================================================================== */
+
+.d-header{
+	position:sticky;
+	top:0;
+	z-index:50;
+	background:var(--surface-page);
+	border-bottom:1px solid var(--hairline);
+}
+.d-header__inner{
+	display:flex;
+	align-items:center;
+	gap:var(--space-s);
+	max-width:var(--page-max);
+	margin:0 auto;
+	padding:var(--space-2xs) var(--space-s);
+}
+
+/* -- the wordmark -----------------------------------------------------------
+   Its own type role, not a heading: it is the same size on every page and must
+   not move when a page's h1 scale changes. */
+.d-header__logo{
+	position:relative;
+	display:inline-flex;
+	align-items:center;
+	gap:.4rem;
+	flex:none;
+	color:var(--ink);
+	text-decoration:none;
+	font:var(--type-wordmark);
+	letter-spacing:.01em;
+}
+.d-header__logo:hover{ color:var(--c-cherry-deep) }
+.d-header__logo img{ max-height:52px; width:auto }
+.d-header__logo:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:4px;
+	border-radius:var(--radius-s);
+}
+
+/* -- the nav ---------------------------------------------------------------- */
+.d-nav{ flex:1 1 auto; min-width:0 }
+.d-nav > ul{
+	display:flex;
+	flex-wrap:nowrap;
+	gap:var(--space-3xs);
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+.d-nav a,
+.d-nav__trigger{
+	position:relative;
+	display:block;
+	padding:.45rem .6rem;
+	border:0;
+	border-radius:var(--radius-s);
+	background:none;
+	color:var(--ink);
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
+	white-space:nowrap;
+	text-decoration:none;
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-nav a:hover, .d-nav a:focus-visible,
+.d-nav__trigger:hover, .d-nav__trigger[aria-expanded="true"]{
+	background:var(--tint-gold);
+	color:var(--c-cherry-deep);
+}
+.d-nav a:focus-visible,
+.d-nav__trigger:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+/* The current page is stated, not just coloured: a colour alone is the one cue
+   a colour-blind visitor does not get. */
+.d-nav a[aria-current="page"]{
+	color:var(--c-cherry-deep);
+	text-decoration:underline;
+	text-underline-offset:.35em;
+	text-decoration-thickness:2px;
+}
+
+/* -- the mega menu -----------------------------------------------------------
+   Full-bleed under the header, three columns of links. Opens on hover and on
+   focus-within for the pointer, and on aria-expanded for everyone else. */
+.d-nav__mega{ position:static }
+.d-mega{
+	position:absolute;
+	left:0;
+	right:0;
+	top:100%;
+	z-index:49;
+	display:none;
+	padding:var(--space-m) var(--space-s) var(--space-l);
+	background:var(--surface-raised);
+	border-bottom:1px solid var(--hairline);
+	box-shadow:var(--shadow-card);
+}
+.d-nav__mega:hover > .d-mega,
+.d-nav__mega:focus-within > .d-mega,
+.d-nav__trigger[aria-expanded="true"] + .d-mega{ display:block }
+.d-mega__list{
+	display:grid;
+	grid-template-columns:repeat(3, 1fr);
+	gap:12px 48px;
+	max-width:var(--page-max);
+	margin:0 auto;
+	padding:0;
+	list-style:none;
+}
+/* *** THE FLOURISH IS TWO STARS, AND THEY ARE MARKS RATHER THAN CHARACTERS. ***
+   The old rule used content:"\2726" and content:"\2727" - two Unicode dingbats
+   that are missing from Inter and fall back to whatever the system has, which
+   on Windows is a different weight and on Android is often nothing at all. Same
+   reason the rating stars are drawn: a mark that is a character is at the mercy
+   of a font stack we do not control. */
+.d-mega__link{
+	position:relative;
+	display:inline-flex;
+	align-items:center;
+	padding:6px 18px 6px 0;
+	color:var(--ink);
+	text-decoration:none;
+	white-space:nowrap;
+	transition:color var(--dur-ui) var(--ease-float);
+}
+.d-mega__link::before,
+.d-mega__link::after{
+	content:"";
+	display:inline-block;
+	background:currentColor;
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	opacity:0;
+	transition:opacity 150ms var(--ease-float);
+}
+.d-mega__link::before{
+	width:.72em;
+	height:.72em;
+	margin-inline-end:8px;
+	mask-image:var(--icon-star-4);
+	-webkit-mask-image:var(--icon-star-4);
+	color:var(--g-core);
+}
+.d-mega__link::after{
+	position:absolute;
+	top:2px;
+	inset-inline-end:2px;
+	width:.5em;
+	height:.5em;
+	mask-image:var(--icon-star-4);
+	-webkit-mask-image:var(--icon-star-4);
+	color:var(--c-cherry);
+}
+.d-mega__link:hover{ color:var(--c-cherry-deep) }
+.d-mega__link:hover::before,
+.d-mega__link:hover::after{ opacity:1 }
+.d-mega__link:hover::before{ animation:d-twinkle 1.5s var(--ease-float) infinite }
+.d-mega__link:hover::after{  animation:d-twinkle 1.5s var(--ease-float) infinite .4s }
+@keyframes d-twinkle{
+	0%,100% { transform:scale(1)    rotate(0deg) }
+	50%     { transform:scale(1.35) rotate(18deg) }
+}
+.d-mega__link:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+	border-radius:var(--radius-xs);
+}
+
+/* -- the search pill --------------------------------------------------------- */
+.d-search{
+	flex:1 1 auto;
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+	min-width:0;
+	padding:var(--space-2xs) var(--space-s);
+	border-radius:var(--radius-pill);
+	background:var(--surface-raised);
+	box-shadow:var(--shadow-card);
+	color:var(--ink-placeholder);
+}
+.d-search:focus-within{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+	box-shadow:0 0 0 3px var(--focus-halo), var(--shadow-card);
+}
+.d-search .d-icon{ width:1.1rem; height:1.1rem; flex:none }
+.d-search input[type="search"]{
+	flex:1 1 auto;
+	min-width:0;
+	border:0;
+	outline:0;
+	background:none;
+	font:inherit;
+	color:var(--ink);
+}
+.d-search input[type="search"]::placeholder{
+	color:var(--ink-placeholder);
+	opacity:1;   /* Firefox dims placeholders by default; the token already is dim */
+}
+.d-search input[type="search"]::-webkit-search-cancel-button{
+	appearance:none;
+	width:.9em;
+	height:.9em;
+	background:currentColor;
+	mask-image:var(--icon-close);
+	mask-size:contain;
+	-webkit-mask-image:var(--icon-close);
+	-webkit-mask-size:contain;
+	cursor:pointer;
+}
+
+/* -- the actions ------------------------------------------------------------- */
+.d-header__actions{
+	display:flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	margin-inline-start:auto;
+	flex:none;
+}
+
+/* -- narrow -----------------------------------------------------------------
+   900px, matching the old breakpoint exactly so nothing shifts at the cutover.
+   The full nav and the search pill go; the burger and the small search button
+   arrive. */
+@media (max-width: 900px){
+	.d-nav{ display:none }
+	.d-search{ display:none }
+	.d-header__burger,
+	.d-header__search-sm{ display:grid }
+}
+.d-header__burger,
+.d-header__search-sm{ display:none }
+}
+
+/* ==== patterns/drawer.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / DRAWER
+   The nav drawer and the cart drawer. Both are <dialog>.
+
+   *** <dialog> IS THE PATTERN, AND IT IS NOT A STYLE CHOICE. ***
+   The old markup already used it, which was the right call and worth keeping
+   for reasons that are easy to lose in a rewrite: a real dialog traps focus,
+   returns focus to whatever opened it, closes on Escape, is inert to the page
+   behind it, and gets ::backdrop for free. A <div class="drawer"> gets none of
+   that and every one of them has to be re-implemented in script, badly.
+
+   *** THE OPEN ANIMATION IS @starting-style, NOT A KEYFRAME. ***
+   The old rule was `animation: darling-drawer-in .22s ease-out` on [open]. An
+   animation keyed to an attribute plays once on open and cannot play backwards
+   on close - so the drawer slid in and then vanished. @starting-style gives the
+   transition a from-value for an element that has just been displayed, and
+   transition-behavior:allow-discrete keeps `display` and `overlay` animating
+   with it, so the close is the same transition run the other way. Same trick as
+   the panel's swim: transitions reverse, animations do not.
+
+   Chrome 117+ / Safari 17.4+. Behind that the drawer opens and closes
+   instantly, which is correct behaviour and not a broken one.
+   ========================================================================== */
+
+.d-drawer{
+	width:min(88vw, 22rem);
+	max-width:none;
+	height:100%;
+	max-height:100%;
+	margin:0 auto 0 0;          /* left edge by default */
+	padding:0;
+	border:0;
+	background:var(--surface-raised);
+	color:var(--ink);
+	overflow:hidden;
+	display:flex;
+	flex-direction:column;
+
+	translate:-100% 0;
+	opacity:0;
+	transition:translate var(--dur-panel) var(--ease-float),
+	           opacity   var(--dur-panel) var(--ease-float),
+	           display   var(--dur-panel) allow-discrete,
+	           overlay   var(--dur-panel) allow-discrete;
+}
+.d-drawer[open]{ translate:0 0; opacity:1 }
+@starting-style{
+	.d-drawer[open]{ translate:-100% 0; opacity:0 }
+}
+/* Opens from the right instead. The cart lives on the right because that is
+   where its button is, and a panel that arrives from the opposite side of the
+   screen from the thing you pressed reads as a different surface. */
+.d-drawer--end{
+	margin:0 0 0 auto;
+	translate:100% 0;
+}
+@starting-style{
+	.d-drawer--end[open]{ translate:100% 0 }
+}
+
+.d-drawer::backdrop{
+	background:var(--scrim);
+	opacity:0;
+	transition:opacity var(--dur-panel) var(--ease-float),
+	           display var(--dur-panel) allow-discrete,
+	           overlay var(--dur-panel) allow-discrete;
+}
+.d-drawer[open]::backdrop{ opacity:1 }
+@starting-style{
+	.d-drawer[open]::backdrop{ opacity:0 }
+}
+
+/* -- head -------------------------------------------------------------------- */
+.d-drawer__head{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:var(--inline);
+	flex:none;
+	padding:var(--space-s);
+	border-bottom:1px solid var(--hairline);
+	font:var(--fw-bold) var(--fs-lede)/var(--lh-title) var(--font-display);
+}
+/* Not a star, and not a spin. That was settled on the notice: a close button is
+   the most-pressed control in the drawer and the least interesting. */
+.d-drawer__close{
+	display:grid;
+	place-items:center;
+	width:2.75rem;
+	height:2.75rem;
+	margin:-.5rem -.5rem -.5rem 0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--c-cocoa);
+	cursor:pointer;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-drawer__close:hover{ color:var(--c-claret); background:var(--tint-gold) }
+.d-drawer__close:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+.d-drawer__close .d-icon{ width:1.15rem; height:1.15rem }
+
+/* -- body: scrolls, and it is the branded bar ------------------------------- */
+.d-drawer__body{
+	flex:1 1 auto;
+	min-height:0;
+	overflow:auto;
+	overscroll-behavior:contain;
+	scrollbar-width:thin;
+	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+}
+.d-drawer__body::-webkit-scrollbar{ width:10px }
+.d-drawer__body::-webkit-scrollbar-track{ background:var(--tint-grey) }
+.d-drawer__body::-webkit-scrollbar-thumb{
+	background:var(--c-grey-400);
+	border:2px solid var(--tint-grey);
+	border-radius:var(--radius-pill);
+}
+
+/* -- the nav list ------------------------------------------------------------
+   44px minimum on every row. This is the one navigation surface that is only
+   ever used with a thumb. */
+.d-drawer__nav ul{
+	margin:0;
+	padding:var(--space-2xs);
+	list-style:none;
+}
+.d-drawer__nav a{
+	display:flex;
+	align-items:center;
+	gap:var(--inline);
+	min-height:44px;
+	padding:var(--space-3xs) var(--space-xs);
+	border-radius:var(--radius-s);
+	color:var(--ink);
+	text-decoration:none;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-drawer__nav a:hover,
+.d-drawer__nav a:focus-visible{
+	background:var(--tint-gold);
+	color:var(--c-cherry-deep);
+}
+.d-drawer__nav a:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+.d-drawer__nav a[aria-current="page"]{
+	color:var(--c-cherry-deep);
+	font-weight:var(--fw-medium);
+}
+.d-drawer__nav hr{
+	border:0;
+	border-top:1px solid var(--hairline);
+	margin:.5rem 1rem;
+}
+.d-drawer__secondary a{ font-size:var(--fs-meta); color:var(--ink-quiet) }
+.d-drawer__secondary a:hover{ color:var(--c-cherry-deep) }
+
+/* -- foot: totals and the two buttons, pinned ------------------------------- */
+.d-drawer__foot{
+	flex:none;
+	padding:var(--space-s);
+	border-top:1px solid var(--hairline);
+	background:var(--surface-raised);
+	display:grid;
+	gap:var(--space-2xs);
+}
+.d-drawer__total{
+	display:flex;
+	align-items:baseline;
+	justify-content:space-between;
+	font:var(--fw-medium) var(--fs-lede)/var(--lh-title) var(--font-ui);
+	font-variant-numeric:tabular-nums;
+}
+.d-drawer__total b{ color:var(--price) }
+.d-drawer__note{ font-size:var(--fs-fine); color:var(--ink-quiet) }
+
+/* -- empty ------------------------------------------------------------------- */
+.d-drawer__empty{
+	display:grid;
+	place-items:center;
+	gap:var(--space-2xs);
+	padding:var(--space-2xl) var(--space-s);
+	text-align:center;
+	color:var(--ink-quiet);
+}
+.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
+
+/* -- reduced motion ----------------------------------------------------------
+   motion.css kills animations, not transitions, and this drawer is transitions
+   all the way down - so it needs its own line. A drawer that slides is the one
+   piece of movement someone with vestibular sensitivity is most likely to be
+   hurt by, because it is large and it crosses the whole screen. */
+@media (prefers-reduced-motion: reduce){
+	.d-drawer, .d-drawer--end{ translate:none }
+	@starting-style{
+		.d-drawer[open], .d-drawer--end[open]{ translate:none }
+	}
+}
 }
 
 /* ==== patterns/band.css ==== */
@@ -3716,6 +4410,170 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    in motion.css. */
 }
 
+
+/* ==== adopted/icon.css ==== */
+/* =============================================================================
+   ADOPTED / ICON  -  replacing the WooCommerce icon font
+   UNLAYERED ON PURPOSE. See index.css.
+
+   *** THIS FILE IS WHAT UNBLOCKS STAGE 4 OF THE DEQUEUE. ***
+   MEASURED, not assumed: woocommerce.css declares @font-face for `star` and
+   `WooCommerce`, both pointing at WooCommerce.woff2, and paints 12 distinct
+   private-use glyphs from them across 19 rules. The font loads on all four page
+   types and 5 glyphs render on the product page. Dequeue woocommerce-general
+   with those rules unanswered and every one becomes an empty box.
+
+   Each rule below replaces one glyph with the same mark drawn as a mask. The
+   `content` stays - it has to, or the pseudo-element does not generate - but it
+   becomes an empty string and the mark is painted as a masked background.
+
+   THE GLYPH TABLE, so the next person can check the work rather than trust it:
+     \e00a  digital downloads list          -> --icon-download
+     \e013  remove a chosen layered filter  -> --icon-close
+     \e015  message notice                  -> --icon-check
+     \e016  error notice                    -> --icon-error
+     \e017  add-to-cart button, added state -> --icon-check
+     \e019  shipping-calculator toggle      -> --icon-chevron-down
+     \e01c  button loading state            -> --icon-spinner
+     \e020  stars picker, filled            -> handled by patterns/rating.css
+     \e021  stars picker, empty             -> handled by patterns/rating.css
+     \e028  info notice                     -> --icon-info
+     \e02d  customer details, email         -> --icon-mail
+     \e037  customer details, phone         -> --icon-phone
+
+   The two star glyphs are deliberately NOT here. rating.css already draws stars
+   with clip-path, font-independently, and has been reviewed; pointing them at a
+   mask would be a second implementation of a solved thing.
+   ========================================================================== */
+
+/* The shared shape. Every rule below only picks a mark. */
+.woocommerce .woocommerce-customer-details--email::before,
+.woocommerce .woocommerce-customer-details--phone::before,
+.woocommerce-account ul.digital-downloads li::before,
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,
+.woocommerce-message::before,
+.woocommerce-error::before,
+.woocommerce-info::before,
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
+	content:"";
+	display:inline-block;
+	flex:none;
+	width:1.05em;
+	height:1.05em;
+	vertical-align:-.18em;
+	margin-inline-end:.45em;
+	/* *** THE FONT DECLARATIONS HAVE TO BE UNSET, NOT JUST OVERPAINTED. ***
+	   Woo sets font-family:WooCommerce on these. If the sheet is still enqueued
+	   while we are testing, an un-reset font-family plus an empty content is a
+	   zero-width nothing in some of them and a stray glyph in others. */
+	font-family:inherit;
+	background:currentColor;
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+}
+.woocommerce .woocommerce-customer-details--email::before{ mask-image:var(--icon-mail); -webkit-mask-image:var(--icon-mail) }
+.woocommerce .woocommerce-customer-details--phone::before{ mask-image:var(--icon-phone); -webkit-mask-image:var(--icon-phone) }
+.woocommerce-account ul.digital-downloads li::before{ mask-image:var(--icon-download); -webkit-mask-image:var(--icon-download) }
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before{
+	mask-image:var(--icon-close); -webkit-mask-image:var(--icon-close);
+	color:var(--c-claret);
+}
+.woocommerce-message::before{ mask-image:var(--icon-check); -webkit-mask-image:var(--icon-check) }
+.woocommerce-error::before{   mask-image:var(--icon-error); -webkit-mask-image:var(--icon-error) }
+.woocommerce-info::before{    mask-image:var(--icon-info);  -webkit-mask-image:var(--icon-info) }
+/* An ::after that points DOWN when the calculator is shut and up when it is
+   open, matching the panel's chevron rather than inventing a third convention. */
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
+	mask-image:var(--icon-chevron-down); -webkit-mask-image:var(--icon-chevron-down);
+	margin-inline:.35em 0;
+	transition:transform var(--dur-ui) var(--ease-float);
+}
+.woocommerce .cart-collaterals .shipping-calculator-button[aria-expanded="true"]::after{
+	transform:rotate(180deg);
+}
+
+/* The loading button. Woo spins \e01c; we spin the ring. The ::after carries
+   the mark so the button's own label stays put rather than being replaced. */
+.woocommerce button.button.loading::after,
+.woocommerce input.button.loading::after,
+.woocommerce a.button.loading::after{
+	content:"";
+	display:inline-block;
+	width:1em;
+	height:1em;
+	margin-inline-start:.5em;
+	vertical-align:-.15em;
+	font-family:inherit;
+	background:currentColor;
+	mask-image:var(--icon-spinner);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-spinner);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	animation:d-icon-spin 900ms linear infinite;
+}
+.woocommerce button.button.added::after,
+.woocommerce a.button.added::after{
+	content:"";
+	display:inline-block;
+	width:1em;
+	height:1em;
+	margin-inline-start:.5em;
+	vertical-align:-.15em;
+	font-family:inherit;
+	background:currentColor;
+	mask-image:var(--icon-check);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-check);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+}
+
+/* =============================================================================
+   FUNCTIONAL, NOT COSMETIC - AND THAT IS WHY IT IS WRITTEN DOWN HERE
+
+   Two rules on this site are printed as INLINE styles against WooCommerce
+   handles. wp_add_inline_style attaches CSS to a handle, so dequeuing the
+   handle takes them with it, silently. Neither is decoration:
+
+   1. form.has-custom-place-order-button #place_order { display:none!important }
+      Hides the duplicate Place Order button when a gateway supplies its own.
+      Lose it and the checkout shows TWO place-order buttons. The class is added
+      by the gateway's script, not by us, so this rule is a contract with code we
+      do not own - which is the argument for keeping the handle rather than
+      copying the rule. It is copied here anyway so that the copy exists and is
+      reviewed; the deciding test is a real order in Stripe test mode, before and
+      after, not a screenshot.
+
+   2. .woocommerce form .form-row .required { visibility: visible }
+      Makes the required-field asterisk visible. Woo prints it to defeat themes
+      that hide abbr[title]. Ours does not, but the day someone adds a reset that
+      does, an invisible required marker on a checkout is a real problem and not
+      an obvious one.
+
+   Both stay OUT of patterns/ deliberately: they style markup we do not own, so
+   they belong with the rest of the adopted rules and must be dropped the day
+   the markup changes.
+   ========================================================================== */
+form.has-custom-place-order-button #place_order{ display:none !important }
+.woocommerce form .form-row .required{
+	visibility:visible;
+	color:var(--c-claret);
+	font-weight:var(--fw-medium);
+	border:0;
+	text-decoration:none;
+}
+.woocommerce form .form-row .optional{ color:var(--ink-quiet) }
 
 /* ==== adopted/card.css ==== */
 /* =============================================================================
