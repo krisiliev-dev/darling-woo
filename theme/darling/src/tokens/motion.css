@@ -127,6 +127,23 @@ body.woocommerce-order-received *, body.woocommerce-order-received *::before{
 	0%, 100% { opacity:.35; transform:scale(.85) rotate(0deg) }
 	50%      { opacity:1;   transform:scale(1.15) rotate(18deg) }
 }
+/* *** THE ONE-SHOT VERSION, AND WHY IT HAS TO BE A SEPARATE KEYFRAME. ***
+   d-twinkle above is written for a LOOP, so both ends of it are the dim end of
+   the cycle. Run it once with `forwards` - which is what you want for an
+   on-hover twinkle, so the star does not snap - and the element is left holding
+   the last keyframe, which is opacity .35 and scale .85. The star flashes and
+   then stays switched off. That happened to the trust band and it is visible in
+   the first screenshot of it: one column's star pale and small, because the
+   test had hovered that column.
+
+   This one starts at rest and ends at rest, so `forwards` is harmless and the
+   animation is invisible at both ends. Use d-twinkle when something idles; use
+   this when something happened. */
+@keyframes d-twinkle-once{
+	0%   { opacity:1; transform:scale(1)    rotate(0deg) }
+	45%  { opacity:1; transform:scale(1.35) rotate(20deg) }
+	100% { opacity:1; transform:scale(1)    rotate(0deg) }
+}
 @keyframes d-drift{
 	0%, 100% { background-position:0% 50% }
 	50%      { background-position:100% 50% }

@@ -1,0 +1,153 @@
+/* =============================================================================
+   PATTERN / CART FURNITURE
+   The three things that sit around a cart and are not the cart: the free
+   shipping bar's frame, the small reassurance line under it, and the four-up
+   trust band on the cart and checkout pages.
+
+   -- NAMING, BECAUSE TWO THINGS IN THE LEGACY CSS ARE BOTH CALLED "trust" -----
+   style.css has `.darling-trust` (a four-column reassurance BAND across the
+   cart and checkout pages) and `.darling-pdp-trust` (a small PANEL in the buy
+   column). They are unrelated components with almost the same name, which is
+   how one of them ends up restyled by accident.
+
+       .darling-pdp-trust   ->  .d-trust      (patterns/product.css)
+       .darling-trust       ->  .d-trustbar   (here)
+
+   The panel took the short name first and already has a hook in
+   patterns/icon.css, so renaming it now would touch three files to make a pair
+   of names marginally clearer. The mapping is written down here instead. If you
+   are looking for the thing in the buy column, it is .d-trust and it is in
+   product.css.
+
+   -- THE BAR ITSELF IS NOT HERE ----------------------------------------------
+   .d-progress is the free-shipping bar: label, track, fill, sheen, the reached
+   state, the native <progress> variant and the accessible markup. It is a
+   general component and it lives in patterns/progress.css. What was missing was
+   only the FRAME - the tinted card the drawer needs around it - and that is
+   twelve lines, below.
+
+   The old `.darling-shipbar` was the whole thing in one bespoke lump: its own
+   track, its own gradient, its own shimmer keyframe, usable nowhere else. This
+   is the frame; the bar is the bar.
+   ========================================================================== */
+
+.d-shipbar{
+	margin:var(--space-2xs) var(--space-s) var(--space-3xs);
+	padding:var(--space-2xs) var(--space-xs);
+	border-radius:var(--radius-m);
+	background:var(--tint-gold);
+}
+/* On a page rather than in a drawer it is a full-width card with the page's own
+   gutter, not the drawer's inset. */
+.d-shipbar--page{
+	margin-inline:0;
+	padding:var(--space-xs) var(--space-s);
+	border:1px solid var(--tint-gold-edge);
+	border-radius:var(--radius-l);
+}
+/* The bar inside the frame runs on the frame's colours: a cocoa fill on a gold
+   card is the strongest reading, and cherry here would compete with the buy
+   button two inches below it. */
+.d-shipbar .d-progress{ --pr-track: color-mix(in oklab, var(--c-cocoa) 12%, transparent) }
+
+/* The reassurance line under the bar. Legacy `.darling-cart-trust`, which was
+   .7 opacity on a tinted card - that lands at about 3.1:1 on the gold and fails
+   AA for small text. It is a colour now, not a fade. */
+.d-cart-note{
+	margin:var(--space-3xs) var(--space-s) 0;
+	font-size:var(--fs-fine);
+	line-height:var(--lh-title);
+	color:var(--ink-quiet);
+}
+.d-cart-note .d-icon{ vertical-align:-.15em; margin-inline-end:.35em; color:var(--g-shadow) }
+
+/* =============================================================================
+   THE TRUST BAND
+   Four short reassurances across the cart and checkout pages: payment on
+   delivery, who carries it, returns, and how to reach a human.
+
+   *** THE STARS TWINKLE ON HOVER, NOT FOREVER. ***
+   The legacy band ran `dhv-tw` on all four star bullets on an infinite loop,
+   staggered .8s apart, on the cart and the checkout - four things pulsing in
+   the corner of the eye of somebody trying to pay. The owner's rule for the
+   icon set was "animation only when something happens", and it applies here
+   more than anywhere: this is the money path. So the stars are still, and one
+   twinkles when you hover its column.
+
+   motion.css already kills animation entirely on cart, checkout and
+   order-received, so on the pages this band actually appears on, even the hover
+   twinkle is off. That is deliberate and it is not a reason to delete the rule:
+   the band is also used on the delivery page, where it is fine.
+   ========================================================================== */
+
+.d-trustbar{
+	display:grid;
+	grid-template-columns:repeat(4, 1fr);
+	gap:var(--space-s);
+	margin:var(--section-y) 0;
+	padding:var(--space-m) var(--gutter);
+	background:var(--surface-quiet);
+	list-style:none;
+}
+/* Full-bleed out of the page's own gutter, the way the legacy band was - but
+   with margin-inline rather than negative margins keyed to a --d-margin
+   variable that only existed while the old grid did. */
+.d-trustbar--bleed{
+	margin-inline:calc(50% - 50vw);
+	padding-inline:max(var(--gutter), calc(50vw - var(--page-max) / 2));
+}
+@media (max-width: 820px){
+	.d-trustbar{ grid-template-columns:repeat(2, 1fr) }
+}
+@media (max-width: 460px){
+	.d-trustbar{ grid-template-columns:1fr }
+}
+.d-trustbar > li,
+.d-trustbar > div{
+	display:grid;
+	gap:var(--space-3xs);
+	margin:0;
+	list-style:none;
+}
+.d-trustbar b{
+	position:relative;
+	display:flex;
+	align-items:center;
+	gap:.45em;
+	font:var(--fw-medium) var(--fs-ui)/var(--lh-title) var(--font-ui);
+	color:var(--ink);
+}
+.d-trustbar b::before{
+	content:"";
+	flex:none;
+	width:.7em;
+	height:.7em;
+	background:var(--c-cherry);
+	-webkit-mask-image:var(--icon-star-4);
+	        mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+/* One twinkle, on hover. d-twinkle-ONCE, not d-twinkle: the looping keyframe
+   has the dim end of the cycle at BOTH 0% and 100%, so running it a single time
+   with `forwards` leaves the star holding opacity .35 and scale .85 - it
+   flashes and then stays switched off. Measured, not guessed: the first
+   screenshot of this band has one pale star in it, the column the test had
+   hovered. See tokens/motion.css. */
+.d-trustbar > *:hover b::before,
+.d-trustbar > *:focus-within b::before{
+	animation:d-twinkle-once 700ms var(--ease-star) 1 forwards;
+}
+.d-trustbar span,
+.d-trustbar p{
+	margin:0;
+	font-size:var(--fs-meta);
+	line-height:var(--lh-body);
+	color:var(--ink-quiet);
+}
+@media (prefers-reduced-motion: reduce){
+	.d-trustbar > *:hover b::before,
+	.d-trustbar > *:focus-within b::before{ animation:none }
+}

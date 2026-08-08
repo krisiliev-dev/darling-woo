@@ -599,6 +599,23 @@ body.woocommerce-order-received *, body.woocommerce-order-received *::before{
 	0%, 100% { opacity:.35; transform:scale(.85) rotate(0deg) }
 	50%      { opacity:1;   transform:scale(1.15) rotate(18deg) }
 }
+/* *** THE ONE-SHOT VERSION, AND WHY IT HAS TO BE A SEPARATE KEYFRAME. ***
+   d-twinkle above is written for a LOOP, so both ends of it are the dim end of
+   the cycle. Run it once with `forwards` - which is what you want for an
+   on-hover twinkle, so the star does not snap - and the element is left holding
+   the last keyframe, which is opacity .35 and scale .85. The star flashes and
+   then stays switched off. That happened to the trust band and it is visible in
+   the first screenshot of it: one column's star pale and small, because the
+   test had hovered that column.
+
+   This one starts at rest and ends at rest, so `forwards` is harmless and the
+   animation is invisible at both ends. Use d-twinkle when something idles; use
+   this when something happened. */
+@keyframes d-twinkle-once{
+	0%   { opacity:1; transform:scale(1)    rotate(0deg) }
+	45%  { opacity:1; transform:scale(1.35) rotate(20deg) }
+	100% { opacity:1; transform:scale(1)    rotate(0deg) }
+}
 @keyframes d-drift{
 	0%, 100% { background-position:0% 50% }
 	50%      { background-position:100% 50% }
@@ -1915,10 +1932,14 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 .d-drawer__line{
 	position:relative;
 	display:grid;
-	/* FOUR columns, not three: ::before is a grid ITEM, so the bullet occupies
-	   the first track and the remove button was wrapping onto a second row -
-	   which is exactly how it rendered. bullet | name | price | remove. */
-	grid-template-columns:auto 1fr auto auto;
+	/* FOUR columns, and ::before is one of them: a pseudo-element on a grid
+	   container is a grid ITEM, so the bullet occupies the first track. It used
+	   to be bullet | name | price | remove, and the remove button wrapped onto a
+	   second row - which is exactly how it rendered.
+	   Now: bullet | thumbnail | body | remove, with the price inside the body
+	   next to the stepper, because a price that is its own column cannot sit
+	   beside a control that is in a different one. */
+	grid-template-columns:auto auto minmax(0, 1fr) auto;
 	align-items:start;
 	gap:var(--space-2xs);
 	padding:var(--space-2xs) 0;
@@ -1945,6 +1966,25 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 }
 /* No hover animation here, on the owner's note: this is a BULLET. A list of
    things somebody already chose is not a control and should not react. */
+/* -- the thumbnail -----------------------------------------------------------
+   *** A CART WITHOUT PICTURES IS A LIST OF WORDS. *** The legacy drawer showed
+   a 64px photograph per row and ours showed none, which would have been a
+   regression the day we cut over, not a missing nicety - a shopper checking
+   they picked the sand bowl and not the ash one has nothing to check against.
+
+   3.25rem rather than 64px so it tracks the root size, and the placeholder
+   gradient underneath so a row whose image has not loaded is a warm tile rather
+   than a hole. */
+.d-drawer__line__thumb{
+	width:3.25rem;
+	height:3.25rem;
+	border-radius:var(--radius-s);
+	object-fit:cover;
+	background:var(--placeholder-product, var(--surface-quiet));
+	flex:none;
+}
+
+.d-drawer__line__body{ display:grid; gap:.15rem; min-width:0 }
 .d-drawer__line__name{ color:var(--ink); line-height:var(--lh-title) }
 .d-drawer__line__meta{
 	display:block;
@@ -1952,6 +1992,35 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
+/* -- the row's own bottom line -----------------------------------------------
+   Stepper on the left, line total on the right. They belong on one line because
+   they are the two halves of the same fact: this many, for this much. */
+.d-drawer__line__foot{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:var(--space-2xs);
+	margin-top:.15rem;
+}
+/* *** THE COMPACT STEPPER IS A MODIFIER, NOT A SECOND STEPPER. ***
+   patterns/quantity.css sets a 44px target and says why - it is the smallest
+   thing anyone taps on the way to paying. That argument is about the product
+   page, where the stepper is the control you use to decide. In a drawer row it
+   is a correction, three of them are stacked in 200px of width, and 44px each
+   makes the list unreadable. 2rem, which is still above the 24px that Chrome's
+   own audit asks for on a secondary control, and the real stepper is one tap
+   away on the cart page.
+   Same markup, same pattern, one class - so a fix to the stepper is a fix to
+   both. */
+.d-qty--compact{ border-radius:var(--radius-s) }
+.d-qty--compact .d-qty__button{
+	min-width:2rem;
+	min-height:2rem;
+	font-size:var(--fs-meta);
+}
+.d-qty--compact{ grid-template-columns:auto 2.2em auto }
+.d-qty--compact .d-qty__input{ font-size:var(--fs-meta) }
+
 .d-drawer__line__price{
 	color:var(--price);
 	font-variant-numeric:tabular-nums;
@@ -2877,10 +2946,19 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
    PATTERN / PROGRESS
    How far you are, and how far is left.
 
-   Written because the cart drawer needs "???????? ?????? 12,60 ????. ???? ??????????????????
-   ????????????????, darling" and there was nothing to build it out of - the old
-   .darling-shipbar was one bespoke bar with its own colours, its own track and
-   its own animation, usable nowhere else.
+   Written because the cart drawer needs a line reading "only 12,60 lv. more to
+   free delivery, darling" with a bar under it, and there was nothing to build
+   it out of - the old .darling-shipbar was one bespoke bar with its own
+   colours, its own track and its own shimmer keyframe, usable nowhere else.
+
+   (This paragraph and the one under "NOT A FLEX ROW" below used to quote that
+   sentence in Bulgarian. Every Cyrillic character in both had become a literal
+   '?' - something in the chain encoded the text as ASCII with
+   errors='replace'. The stylesheet is deliberately ASCII-only, so the fix is to
+   say it in English rather than to re-add characters that will be mangled
+   again. Where Bulgarian copy genuinely has to appear in CSS, as in the
+   express-checkout caption in patterns/product.css, it is written as six-digit
+   escapes.)
 
    *** IT IS A <progress> WHERE IT CAN BE, AND ROLE=progressbar WHERE IT CANNOT.
    A bar that is only a div with a width is invisible to a screen reader: the
@@ -2921,8 +2999,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 
 /* *** NOT A FLEX ROW. *** As flex, every word-level element in the sentence
    became a flex ITEM - so the amount in <b> was a box of its own and the line
-   broke into three: "???????? ??????" / "12,70 ????." / "???? ?????????????????? ????????????????". A
-   sentence is text, and the icon rides in it as text. */
+   broke into three - the words, then the amount, then the rest of the
+   sentence, each on its own line. A sentence is text, and the icon rides in it as text. */
 .d-progress__label{
 	display:block;
 	margin:0;
@@ -5886,8 +5964,14 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 }
 /* The stepper keeps its intrinsic width and the button takes the rest. Without
    the `flex:none` the stepper is a flex item with an <input> in it and stretches
-   to share the row, which puts a 170px-wide box around a one-digit quantity. */
-.d-product__atc .d-quantity{ flex:none }
+   to share the row, which puts a 170px-wide box around a one-digit quantity.
+
+   *** AND THE CLASS IS .d-qty, NOT .d-quantity. *** I wrote the wrong name here
+   and in the gallery fixture, so the product page rendered a bare number field
+   with two unstyled buttons beside it instead of the pill - the pattern was
+   fine, nothing was selecting it. The FILE is patterns/quantity.css; the CLASS
+   is .d-qty. */
+.d-product__atc .d-qty{ flex:none }
 .d-product__atc .d-btn,
 .d-product__atc button[type="submit"]{ flex:1 1 14rem }
 
@@ -6192,6 +6276,164 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 .d-related__title{ margin:0 0 var(--space-s); font:var(--type-section) }
 @supports selector(:has(*)){
 	.d-related:not(:has(li, .d-card)){ display:none }
+}
+
+}
+
+/* ==== patterns/cart.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / CART FURNITURE
+   The three things that sit around a cart and are not the cart: the free
+   shipping bar's frame, the small reassurance line under it, and the four-up
+   trust band on the cart and checkout pages.
+
+   -- NAMING, BECAUSE TWO THINGS IN THE LEGACY CSS ARE BOTH CALLED "trust" -----
+   style.css has `.darling-trust` (a four-column reassurance BAND across the
+   cart and checkout pages) and `.darling-pdp-trust` (a small PANEL in the buy
+   column). They are unrelated components with almost the same name, which is
+   how one of them ends up restyled by accident.
+
+       .darling-pdp-trust   ->  .d-trust      (patterns/product.css)
+       .darling-trust       ->  .d-trustbar   (here)
+
+   The panel took the short name first and already has a hook in
+   patterns/icon.css, so renaming it now would touch three files to make a pair
+   of names marginally clearer. The mapping is written down here instead. If you
+   are looking for the thing in the buy column, it is .d-trust and it is in
+   product.css.
+
+   -- THE BAR ITSELF IS NOT HERE ----------------------------------------------
+   .d-progress is the free-shipping bar: label, track, fill, sheen, the reached
+   state, the native <progress> variant and the accessible markup. It is a
+   general component and it lives in patterns/progress.css. What was missing was
+   only the FRAME - the tinted card the drawer needs around it - and that is
+   twelve lines, below.
+
+   The old `.darling-shipbar` was the whole thing in one bespoke lump: its own
+   track, its own gradient, its own shimmer keyframe, usable nowhere else. This
+   is the frame; the bar is the bar.
+   ========================================================================== */
+
+.d-shipbar{
+	margin:var(--space-2xs) var(--space-s) var(--space-3xs);
+	padding:var(--space-2xs) var(--space-xs);
+	border-radius:var(--radius-m);
+	background:var(--tint-gold);
+}
+/* On a page rather than in a drawer it is a full-width card with the page's own
+   gutter, not the drawer's inset. */
+.d-shipbar--page{
+	margin-inline:0;
+	padding:var(--space-xs) var(--space-s);
+	border:1px solid var(--tint-gold-edge);
+	border-radius:var(--radius-l);
+}
+/* The bar inside the frame runs on the frame's colours: a cocoa fill on a gold
+   card is the strongest reading, and cherry here would compete with the buy
+   button two inches below it. */
+.d-shipbar .d-progress{ --pr-track: color-mix(in oklab, var(--c-cocoa) 12%, transparent) }
+
+/* The reassurance line under the bar. Legacy `.darling-cart-trust`, which was
+   .7 opacity on a tinted card - that lands at about 3.1:1 on the gold and fails
+   AA for small text. It is a colour now, not a fade. */
+.d-cart-note{
+	margin:var(--space-3xs) var(--space-s) 0;
+	font-size:var(--fs-fine);
+	line-height:var(--lh-title);
+	color:var(--ink-quiet);
+}
+.d-cart-note .d-icon{ vertical-align:-.15em; margin-inline-end:.35em; color:var(--g-shadow) }
+
+/* =============================================================================
+   THE TRUST BAND
+   Four short reassurances across the cart and checkout pages: payment on
+   delivery, who carries it, returns, and how to reach a human.
+
+   *** THE STARS TWINKLE ON HOVER, NOT FOREVER. ***
+   The legacy band ran `dhv-tw` on all four star bullets on an infinite loop,
+   staggered .8s apart, on the cart and the checkout - four things pulsing in
+   the corner of the eye of somebody trying to pay. The owner's rule for the
+   icon set was "animation only when something happens", and it applies here
+   more than anywhere: this is the money path. So the stars are still, and one
+   twinkles when you hover its column.
+
+   motion.css already kills animation entirely on cart, checkout and
+   order-received, so on the pages this band actually appears on, even the hover
+   twinkle is off. That is deliberate and it is not a reason to delete the rule:
+   the band is also used on the delivery page, where it is fine.
+   ========================================================================== */
+
+.d-trustbar{
+	display:grid;
+	grid-template-columns:repeat(4, 1fr);
+	gap:var(--space-s);
+	margin:var(--section-y) 0;
+	padding:var(--space-m) var(--gutter);
+	background:var(--surface-quiet);
+	list-style:none;
+}
+/* Full-bleed out of the page's own gutter, the way the legacy band was - but
+   with margin-inline rather than negative margins keyed to a --d-margin
+   variable that only existed while the old grid did. */
+.d-trustbar--bleed{
+	margin-inline:calc(50% - 50vw);
+	padding-inline:max(var(--gutter), calc(50vw - var(--page-max) / 2));
+}
+@media (max-width: 820px){
+	.d-trustbar{ grid-template-columns:repeat(2, 1fr) }
+}
+@media (max-width: 460px){
+	.d-trustbar{ grid-template-columns:1fr }
+}
+.d-trustbar > li,
+.d-trustbar > div{
+	display:grid;
+	gap:var(--space-3xs);
+	margin:0;
+	list-style:none;
+}
+.d-trustbar b{
+	position:relative;
+	display:flex;
+	align-items:center;
+	gap:.45em;
+	font:var(--fw-medium) var(--fs-ui)/var(--lh-title) var(--font-ui);
+	color:var(--ink);
+}
+.d-trustbar b::before{
+	content:"";
+	flex:none;
+	width:.7em;
+	height:.7em;
+	background:var(--c-cherry);
+	-webkit-mask-image:var(--icon-star-4);
+	        mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+/* One twinkle, on hover. d-twinkle-ONCE, not d-twinkle: the looping keyframe
+   has the dim end of the cycle at BOTH 0% and 100%, so running it a single time
+   with `forwards` leaves the star holding opacity .35 and scale .85 - it
+   flashes and then stays switched off. Measured, not guessed: the first
+   screenshot of this band has one pale star in it, the column the test had
+   hovered. See tokens/motion.css. */
+.d-trustbar > *:hover b::before,
+.d-trustbar > *:focus-within b::before{
+	animation:d-twinkle-once 700ms var(--ease-star) 1 forwards;
+}
+.d-trustbar span,
+.d-trustbar p{
+	margin:0;
+	font-size:var(--fs-meta);
+	line-height:var(--lh-body);
+	color:var(--ink-quiet);
+}
+@media (prefers-reduced-motion: reduce){
+	.d-trustbar > *:hover b::before,
+	.d-trustbar > *:focus-within b::before{ animation:none }
 }
 
 }
@@ -9151,7 +9393,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -10028,17 +10270,50 @@ vanished. Same lesson as the panel's swim: transitions reverse, animations do no
     <button class="d-drawer__close" aria-label="Затвори" onclick="this.closest('dialog').close()">
       <span class="d-icon d-icon--close"></span></button></div>
   <div class="d-drawer__body"><ul class="d-drawer__list">
-    <li class="d-drawer__line"><span><span class="d-drawer__line__name">Керамична купа</span>
-      <span class="d-drawer__line__meta">Пясъчна &middot; 1 бр.</span></span>
-      <span class="d-drawer__line__price">26,40 лв.</span>
+    <li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='26' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Керамична купа</span>
+        <span class="d-drawer__line__meta">Пясъчна</span>
+        <div class="d-drawer__line__foot">
+          <div class="d-qty d-qty--compact">
+            <button class="d-qty__button" aria-label="По-малко">&minus;</button>
+            <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
+            <button class="d-qty__button" aria-label="Повече">+</button>
+          </div>
+          <span class="d-drawer__line__price">26,40 лв.</span>
+        </div>
+      </div>
       <button class="d-drawer__line__rm" aria-label="Премахни"><span class="d-icon d-icon--close"></span></button></li>
-    <li class="d-drawer__line"><span><span class="d-drawer__line__name">Ленена кърпа</span>
-      <span class="d-drawer__line__meta">Натурална &middot; 2 бр.</span></span>
-      <span class="d-drawer__line__price">37,00 лв.</span>
+    <li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='26' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Ленена кърпа</span>
+        <span class="d-drawer__line__meta">Натурална</span>
+        <div class="d-drawer__line__foot">
+          <div class="d-qty d-qty--compact">
+            <button class="d-qty__button" aria-label="По-малко">&minus;</button>
+            <input class="d-qty__input" type="number" value="2" min="1" aria-label="Количество">
+            <button class="d-qty__button" aria-label="Повече">+</button>
+          </div>
+          <span class="d-drawer__line__price">37,00 лв.</span>
+        </div>
+      </div>
       <button class="d-drawer__line__rm" aria-label="Премахни"><span class="d-icon d-icon--close"></span></button></li>
-    <li class="d-drawer__line"><span><span class="d-drawer__line__name">Дървена дъска за рязане</span>
-      <span class="d-drawer__line__meta">Дъб &middot; 1 бр.</span></span>
-      <span class="d-drawer__line__price">31,90 лв.</span>
+    <li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='26' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Дървена дъска за рязане</span>
+        <span class="d-drawer__line__meta">Дъб</span>
+        <div class="d-drawer__line__foot">
+          <div class="d-qty d-qty--compact">
+            <button class="d-qty__button" aria-label="По-малко">&minus;</button>
+            <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
+            <button class="d-qty__button" aria-label="Повече">+</button>
+          </div>
+          <span class="d-drawer__line__price">31,90 лв.</span>
+        </div>
+      </div>
       <button class="d-drawer__line__rm" aria-label="Премахни"><span class="d-icon d-icon--close"></span></button></li>
   </ul></div>
   <div class="d-drawer__foot">
@@ -10310,10 +10585,10 @@ fixture. Re-check them the day a photographed product with a review exists.</p>
     <p class="d-product__stock d-product__stock--low">
       <span class="d-icon d-icon--warning"></span> Остават само 3</p>
     <div class="d-product__atc">
-      <div class="d-quantity">
-        <button class="d-quantity__btn" aria-label="По-малко"><span class="d-icon d-icon--minus"></span></button>
-        <input class="d-quantity__input" type="number" value="1" min="1" aria-label="Количество">
-        <button class="d-quantity__btn" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
+      <div class="d-qty">
+        <button class="d-qty__button" aria-label="По-малко"><span class="d-icon d-icon--minus"></span></button>
+        <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
+        <button class="d-qty__button" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
       </div>
       <button class="d-btn d-btn--primary">Добавяне в количката</button>
     </div>
@@ -10467,6 +10742,51 @@ strength with a gold ring on the active one &mdash; a mark that says
   });
 })();
 </script>
+</section><section class="sec" id="cart"><h2>Patterns</h2>
+<h3>Cart furniture &mdash; the shipping bar&rsquo;s frame, the note, the trust band</h3>
+<p class="note"><b>The bar itself is not new.</b> <code>.d-progress</code> already
+does the label, the track, the fill, the sheen, the reached state and the
+accessible <code>&lt;progress&gt;</code> variant. What was missing was the
+<em>frame</em> &mdash; the tinted card the drawer needs around it &mdash; and
+that is twelve lines. The old <code>.darling-shipbar</code> was the whole thing
+in one lump: its own track, its own gradient, its own shimmer keyframe, usable
+nowhere else.</p>
+<div style="max-width:420px;background:var(--surface-raised);border-radius:var(--radius-l);padding:var(--space-2xs) 0 var(--space-xs)">
+  <div class="d-shipbar">
+    <div class="d-progress" style="--pr:.835">
+      <p class="d-progress__label"><span class="d-icon d-icon--truck"></span>
+      Само още <b>12,70 лв.</b> до безплатна доставка, darling</p>
+      <div class="d-progress__track"><div class="d-progress__bar"></div></div>
+    </div>
+  </div>
+  <p class="d-cart-note"><span class="d-icon d-icon--shield"></span>
+  Плащаш при получаване &middot; 14 дни за връщане</p>
+</div>
+
+<p class="lbl" style="margin-top:26px">The trust band &mdash; hover a column</p>
+<ul class="d-trustbar">
+  <li><b>Наложен платеж</b><span>Плащаш при получаване, без предплата.</span></li>
+  <li><b>Еконт и Спиди</b><span>До адрес или до офис, ти избираш.</span></li>
+  <li><b>14 дни за връщане</b><span>Без причина, стига опаковката да е запазена.</span></li>
+  <li><b>Пишете ни</b><span>Отговаряме в същия работен ден.</span></li>
+</ul>
+<div class="todo"><b>The stars are still, and one twinkles when you hover its
+column.</b> The legacy band ran the twinkle on all four bullets on an infinite
+loop, staggered .8s apart, on the cart and the checkout &mdash; four things
+pulsing in the corner of the eye of somebody trying to pay. Your rule for the
+icon set was &ldquo;only when something happens&rdquo;, and the money path is
+where it matters most.<br><br>
+<b>On the cart and checkout it will not twinkle at all</b>, because
+<code>motion.css</code> already kills animation outright on those three
+templates. That is correct, and it is not a reason to delete the rule &mdash;
+the band also appears on the delivery page, where movement is harmless.<br><br>
+<b>Two things in the old CSS were both called &ldquo;trust&rdquo;.</b>
+<code>.darling-trust</code> is this band; <code>.darling-pdp-trust</code> is the
+small panel in the buy column. They are unrelated components with almost the
+same name, which is how one gets restyled by accident. Here they are
+<code>.d-trustbar</code> and <code>.d-trust</code>, and the mapping is written
+down at the top of <code>patterns/cart.css</code> so nobody has to guess
+twice.</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>
 <p class="note">card, button, band, notice, rating, field, table, quantity, badge,

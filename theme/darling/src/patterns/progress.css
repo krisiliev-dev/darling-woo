@@ -2,10 +2,19 @@
    PATTERN / PROGRESS
    How far you are, and how far is left.
 
-   Written because the cart drawer needs "???????? ?????? 12,60 ????. ???? ??????????????????
-   ????????????????, darling" and there was nothing to build it out of - the old
-   .darling-shipbar was one bespoke bar with its own colours, its own track and
-   its own animation, usable nowhere else.
+   Written because the cart drawer needs a line reading "only 12,60 lv. more to
+   free delivery, darling" with a bar under it, and there was nothing to build
+   it out of - the old .darling-shipbar was one bespoke bar with its own
+   colours, its own track and its own shimmer keyframe, usable nowhere else.
+
+   (This paragraph and the one under "NOT A FLEX ROW" below used to quote that
+   sentence in Bulgarian. Every Cyrillic character in both had become a literal
+   '?' - something in the chain encoded the text as ASCII with
+   errors='replace'. The stylesheet is deliberately ASCII-only, so the fix is to
+   say it in English rather than to re-add characters that will be mangled
+   again. Where Bulgarian copy genuinely has to appear in CSS, as in the
+   express-checkout caption in patterns/product.css, it is written as six-digit
+   escapes.)
 
    *** IT IS A <progress> WHERE IT CAN BE, AND ROLE=progressbar WHERE IT CANNOT.
    A bar that is only a div with a width is invisible to a screen reader: the
@@ -46,8 +55,8 @@
 
 /* *** NOT A FLEX ROW. *** As flex, every word-level element in the sentence
    became a flex ITEM - so the amount in <b> was a box of its own and the line
-   broke into three: "???????? ??????" / "12,70 ????." / "???? ?????????????????? ????????????????". A
-   sentence is text, and the icon rides in it as text. */
+   broke into three - the words, then the amount, then the rest of the
+   sentence, each on its own line. A sentence is text, and the icon rides in it as text. */
 .d-progress__label{
 	display:block;
 	margin:0;

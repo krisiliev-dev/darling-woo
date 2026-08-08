@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -891,17 +891,50 @@ vanished. Same lesson as the panel's swim: transitions reverse, animations do no
     <button class="d-drawer__close" aria-label="Затвори" onclick="this.closest('dialog').close()">
       <span class="d-icon d-icon--close"></span></button></div>
   <div class="d-drawer__body"><ul class="d-drawer__list">
-    <li class="d-drawer__line"><span><span class="d-drawer__line__name">Керамична купа</span>
-      <span class="d-drawer__line__meta">Пясъчна &middot; 1 бр.</span></span>
-      <span class="d-drawer__line__price">26,40 лв.</span>
+    <li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='26' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Керамична купа</span>
+        <span class="d-drawer__line__meta">Пясъчна</span>
+        <div class="d-drawer__line__foot">
+          <div class="d-qty d-qty--compact">
+            <button class="d-qty__button" aria-label="По-малко">&minus;</button>
+            <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
+            <button class="d-qty__button" aria-label="Повече">+</button>
+          </div>
+          <span class="d-drawer__line__price">26,40 лв.</span>
+        </div>
+      </div>
       <button class="d-drawer__line__rm" aria-label="Премахни"><span class="d-icon d-icon--close"></span></button></li>
-    <li class="d-drawer__line"><span><span class="d-drawer__line__name">Ленена кърпа</span>
-      <span class="d-drawer__line__meta">Натурална &middot; 2 бр.</span></span>
-      <span class="d-drawer__line__price">37,00 лв.</span>
+    <li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='26' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Ленена кърпа</span>
+        <span class="d-drawer__line__meta">Натурална</span>
+        <div class="d-drawer__line__foot">
+          <div class="d-qty d-qty--compact">
+            <button class="d-qty__button" aria-label="По-малко">&minus;</button>
+            <input class="d-qty__input" type="number" value="2" min="1" aria-label="Количество">
+            <button class="d-qty__button" aria-label="Повече">+</button>
+          </div>
+          <span class="d-drawer__line__price">37,00 лв.</span>
+        </div>
+      </div>
       <button class="d-drawer__line__rm" aria-label="Премахни"><span class="d-icon d-icon--close"></span></button></li>
-    <li class="d-drawer__line"><span><span class="d-drawer__line__name">Дървена дъска за рязане</span>
-      <span class="d-drawer__line__meta">Дъб &middot; 1 бр.</span></span>
-      <span class="d-drawer__line__price">31,90 лв.</span>
+    <li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='26' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Дървена дъска за рязане</span>
+        <span class="d-drawer__line__meta">Дъб</span>
+        <div class="d-drawer__line__foot">
+          <div class="d-qty d-qty--compact">
+            <button class="d-qty__button" aria-label="По-малко">&minus;</button>
+            <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
+            <button class="d-qty__button" aria-label="Повече">+</button>
+          </div>
+          <span class="d-drawer__line__price">31,90 лв.</span>
+        </div>
+      </div>
       <button class="d-drawer__line__rm" aria-label="Премахни"><span class="d-icon d-icon--close"></span></button></li>
   </ul></div>
   <div class="d-drawer__foot">
@@ -1237,10 +1270,10 @@ A('''</ol>
     <p class="d-product__stock d-product__stock--low">
       <span class="d-icon d-icon--warning"></span> Остават само 3</p>
     <div class="d-product__atc">
-      <div class="d-quantity">
-        <button class="d-quantity__btn" aria-label="По-малко"><span class="d-icon d-icon--minus"></span></button>
-        <input class="d-quantity__input" type="number" value="1" min="1" aria-label="Количество">
-        <button class="d-quantity__btn" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
+      <div class="d-qty">
+        <button class="d-qty__button" aria-label="По-малко"><span class="d-icon d-icon--minus"></span></button>
+        <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
+        <button class="d-qty__button" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
       </div>
       <button class="d-btn d-btn--primary">Добавяне в количката</button>
     </div>
@@ -1394,6 +1427,55 @@ strength with a gold ring on the active one &mdash; a mark that says
   });
 })();
 </script>
+</section>''')
+
+
+# ------------------------------------------------------------------- cart ---
+A('''<section class="sec" id="cart"><h2>Patterns</h2>
+<h3>Cart furniture &mdash; the shipping bar&rsquo;s frame, the note, the trust band</h3>
+<p class="note"><b>The bar itself is not new.</b> <code>.d-progress</code> already
+does the label, the track, the fill, the sheen, the reached state and the
+accessible <code>&lt;progress&gt;</code> variant. What was missing was the
+<em>frame</em> &mdash; the tinted card the drawer needs around it &mdash; and
+that is twelve lines. The old <code>.darling-shipbar</code> was the whole thing
+in one lump: its own track, its own gradient, its own shimmer keyframe, usable
+nowhere else.</p>
+<div style="max-width:420px;background:var(--surface-raised);border-radius:var(--radius-l);padding:var(--space-2xs) 0 var(--space-xs)">
+  <div class="d-shipbar">
+    <div class="d-progress" style="--pr:.835">
+      <p class="d-progress__label"><span class="d-icon d-icon--truck"></span>
+      Само още <b>12,70 лв.</b> до безплатна доставка, darling</p>
+      <div class="d-progress__track"><div class="d-progress__bar"></div></div>
+    </div>
+  </div>
+  <p class="d-cart-note"><span class="d-icon d-icon--shield"></span>
+  Плащаш при получаване &middot; 14 дни за връщане</p>
+</div>
+
+<p class="lbl" style="margin-top:26px">The trust band &mdash; hover a column</p>
+<ul class="d-trustbar">
+  <li><b>Наложен платеж</b><span>Плащаш при получаване, без предплата.</span></li>
+  <li><b>Еконт и Спиди</b><span>До адрес или до офис, ти избираш.</span></li>
+  <li><b>14 дни за връщане</b><span>Без причина, стига опаковката да е запазена.</span></li>
+  <li><b>Пишете ни</b><span>Отговаряме в същия работен ден.</span></li>
+</ul>
+<div class="todo"><b>The stars are still, and one twinkles when you hover its
+column.</b> The legacy band ran the twinkle on all four bullets on an infinite
+loop, staggered .8s apart, on the cart and the checkout &mdash; four things
+pulsing in the corner of the eye of somebody trying to pay. Your rule for the
+icon set was &ldquo;only when something happens&rdquo;, and the money path is
+where it matters most.<br><br>
+<b>On the cart and checkout it will not twinkle at all</b>, because
+<code>motion.css</code> already kills animation outright on those three
+templates. That is correct, and it is not a reason to delete the rule &mdash;
+the band also appears on the delivery page, where movement is harmless.<br><br>
+<b>Two things in the old CSS were both called &ldquo;trust&rdquo;.</b>
+<code>.darling-trust</code> is this band; <code>.darling-pdp-trust</code> is the
+small panel in the buy column. They are unrelated components with almost the
+same name, which is how one gets restyled by accident. Here they are
+<code>.d-trustbar</code> and <code>.d-trust</code>, and the mapping is written
+down at the top of <code>patterns/cart.css</code> so nobody has to guess
+twice.</div>
 </section>''')
 
 A('''<section class="sec" id="next"><h2>Status</h2>

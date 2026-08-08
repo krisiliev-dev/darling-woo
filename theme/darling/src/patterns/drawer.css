@@ -318,10 +318,14 @@
 .d-drawer__line{
 	position:relative;
 	display:grid;
-	/* FOUR columns, not three: ::before is a grid ITEM, so the bullet occupies
-	   the first track and the remove button was wrapping onto a second row -
-	   which is exactly how it rendered. bullet | name | price | remove. */
-	grid-template-columns:auto 1fr auto auto;
+	/* FOUR columns, and ::before is one of them: a pseudo-element on a grid
+	   container is a grid ITEM, so the bullet occupies the first track. It used
+	   to be bullet | name | price | remove, and the remove button wrapped onto a
+	   second row - which is exactly how it rendered.
+	   Now: bullet | thumbnail | body | remove, with the price inside the body
+	   next to the stepper, because a price that is its own column cannot sit
+	   beside a control that is in a different one. */
+	grid-template-columns:auto auto minmax(0, 1fr) auto;
 	align-items:start;
 	gap:var(--space-2xs);
 	padding:var(--space-2xs) 0;
@@ -348,6 +352,25 @@
 }
 /* No hover animation here, on the owner's note: this is a BULLET. A list of
    things somebody already chose is not a control and should not react. */
+/* -- the thumbnail -----------------------------------------------------------
+   *** A CART WITHOUT PICTURES IS A LIST OF WORDS. *** The legacy drawer showed
+   a 64px photograph per row and ours showed none, which would have been a
+   regression the day we cut over, not a missing nicety - a shopper checking
+   they picked the sand bowl and not the ash one has nothing to check against.
+
+   3.25rem rather than 64px so it tracks the root size, and the placeholder
+   gradient underneath so a row whose image has not loaded is a warm tile rather
+   than a hole. */
+.d-drawer__line__thumb{
+	width:3.25rem;
+	height:3.25rem;
+	border-radius:var(--radius-s);
+	object-fit:cover;
+	background:var(--placeholder-product, var(--surface-quiet));
+	flex:none;
+}
+
+.d-drawer__line__body{ display:grid; gap:.15rem; min-width:0 }
 .d-drawer__line__name{ color:var(--ink); line-height:var(--lh-title) }
 .d-drawer__line__meta{
 	display:block;
@@ -355,6 +378,35 @@
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
+/* -- the row's own bottom line -----------------------------------------------
+   Stepper on the left, line total on the right. They belong on one line because
+   they are the two halves of the same fact: this many, for this much. */
+.d-drawer__line__foot{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:var(--space-2xs);
+	margin-top:.15rem;
+}
+/* *** THE COMPACT STEPPER IS A MODIFIER, NOT A SECOND STEPPER. ***
+   patterns/quantity.css sets a 44px target and says why - it is the smallest
+   thing anyone taps on the way to paying. That argument is about the product
+   page, where the stepper is the control you use to decide. In a drawer row it
+   is a correction, three of them are stacked in 200px of width, and 44px each
+   makes the list unreadable. 2rem, which is still above the 24px that Chrome's
+   own audit asks for on a secondary control, and the real stepper is one tap
+   away on the cart page.
+   Same markup, same pattern, one class - so a fix to the stepper is a fix to
+   both. */
+.d-qty--compact{ border-radius:var(--radius-s) }
+.d-qty--compact .d-qty__button{
+	min-width:2rem;
+	min-height:2rem;
+	font-size:var(--fs-meta);
+}
+.d-qty--compact{ grid-template-columns:auto 2.2em auto }
+.d-qty--compact .d-qty__input{ font-size:var(--fs-meta) }
+
 .d-drawer__line__price{
 	color:var(--price);
 	font-variant-numeric:tabular-nums;
