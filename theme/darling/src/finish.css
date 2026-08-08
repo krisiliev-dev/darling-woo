@@ -48,7 +48,6 @@
 @property --glow-base{    syntax:"<number>"; inherits:true;  initial-value:1 }
 @property --glow-breathe{ syntax:"<number>"; inherits:false; initial-value:1 }
 @property --glow-hover{   syntax:"<number>"; inherits:false; initial-value:1 }
-@property --drift-k{      syntax:"<number>"; inherits:true;  initial-value:1 }
 
 :root{
 	--grain-src: url("../assets/ply-grain.webp");
@@ -68,6 +67,22 @@
 	/* Keeps the swarm off the label. Percentages of the ::before box, which is
 	   larger than the element, so the clear centre lands over the text. */
 	--firefly-mask: radial-gradient(42% 30% at 50% 50%, transparent 0 46%, #000 88%);
+
+	/* THE BODY TONE. Banding across a form is the reflection of a WIDE
+	   environment, which is why it reads as cut out of something larger.
+
+	   *** THIS WAS DELETED BY ACCIDENT IN v4 AND NOTHING COMPLAINED. ***
+	   I rewrote this :root block for the fireflies and dropped --surface-finish
+	   out of it. background-image on .d-finish still referenced it, so the whole
+	   declaration went invalid-at-computed-value-time and resolved to `none` -
+	   every button lost its ramp, its speculars and its inner glow in one go and
+	   fell back to the flat background-color. The owner spotted it on sight; no
+	   test I had would have. Third instance of the same family: --ink-2
+	   consumed and never declared, --d-page declared and never consumed, this
+	   one declared then un-declared. The build now runs a token check. */
+	--surface-finish:
+		radial-gradient(52% 120% at 26% 20%, var(--g-vanilla) 0%, var(--g-light) 36%, transparent 74%),
+		linear-gradient(175deg, var(--g-light) 0%, var(--g-core) 58%, var(--g-shadow) 100%);
 }
 
 /* *** EVERYTHING THAT READS --glow-k IS DECLARED HERE, ON .d-finish, NOT ON
@@ -133,14 +148,25 @@
 	   broad speculars, then the ramp. All three are static and unmasked, because
 	   they live behind the text where nothing needs to be kept clear. */
 	background-image:
-		radial-gradient(closest-side, transparent 52%, hsl(from var(--g-light) h s l / calc(.55 * var(--glow-k))) 100%),
-		radial-gradient(closest-side circle at var(--flair-1-x, 32%) var(--flair-1-y, 37%),
-			var(--flair-a) 0%, var(--flair-b) 34%, transparent 100%),
-		radial-gradient(closest-side circle at var(--flair-2-x, 73%) var(--flair-2-y, 69%),
-			var(--flair-a) 0%, var(--flair-b) 26%, transparent 100%),
+		/* THE TOP SPECULAR. A wide, shallow reflection sitting just above the
+		   top edge, so only its lower half falls on the object. This single
+		   layer is what makes a surface read as glossy rather than painted -
+		   v4 had no equivalent and the owner spotted it immediately. */
+		radial-gradient(78% 44% at 50% -8%,
+			hsl(48 100% 98% / calc(.70 * var(--glow-k))) 0%,
+			hsl(46 100% 91% / calc(.32 * var(--glow-k))) 44%, transparent 78%),
+		/* the two wandering speculars, kept out of the middle by their tables */
+		radial-gradient(closest-side circle at var(--flair-1-x, 16%) var(--flair-1-y, 24%),
+			var(--flair-a) 0%, var(--flair-b) 30%, transparent 100%),
+		radial-gradient(closest-side circle at var(--flair-2-x, 82%) var(--flair-2-y, 74%),
+			var(--flair-a) 0%, var(--flair-b) 24%, transparent 100%),
+		/* the inner glow: light pooling just inside the edge, which is what
+		   makes the object read as lit from WITHIN rather than merely lit */
+		radial-gradient(closest-side, transparent 44%,
+			hsl(from var(--g-light) h s l / calc(.62 * var(--glow-k))) 100%),
 		var(--surface-finish);
-	background-size: 100% 100%, 62% 150%, 46% 118%, 100% 100%, 100% 100%;
-	background-position: center, center, center, center, center;
+	background-size: 100% 100%, 34% 92%, 27% 76%, 100% 100%, 100% 100%, 100% 100%;
+	background-position: center, center, center, center, center, center;
 	background-repeat:no-repeat;
 
 	box-shadow:var(--rim), var(--glow-outer), var(--lift);
@@ -180,16 +206,16 @@
 	background-size:
 		0.44em 0.44em, 0.435em 0.435em, 0.274em 0.274em, 0.317em 0.317em, 0.298em 0.298em, 0.456em 0.456em, 0.28em 0.28em, 0.609em 0.609em, 0.23em 0.23em, 0.439em 0.439em;
 	background-position:
-		calc(var(--ff-1-x) + 0.3125em * var(--drift-k)) calc(var(--ff-1-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-2-x) - 0.15em * var(--drift-k)) calc(var(--ff-2-y) + 0.125em * var(--drift-k)),
-		calc(var(--ff-3-x) + 0.0375em * var(--drift-k)) calc(var(--ff-3-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-4-x) + 0.075em * var(--drift-k)) calc(var(--ff-4-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-5-x) - 0.225em * var(--drift-k)) calc(var(--ff-5-y) + 0.05em * var(--drift-k)),
-		calc(var(--ff-6-x) + 0.1875em * var(--drift-k)) calc(var(--ff-6-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-7-x) - 0.075em * var(--drift-k)) calc(var(--ff-7-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-8-x) + 0.0625em * var(--drift-k)) calc(var(--ff-8-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-9-x) + 0.05em * var(--drift-k)) calc(var(--ff-9-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-10-x) - 0.225em * var(--drift-k)) calc(var(--ff-10-y) - 0.1em * var(--drift-k));
+		var(--ff-1-x) var(--ff-1-y),
+		var(--ff-2-x) var(--ff-2-y),
+		var(--ff-3-x) var(--ff-3-y),
+		var(--ff-4-x) var(--ff-4-y),
+		var(--ff-5-x) var(--ff-5-y),
+		var(--ff-6-x) var(--ff-6-y),
+		var(--ff-7-x) var(--ff-7-y),
+		var(--ff-8-x) var(--ff-8-y),
+		var(--ff-9-x) var(--ff-9-y),
+		var(--ff-10-x) var(--ff-10-y);
 	background-repeat:no-repeat;
 	-webkit-mask-image:var(--firefly-mask);
 	        mask-image:var(--firefly-mask);
@@ -199,10 +225,21 @@
 	/* LONGHANDS, not the shorthand: a component that needs its own animation
 	   appends to animation-name rather than fighting a shorthand that would
 	   reset duration and easing underneath it. */
-	animation-name: d-firefly-drift, d-finish-breathe;
-	animation-duration: var(--speck-cycle, 15s), var(--breathe-cycle, 9s);
-	animation-timing-function: linear, var(--ease-float);
-	animation-iteration-count: infinite, infinite;
+	/* FOUR animations, and the composition line is the whole trick.
+	   The two drifts are ADDITIVE, so their offsets sum onto the base position
+	   instead of the second one replacing the first. Two circles of different
+	   radius and coprime period add up to an epicycle: the swarm stops looking
+	   like ten things on rails. The twinkle and the breathe replace, because
+	   they own their properties outright.
+	   animation-composition is Chrome 112 / Safari 16 / Firefox 115. Where it is
+	   missing, the second drift simply replaces the first and the motion is a
+	   plain circle - degraded, never broken. */
+	animation-name: d-firefly-a, d-firefly-b, d-firefly-twinkle, d-finish-breathe;
+	animation-duration: var(--ff-cycle-a, 15s), var(--ff-cycle-b, 24s),
+	                    var(--ff-cycle-a, 15s), var(--breathe-cycle, 9s);
+	animation-timing-function: linear, linear, var(--ease-float), var(--ease-float);
+	animation-iteration-count: infinite, infinite, infinite, infinite;
+	animation-composition: add, add, replace, replace;
 }
 
 /* -- the grain -------------------------------------------------------------
@@ -238,7 +275,6 @@
 .d-finish:hover,
 .d-finish:focus-visible{
 	--glow-hover: 1.34;
-	--drift-k: 1.5;
 }
 .d-finish:hover::before,
 .d-finish:focus-visible::before{
@@ -280,94 +316,253 @@
 	42%      { opacity: 1 }
 }
 
-@keyframes d-firefly-drift{
+@keyframes d-firefly-a{
 	0% {
 		background-position:
-		calc(var(--ff-1-x) + 0.3125em * var(--drift-k)) calc(var(--ff-1-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-2-x) - 0.15em * var(--drift-k)) calc(var(--ff-2-y) + 0.125em * var(--drift-k)),
-		calc(var(--ff-3-x) + 0.0375em * var(--drift-k)) calc(var(--ff-3-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-4-x) + 0.075em * var(--drift-k)) calc(var(--ff-4-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-5-x) - 0.225em * var(--drift-k)) calc(var(--ff-5-y) + 0.05em * var(--drift-k)),
-		calc(var(--ff-6-x) + 0.1875em * var(--drift-k)) calc(var(--ff-6-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-7-x) - 0.075em * var(--drift-k)) calc(var(--ff-7-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-8-x) + 0.0625em * var(--drift-k)) calc(var(--ff-8-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-9-x) + 0.05em * var(--drift-k)) calc(var(--ff-9-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-10-x) - 0.225em * var(--drift-k)) calc(var(--ff-10-y) - 0.1em * var(--drift-k));
+		0.4688em 0.0em,
+		0.1656em -0.3012em,
+		-0.3014em 0.4749em,
+		-0.1159em 0.3566em,
+		-0.4911em -0.0937em,
+		-0.1992em -0.2408em,
+		-0.3539em 0.2572em,
+		0.0744em -0.5891em,
+		0.3777em 0.1496em,
+		0.4298em 0.3123em;
+	}
+	12.5% {
+		background-position:
+		0.3315em 0.3315em,
+		-0.0959em -0.3301em,
+		-0.549em 0.1227em,
+		-0.3341em 0.1702em,
+		-0.4135em 0.281em,
+		0.0294em -0.3111em,
+		-0.0684em 0.4321em,
+		0.4692em -0.3639em,
+		0.3728em -0.1613em,
+		0.5247em -0.0831em;
+	}
+	25% {
+		background-position:
+		0.0em 0.4688em,
+		-0.3012em -0.1656em,
+		-0.4749em -0.3014em,
+		-0.3566em -0.1159em,
+		-0.0937em 0.4911em,
+		0.2408em -0.1992em,
+		0.2572em 0.3539em,
+		0.5891em 0.0744em,
+		0.1496em -0.3777em,
+		0.3123em -0.4298em;
+	}
+	37.5% {
+		background-position:
+		-0.3315em 0.3315em,
+		-0.3301em 0.0959em,
+		-0.1227em -0.549em,
+		-0.1702em -0.3341em,
+		0.281em 0.4135em,
+		0.3111em 0.0294em,
+		0.4321em 0.0684em,
+		0.3639em 0.4692em,
+		-0.1613em -0.3728em,
+		-0.0831em -0.5247em;
+	}
+	50% {
+		background-position:
+		-0.4688em 0.0em,
+		-0.1656em 0.3012em,
+		0.3014em -0.4749em,
+		0.1159em -0.3566em,
+		0.4911em 0.0937em,
+		0.1992em 0.2408em,
+		0.3539em -0.2572em,
+		-0.0744em 0.5891em,
+		-0.3777em -0.1496em,
+		-0.4298em -0.3123em;
+	}
+	62.5% {
+		background-position:
+		-0.3315em -0.3315em,
+		0.0959em 0.3301em,
+		0.549em -0.1227em,
+		0.3341em -0.1702em,
+		0.4135em -0.281em,
+		-0.0294em 0.3111em,
+		0.0684em -0.4321em,
+		-0.4692em 0.3639em,
+		-0.3728em 0.1613em,
+		-0.5247em 0.0831em;
+	}
+	75% {
+		background-position:
+		-0.0em -0.4688em,
+		0.3012em 0.1656em,
+		0.4749em 0.3014em,
+		0.3566em 0.1159em,
+		0.0937em -0.4911em,
+		-0.2408em 0.1992em,
+		-0.2572em -0.3539em,
+		-0.5891em -0.0744em,
+		-0.1496em 0.3777em,
+		-0.3123em 0.4298em;
+	}
+	87.5% {
+		background-position:
+		0.3315em -0.3315em,
+		0.3301em -0.0959em,
+		0.1227em 0.549em,
+		0.1702em 0.3341em,
+		-0.281em -0.4135em,
+		-0.3111em -0.0294em,
+		-0.4321em -0.0684em,
+		-0.3639em -0.4692em,
+		0.1613em 0.3728em,
+		0.0831em 0.5247em;
+	}
+	100% {
+		background-position:
+		0.4688em -0.0em,
+		0.1656em -0.3012em,
+		-0.3014em 0.4749em,
+		-0.1159em 0.3566em,
+		-0.4911em -0.0937em,
+		-0.1992em -0.2408em,
+		-0.3539em 0.2572em,
+		0.0744em -0.5891em,
+		0.3777em 0.1496em,
+		0.4298em 0.3123em;
+	}
+}
+@keyframes d-firefly-b{
+	0% {
+		background-position:
+		0.2em -0.0em,
+		-0.1711em 0.1822em,
+		-0.0102em 0.1622em,
+		0.1734em 0.1434em,
+		-0.1736em 0.0219em,
+		0.1543em 0.2124em,
+		0.0351em 0.1842em,
+		-0.1266em 0.0804em,
+		0.23em -0.0591em,
+		-0.1024em -0.1862em;
+	}
+	14.2857% {
+		background-position:
+		0.1247em -0.1564em,
+		-0.2492em -0.0202em,
+		0.1204em 0.1091em,
+		-0.004em 0.225em,
+		-0.1254em -0.1221em,
+		0.2622em 0.0118em,
+		-0.1221em 0.1423em,
+		-0.0161em 0.1491em,
+		0.1896em 0.143em,
+		-0.2094em -0.0361em;
+	}
+	28.5714% {
+		background-position:
+		-0.0445em -0.195em,
+		-0.1396em -0.2074em,
+		0.1604em -0.0261em,
+		-0.1784em 0.1371em,
+		0.0173em -0.1741em,
+		0.1727em -0.1977em,
+		-0.1874em -0.0067em,
+		0.1065em 0.1056em,
+		0.0064em 0.2374em,
+		-0.1588em 0.1412em;
+	}
+	42.8571% {
+		background-position:
+		-0.1802em -0.0868em,
+		0.0751em -0.2384em,
+		0.0796em -0.1417em,
+		-0.2184em -0.054em,
+		0.1469em -0.0951em,
+		-0.0469em -0.2583em,
+		-0.1116em -0.1507em,
+		0.149em -0.0175em,
+		-0.1816em 0.153em,
+		0.0114em 0.2122em;
+	}
+	57.1429% {
+		background-position:
+		-0.1802em 0.0868em,
+		0.2333em -0.0899em,
+		-0.0612em -0.1505em,
+		-0.094em -0.2044em,
+		0.1659em 0.0556em,
+		-0.2312em -0.1244em,
+		0.0483em -0.1812em,
+		0.0792em -0.1274em,
+		-0.2329em -0.0466em,
+		0.173em 0.1234em;
+	}
+	71.4286% {
+		background-position:
+		-0.0445em 0.195em,
+		0.2158em 0.1263em,
+		-0.1558em -0.046em,
+		0.1012em -0.2009em,
+		0.06em 0.1644em,
+		-0.2414em 0.1032em,
+		0.1717em -0.0752em,
+		-0.0502em -0.1414em,
+		-0.1088em -0.2111em,
+		0.2043em -0.0584em;
+	}
+	85.7143% {
+		background-position:
+		0.1247em 0.1564em,
+		0.0358em 0.2474em,
+		-0.1332em 0.0931em,
+		0.2202em -0.0461em,
+		-0.0911em 0.1494em,
+		-0.0698em 0.253em,
+		0.1659em 0.0874em,
+		-0.1418em -0.0489em,
+		0.0972em -0.2167em,
+		0.0818em -0.1961em;
+	}
+	100% {
+		background-position:
+		0.2em 0.0em,
+		-0.1711em 0.1822em,
+		-0.0102em 0.1622em,
+		0.1734em 0.1434em,
+		-0.1736em 0.0219em,
+		0.1543em 0.2124em,
+		0.0351em 0.1842em,
+		-0.1266em 0.0804em,
+		0.23em -0.0591em,
+		-0.1024em -0.1862em;
+	}
+}
+@keyframes d-firefly-twinkle{
+	0% {
 		background-size:
 		0.44em 0.44em, 0.435em 0.435em, 0.274em 0.274em, 0.317em 0.317em, 0.298em 0.298em, 0.456em 0.456em, 0.28em 0.28em, 0.609em 0.609em, 0.23em 0.23em, 0.439em 0.439em;
 	}
 	20% {
-		background-position:
-		calc(var(--ff-1-x) + 0.0625em * var(--drift-k)) calc(var(--ff-1-y) + 0.2em * var(--drift-k)),
-		calc(var(--ff-2-x) - 0.15em * var(--drift-k)) calc(var(--ff-2-y) - 0.125em * var(--drift-k)),
-		calc(var(--ff-3-x) + 0.1875em * var(--drift-k)) calc(var(--ff-3-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-4-x) - 0.225em * var(--drift-k)) calc(var(--ff-4-y) - 0.075em * var(--drift-k)),
-		calc(var(--ff-5-x) + 0.075em * var(--drift-k)) calc(var(--ff-5-y) + 0.1em * var(--drift-k)),
-		calc(var(--ff-6-x) + 0.0375em * var(--drift-k)) calc(var(--ff-6-y) - 0.3em * var(--drift-k)),
-		calc(var(--ff-7-x) - 0.075em * var(--drift-k)) calc(var(--ff-7-y) + 0.15em * var(--drift-k)),
-		calc(var(--ff-8-x) + 0.3125em * var(--drift-k)) calc(var(--ff-8-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-9-x) - 0.15em * var(--drift-k)) calc(var(--ff-9-y) + 0.15em * var(--drift-k)),
-		calc(var(--ff-10-x) + 0.075em * var(--drift-k)) calc(var(--ff-10-y) - 0.2em * var(--drift-k));
 		background-size:
 		0.638em 0.638em, 0.216em 0.216em, 0.464em 0.464em, 0.161em 0.161em, 0.643em 0.643em, 0.34em 0.34em, 0.406em 0.406em, 0.302em 0.302em, 0.39em 0.39em, 0.223em 0.223em;
 	}
 	40% {
-		background-position:
-		calc(var(--ff-1-x) - 0.1875em * var(--drift-k)) calc(var(--ff-1-y) + 0.1em * var(--drift-k)),
-		calc(var(--ff-2-x) + 0.05em * var(--drift-k)) calc(var(--ff-2-y) - 0.25em * var(--drift-k)),
-		calc(var(--ff-3-x) + 0.0375em * var(--drift-k)) calc(var(--ff-3-y) - 0.3em * var(--drift-k)),
-		calc(var(--ff-4-x) - 0.225em * var(--drift-k)) calc(var(--ff-4-y) + 0.075em * var(--drift-k)),
-		calc(var(--ff-5-x) + 0.375em * var(--drift-k)) calc(var(--ff-5-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-6-x) - 0.1125em * var(--drift-k)) calc(var(--ff-6-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-7-x) + 0.025em * var(--drift-k)) calc(var(--ff-7-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-8-x) + 0.0625em * var(--drift-k)) calc(var(--ff-8-y) + 0.15em * var(--drift-k)),
-		calc(var(--ff-9-x) - 0.15em * var(--drift-k)) calc(var(--ff-9-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-10-x) + 0.375em * var(--drift-k)) calc(var(--ff-10-y) + 0.0em * var(--drift-k));
 		background-size:
 		0.317em 0.317em, 0.366em 0.366em, 0.236em 0.236em, 0.348em 0.348em, 0.48em 0.48em, 0.493em 0.493em, 0.202em 0.202em, 0.512em 0.512em, 0.198em 0.198em, 0.482em 0.482em;
 	}
 	60% {
-		background-position:
-		calc(var(--ff-1-x) - 0.1875em * var(--drift-k)) calc(var(--ff-1-y) - 0.1em * var(--drift-k)),
-		calc(var(--ff-2-x) + 0.25em * var(--drift-k)) calc(var(--ff-2-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-3-x) - 0.1125em * var(--drift-k)) calc(var(--ff-3-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-4-x) + 0.075em * var(--drift-k)) calc(var(--ff-4-y) + 0.15em * var(--drift-k)),
-		calc(var(--ff-5-x) + 0.075em * var(--drift-k)) calc(var(--ff-5-y) - 0.1em * var(--drift-k)),
-		calc(var(--ff-6-x) - 0.1125em * var(--drift-k)) calc(var(--ff-6-y) + 0.15em * var(--drift-k)),
-		calc(var(--ff-7-x) + 0.125em * var(--drift-k)) calc(var(--ff-7-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-8-x) - 0.1875em * var(--drift-k)) calc(var(--ff-8-y) + 0.075em * var(--drift-k)),
-		calc(var(--ff-9-x) + 0.05em * var(--drift-k)) calc(var(--ff-9-y) - 0.3em * var(--drift-k)),
-		calc(var(--ff-10-x) + 0.075em * var(--drift-k)) calc(var(--ff-10-y) + 0.2em * var(--drift-k));
 		background-size:
 		0.537em 0.537em, 0.186em 0.186em, 0.509em 0.509em, 0.26em 0.26em, 0.696em 0.696em, 0.245em 0.245em, 0.342em 0.342em, 0.26em 0.26em, 0.429em 0.429em, 0.36em 0.36em;
 	}
 	80% {
-		background-position:
-		calc(var(--ff-1-x) + 0.0625em * var(--drift-k)) calc(var(--ff-1-y) - 0.2em * var(--drift-k)),
-		calc(var(--ff-2-x) + 0.05em * var(--drift-k)) calc(var(--ff-2-y) + 0.25em * var(--drift-k)),
-		calc(var(--ff-3-x) - 0.1125em * var(--drift-k)) calc(var(--ff-3-y) + 0.15em * var(--drift-k)),
-		calc(var(--ff-4-x) + 0.375em * var(--drift-k)) calc(var(--ff-4-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-5-x) - 0.225em * var(--drift-k)) calc(var(--ff-5-y) - 0.05em * var(--drift-k)),
-		calc(var(--ff-6-x) + 0.0375em * var(--drift-k)) calc(var(--ff-6-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-7-x) + 0.025em * var(--drift-k)) calc(var(--ff-7-y) - 0.3em * var(--drift-k)),
-		calc(var(--ff-8-x) - 0.1875em * var(--drift-k)) calc(var(--ff-8-y) - 0.075em * var(--drift-k)),
-		calc(var(--ff-9-x) + 0.25em * var(--drift-k)) calc(var(--ff-9-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-10-x) - 0.225em * var(--drift-k)) calc(var(--ff-10-y) + 0.1em * var(--drift-k));
 		background-size:
 		0.273em 0.273em, 0.402em 0.402em, 0.38em 0.38em, 0.377em 0.377em, 0.346em 0.346em, 0.415em 0.415em, 0.174em 0.174em, 0.563em 0.563em, 0.32em 0.32em, 0.522em 0.522em;
 	}
 	100% {
-		background-position:
-		calc(var(--ff-1-x) + 0.3125em * var(--drift-k)) calc(var(--ff-1-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-2-x) - 0.15em * var(--drift-k)) calc(var(--ff-2-y) + 0.125em * var(--drift-k)),
-		calc(var(--ff-3-x) + 0.0375em * var(--drift-k)) calc(var(--ff-3-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-4-x) + 0.075em * var(--drift-k)) calc(var(--ff-4-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-5-x) - 0.225em * var(--drift-k)) calc(var(--ff-5-y) + 0.05em * var(--drift-k)),
-		calc(var(--ff-6-x) + 0.1875em * var(--drift-k)) calc(var(--ff-6-y) + 0.0em * var(--drift-k)),
-		calc(var(--ff-7-x) - 0.075em * var(--drift-k)) calc(var(--ff-7-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-8-x) + 0.0625em * var(--drift-k)) calc(var(--ff-8-y) - 0.15em * var(--drift-k)),
-		calc(var(--ff-9-x) + 0.05em * var(--drift-k)) calc(var(--ff-9-y) + 0.3em * var(--drift-k)),
-		calc(var(--ff-10-x) - 0.225em * var(--drift-k)) calc(var(--ff-10-y) - 0.1em * var(--drift-k));
 		background-size:
 		0.44em 0.44em, 0.435em 0.435em, 0.274em 0.274em, 0.317em 0.317em, 0.298em 0.298em, 0.456em 0.456em, 0.28em 0.28em, 0.609em 0.609em, 0.23em 0.23em, 0.439em 0.439em;
 	}
@@ -438,19 +633,19 @@
 
 /* flairs on 13 - the light source shifts, so no two neighbours catch it the
    same way. */
-.d-finish:nth-of-type(13n+1 ){ --flair-1-x:32%; --flair-1-y:37%; --flair-2-x:73%; --flair-2-y:69% }
-.d-finish:nth-of-type(13n+2 ){ --flair-1-x:24%; --flair-1-y:30%; --flair-2-x:68%; --flair-2-y:74% }
-.d-finish:nth-of-type(13n+3 ){ --flair-1-x:41%; --flair-1-y:28%; --flair-2-x:80%; --flair-2-y:62% }
-.d-finish:nth-of-type(13n+4 ){ --flair-1-x:29%; --flair-1-y:44%; --flair-2-x:64%; --flair-2-y:58% }
-.d-finish:nth-of-type(13n+5 ){ --flair-1-x:37%; --flair-1-y:33%; --flair-2-x:77%; --flair-2-y:71% }
-.d-finish:nth-of-type(13n+6 ){ --flair-1-x:21%; --flair-1-y:39%; --flair-2-x:70%; --flair-2-y:66% }
-.d-finish:nth-of-type(13n+7 ){ --flair-1-x:35%; --flair-1-y:26%; --flair-2-x:83%; --flair-2-y:73% }
-.d-finish:nth-of-type(13n+8 ){ --flair-1-x:27%; --flair-1-y:35%; --flair-2-x:66%; --flair-2-y:61% }
-.d-finish:nth-of-type(13n+9 ){ --flair-1-x:44%; --flair-1-y:41%; --flair-2-x:75%; --flair-2-y:76% }
-.d-finish:nth-of-type(13n+10){ --flair-1-x:19%; --flair-1-y:32%; --flair-2-x:71%; --flair-2-y:64% }
-.d-finish:nth-of-type(13n+11){ --flair-1-x:39%; --flair-1-y:47%; --flair-2-x:61%; --flair-2-y:70% }
-.d-finish:nth-of-type(13n+12){ --flair-1-x:26%; --flair-1-y:43%; --flair-2-x:79%; --flair-2-y:67% }
-.d-finish:nth-of-type(13n+13){ --flair-1-x:43%; --flair-1-y:31%; --flair-2-x:69%; --flair-2-y:72% }
+.d-finish:nth-of-type(13n+1 ){ --flair-1-x:16%; --flair-1-y:24%; --flair-2-x:82%; --flair-2-y:74% }
+.d-finish:nth-of-type(13n+2 ){ --flair-1-x:24%; --flair-1-y:30%; --flair-2-x:76%; --flair-2-y:78% }
+.d-finish:nth-of-type(13n+3 ){ --flair-1-x:13%; --flair-1-y:20%; --flair-2-x:87%; --flair-2-y:70% }
+.d-finish:nth-of-type(13n+4 ){ --flair-1-x:26%; --flair-1-y:33%; --flair-2-x:74%; --flair-2-y:67% }
+.d-finish:nth-of-type(13n+5 ){ --flair-1-x:19%; --flair-1-y:22%; --flair-2-x:79%; --flair-2-y:80% }
+.d-finish:nth-of-type(13n+6 ){ --flair-1-x:11%; --flair-1-y:31%; --flair-2-x:85%; --flair-2-y:72% }
+.d-finish:nth-of-type(13n+7 ){ --flair-1-x:23%; --flair-1-y:18%; --flair-2-x:90%; --flair-2-y:76% }
+.d-finish:nth-of-type(13n+8 ){ --flair-1-x:15%; --flair-1-y:28%; --flair-2-x:73%; --flair-2-y:68% }
+.d-finish:nth-of-type(13n+9 ){ --flair-1-x:27%; --flair-1-y:34%; --flair-2-x:81%; --flair-2-y:83% }
+.d-finish:nth-of-type(13n+10){ --flair-1-x:12%; --flair-1-y:26%; --flair-2-x:77%; --flair-2-y:71% }
+.d-finish:nth-of-type(13n+11){ --flair-1-x:21%; --flair-1-y:17%; --flair-2-x:88%; --flair-2-y:79% }
+.d-finish:nth-of-type(13n+12){ --flair-1-x:18%; --flair-1-y:32%; --flair-2-x:75%; --flair-2-y:84% }
+.d-finish:nth-of-type(13n+13){ --flair-1-x:25%; --flair-1-y:21%; --flair-2-x:83%; --flair-2-y:66% }
 
 /* the swarm on 11 - ten fireflies, scattered by a low-discrepancy sequence so
    they never clump the way ten random points frequently do. */
@@ -467,25 +662,25 @@
 .d-finish:nth-of-type(11n+11){ --ff-1-x:43%; --ff-1-y:81%; --ff-2-x:8%; --ff-2-y:27%; --ff-3-x:64%; --ff-3-y:65%; --ff-4-x:29%; --ff-4-y:11%; --ff-5-x:86%; --ff-5-y:49%; --ff-6-x:51%; --ff-6-y:87%; --ff-7-x:16%; --ff-7-y:34%; --ff-8-x:73%; --ff-8-y:72%; --ff-9-x:38%; --ff-9-y:18%; --ff-10-x:95%; --ff-10-y:56% }
 
 /* pace on 19 - drift cycle and breathe cycle, so neighbours never sync up. */
-.d-finish:nth-of-type(19n+1 ){ --speck-cycle:13s; --breathe-cycle:7s }
-.d-finish:nth-of-type(19n+2 ){ --speck-cycle:17s; --breathe-cycle:9s }
-.d-finish:nth-of-type(19n+3 ){ --speck-cycle:11s; --breathe-cycle:8s }
-.d-finish:nth-of-type(19n+4 ){ --speck-cycle:19s; --breathe-cycle:11s }
-.d-finish:nth-of-type(19n+5 ){ --speck-cycle:15s; --breathe-cycle:7.5s }
-.d-finish:nth-of-type(19n+6 ){ --speck-cycle:23s; --breathe-cycle:10s }
-.d-finish:nth-of-type(19n+7 ){ --speck-cycle:12s; --breathe-cycle:8.5s }
-.d-finish:nth-of-type(19n+8 ){ --speck-cycle:21s; --breathe-cycle:12s }
-.d-finish:nth-of-type(19n+9 ){ --speck-cycle:14s; --breathe-cycle:9.5s }
-.d-finish:nth-of-type(19n+10){ --speck-cycle:18s; --breathe-cycle:6.5s }
-.d-finish:nth-of-type(19n+11){ --speck-cycle:16s; --breathe-cycle:10.5s }
-.d-finish:nth-of-type(19n+12){ --speck-cycle:25s; --breathe-cycle:13s }
-.d-finish:nth-of-type(19n+13){ --speck-cycle:13.5s; --breathe-cycle:7.2s }
-.d-finish:nth-of-type(19n+14){ --speck-cycle:20s; --breathe-cycle:11.5s }
-.d-finish:nth-of-type(19n+15){ --speck-cycle:11.5s; --breathe-cycle:8.8s }
-.d-finish:nth-of-type(19n+16){ --speck-cycle:22s; --breathe-cycle:9.2s }
-.d-finish:nth-of-type(19n+17){ --speck-cycle:15.5s; --breathe-cycle:6.8s }
-.d-finish:nth-of-type(19n+18){ --speck-cycle:24s; --breathe-cycle:12.5s }
-.d-finish:nth-of-type(19n+19){ --speck-cycle:19.5s; --breathe-cycle:10.2s }
+.d-finish:nth-of-type(19n+1 ){ --ff-cycle-a:13s; --ff-cycle-b:21.0s; --breathe-cycle:7s }
+.d-finish:nth-of-type(19n+2 ){ --ff-cycle-a:17s; --ff-cycle-b:27.5s; --breathe-cycle:9s }
+.d-finish:nth-of-type(19n+3 ){ --ff-cycle-a:11s; --ff-cycle-b:17.8s; --breathe-cycle:8s }
+.d-finish:nth-of-type(19n+4 ){ --ff-cycle-a:19s; --ff-cycle-b:30.7s; --breathe-cycle:11s }
+.d-finish:nth-of-type(19n+5 ){ --ff-cycle-a:15s; --ff-cycle-b:24.3s; --breathe-cycle:7.5s }
+.d-finish:nth-of-type(19n+6 ){ --ff-cycle-a:23s; --ff-cycle-b:37.2s; --breathe-cycle:10s }
+.d-finish:nth-of-type(19n+7 ){ --ff-cycle-a:12s; --ff-cycle-b:19.4s; --breathe-cycle:8.5s }
+.d-finish:nth-of-type(19n+8 ){ --ff-cycle-a:21s; --ff-cycle-b:34.0s; --breathe-cycle:12s }
+.d-finish:nth-of-type(19n+9 ){ --ff-cycle-a:14s; --ff-cycle-b:22.7s; --breathe-cycle:9.5s }
+.d-finish:nth-of-type(19n+10){ --ff-cycle-a:18s; --ff-cycle-b:29.1s; --breathe-cycle:6.5s }
+.d-finish:nth-of-type(19n+11){ --ff-cycle-a:16s; --ff-cycle-b:25.9s; --breathe-cycle:10.5s }
+.d-finish:nth-of-type(19n+12){ --ff-cycle-a:25s; --ff-cycle-b:40.5s; --breathe-cycle:13s }
+.d-finish:nth-of-type(19n+13){ --ff-cycle-a:13.5s; --ff-cycle-b:21.8s; --breathe-cycle:7.2s }
+.d-finish:nth-of-type(19n+14){ --ff-cycle-a:20s; --ff-cycle-b:32.4s; --breathe-cycle:11.5s }
+.d-finish:nth-of-type(19n+15){ --ff-cycle-a:11.5s; --ff-cycle-b:18.6s; --breathe-cycle:8.8s }
+.d-finish:nth-of-type(19n+16){ --ff-cycle-a:22s; --ff-cycle-b:35.6s; --breathe-cycle:9.2s }
+.d-finish:nth-of-type(19n+17){ --ff-cycle-a:15.5s; --ff-cycle-b:25.1s; --breathe-cycle:6.8s }
+.d-finish:nth-of-type(19n+18){ --ff-cycle-a:24s; --ff-cycle-b:38.8s; --breathe-cycle:12.5s }
+.d-finish:nth-of-type(19n+19){ --ff-cycle-a:19.5s; --ff-cycle-b:31.6s; --breathe-cycle:10.2s }
 
 /* -- the kill switches are in motion.css and are blanket -------------------
    `*, *::before, *::after { animation:none !important }` under reduced motion,

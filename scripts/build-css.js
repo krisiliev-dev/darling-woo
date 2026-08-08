@@ -48,3 +48,7 @@ fs.writeFileSync(OUT, out);
 const kb = (Buffer.byteLength(out) / 1024).toFixed(1);
 console.log('built ' + path.basename(OUT) + '  ' + kb + ' KB  from ' + imports.length + ' file(s)' +
             (missing ? '  (' + missing + ' MISSING)' : ''));
+// Fail the build on a token that is referenced but never declared. See the
+// file for why this is not optional.
+require('./check-tokens.js');
+

@@ -1,0 +1,60 @@
+/* =============================================================================
+   BASE / ELEMENTS
+   What a bare tag looks like before any component touches it. Nothing here has
+   a class; everything here reads a token and never a literal.
+
+   base is the FIRST layer after tokens, so every pattern and every utility
+   outranks it. That is the point: base is the floor, not a fight.
+   ========================================================================== */
+
+*, *::before, *::after{ box-sizing:border-box }
+
+html{
+	/* The owner asked for the main scrollbar to get the darling treatment.
+	   Two standard properties. `thin` narrows the thumb, not the track, so
+	   there is no layout shift and no scrollbar-gutter needed. */
+	scrollbar-color: var(--c-mauve) var(--surface-quiet);
+	scrollbar-width: thin;
+	-webkit-text-size-adjust:100%;
+}
+
+body{
+	margin:0;
+	background:var(--surface-page);
+	color:var(--ink);
+	font:var(--type-body);
+	-webkit-font-smoothing:antialiased;
+}
+
+h1, h2, h3, h4{
+	margin:0 0 var(--stack-tight);
+	color:var(--ink);
+	text-wrap:balance;
+}
+h1{ font:var(--type-hero) }
+h2{ font:var(--type-section) }
+h3{ font:var(--fw-bold) var(--fs-lede)/var(--lh-title) var(--font-display) }
+h4{ font:var(--fw-bold) var(--fs-body)/var(--lh-title) var(--font-display) }
+
+p{ margin:0 0 var(--stack); max-width:var(--measure-lede) }
+p:last-child{ margin-bottom:0 }
+
+a{ color:inherit; text-underline-offset:.18em }
+
+img, svg, video{ display:block; max-width:100%; height:auto }
+
+hr{
+	border:0;
+	height:var(--radius-rule);
+	border-radius:var(--radius-rule);
+	background:var(--hairline);
+	margin:var(--section-y) 0;
+}
+
+/* One focus ring, on every focusable thing, defined once. :focus-visible only -
+   a mouse click should not draw it. */
+:focus-visible{
+	outline:2px solid var(--action);
+	outline-offset:2px;
+	border-radius:var(--radius-xs);
+}

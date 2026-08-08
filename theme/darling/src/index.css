@@ -13,9 +13,20 @@
    MATTER HOW SPECIFIC the earlier selector is, so declaring the order once
    here replaces every future specificity fight and every !important.
 
-   Third-party CSS is unlayered, and unlayered CSS beats layered CSS - so
-   WooCommerce is pulled INTO the `wc` layer at enqueue time. That is the one
-   piece of PHP this system needs.
+   Third-party CSS is unlayered, and unlayered CSS beats layered CSS. The plan
+   used to be to pull WooCommerce INTO the `wc` layer at enqueue time. It is
+   not, any more, and the `wc` layer above is kept only as a place to put it if
+   that ever changes.
+
+   MEASURED INSTEAD (collide.js, four live pages): the overlap between our rules
+   and Woo/Stripe is 38 element/property pairs on home, 31 on shop, 6 on
+   checkout and 209 on the product page, and two thirds of the product ones come
+   from the legacy review form and product tabs. 284 pairs in about a dozen
+   selectors. Dequeuing thirteen stylesheets and re-importing them - which costs
+   a blocking request each on checkout, because an @import is invisible to the
+   preload scanner - buys almost nothing. A small UNLAYERED override block at
+   the end of the build handles the measured collisions, and collide.js runs as
+   a gate so a plugin update that widens the set fails loudly.
 
    -- FILE ORDER within our own layers ---------------------------------------
    tokens    the only place a literal value lives
@@ -26,7 +37,7 @@
    utilities last, and allowed to be specific
    ========================================================================== */
 
-@layer wc, tokens, base, metal, motion, patterns, utilities;
+@layer wc, tokens, base, motion, patterns, finish, utilities;
 
 /* -- tokens ---------------------------------------------------------------- */
 @import url("tokens/colour.css") layer(tokens);
@@ -34,6 +45,9 @@
 @import url("tokens/space.css")  layer(tokens);
 @import url("tokens/radius.css") layer(tokens);
 @import url("tokens/motion.css") layer(motion);
+@import url("base/elements.css")    layer(base);
+@import url("patterns/band.css")    layer(patterns);
+@import url("patterns/button.css")  layer(patterns);
 @import url("finish.css")        layer(finish);
 
-/* base, metal, motion, patterns, utilities: not written yet. */
+/* card, field, badge, placeholder, utilities: not written yet. */

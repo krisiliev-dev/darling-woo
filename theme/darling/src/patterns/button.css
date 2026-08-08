@@ -1,0 +1,63 @@
+/* =============================================================================
+   PATTERN / BUTTON
+   Three, and no more:
+       .d-btn            the amber one. Add .d-finish for the plywood surface.
+       .d-btn--quiet     outlined, for the second choice on a screen.
+       .d-btn--text      a link that behaves like a button.
+
+   .d-btn ALONE still renders a solid amber button. The finish is an upgrade,
+   never a dependency - a pattern that renders transparent when someone forgets
+   a second class is a pattern that will eventually ship transparent.
+
+   *** THIS IS THE PATTERN THAT HAS TO BEAT WOOCOMMERCE. ***
+   Woo styles .wp-block-button__link, .wc-block-components-product-button__button
+   and a.button UNLAYERED, and unlayered CSS outranks every layer regardless of
+   specificity. Measured with collide.js across four live pages, the whole
+   overlap is 284 element/property pairs in about a dozen selectors, and the
+   properties are: padding, border-radius, width, display, justify-content,
+   font-size, transition-duration, margin, color. Those are what the unlayered
+   override block at the end of the build re-asserts. Nothing else needs to be
+   in that block, and anything added to it without a collide.js run is a guess.
+   ========================================================================== */
+
+.d-btn{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	gap:var(--inline);
+
+	font:var(--type-ui);
+	font-weight:var(--fw-medium);
+	text-decoration:none;
+	white-space:nowrap;
+
+	padding:.72em 1.5em;
+	border:0;
+	border-radius:var(--radius-pill);
+	cursor:pointer;
+
+	background:var(--action);
+	color:var(--action-ink);
+	transition:transform var(--dur-ui) var(--ease-float);
+}
+.d-btn:active{ transform:translateY(1px) }
+
+.d-btn--sm{ font-size:var(--fs-badge); padding:.52em 1.05em }
+.d-btn--lg{ font-size:var(--fs-lede);  padding:.8em 1.9em }
+
+/* The second choice. No finish and no fill: two amber buttons side by side
+   means neither one is the answer. */
+.d-btn--quiet{
+	background:transparent;
+	color:var(--ink);
+	box-shadow:inset 0 0 0 1px var(--edge-field);
+}
+.d-btn--quiet:hover{ background:var(--surface-quiet) }
+
+.d-btn--text{
+	padding:0;
+	background:none;
+	box-shadow:none;
+	color:var(--ink);
+	text-decoration:underline;
+}

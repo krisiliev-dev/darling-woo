@@ -8,7 +8,7 @@ ASCII only: the Windows shell that receives this file reads UTF-8 bytes as the
 ANSI codepage, which is exactly how the first preview shipped with mojibake
 Cyrillic and how the mangling got into src/finish.css's own comments.
 """
-from math import floor
+from math import cos, sin, pi
 
 # ---------------------------------------------------------------- variance ---
 GRAIN_X = ['0%', '37%', '64%', '18%', '81%']            # period 5
@@ -18,10 +18,17 @@ GRAIN_Y = ['0%', '43%', '71%', '12%', '88%', '29%', '56%']   # period 7
 # broad speculars - period 13. Kept in the middle band of the element: a
 # specular pinned to a corner reads as a mistake rather than as light.
 FLAIRS = [
-    (32, 37, 73, 69), (24, 30, 68, 74), (41, 28, 80, 62), (29, 44, 64, 58),
-    (37, 33, 77, 71), (21, 39, 70, 66), (35, 26, 83, 73), (27, 35, 66, 61),
-    (44, 41, 75, 76), (19, 32, 71, 64), (39, 47, 61, 70), (26, 43, 79, 67),
-    (43, 31, 69, 72),
+    # *** BOTH COORDINATES STAY OUT OF THE MIDDLE. ***
+    # v4 moved the speculars from a masked pseudo-element onto the element
+    # background and kept the old coordinates, which put their bright cores
+    # under the label - where they wash into the text instead of reading as
+    # light, and the owner said the buttons had lost their reflectiveness. On
+    # the background there is no mask to cut the centre out, so the coordinates
+    # have to do it: x stays in 10-27 or 73-90, y in 16-34 or 66-84.
+    (16, 24, 82, 74), (24, 30, 76, 78), (13, 20, 87, 70), (26, 33, 74, 67),
+    (19, 22, 79, 80), (11, 31, 85, 72), (23, 18, 90, 76), (15, 28, 73, 68),
+    (27, 34, 81, 83), (12, 26, 77, 71), (21, 17, 88, 79), (18, 32, 75, 84),
+    (25, 21, 83, 66),
 ]
 
 FIREFLIES = 10
@@ -62,36 +69,45 @@ CYCLES = ['13s', '17s', '11s', '19s', '15s', '23s', '12s', '21s', '14s', '18s',
 BREATHE = ['7s', '9s', '8s', '11s', '7.5s', '10s', '8.5s', '12s', '9.5s', '6.5s',
            '10.5s', '13s', '7.2s', '11.5s', '8.8s', '9.2s', '6.8s', '12.5s', '10.2s']
 
-STOPS = [0, 20, 40, 60, 80, 100]
+# The big slow circle and the small fast one. Radii in px; they become em.
+RAD_A   = [7.5, 5.5, 9.0, 6.0, 8.0, 5.0, 7.0, 9.5, 6.5, 8.5]
+PHASE_A = [i * 0.1 + (i % 3) * 0.07 for i in range(FIREFLIES)]
+SPIN_A  = [1, -1, 1, 1, -1, 1, -1, 1, -1, -1]
+
+RAD_B   = [3.2, 4.0, 2.6, 3.6, 2.8, 4.2, 3.0, 2.4, 3.8, 3.4]
+PHASE_B = [(i * 0.37) % 1.0 for i in range(FIREFLIES)]
+SPIN_B  = [-1, 1, -1, 1, 1, -1, 1, -1, 1, -1]
+
+STOPS_A = [0, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100]
+STOPS_B = [0, 100 / 7 * 1, 100 / 7 * 2, 100 / 7 * 3, 100 / 7 * 4, 100 / 7 * 5,
+           100 / 7 * 6, 100]
+STOPS_T = [0, 20, 40, 60, 80, 100]
 
 
-def pos_list(phase):
-    """background-position for the ten fireflies at a given drift phase (-1..1)"""
+def base_pos():
+    """where each firefly sits before any animation touches it"""
     rows = []
     for i in range(FIREFLIES):
-        dx, dy = DRIFT[i]
-        # each firefly runs a quarter-cycle behind the last, so the swarm never
-        # pulses as one body
-        k = phase - (i / FIREFLIES)
-        sx = round(dx * _wave(k), 2)
-        sy = round(dy * _wave(k + .25), 2)
         end = ';' if i == FIREFLIES - 1 else ','
-        rows.append('\t\tcalc(var(--ff-%d-x) %s) calc(var(--ff-%d-y) %s)%s'
-                    % (i + 1, _off(sx), i + 1, _off(sy), end))
+        rows.append('\t\tvar(--ff-%d-x) var(--ff-%d-y)%s' % (i + 1, i + 1, end))
     return '\n'.join(rows)
 
 
-def _off(px):
-    """a signed em offset, written so calc() reads cleanly rather than `+ -0.15em`"""
-    em = round(px / 16.0, 4)
-    sign = '-' if em < 0 else '+'
-    return '%s %sem * var(--drift-k)' % (sign, abs(em))
+def off_list(t, radii, phases, spin):
+    """A pure OFFSET list, in em, for an additive animation.
 
-
-def _wave(k):
-    """triangle wave in -1..1, so the keyframe stops join up seamlessly"""
-    k = k % 1.0
-    return 4 * abs(k - 0.5) - 1
+    Each firefly walks a circle rather than a line. One circle on its own is
+    still a loop you can learn; two circles of different radius and coprime
+    period, added together, trace an epicycle that does not visibly repeat -
+    which is the difference between a path and a wander."""
+    rows = []
+    for i in range(FIREFLIES):
+        a = 2 * pi * (t + phases[i]) * spin[i]
+        dx = radii[i] * cos(a)
+        dy = radii[i] * sin(a)
+        end = ';' if i == FIREFLIES - 1 else ','
+        rows.append('\t\t%sem %sem%s' % (round(dx / 16, 4), round(dy / 16, 4), end))
+    return '\n'.join(rows)
 
 
 def size_list(stop_index):
@@ -156,7 +172,6 @@ w('''/* ========================================================================
 @property --glow-base{    syntax:"<number>"; inherits:true;  initial-value:1 }
 @property --glow-breathe{ syntax:"<number>"; inherits:false; initial-value:1 }
 @property --glow-hover{   syntax:"<number>"; inherits:false; initial-value:1 }
-@property --drift-k{      syntax:"<number>"; inherits:true;  initial-value:1 }
 
 :root{
 	--grain-src: url("../assets/ply-grain.webp");
@@ -176,6 +191,22 @@ w('''/* ========================================================================
 	/* Keeps the swarm off the label. Percentages of the ::before box, which is
 	   larger than the element, so the clear centre lands over the text. */
 	--firefly-mask: radial-gradient(42% 30% at 50% 50%, transparent 0 46%, #000 88%);
+
+	/* THE BODY TONE. Banding across a form is the reflection of a WIDE
+	   environment, which is why it reads as cut out of something larger.
+
+	   *** THIS WAS DELETED BY ACCIDENT IN v4 AND NOTHING COMPLAINED. ***
+	   I rewrote this :root block for the fireflies and dropped --surface-finish
+	   out of it. background-image on .d-finish still referenced it, so the whole
+	   declaration went invalid-at-computed-value-time and resolved to `none` -
+	   every button lost its ramp, its speculars and its inner glow in one go and
+	   fell back to the flat background-color. The owner spotted it on sight; no
+	   test I had would have. Third instance of the same family: --ink-2
+	   consumed and never declared, --d-page declared and never consumed, this
+	   one declared then un-declared. The build now runs a token check. */
+	--surface-finish:
+		radial-gradient(52% 120% at 26% 20%, var(--g-vanilla) 0%, var(--g-light) 36%, transparent 74%),
+		linear-gradient(175deg, var(--g-light) 0%, var(--g-core) 58%, var(--g-shadow) 100%);
 }
 
 /* *** EVERYTHING THAT READS --glow-k IS DECLARED HERE, ON .d-finish, NOT ON
@@ -241,14 +272,25 @@ w('''/* ========================================================================
 	   broad speculars, then the ramp. All three are static and unmasked, because
 	   they live behind the text where nothing needs to be kept clear. */
 	background-image:
-		radial-gradient(closest-side, transparent 52%, hsl(from var(--g-light) h s l / calc(.55 * var(--glow-k))) 100%),
-		radial-gradient(closest-side circle at var(--flair-1-x, 32%) var(--flair-1-y, 37%),
-			var(--flair-a) 0%, var(--flair-b) 34%, transparent 100%),
-		radial-gradient(closest-side circle at var(--flair-2-x, 73%) var(--flair-2-y, 69%),
-			var(--flair-a) 0%, var(--flair-b) 26%, transparent 100%),
+		/* THE TOP SPECULAR. A wide, shallow reflection sitting just above the
+		   top edge, so only its lower half falls on the object. This single
+		   layer is what makes a surface read as glossy rather than painted -
+		   v4 had no equivalent and the owner spotted it immediately. */
+		radial-gradient(78% 44% at 50% -8%,
+			hsl(48 100% 98% / calc(.70 * var(--glow-k))) 0%,
+			hsl(46 100% 91% / calc(.32 * var(--glow-k))) 44%, transparent 78%),
+		/* the two wandering speculars, kept out of the middle by their tables */
+		radial-gradient(closest-side circle at var(--flair-1-x, 16%) var(--flair-1-y, 24%),
+			var(--flair-a) 0%, var(--flair-b) 30%, transparent 100%),
+		radial-gradient(closest-side circle at var(--flair-2-x, 82%) var(--flair-2-y, 74%),
+			var(--flair-a) 0%, var(--flair-b) 24%, transparent 100%),
+		/* the inner glow: light pooling just inside the edge, which is what
+		   makes the object read as lit from WITHIN rather than merely lit */
+		radial-gradient(closest-side, transparent 44%,
+			hsl(from var(--g-light) h s l / calc(.62 * var(--glow-k))) 100%),
 		var(--surface-finish);
-	background-size: 100% 100%, 62% 150%, 46% 118%, 100% 100%, 100% 100%;
-	background-position: center, center, center, center, center;
+	background-size: 100% 100%, 34% 92%, 27% 76%, 100% 100%, 100% 100%, 100% 100%;
+	background-position: center, center, center, center, center, center;
 	background-repeat:no-repeat;
 
 	box-shadow:var(--rim), var(--glow-outer), var(--lift);
@@ -282,7 +324,7 @@ for i in range(FIREFLIES):
 w('\tbackground-size:')
 w(size_list(0))
 w('\tbackground-position:')
-w(pos_list(0))
+w(base_pos())
 w('''	background-repeat:no-repeat;
 	-webkit-mask-image:var(--firefly-mask);
 	        mask-image:var(--firefly-mask);
@@ -292,10 +334,21 @@ w('''	background-repeat:no-repeat;
 	/* LONGHANDS, not the shorthand: a component that needs its own animation
 	   appends to animation-name rather than fighting a shorthand that would
 	   reset duration and easing underneath it. */
-	animation-name: d-firefly-drift, d-finish-breathe;
-	animation-duration: var(--speck-cycle, 15s), var(--breathe-cycle, 9s);
-	animation-timing-function: linear, var(--ease-float);
-	animation-iteration-count: infinite, infinite;
+	/* FOUR animations, and the composition line is the whole trick.
+	   The two drifts are ADDITIVE, so their offsets sum onto the base position
+	   instead of the second one replacing the first. Two circles of different
+	   radius and coprime period add up to an epicycle: the swarm stops looking
+	   like ten things on rails. The twinkle and the breathe replace, because
+	   they own their properties outright.
+	   animation-composition is Chrome 112 / Safari 16 / Firefox 115. Where it is
+	   missing, the second drift simply replaces the first and the motion is a
+	   plain circle - degraded, never broken. */
+	animation-name: d-firefly-a, d-firefly-b, d-firefly-twinkle, d-finish-breathe;
+	animation-duration: var(--ff-cycle-a, 15s), var(--ff-cycle-b, 24s),
+	                    var(--ff-cycle-a, 15s), var(--breathe-cycle, 9s);
+	animation-timing-function: linear, linear, var(--ease-float), var(--ease-float);
+	animation-iteration-count: infinite, infinite, infinite, infinite;
+	animation-composition: add, add, replace, replace;
 }''')
 
 w('''
@@ -332,7 +385,6 @@ w('''
 .d-finish:hover,
 .d-finish:focus-visible{
 	--glow-hover: 1.34;
-	--drift-k: 1.5;
 }
 .d-finish:hover::before,
 .d-finish:focus-visible::before{
@@ -376,12 +428,20 @@ w('''
 }
 ''')
 
-w('@keyframes d-firefly-drift{')
-for si, stop in enumerate(STOPS):
-    phase = stop / 100.0
+for label, stops, rad, ph, spin in [
+        ('d-firefly-a', STOPS_A, RAD_A, PHASE_A, SPIN_A),
+        ('d-firefly-b', STOPS_B, RAD_B, PHASE_B, SPIN_B)]:
+    w('@keyframes %s{' % label)
+    for stop in stops:
+        w('\t%s%% {' % round(stop, 4))
+        w('\t\tbackground-position:')
+        w(off_list(stop / 100.0, rad, ph, spin))
+        w('\t}')
+    w('}')
+
+w('@keyframes d-firefly-twinkle{')
+for si, stop in enumerate(STOPS_T):
     w('\t%d%% {' % stop)
-    w('\t\tbackground-position:')
-    w(pos_list(phase))
     w('\t\tbackground-size:')
     w(size_list(si if stop != 100 else 0))
     w('\t}')
@@ -460,7 +520,9 @@ for v, pts in enumerate(SWARM_POS, 1):
 
 w('\n/* pace on 19 - drift cycle and breathe cycle, so neighbours never sync up. */')
 for i, (c, bcy) in enumerate(zip(CYCLES, BREATHE), 1):
-    w('.d-finish:nth-of-type(19n+%-2d){ --speck-cycle:%s; --breathe-cycle:%s }' % (i, c, bcy))
+    b = round(float(c[:-1]) * 1.618, 1)
+    w('.d-finish:nth-of-type(19n+%-2d){ --ff-cycle-a:%s; --ff-cycle-b:%ss; --breathe-cycle:%s }'
+      % (i, c, b, bcy))
 
 w('''
 /* -- the kill switches are in motion.css and are blanket -------------------

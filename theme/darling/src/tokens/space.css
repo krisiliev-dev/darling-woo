@@ -38,4 +38,10 @@
 	--stack-tight:   var(--space-2xs);  /* label to the thing it labels        */
 	--grid-gap:      var(--space-s);    /* between cards in a grid             */
 	--inline:        var(--space-2xs);  /* between things on one line          */
+
+	/* -- the page column -----------------------------------------------------
+	   How wide the readable column of a full-bleed band is allowed to get. Not
+	   a measure: --measure-lede and --measure-hero are about how far an eye
+	   tracks a line of prose, this is about how far a LAYOUT spreads. */
+	--page-max: 1120px;
 }

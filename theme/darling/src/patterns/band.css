@@ -1,0 +1,45 @@
+/* =============================================================================
+   PATTERN / BAND
+   A full-width strip of colour with a centred column inside it.
+
+   *** FULL BLEED IS THE DEFAULT, NOT A MODIFIER. *** Every band on the live
+   site shipped inset first and had to be corrected one at a time. The COLOUR
+   runs edge to edge; the CONTENT gets the gutter. A band that needs to be inset
+   is a container's problem, not the band's.
+
+   Built on a grid, not on negative margins. A negative margin has to cancel
+   whatever padding its wrapper happens to have, and when it over-cancels the
+   result is a horizontal scrollbar at exactly one viewport width, which nobody
+   tests. The grid needs to know nothing about its wrapper.
+   ========================================================================== */
+
+.d-band{
+	display:grid;
+	grid-template-columns:
+		[full-start] minmax(var(--gutter), 1fr)
+		[content-start] min(var(--page-max), 100% - var(--gutter) * 2) [content-end]
+		minmax(var(--gutter), 1fr) [full-end];
+	padding-block:var(--band-y);
+	background:var(--surface-band);
+	color:var(--ink-on-dark);
+}
+.d-band > *{ grid-column:content }
+.d-band > .d-band__full{ grid-column:full }
+
+.d-band__title{ font:var(--type-band); color:inherit }
+.d-band__body{ color:inherit; max-width:var(--measure-lede) }
+
+/* The one divider the finish is allowed to draw: a plywood rule between
+   sections. --grain-size is explicit because a 3px-tall element has no type to
+   scale from, and --firefly-reach is 0 because a full-bleed rule touches the
+   viewport edge, where an overhanging pseudo-element is a horizontal
+   scrollbar. */
+.d-band__rule{
+	height:var(--radius-rule);
+	border-radius:var(--radius-rule);
+	--grain-size:60px;
+	--firefly-reach:0em;
+}
+
+.d-band--quiet{ background:var(--surface-quiet); color:var(--ink) }
+.d-band--page{  background:var(--surface-page);  color:var(--ink) }
