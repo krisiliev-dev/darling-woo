@@ -204,7 +204,7 @@
 }
 /* Keyboard gets the same lift, one star at a time, plus a visible ring. */
 .d-rating-input input:focus-visible + .d-rating-input__star{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:3px;
 	transform:translateY(-.16em) scale(1.08);
 }

@@ -127,4 +127,14 @@
 	--notice-warning-edge: var(--g-shadow);
 	--notice-success-edge: var(--g-core);   /* gold. The owner ruled out green. */
 	--notice-info-edge:    var(--c-mauve);
+
+	/* -- focus ----------------------------------------------------------------
+	   *** ITS OWN TOKEN, AND DELIBERATELY NOT --action. ***
+	   Focus used to be drawn with --action, and --action measures #D42A3C -
+	   cherry. So every ring in the system was red, and clicking into a quantity
+	   field looked like a validation error before anything had been typed. Red
+	   is the invalid state and nothing else. Cocoa is the calmest thing in the
+	   palette that is still unmistakably not the resting edge. */
+	--focus-ring: var(--c-cocoa);
+	--focus-halo: color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }

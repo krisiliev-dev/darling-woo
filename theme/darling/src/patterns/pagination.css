@@ -38,7 +38,7 @@
 }
 .d-pagination__item:hover{ background:var(--surface-quiet) }
 .d-pagination__item:focus-visible{
-	outline:2px solid var(--c-cocoa);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
 .d-pagination__item--current{

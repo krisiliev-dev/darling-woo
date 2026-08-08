@@ -25,8 +25,8 @@
 	           box-shadow var(--dur-ui) var(--ease-float);
 }
 .d-qty:focus-within{
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 .d-qty__button{
 	appearance:none;
@@ -55,6 +55,16 @@
 }
 /* The spinners are removed because we drew the buttons; leaving both gives two
    different ways to change the same number, one of them 12px tall. */
+/* *** THE WRAPPER DRAWS THE RING, NOT THE INPUT. ***
+   The pill shows :focus-within, so a second outline on the input inside it puts
+   a ring inside a ring and reads as two controls. This is also where the red was
+   coming from: the input was falling through to the global :focus-visible rule,
+   which used to be cherry. */
+.d-qty__input:focus,
+.d-qty__input:focus-visible,
+.wc-block-components-quantity-selector__input:focus,
+.wc-block-components-quantity-selector__input:focus-visible{ outline:none }
+
 .d-qty__input::-webkit-outer-spin-button,
 .d-qty__input::-webkit-inner-spin-button{ appearance:none; margin:0 }
 .d-qty__input[type="number"]{ -moz-appearance:textfield }

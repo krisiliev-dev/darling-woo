@@ -54,7 +54,7 @@ hr{
 /* One focus ring, on every focusable thing, defined once. :focus-visible only -
    a mouse click should not draw it. */
 :focus-visible{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 	border-radius:var(--radius-xs);
 }

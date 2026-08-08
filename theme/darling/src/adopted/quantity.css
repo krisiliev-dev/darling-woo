@@ -35,8 +35,8 @@
 	content:none;   /* Woo draws a divider here; the pill needs no seam */
 }
 .wc-block-components-quantity-selector:focus-within{
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 /* *** THE BUTTONS COME AFTER THE INPUT IN THE SOURCE. ***
    Captured, not assumed - the minus is not the first child, so grid areas do

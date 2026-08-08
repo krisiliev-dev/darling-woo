@@ -74,8 +74,8 @@
 .d-field select:focus,
 .d-field textarea:focus{
 	outline:none;
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 
 .d-field__label{
@@ -258,6 +258,6 @@
 .d-check input:checked{ background:var(--action); border-color:var(--action) }
 .d-check input:checked::before{ transform:scale(1) }
 .d-check input:focus-visible{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }

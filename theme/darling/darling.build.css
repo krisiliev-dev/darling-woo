@@ -133,6 +133,16 @@
 	--notice-warning-edge: var(--g-shadow);
 	--notice-success-edge: var(--g-core);   /* gold. The owner ruled out green. */
 	--notice-info-edge:    var(--c-mauve);
+
+	/* -- focus ----------------------------------------------------------------
+	   *** ITS OWN TOKEN, AND DELIBERATELY NOT --action. ***
+	   Focus used to be drawn with --action, and --action measures #D42A3C -
+	   cherry. So every ring in the system was red, and clicking into a quantity
+	   field looked like a validation error before anything had been typed. Red
+	   is the invalid state and nothing else. Cocoa is the calmest thing in the
+	   palette that is still unmistakably not the resting edge. */
+	--focus-ring: var(--c-cocoa);
+	--focus-halo: color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 }
 
@@ -447,7 +457,7 @@ hr{
 /* One focus ring, on every focusable thing, defined once. :focus-visible only -
    a mouse click should not draw it. */
 :focus-visible{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 	border-radius:var(--radius-xs);
 }
@@ -1262,7 +1272,7 @@ hr{
 }
 /* Keyboard gets the same lift, one star at a time, plus a visible ring. */
 .d-rating-input input:focus-visible + .d-rating-input__star{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:3px;
 	transform:translateY(-.16em) scale(1.08);
 }
@@ -1347,8 +1357,8 @@ hr{
 .d-field select:focus,
 .d-field textarea:focus{
 	outline:none;
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 
 .d-field__label{
@@ -1531,7 +1541,7 @@ hr{
 .d-check input:checked{ background:var(--action); border-color:var(--action) }
 .d-check input:checked::before{ transform:scale(1) }
 .d-check input:focus-visible{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
 
@@ -1819,7 +1829,7 @@ hr{
 }
 .d-pagination__item:hover{ background:var(--surface-quiet) }
 .d-pagination__item:focus-visible{
-	outline:2px solid var(--c-cocoa);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
 .d-pagination__item--current{
@@ -1897,7 +1907,7 @@ hr{
 .d-panel__summary::-webkit-details-marker{ display:none }
 .d-panel__summary:hover{ background:var(--surface-quiet) }
 .d-panel__summary:focus-visible{
-	outline:2px solid var(--c-cocoa);
+	outline:2px solid var(--focus-ring);
 	outline-offset:-2px;
 }
 /* The marker: a chevron drawn from two borders, so it needs no font and no SVG
@@ -1992,8 +2002,8 @@ hr{
 	           box-shadow var(--dur-ui) var(--ease-float);
 }
 .d-qty:focus-within{
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 .d-qty__button{
 	appearance:none;
@@ -2022,6 +2032,16 @@ hr{
 }
 /* The spinners are removed because we drew the buttons; leaving both gives two
    different ways to change the same number, one of them 12px tall. */
+/* *** THE WRAPPER DRAWS THE RING, NOT THE INPUT. ***
+   The pill shows :focus-within, so a second outline on the input inside it puts
+   a ring inside a ring and reads as two controls. This is also where the red was
+   coming from: the input was falling through to the global :focus-visible rule,
+   which used to be cherry. */
+.d-qty__input:focus,
+.d-qty__input:focus-visible,
+.wc-block-components-quantity-selector__input:focus,
+.wc-block-components-quantity-selector__input:focus-visible{ outline:none }
+
 .d-qty__input::-webkit-outer-spin-button,
 .d-qty__input::-webkit-inner-spin-button{ appearance:none; margin:0 }
 .d-qty__input[type="number"]{ -moz-appearance:textfield }
@@ -2924,8 +2944,8 @@ li.product .wp-block-button__link{
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus{
 	outline:none;
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input label{
 	position:absolute;
@@ -2993,8 +3013,8 @@ li.product .wp-block-button__link{
 }
 .wc-blocks-components-select__container:hover{ border-color:var(--c-mauve-light) }
 .wc-blocks-components-select__container:focus-within{
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 .wc-block-components-form .wc-blocks-components-select__select,
 .wc-block-components-form .wc-block-components-country-input.wc-block-components-country-input select,
@@ -3098,7 +3118,7 @@ li.product .wp-block-button__link{
 	border-color:var(--action);
 }
 .wc-block-components-checkbox__input:focus-visible{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
 .wc-block-components-checkbox__mark{
@@ -3168,7 +3188,7 @@ li.product .wp-block-button__link{
 }
 .wc-block-components-radio-control__input:checked::before{ transform:scale(1) }
 .wc-block-components-radio-control__input:focus-visible{
-	outline:2px solid var(--action);
+	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
 .wc-block-components-radio-control__label{ font-weight:var(--fw-medium) }
@@ -3197,8 +3217,8 @@ li.product .wp-block-button__link{
 .woocommerce form .form-row textarea:focus,
 .woocommerce form .form-row select:focus{
 	outline:none;
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 .woocommerce form .form-row label{
 	display:block;
@@ -3790,8 +3810,8 @@ li.product .wp-block-button__link{
 	content:none;   /* Woo draws a divider here; the pill needs no seam */
 }
 .wc-block-components-quantity-selector:focus-within{
-	border-color:var(--c-cocoa);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
 }
 /* *** THE BUTTONS COME AFTER THE INPUT IN THE SOURCE. ***
    Captured, not assumed - the minus is not the first child, so grid areas do
