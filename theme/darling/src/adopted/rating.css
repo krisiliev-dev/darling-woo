@@ -1,0 +1,83 @@
+/* =============================================================================
+   ADOPTED / rating
+   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+
+   It styles markup WooCommerce and Stripe emit, which we cannot add classes to.
+   Their stylesheets are unlayered, and unlayered CSS beats layered CSS however
+   specific the layered selector is - so a rule that has to overrule them cannot
+   live in @layer patterns. Measured on the live checkout: identical rules moved
+   here went from losing on border-radius, background and border colour to
+   winning all three.
+
+   The trade is real and worth stating. Nothing in this file participates in the
+   layer order, so it also outranks OUR patterns - which means anything here that
+   is not actually contested by a third party is a rule quietly beating our own
+   system for no reason. collide.js measures the contested set; keep this file
+   inside it.
+
+   Moved out of patterns/rating.css, not copied. There is one definition.
+   ========================================================================== */
+
+/* -- ADOPTED: WooCommerce's ratings -----------------------------------------
+   Two of them. The block one exposes the value as a CSS variable, which is a
+   gift; the classic one expresses it as the width of an inner span, which is
+   why the outer element cannot simply be masked and be done with. */
+.wc-block-components-product-rating-stars,
+.wc-block-components-product-rating__stars,
+.star-rating{
+	position:relative;
+	display:inline-block;
+	width:5.6em;
+	height:1.12em;
+	font-size:var(--fs-fine);
+	overflow:hidden;
+	background:var(--c-ash-300);
+	-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z' fill='%23000'/%3E%3C/svg%3E");
+	        mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z' fill='%23000'/%3E%3C/svg%3E");
+	/* 20% rather than 1.12em: a length has to divide the width EXACTLY or
+	   subpixel rounding paints a sixth, clipped star. The box is 5.6 x 1.12em,
+	   so 20% by 100% is both square and exactly five. */
+	-webkit-mask-size:20% 100%;
+	        mask-size:20% 100%;
+	-webkit-mask-repeat:repeat-x;
+	        mask-repeat:repeat-x;
+}
+/* Silence the glyphs. font-size:0 rather than display:none, because Woo uses the
+   span's WIDTH to express the value and display:none collapses it. */
+.star-rating::before,
+.star-rating span::before,
+.wc-block-components-product-rating-stars::before{
+	font-size:0;
+	content:"";
+}
+/* The classic markup: an inner span whose width IS the rating. Painting it gold
+   inside the masked parent turns that width into a partial fill for free. */
+.star-rating span{
+	position:absolute;
+	inset:0 auto 0 0;
+	display:block;
+	height:100%;
+	background:var(--g-core);
+	overflow:hidden;
+	text-indent:-999em;
+}
+
+/* The review form's star picker. Woo emits five nested <a> elements; they get
+   the shape, and the fill follows hover left to right. */
+.woocommerce p.stars{ display:inline-flex; gap:.1em; margin:0 }
+.woocommerce p.stars a{
+	display:block;
+	width:1.3em;
+	height:1.3em;
+	text-indent:-999em;
+	background:var(--c-ash-300);
+	-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z' fill='%23000'/%3E%3C/svg%3E");
+	        mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z' fill='%23000'/%3E%3C/svg%3E");
+	-webkit-mask-size:100% 100%;
+	        mask-size:100% 100%;
+	transition:background 120ms var(--ease-float);
+}
+.woocommerce p.stars:hover a,
+.woocommerce p.stars a.active,
+.woocommerce p.stars a.active ~ a{ background:var(--g-core) }
+.woocommerce p.stars a:hover ~ a{ background:var(--c-ash-300) }

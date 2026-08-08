@@ -51,6 +51,14 @@
 @import url("patterns/card.css")    layer(patterns);
 @import url("patterns/notice.css")  layer(patterns);
 @import url("patterns/rating.css")  layer(patterns);
+@import url("patterns/field.css")   layer(patterns);
 @import url("finish.css")        layer(finish);
 
 /* card, field, badge, placeholder, utilities: not written yet. */
+/* -- ADOPTED, UNLAYERED --------------------------------------------------
+   These have to outrank WooCommerce, and only unlayered CSS can. Last on
+   purpose, and no layer() on purpose. */
+@import url("adopted/card.css");
+@import url("adopted/field.css");
+@import url("adopted/notice.css");
+@import url("adopted/rating.css");
