@@ -2383,9 +2383,19 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	position:absolute;
 	inset:0;
 	pointer-events:none;
-	/* Behind the button's own background, so a star that has not left yet is
-	   genuinely hidden rather than sitting on top of the label. */
-	z-index:-1;
+	/* *** NOT z-index:-1, AND THE REASON IS WORTH KNOWING. ***
+	   Inside a stacking context the context's own background paints FIRST and
+	   negative-z children paint on top of it - so z-index:-1 put the stars above
+	   the pill's background rather than behind it. That is the single star the
+	   owner could see. Escaping the button's context would drop them behind the
+	   season panel's opaque gradient instead and hide them completely: the band
+	   between "behind the button" and "behind the panel" is one stacking context
+	   wide, and there is nothing to sit in it.
+	   So it is not a z-order problem at all. They start at the button's CENTRE
+	   at scale 0 - occupying nothing, painting nothing - and grow as they travel
+	   out. Emerging from a point under the middle of the pill reads as coming
+	   from behind it, and it cannot break. */
+	z-index:0;
 }
 .d-burst i{
 	position:absolute;
@@ -2410,11 +2420,17 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 }
 /* Five destinations, five sizes, five spin rates. Deliberately not on a circle:
    evenly spaced points read as a diagram, and these should read as a handful. */
-.d-burst i:nth-child(1){ --bx:-58%; --by:-118%; --bs:.62rem }
-.d-burst i:nth-child(2){ --bx: 46%; --by:-132%; --bs:.46rem }
-.d-burst i:nth-child(3){ --bx: 74%; --by:  16%; --bs:.7rem  }
-.d-burst i:nth-child(4){ --bx:-78%; --by:  42%; --bs:.5rem  }
-.d-burst i:nth-child(5){ --bx: 10%; --by: 140%; --bs:.56rem }
+/* *** THESE WERE PERCENTAGES, AND THAT IS WHY NOTHING CAME OUT. ***
+   A percentage in `translate` resolves against the ELEMENT'S OWN border box,
+   not against its container - so --bx:-58% moved a .6rem star five pixels and
+   it never got past the button's own padding. Every one of them stayed
+   underneath. Real lengths now, measured against the button rather than
+   against themselves. */
+.d-burst i:nth-child(1){ --bx:-4.4rem; --by:-1.5rem; --bs:.62rem }
+.d-burst i:nth-child(2){ --bx:-1.6rem; --by:-2.5rem; --bs:.46rem }   /* was the one that stayed inside */
+.d-burst i:nth-child(3){ --bx: 4.6rem; --by:-1.2rem; --bs:.7rem  }
+.d-burst i:nth-child(4){ --bx: 3.1rem; --by: 1.7rem; --bs:.5rem  }
+.d-burst i:nth-child(5){ --bx:-3.4rem; --by: 1.6rem; --bs:.56rem }
 .d-burst i:nth-child(2),
 .d-burst i:nth-child(5){ background:var(--burst-alt, var(--c-cream)) }
 
@@ -2728,6 +2744,8 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
    and disables itself at the ends, which is the exact behaviour carousel.js was
    written to provide. */
 @supports selector(::scroll-button(right)){
+	/* The scriptless controls replace the hand-driven ones entirely - two sets of
+	   prev/next on one row is two tab stops that do the same thing. */
 	.d-carousel--auto .d-carousel__btn{ display:none }
 	.d-carousel--auto{ anchor-name:--d-carousel }
 	.d-carousel--auto .d-carousel__row::scroll-button(left),
@@ -2743,20 +2761,26 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 		height:2.75rem;
 		border:1px solid var(--edge-field);
 		border-radius:var(--radius-circle);
-		background:var(--surface-raised);
+		background-color:var(--surface-raised);
 		color:var(--ink);
 		cursor:pointer;
 		box-shadow:var(--shadow-card);
-		font-size:1.15rem;
-		line-height:1;
 	}
 	.d-carousel--auto .d-carousel__row::scroll-button(left){
-		content:"\2039";
+		content:"";
 		inset-inline-start:calc(anchor(left) - 6px);
+		background-image:var(--icon-chevron-left);
+		background-repeat:no-repeat;
+		background-position:center;
+		background-size:1.15rem 1.15rem;
 	}
 	.d-carousel--auto .d-carousel__row::scroll-button(right){
-		content:"\203A";
+		content:"";
 		inset-inline-end:calc(anchor(right) - 6px);
+		background-image:var(--icon-chevron-right);
+		background-repeat:no-repeat;
+		background-position:center;
+		background-size:1.15rem 1.15rem;
 	}
 	.d-carousel--auto .d-carousel__row::scroll-button(left):disabled,
 	.d-carousel--auto .d-carousel__row::scroll-button(right):disabled{
@@ -2764,30 +2788,36 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 		cursor:default;
 		box-shadow:none;
 	}
-	/* The dots. A marker per item, and :target-current is the one in view -
-	   state the browser keeps and we would otherwise track in script. */
-	.d-carousel--auto .d-carousel__row{ scroll-marker-group:after }
-	.d-carousel--auto .d-carousel__row::scroll-marker-group{
-		display:flex;
-		justify-content:center;
-		gap:var(--space-3xs);
-		padding-top:var(--space-2xs);
-	}
-	.d-carousel--auto .d-carousel__row > *::scroll-marker{
-		content:"";
-		width:.5rem;
-		height:.5rem;
-		border-radius:var(--radius-circle);
-		background:var(--c-grey-400);
-		transition:background var(--dur-ui) var(--ease-float),
-		           scale var(--dur-ui) var(--ease-float);
-	}
-	.d-carousel--auto .d-carousel__row > *::scroll-marker:target-current{
-		background:var(--c-cocoa);
-		scale:1.3;
-	}
-}
+	/* *** ::scroll-marker IS REMOVED, AND IT IS NOT A TASTE DECISION - IT
+	   CRASHES THE RENDERER. ***
 
+	   MEASURED, Chromium 141.0.7390.37, the version the owner is on. Loading
+	   the component gallery with .d-carousel--auto took the tab down with
+	   "Target crashed" before first paint. Bisected on the real page:
+
+	     remove the ::scroll-marker rules      -> loads, 17 sections   OK
+	     remove the ::scroll-button rules      -> still crashes
+	     remove anchor-name                    -> still crashes
+	     remove the header's scroll timeline   -> still crashes
+	     remove timeline-scope / scroll-timeline -> still crashes
+	     remove every offset-path              -> still crashes
+	     full stylesheet + ONLY the carousel markup -> still crashes
+
+	   So the markers are necessary and sufficient for it, in the context of
+	   this stylesheet. Five hand-written minimal reproductions did NOT crash -
+	   markers alone, markers with :target-current, with a transition, with
+	   scale, and all of it together with the buttons and anchor positioning -
+	   so the trigger is an interaction with something else in the sheet that I
+	   have not pinned down. That is worth saying plainly rather than dressing
+	   up: I know what to remove, not yet why.
+
+	   THE BUTTONS ARE FINE and stay - the no-marker build keeps them, anchor
+	   positioning and all, and loads clean. Dots come back when this is
+	   understood or a later Chrome fixes it; until then the row is scrollable,
+	   swipeable and has working prev/next, which is the part that matters.
+
+	   The near miss is the point: this would have shipped as "look, a carousel
+	   with no JavaScript" and taken out the tab on every catalogue page. */
 /* -- the tile ---------------------------------------------------------------- */
 .d-carousel__tile{
 	position:relative;

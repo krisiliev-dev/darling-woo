@@ -281,6 +281,8 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
    and disables itself at the ends, which is the exact behaviour carousel.js was
    written to provide. */
 @supports selector(::scroll-button(right)){
+	/* The scriptless controls replace the hand-driven ones entirely - two sets of
+	   prev/next on one row is two tab stops that do the same thing. */
 	.d-carousel--auto .d-carousel__btn{ display:none }
 	.d-carousel--auto{ anchor-name:--d-carousel }
 	.d-carousel--auto .d-carousel__row::scroll-button(left),
@@ -296,20 +298,26 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 		height:2.75rem;
 		border:1px solid var(--edge-field);
 		border-radius:var(--radius-circle);
-		background:var(--surface-raised);
+		background-color:var(--surface-raised);
 		color:var(--ink);
 		cursor:pointer;
 		box-shadow:var(--shadow-card);
-		font-size:1.15rem;
-		line-height:1;
 	}
 	.d-carousel--auto .d-carousel__row::scroll-button(left){
-		content:"\2039";
+		content:"";
 		inset-inline-start:calc(anchor(left) - 6px);
+		background-image:var(--icon-chevron-left);
+		background-repeat:no-repeat;
+		background-position:center;
+		background-size:1.15rem 1.15rem;
 	}
 	.d-carousel--auto .d-carousel__row::scroll-button(right){
-		content:"\203A";
+		content:"";
 		inset-inline-end:calc(anchor(right) - 6px);
+		background-image:var(--icon-chevron-right);
+		background-repeat:no-repeat;
+		background-position:center;
+		background-size:1.15rem 1.15rem;
 	}
 	.d-carousel--auto .d-carousel__row::scroll-button(left):disabled,
 	.d-carousel--auto .d-carousel__row::scroll-button(right):disabled{
@@ -317,30 +325,36 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 		cursor:default;
 		box-shadow:none;
 	}
-	/* The dots. A marker per item, and :target-current is the one in view -
-	   state the browser keeps and we would otherwise track in script. */
-	.d-carousel--auto .d-carousel__row{ scroll-marker-group:after }
-	.d-carousel--auto .d-carousel__row::scroll-marker-group{
-		display:flex;
-		justify-content:center;
-		gap:var(--space-3xs);
-		padding-top:var(--space-2xs);
-	}
-	.d-carousel--auto .d-carousel__row > *::scroll-marker{
-		content:"";
-		width:.5rem;
-		height:.5rem;
-		border-radius:var(--radius-circle);
-		background:var(--c-grey-400);
-		transition:background var(--dur-ui) var(--ease-float),
-		           scale var(--dur-ui) var(--ease-float);
-	}
-	.d-carousel--auto .d-carousel__row > *::scroll-marker:target-current{
-		background:var(--c-cocoa);
-		scale:1.3;
-	}
-}
+	/* *** ::scroll-marker IS REMOVED, AND IT IS NOT A TASTE DECISION - IT
+	   CRASHES THE RENDERER. ***
 
+	   MEASURED, Chromium 141.0.7390.37, the version the owner is on. Loading
+	   the component gallery with .d-carousel--auto took the tab down with
+	   "Target crashed" before first paint. Bisected on the real page:
+
+	     remove the ::scroll-marker rules      -> loads, 17 sections   OK
+	     remove the ::scroll-button rules      -> still crashes
+	     remove anchor-name                    -> still crashes
+	     remove the header's scroll timeline   -> still crashes
+	     remove timeline-scope / scroll-timeline -> still crashes
+	     remove every offset-path              -> still crashes
+	     full stylesheet + ONLY the carousel markup -> still crashes
+
+	   So the markers are necessary and sufficient for it, in the context of
+	   this stylesheet. Five hand-written minimal reproductions did NOT crash -
+	   markers alone, markers with :target-current, with a transition, with
+	   scale, and all of it together with the buttons and anchor positioning -
+	   so the trigger is an interaction with something else in the sheet that I
+	   have not pinned down. That is worth saying plainly rather than dressing
+	   up: I know what to remove, not yet why.
+
+	   THE BUTTONS ARE FINE and stay - the no-marker build keeps them, anchor
+	   positioning and all, and loads clean. Dots come back when this is
+	   understood or a later Chrome fixes it; until then the row is scrollable,
+	   swipeable and has working prev/next, which is the part that matters.
+
+	   The near miss is the point: this would have shipped as "look, a carousel
+	   with no JavaScript" and taken out the tab on every catalogue page. */
 /* -- the tile ---------------------------------------------------------------- */
 .d-carousel__tile{
 	position:relative;

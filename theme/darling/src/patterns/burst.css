@@ -30,9 +30,19 @@
 	position:absolute;
 	inset:0;
 	pointer-events:none;
-	/* Behind the button's own background, so a star that has not left yet is
-	   genuinely hidden rather than sitting on top of the label. */
-	z-index:-1;
+	/* *** NOT z-index:-1, AND THE REASON IS WORTH KNOWING. ***
+	   Inside a stacking context the context's own background paints FIRST and
+	   negative-z children paint on top of it - so z-index:-1 put the stars above
+	   the pill's background rather than behind it. That is the single star the
+	   owner could see. Escaping the button's context would drop them behind the
+	   season panel's opaque gradient instead and hide them completely: the band
+	   between "behind the button" and "behind the panel" is one stacking context
+	   wide, and there is nothing to sit in it.
+	   So it is not a z-order problem at all. They start at the button's CENTRE
+	   at scale 0 - occupying nothing, painting nothing - and grow as they travel
+	   out. Emerging from a point under the middle of the pill reads as coming
+	   from behind it, and it cannot break. */
+	z-index:0;
 }
 .d-burst i{
 	position:absolute;
@@ -57,11 +67,17 @@
 }
 /* Five destinations, five sizes, five spin rates. Deliberately not on a circle:
    evenly spaced points read as a diagram, and these should read as a handful. */
-.d-burst i:nth-child(1){ --bx:-58%; --by:-118%; --bs:.62rem }
-.d-burst i:nth-child(2){ --bx: 46%; --by:-132%; --bs:.46rem }
-.d-burst i:nth-child(3){ --bx: 74%; --by:  16%; --bs:.7rem  }
-.d-burst i:nth-child(4){ --bx:-78%; --by:  42%; --bs:.5rem  }
-.d-burst i:nth-child(5){ --bx: 10%; --by: 140%; --bs:.56rem }
+/* *** THESE WERE PERCENTAGES, AND THAT IS WHY NOTHING CAME OUT. ***
+   A percentage in `translate` resolves against the ELEMENT'S OWN border box,
+   not against its container - so --bx:-58% moved a .6rem star five pixels and
+   it never got past the button's own padding. Every one of them stayed
+   underneath. Real lengths now, measured against the button rather than
+   against themselves. */
+.d-burst i:nth-child(1){ --bx:-4.4rem; --by:-1.5rem; --bs:.62rem }
+.d-burst i:nth-child(2){ --bx:-1.6rem; --by:-2.5rem; --bs:.46rem }   /* was the one that stayed inside */
+.d-burst i:nth-child(3){ --bx: 4.6rem; --by:-1.2rem; --bs:.7rem  }
+.d-burst i:nth-child(4){ --bx: 3.1rem; --by: 1.7rem; --bs:.5rem  }
+.d-burst i:nth-child(5){ --bx:-3.4rem; --by: 1.6rem; --bs:.56rem }
 .d-burst i:nth-child(2),
 .d-burst i:nth-child(5){ background:var(--burst-alt, var(--c-cream)) }
 
