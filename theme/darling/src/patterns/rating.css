@@ -82,9 +82,29 @@
 	height:1.25em;
 	background:var(--c-ash-300);
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+	position:relative;
 	transition:background 140ms var(--ease-float),
 	           transform 180ms var(--ease-float),
 	           filter 180ms var(--ease-float);
+}
+
+/* *** THE SHINE HAS TO BE ON THE STAR, NOT AROUND IT. ***
+   v1 used a drop-shadow halo and the owner could not see it, which is the same
+   physics as the fireflies: an amber glow needs a dark ground to read against,
+   and this sits on grey-100. So the shine is a specular sweep ACROSS the star
+   instead - a light band that travels corner to corner. The parent's clip-path
+   clips its descendants, so the band is star-shaped for free. */
+.d-rating-input__star::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:linear-gradient(114deg,
+		transparent 24%,
+		hsl(50 100% 99% / .95) 46%,
+		hsl(46 100% 92% / .7) 54%,
+		transparent 76%);
+	transform:translateX(-130%);
+	opacity:0;
 }
 
 /* checked fills up to N */
@@ -107,7 +127,25 @@
 .d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star{
 	background:var(--g-light);
 	transform:translateY(-.16em) scale(1.08);
-	filter:drop-shadow(0 0 .3em hsl(from var(--g-core) h s l / .8));
+	filter:drop-shadow(0 .12em .22em hsl(from var(--g-deep) h s l / .45));
+}
+/* The sweep runs once per hover. Staggered per star so the light travels along
+   the row rather than flashing all of them at the same instant. */
+.d-rating-input:has(label:nth-child(1):hover) label:nth-child(-n+1) .d-rating-input__star::after,
+.d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star::after,
+.d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star::after,
+.d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star::after,
+.d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star::after{
+	animation:d-star-sweep 620ms var(--ease-float) 1;
+}
+.d-rating-input label:nth-child(2) .d-rating-input__star::after{ animation-delay:60ms }
+.d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:120ms }
+.d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:180ms }
+.d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:240ms }
+@keyframes d-star-sweep{
+	0%   { transform:translateX(-130%); opacity:0 }
+	22%  { opacity:1 }
+	100% { transform:translateX(130%);  opacity:0 }
 }
 /* Anything past the hovered star drops back to empty, so moving left from a
    checked five reads as taking stars away rather than as nothing happening. */
