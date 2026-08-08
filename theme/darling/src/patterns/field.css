@@ -157,6 +157,20 @@
 	.d-select::picker(select){
 		appearance:base-select;
 	}
+	/* *** base-select MAKES THE SELECT A FLEX CONTAINER. ***
+	   Its default align-items is `normal`, which stretches the value to the full
+	   height instead of centring it - so the text sat slightly high against the
+	   input beside it and the owner spotted it immediately. Measured: the select
+	   came out 65.75px tall against the input's 70.56, with the value stretched
+	   rather than centred. These four lines put it back on the same line as
+	   every other control. */
+	.d-field select,
+	.d-select{
+		align-items:center;
+		justify-content:flex-start;
+		min-height:2.9em;
+		line-height:var(--lh-flush);
+	}
 	.d-field select::picker(select),
 	.d-select::picker(select){
 		margin-top:.35em;

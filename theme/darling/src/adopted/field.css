@@ -161,6 +161,8 @@
 @supports (appearance: base-select){
 	.wc-block-components-form select,
 	.wc-block-components-form select::picker(select){ appearance:base-select }
+	/* same flex-centring fix as the .d-field select above */
+	.wc-block-components-form select{ align-items:center; justify-content:flex-start }
 	.wc-block-components-form select::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
