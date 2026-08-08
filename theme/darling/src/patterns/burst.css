@@ -101,6 +101,49 @@
    properties and not one `transform`. */
 @keyframes d-burst-spin{ to{ rotate:360deg } }
 
+/* =============================================================================
+   THE POP - the same stars, thrown rather than shown.
+
+   Hover is a transition: it has a there and a back, and holding the pointer
+   still holds the stars out. A click has no "back" - the thing happened, and
+   the marks should leave and not return. That is an ANIMATION, and it is the
+   one shape a transition cannot make.
+
+   Fired by darling-ui.js putting data-pop on the burst and taking it off again,
+   the same bump() the cart icon's wheels use. Nothing here runs on its own.
+
+   *** THEY GO FURTHER THAN THE HOVER AND THEY DO NOT COME BACK. *** 1.9x the
+   hover distance, ending at opacity 0, so the last thing you see is the stars
+   leaving the frame rather than snapping off at full brightness. `forwards`
+   would hold them there invisible; they end at scale 0 instead, so the resting
+   state after the animation is the resting state before it and the attribute
+   can be re-added immediately for a second click.
+   ========================================================================== */
+.d-burst[data-pop] i{
+	animation:d-burst-pop 720ms var(--ease-star) 1 both;
+}
+.d-burst[data-pop] i:nth-child(2){ animation-delay:40ms }
+.d-burst[data-pop] i:nth-child(3){ animation-delay:80ms }
+.d-burst[data-pop] i:nth-child(4){ animation-delay:25ms }
+.d-burst[data-pop] i:nth-child(5){ animation-delay:65ms }
+@keyframes d-burst-pop{
+	0%{
+		translate:-50% -50%;
+		scale:0; opacity:0; rotate:0deg;
+	}
+	14%{ opacity:1; scale:1.15 }
+	100%{
+		translate:calc(-50% + var(--bx) * 1.9) calc(-50% + var(--by) * 1.9);
+		scale:0; opacity:0; rotate:220deg;
+	}
+}
+/* The button has to let them out. .d-finish clips its own texture, and a burst
+   inside a clipped box is five stars nobody sees. */
+.d-burst-host{ position:relative; overflow:visible }
+@media (prefers-reduced-motion: reduce){
+	.d-burst[data-pop] i{ animation:none }
+}
+
 @media (prefers-reduced-motion: reduce){
 	.d-burst{ display:none }
 }

@@ -2545,6 +2545,49 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
    properties and not one `transform`. */
 @keyframes d-burst-spin{ to{ rotate:360deg } }
 
+/* =============================================================================
+   THE POP - the same stars, thrown rather than shown.
+
+   Hover is a transition: it has a there and a back, and holding the pointer
+   still holds the stars out. A click has no "back" - the thing happened, and
+   the marks should leave and not return. That is an ANIMATION, and it is the
+   one shape a transition cannot make.
+
+   Fired by darling-ui.js putting data-pop on the burst and taking it off again,
+   the same bump() the cart icon's wheels use. Nothing here runs on its own.
+
+   *** THEY GO FURTHER THAN THE HOVER AND THEY DO NOT COME BACK. *** 1.9x the
+   hover distance, ending at opacity 0, so the last thing you see is the stars
+   leaving the frame rather than snapping off at full brightness. `forwards`
+   would hold them there invisible; they end at scale 0 instead, so the resting
+   state after the animation is the resting state before it and the attribute
+   can be re-added immediately for a second click.
+   ========================================================================== */
+.d-burst[data-pop] i{
+	animation:d-burst-pop 720ms var(--ease-star) 1 both;
+}
+.d-burst[data-pop] i:nth-child(2){ animation-delay:40ms }
+.d-burst[data-pop] i:nth-child(3){ animation-delay:80ms }
+.d-burst[data-pop] i:nth-child(4){ animation-delay:25ms }
+.d-burst[data-pop] i:nth-child(5){ animation-delay:65ms }
+@keyframes d-burst-pop{
+	0%{
+		translate:-50% -50%;
+		scale:0; opacity:0; rotate:0deg;
+	}
+	14%{ opacity:1; scale:1.15 }
+	100%{
+		translate:calc(-50% + var(--bx) * 1.9) calc(-50% + var(--by) * 1.9);
+		scale:0; opacity:0; rotate:220deg;
+	}
+}
+/* The button has to let them out. .d-finish clips its own texture, and a burst
+   inside a clipped box is five stars nobody sees. */
+.d-burst-host{ position:relative; overflow:visible }
+@media (prefers-reduced-motion: reduce){
+	.d-burst[data-pop] i{ animation:none }
+}
+
 @media (prefers-reduced-motion: reduce){
 	.d-burst{ display:none }
 }
@@ -5821,13 +5864,24 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    two absolutely-positioned pseudo-elements and `text-indent:-9999px`; ours is
    the icon pattern, so it inherits the mark, the hover and the focus ring that
    every other icon button on the site has. */
+/* *** MEASURED: THREE GRID ROWS, 25.59px / 7.20px / 7.20px. ***
+   This was `display:grid; place-items:center` and the mark sat about 7px high
+   in a 40px disc. WooCommerce's trigger is an <a> containing a text node and a
+   span, and in a grid container EACH OF THOSE IS ITS OWN ITEM IN ITS OWN ROW -
+   so place-items centred the mark inside the first row of three rather than
+   inside the button. Not a padding problem, a flow problem, and no amount of
+   padding would have found it.
+   The mark is out of flow now: the disc is a positioned box and ::before is
+   absolutely centred in it, so nothing a third party puts inside the anchor can
+   move it. Same geometry and same hover as .d-icon-btn - which is the component
+   this WOULD be, if we could put a class on markup WooCommerce emits. */
 .d-gallery__zoom{
 	position:absolute;
 	z-index:3;
 	top:var(--space-2xs);
 	inset-inline-end:var(--space-2xs);
-	display:grid;
-	place-items:center;
+	display:block;
+	font-size:0;
 	width:2.5rem;
 	height:2.5rem;
 	padding:0;
@@ -5842,6 +5896,10 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 }
 .d-gallery__zoom::before{
 	content:"";
+	position:absolute;
+	top:50%;
+	left:50%;
+	translate:-50% -50%;
 	width:1.15rem;
 	height:1.15rem;
 	background:currentColor;
@@ -5974,6 +6032,12 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 .d-product__atc .d-qty{ flex:none }
 .d-product__atc .d-btn,
 .d-product__atc button[type="submit"]{ flex:1 1 14rem }
+/* *** THE BUY BUTTON IS THE FINISH BUTTON. *** Owner's call, and the right one:
+   this is the single most important control on the site and it was rendering as
+   the plain cherry pill. .d-finish is the plywood texture with the fireflies.
+   overflow:visible so the click burst can leave the button - .d-finish clips its
+   own texture, and five stars inside a clipped box is five stars nobody sees. */
+.d-product__atc .d-finish{ position:relative; overflow:visible }
 
 /* Stripe's express-checkout buttons, with a caption above them so they read as
    an alternative to the buy button rather than a second one.
@@ -6035,6 +6099,20 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
+/* *** THE PANELS IN HERE MUST CARRY .d-panel--gold, AND THAT IS MARKUP. ***
+   The owner: "hovering on the panel to the right makes the clickable area go
+   grey instead of the gold colour it is supposed to be. Isn't this panel the
+   same instance as the one above?" It is, and it was behaving identically -
+   measured, the trust panel resolved --panel-surface #F1F1F6 and --panel-quiet
+   #DEDEE6, which is .d-panel's DEFAULT grey family, and its hover came out
+   rgb(222,222,230), exactly what that family says it should be.
+
+   So the component was right and I was wrong: I put a default-variant panel on
+   a gold card. The fix belongs in the markup - `class="d-panel d-panel--gold"`
+   - and NOT in a `.d-trust .d-panel{ --panel-quiet: ... }` override here, which
+   would work and would also be the moment the variant system stops being the
+   single place a family is defined. Five variables copied into a second file is
+   how a design system starts disagreeing with itself. */
 .d-trust .d-panel{
 	border:0;
 	border-top:1px solid color-mix(in oklab, var(--g-core) 40%, transparent);
@@ -6406,7 +6484,11 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	flex:none;
 	width:.7em;
 	height:.7em;
-	background:var(--c-cherry);
+	/* Owner's call: one of the deeper golds rather than cherry. --g-shadow is
+	   the gold ramp's shadow step, the same one --tint-gold-mark points at, so
+	   the bullet now matches every other "this is a gold mark" in the system
+	   instead of borrowing the buy button's colour for decoration. */
+	background:var(--g-shadow);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
 	-webkit-mask-size:contain;
@@ -8142,7 +8224,15 @@ li.product .wp-block-button__link{
 }
 
 /* -- product attributes: a description list wearing a table ---------------- */
+/* *** A MEASURE, NOT THE WHOLE PAGE. *** Measured in the product fixture: this
+   table came out 1132px wide inside a tab panel whose prose wraps at about 330,
+   which puts a four-word label and a four-word value 340px apart with a
+   quarter-mile of nothing between them. Nobody had said how wide an attributes
+   table should be, so it took everything it was offered.
+   46rem is the same measure the review form uses. A table of short facts reads
+   like a list, and a list wants a column, not a page. */
 .woocommerce table.shop_attributes{
+	max-width:46rem;
 	width:100%;
 	border:0;
 	border-collapse:collapse;
@@ -8860,8 +8950,14 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 	z-index:3;
 	top:var(--space-2xs);
 	right:var(--space-2xs);
-	display:grid;
-	place-items:center;
+	/* *** NOT A GRID. MEASURED: THREE ROWS, 25.59px / 7.20px / 7.20px. ***
+	   Woo's trigger is an <a> holding a text node AND a span. In a grid
+	   container each of those is its own item in its own row, so place-items
+	   centred the mark inside the first row rather than inside the disc - about
+	   7px high in a 40px button, which is exactly what the owner saw. The mark
+	   is absolutely positioned now, so nothing inside the anchor can move it and
+	   a WooCommerce update that adds another child cannot break it either. */
+	display:block;
 	width:2.5rem;
 	height:2.5rem;
 	padding:0;
@@ -8886,7 +8982,10 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 .woocommerce div.product div.images .woocommerce-product-gallery__trigger::before{
 	content:"";
-	position:static;
+	position:absolute;
+	top:50%;
+	left:50%;
+	translate:-50% -50%;
 	width:1.15rem;
 	height:1.15rem;
 	border:0;
@@ -9393,7 +9492,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -10109,6 +10208,21 @@ that is the next component.</div>
 		if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
 	}
 
+	/* 9. THE CLICK BURST. Hover is a transition and has a there and a back; a
+	      click has no back - the thing happened. So the pop is an ANIMATION, and
+	      an animation has to be re-triggered, which is the one thing CSS cannot
+	      do on its own. bump() removes the attribute, forces a reflow and puts
+	      it back, so a second click restarts it instead of being ignored.
+
+	      Opt-in by class: a burst that fired on every click of anything
+	      containing stars would fire on the season banner's link too, where the
+	      stars are a hover effect and popping them is wrong. */
+	function burstHost(el) {
+		var burst = el.querySelector('.d-burst');
+		if (!burst) return;
+		el.addEventListener('click', function () { bump(burst, 'data-pop', 900); });
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -10125,6 +10239,9 @@ that is the next component.</div>
 		});
 		(root || document).querySelectorAll('.woocommerce-tabs, .d-tabs').forEach(function (el) {
 			if (!el.dataset.dTabs) { el.dataset.dTabs = '1'; tabs(el); }
+		});
+		(root || document).querySelectorAll('.d-burst-host').forEach(function (el) {
+			if (!el.dataset.dBurst) { el.dataset.dBurst = '1'; burstHost(el); }
 		});
 	}
 
@@ -10536,6 +10653,70 @@ reproduce it, so I know what to remove and not yet why. And
 <code>anchor(center)</code>, which is, computed to <code>top: auto</code> and
 dropped the button in the bottom-left corner. Two failures and a browser crash
 on one feature is where to stop.</div>
+</section><section class="sec" id="tabs"><h2>Patterns</h2>
+<h3>Tabs</h3>
+<p class="note"><b>One row of labels, one panel showing at a time, and an
+underline that travels.</b> The mark is not a background on the selected tab
+&mdash; a background cannot move between two elements, and moving is the whole
+point. It is two bars on one pair of values, <code>--tab-x</code> and
+<code>--tab-w</code>, transitioned on two different clocks: the cherry mark on
+the UI curve arrives first, the gold ghost on the wake curve is still catching
+up, and the lit gap between them <em>is</em> the trail. Nothing computes a
+direction; the sign of the gap falls out of the ghost being late. Same trick as
+the panel&rsquo;s swimmer and the paginator&rsquo;s wake.</p>
+<p class="note"><b>Tab widths depend on their text</b>, so unlike the paginator
+there is no cell size to multiply an index by, and CSS cannot measure a box.
+<code>darling-ui.js</code> measures the selected tab and publishes the two
+numbers. Until it has, the CSS draws <em>no</em> travelling bar at all and the
+selected tab carries a plain static underline &mdash; so a page whose script
+failed to load still has a correct tab strip, just a still one. The two are
+never both drawn.</p>
+<div class="d-tabs" id="tabsdemo">
+  <ul class="d-tabs__list" role="tablist">
+    <li><a class="d-tabs__tab" role="tab" aria-selected="true" href="#tp1">Описание</a></li>
+    <li><a class="d-tabs__tab" role="tab" aria-selected="false" href="#tp2">Отзиви (2)</a></li>
+    <li><a class="d-tabs__tab" role="tab" aria-selected="false" href="#tp3">Доставка</a></li>
+  </ul>
+  <div class="d-tabpanel" id="tp1" role="tabpanel">
+    <h3>Описание</h3>
+    <p>Купата е хвърлена на колело и глазирана на ръка. Две съседни купи никога
+    не са напълно еднакви &mdash; това е глазурата, не дефект.</p>
+  </div>
+  <div class="d-tabpanel" id="tp2" role="tabpanel" hidden>
+    <h3>Отзиви</h3><p>Две мнения, средно 4,5 от 5.</p>
+  </div>
+  <div class="d-tabpanel" id="tp3" role="tabpanel" hidden>
+    <h3>Доставка</h3><p>Еконт и Спиди, до адрес или до офис.</p>
+  </div>
+</div>
+<div class="todo"><b>Two tabs on the product page, not three.</b> Owner&rsquo;s
+call: <code>Описание</code> and <code>Отзиви</code> are enough, because the care
+instructions, the safety warnings, the manufacturer and the attributes all
+belong in the description &mdash; as a table, which WooCommerce already emits as
+<code>table.shop_attributes</code> and which <code>adopted/table.css</code>
+already styles. That is a <em>content</em> change, not a style one: the third tab
+is registered in PHP, so removing it is a change to whatever adds the
+<code>darling_gpsr</code> tab, not to any file in <code>src/</code>. Written down
+here so it does not get lost between the two.<br><br>
+<b>Still open:</b> these are links with <code>aria-selected</code>, which is not
+strictly correct &mdash; a tab should be a <code>button</code> inside a
+<code>role="tablist"</code>, with arrow-key navigation between them. On the
+product page the markup is WooCommerce&rsquo;s and we do not get a choice; here
+we do, and it should become buttons before this pattern is used anywhere new.
+</div>
+<script>
+/* Gallery chrome only. On a real page whatever owns the tabs owns this. */
+(function(){
+  var w=document.getElementById('tabsdemo'); if(!w) return;
+  w.querySelector('.d-tabs__list').addEventListener('click',function(e){
+    var a=e.target.closest('a'); if(!a) return; e.preventDefault();
+    w.querySelectorAll('.d-tabs__tab').forEach(function(x){x.setAttribute('aria-selected','false')});
+    a.setAttribute('aria-selected','true');
+    w.querySelectorAll('.d-tabpanel').forEach(function(p){p.hidden=true});
+    var t=w.querySelector(a.getAttribute('href')); if(t) t.hidden=false;
+  });
+})();
+</script>
 </section><section class="sec" id="product"><h2>Patterns</h2>
 <h3>Product page &mdash; gallery, buy column, trust, tabs, reviews</h3>
 <p class="note"><b>This is the most contested page on the site.</b>
@@ -10573,7 +10754,7 @@ fixture. Re-check them the day a photographed product with a review exists.</p>
         <div class="woocommerce-product-gallery__image"><a href="#"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></a></div>
       </div>
     </div>
-    <ol class="flex-control-nav flex-control-thumbs"><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="flex-active" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li></ol>
+    <ol class="flex-control-nav flex-control-thumbs"><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="flex-active" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li></ol>
   </div>
 
   <div class="summary entry-summary d-product__buy">
@@ -10590,7 +10771,8 @@ fixture. Re-check them the day a photographed product with a review exists.</p>
         <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
         <button class="d-qty__button" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
       </div>
-      <button class="d-btn d-btn--primary">Добавяне в количката</button>
+      <button class="d-btn d-finish d-burst-host">Добавяне в количката<span
+        class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button>
     </div>
     <div class="d-product__express">
       <div style="display:grid;gap:8px">
@@ -10604,10 +10786,10 @@ fixture. Re-check them the day a photographed product with a review exists.</p>
         <strong>Наложен платеж</strong> &mdash; плащаш при получаване</p>
       <p class="d-trust__ship">Еконт и Спиди &middot; до адрес или до офис &middot;
         безплатна доставка над 77&nbsp;&euro;</p>
-      <details class="d-panel"><summary class="d-panel__summary">Доставка</summary>
+      <details class="d-panel d-panel--gold"><summary class="d-panel__summary">Доставка</summary>
         <div class="d-panel__body"><p>Изпращаме с Еконт или Спиди &mdash; ти избираш
         при поръчката. Обикновено тръгва в рамките на един работен ден.</p></div></details>
-      <details class="d-panel"><summary class="d-panel__summary">Връщане и замяна</summary>
+      <details class="d-panel d-panel--gold"><summary class="d-panel__summary">Връщане и замяна</summary>
         <div class="d-panel__body"><p>14 дни за връщане без причина, стига опаковката
         да е запазена.</p></div></details>
     </div>
@@ -10620,12 +10802,34 @@ trail lags behind it</p>
   <ul class="tabs wc-tabs">
     <li class="description_tab active" id="tab-title-description"><a href="#tab-description">Описание</a></li>
     <li class="reviews_tab" id="tab-title-reviews"><a href="#tab-reviews">Отзиви (2)</a></li>
-    <li class="darling_gpsr_tab" id="tab-title-gpsr"><a href="#tab-gpsr">Безопасност и производител</a></li>
   </ul>
   <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-description">
     <h2>Описание</h2>
     <p>Купата е хвърлена на колело и глазирана на ръка, затова две съседни купи
     никога не са напълно еднакви. Издържа на съдомиялна и микровълнова.</p>
+    <table class="woocommerce-product-attributes shop_attributes">
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Материал</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Керамика, ръчна глазура</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Размери</th>
+        <td class="woocommerce-product-attributes-item__value"><p>&Oslash; 22 &times; 9 см</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Тегло</th>
+        <td class="woocommerce-product-attributes-item__value"><p>0,74 кг</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Цвят</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Пясък</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Грижа</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Съдомиялна и микровълнова, без фурна</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Производител</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Дарлинг 7 ООД, София</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Безопасност</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Не е играчка. Ръбовете могат да се нащърбят при удар.</p></td></tr>
+    </table>
   </div>
   <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-reviews" style="display:none">
     <div id="reviews" class="woocommerce-Reviews">
@@ -10634,7 +10838,7 @@ trail lags behind it</p>
         <ol class="commentlist">
           <li class="review byuser">
             <div class="comment_container">
-              <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+              <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
               <div class="comment-text">
                 <div class="star-rating" role="img" aria-label="5 от 5"><span style="width:100%">5</span></div>
                 <p class="meta">
@@ -10649,7 +10853,7 @@ trail lags behind it</p>
             </div>
             <ul class="children"><li class="comment">
               <div class="comment_container">
-                <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+                <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
                 <div class="comment-text">
                   <p class="meta"><strong class="woocommerce-review__author">Дарлинг</strong>
                   <span class="woocommerce-review__dash">&ndash;</span>
@@ -10661,7 +10865,7 @@ trail lags behind it</p>
           </li>
           <li class="review">
             <div class="comment_container">
-              <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+              <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
               <div class="comment-text">
                 <div class="star-rating" role="img" aria-label="4 от 5"><span style="width:80%">4</span></div>
                 <p class="meta"><strong class="woocommerce-review__author">Иван</strong>
@@ -10674,6 +10878,8 @@ trail lags behind it</p>
           </li>
         </ol>
       </div>
+      <p class="lbl" style="margin:22px 0 6px">And the same tab with no reviews yet</p>
+      <p class="woocommerce-noreviews">Все още няма отзиви.</p>
       <div id="review_form_wrapper"><div id="review_form"><div id="respond" class="comment-respond">
         <span id="reply-title" class="comment-reply-title">Напиши отзив</span>
         <form class="comment-form">
@@ -10691,15 +10897,7 @@ trail lags behind it</p>
       </div></div></div>
     </div>
   </div>
-  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-gpsr" style="display:none">
-    <h2>Безопасност и производител</h2>
-    <p><strong>Производител:</strong> Дарлинг 7 ООД, София</p>
-    <p><strong>Предупреждения:</strong> не е играчка; ръбовете могат да се нащърбят при удар.</p>
-  </div>
 </div>
-
-<p class="lbl" style="margin-top:26px">No reviews yet</p>
-<div class="woocommerce"><p class="woocommerce-noreviews">Все още няма отзиви.</p></div>
 
 </div></div>
 <div class="todo"><b>The travelling underline is not a background on the active
@@ -10760,7 +10958,7 @@ nowhere else.</p>
     </div>
   </div>
   <p class="d-cart-note"><span class="d-icon d-icon--shield"></span>
-  Плащаш при получаване &middot; 14 дни за връщане</p>
+  14 дни за връщане &middot; безопасно плащане</p>
 </div>
 
 <p class="lbl" style="margin-top:26px">The trust band &mdash; hover a column</p>

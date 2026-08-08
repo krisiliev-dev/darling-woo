@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1205,6 +1205,76 @@ on one feature is where to stop.</div>
 </section>''')
 
 
+
+TABS_MARKUP = '''<section class="sec" id="tabs"><h2>Patterns</h2>
+<h3>Tabs</h3>
+<p class="note"><b>One row of labels, one panel showing at a time, and an
+underline that travels.</b> The mark is not a background on the selected tab
+&mdash; a background cannot move between two elements, and moving is the whole
+point. It is two bars on one pair of values, <code>--tab-x</code> and
+<code>--tab-w</code>, transitioned on two different clocks: the cherry mark on
+the UI curve arrives first, the gold ghost on the wake curve is still catching
+up, and the lit gap between them <em>is</em> the trail. Nothing computes a
+direction; the sign of the gap falls out of the ghost being late. Same trick as
+the panel&rsquo;s swimmer and the paginator&rsquo;s wake.</p>
+<p class="note"><b>Tab widths depend on their text</b>, so unlike the paginator
+there is no cell size to multiply an index by, and CSS cannot measure a box.
+<code>darling-ui.js</code> measures the selected tab and publishes the two
+numbers. Until it has, the CSS draws <em>no</em> travelling bar at all and the
+selected tab carries a plain static underline &mdash; so a page whose script
+failed to load still has a correct tab strip, just a still one. The two are
+never both drawn.</p>
+<div class="d-tabs" id="tabsdemo">
+  <ul class="d-tabs__list" role="tablist">
+    <li><a class="d-tabs__tab" role="tab" aria-selected="true" href="#tp1">Описание</a></li>
+    <li><a class="d-tabs__tab" role="tab" aria-selected="false" href="#tp2">Отзиви (2)</a></li>
+    <li><a class="d-tabs__tab" role="tab" aria-selected="false" href="#tp3">Доставка</a></li>
+  </ul>
+  <div class="d-tabpanel" id="tp1" role="tabpanel">
+    <h3>Описание</h3>
+    <p>Купата е хвърлена на колело и глазирана на ръка. Две съседни купи никога
+    не са напълно еднакви &mdash; това е глазурата, не дефект.</p>
+  </div>
+  <div class="d-tabpanel" id="tp2" role="tabpanel" hidden>
+    <h3>Отзиви</h3><p>Две мнения, средно 4,5 от 5.</p>
+  </div>
+  <div class="d-tabpanel" id="tp3" role="tabpanel" hidden>
+    <h3>Доставка</h3><p>Еконт и Спиди, до адрес или до офис.</p>
+  </div>
+</div>
+<div class="todo"><b>Two tabs on the product page, not three.</b> Owner&rsquo;s
+call: <code>Описание</code> and <code>Отзиви</code> are enough, because the care
+instructions, the safety warnings, the manufacturer and the attributes all
+belong in the description &mdash; as a table, which WooCommerce already emits as
+<code>table.shop_attributes</code> and which <code>adopted/table.css</code>
+already styles. That is a <em>content</em> change, not a style one: the third tab
+is registered in PHP, so removing it is a change to whatever adds the
+<code>darling_gpsr</code> tab, not to any file in <code>src/</code>. Written down
+here so it does not get lost between the two.<br><br>
+<b>Still open:</b> these are links with <code>aria-selected</code>, which is not
+strictly correct &mdash; a tab should be a <code>button</code> inside a
+<code>role="tablist"</code>, with arrow-key navigation between them. On the
+product page the markup is WooCommerce&rsquo;s and we do not get a choice; here
+we do, and it should become buttons before this pattern is used anywhere new.
+</div>
+<script>
+/* Gallery chrome only. On a real page whatever owns the tabs owns this. */
+(function(){
+  var w=document.getElementById('tabsdemo'); if(!w) return;
+  w.querySelector('.d-tabs__list').addEventListener('click',function(e){
+    var a=e.target.closest('a'); if(!a) return; e.preventDefault();
+    w.querySelectorAll('.d-tabs__tab').forEach(function(x){x.setAttribute('aria-selected','false')});
+    a.setAttribute('aria-selected','true');
+    w.querySelectorAll('.d-tabpanel').forEach(function(p){p.hidden=true});
+    var t=w.querySelector(a.getAttribute('href')); if(t) t.hidden=false;
+  });
+})();
+</script>
+</section>'''
+
+# --------------------------------------------------------------------- tabs ---
+A(TABS_MARKUP)
+
 # ------------------------------------------------------------------ product ---
 # *** THE FIXTURE USES WOO'S CLASS NAMES, NOT OURS, AND THAT IS THE POINT. ***
 # The gallery, the tabs and the review list are WooCommerce's markup. The rules
@@ -1212,11 +1282,16 @@ on one feature is where to stop.</div>
 # woocommerce.css. A fixture written with .d-gallery would render beautifully
 # and prove nothing. This one is shaped like the real page - .woocommerce >
 # div.product > div.images - so what it shows is whether we won.
+# *** NO BACKGROUND RECTANGLE. *** The owner asked for the thumbnails to carry
+# the main image's background. Measured: they already did - both resolve the same
+# radial-gradient - and what hid it was THIS stand-in painting a full-bleed
+# opaque rect over it. Real product photographs are cut-outs with transparency
+# (the licence register makes that a rendering requirement), so the opaque
+# fixture was the thing telling the lie.
 THUMB = ("data:image/svg+xml;utf8,"
   "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E"
-  "%3Crect width='100' height='100' fill='%23e3d9cc'/%3E"
-  "%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E"
-  "%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E")
+  "%3Ccircle cx='50' cy='56' r='27' fill='%23c9b9a6'/%3E"
+  "%3Cellipse cx='50' cy='36' rx='27' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E")
 
 A('''<section class="sec" id="product"><h2>Patterns</h2>
 <h3>Product page &mdash; gallery, buy column, trust, tabs, reviews</h3>
@@ -1275,7 +1350,8 @@ A('''</ol>
         <input class="d-qty__input" type="number" value="1" min="1" aria-label="Количество">
         <button class="d-qty__button" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
       </div>
-      <button class="d-btn d-btn--primary">Добавяне в количката</button>
+      <button class="d-btn d-finish d-burst-host">Добавяне в количката<span
+        class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button>
     </div>
     <div class="d-product__express">
       <div style="display:grid;gap:8px">
@@ -1289,10 +1365,10 @@ A('''</ol>
         <strong>Наложен платеж</strong> &mdash; плащаш при получаване</p>
       <p class="d-trust__ship">Еконт и Спиди &middot; до адрес или до офис &middot;
         безплатна доставка над 77&nbsp;&euro;</p>
-      <details class="d-panel"><summary class="d-panel__summary">Доставка</summary>
+      <details class="d-panel d-panel--gold"><summary class="d-panel__summary">Доставка</summary>
         <div class="d-panel__body"><p>Изпращаме с Еконт или Спиди &mdash; ти избираш
         при поръчката. Обикновено тръгва в рамките на един работен ден.</p></div></details>
-      <details class="d-panel"><summary class="d-panel__summary">Връщане и замяна</summary>
+      <details class="d-panel d-panel--gold"><summary class="d-panel__summary">Връщане и замяна</summary>
         <div class="d-panel__body"><p>14 дни за връщане без причина, стига опаковката
         да е запазена.</p></div></details>
     </div>
@@ -1305,12 +1381,34 @@ trail lags behind it</p>
   <ul class="tabs wc-tabs">
     <li class="description_tab active" id="tab-title-description"><a href="#tab-description">Описание</a></li>
     <li class="reviews_tab" id="tab-title-reviews"><a href="#tab-reviews">Отзиви (2)</a></li>
-    <li class="darling_gpsr_tab" id="tab-title-gpsr"><a href="#tab-gpsr">Безопасност и производител</a></li>
   </ul>
   <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-description">
     <h2>Описание</h2>
     <p>Купата е хвърлена на колело и глазирана на ръка, затова две съседни купи
     никога не са напълно еднакви. Издържа на съдомиялна и микровълнова.</p>
+    <table class="woocommerce-product-attributes shop_attributes">
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Материал</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Керамика, ръчна глазура</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Размери</th>
+        <td class="woocommerce-product-attributes-item__value"><p>&Oslash; 22 &times; 9 см</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Тегло</th>
+        <td class="woocommerce-product-attributes-item__value"><p>0,74 кг</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Цвят</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Пясък</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Грижа</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Съдомиялна и микровълнова, без фурна</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Производител</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Дарлинг 7 ООД, София</p></td></tr>
+      <tr class="woocommerce-product-attributes-item">
+        <th class="woocommerce-product-attributes-item__label">Безопасност</th>
+        <td class="woocommerce-product-attributes-item__value"><p>Не е играчка. Ръбовете могат да се нащърбят при удар.</p></td></tr>
+    </table>
   </div>
   <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-reviews" style="display:none">
     <div id="reviews" class="woocommerce-Reviews">
@@ -1359,6 +1457,8 @@ trail lags behind it</p>
           </li>
         </ol>
       </div>
+      <p class="lbl" style="margin:22px 0 6px">And the same tab with no reviews yet</p>
+      <p class="woocommerce-noreviews">Все още няма отзиви.</p>
       <div id="review_form_wrapper"><div id="review_form"><div id="respond" class="comment-respond">
         <span id="reply-title" class="comment-reply-title">Напиши отзив</span>
         <form class="comment-form">
@@ -1376,15 +1476,7 @@ trail lags behind it</p>
       </div></div></div>
     </div>
   </div>
-  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-gpsr" style="display:none">
-    <h2>Безопасност и производител</h2>
-    <p><strong>Производител:</strong> Дарлинг 7 ООД, София</p>
-    <p><strong>Предупреждения:</strong> не е играчка; ръбовете могат да се нащърбят при удар.</p>
-  </div>
 </div>
-
-<p class="lbl" style="margin-top:26px">No reviews yet</p>
-<div class="woocommerce"><p class="woocommerce-noreviews">Все още няма отзиви.</p></div>
 
 </div></div>
 <div class="todo"><b>The travelling underline is not a background on the active
@@ -1449,7 +1541,7 @@ nowhere else.</p>
     </div>
   </div>
   <p class="d-cart-note"><span class="d-icon d-icon--shield"></span>
-  Плащаш при получаване &middot; 14 дни за връщане</p>
+  14 дни за връщане &middot; безопасно плащане</p>
 </div>
 
 <p class="lbl" style="margin-top:26px">The trust band &mdash; hover a column</p>

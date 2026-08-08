@@ -122,7 +122,11 @@
 	flex:none;
 	width:.7em;
 	height:.7em;
-	background:var(--c-cherry);
+	/* Owner's call: one of the deeper golds rather than cherry. --g-shadow is
+	   the gold ramp's shadow step, the same one --tint-gold-mark points at, so
+	   the bullet now matches every other "this is a gold mark" in the system
+	   instead of borrowing the buy button's colour for decoration. */
+	background:var(--g-shadow);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
 	-webkit-mask-size:contain;

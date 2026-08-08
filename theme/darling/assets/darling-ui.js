@@ -278,6 +278,21 @@
 		if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
 	}
 
+	/* 9. THE CLICK BURST. Hover is a transition and has a there and a back; a
+	      click has no back - the thing happened. So the pop is an ANIMATION, and
+	      an animation has to be re-triggered, which is the one thing CSS cannot
+	      do on its own. bump() removes the attribute, forces a reflow and puts
+	      it back, so a second click restarts it instead of being ignored.
+
+	      Opt-in by class: a burst that fired on every click of anything
+	      containing stars would fire on the season banner's link too, where the
+	      stars are a hover effect and popping them is wrong. */
+	function burstHost(el) {
+		var burst = el.querySelector('.d-burst');
+		if (!burst) return;
+		el.addEventListener('click', function () { bump(burst, 'data-pop', 900); });
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -294,6 +309,9 @@
 		});
 		(root || document).querySelectorAll('.woocommerce-tabs, .d-tabs').forEach(function (el) {
 			if (!el.dataset.dTabs) { el.dataset.dTabs = '1'; tabs(el); }
+		});
+		(root || document).querySelectorAll('.d-burst-host').forEach(function (el) {
+			if (!el.dataset.dBurst) { el.dataset.dBurst = '1'; burstHost(el); }
 		});
 	}
 

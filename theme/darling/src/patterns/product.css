@@ -118,13 +118,24 @@
    two absolutely-positioned pseudo-elements and `text-indent:-9999px`; ours is
    the icon pattern, so it inherits the mark, the hover and the focus ring that
    every other icon button on the site has. */
+/* *** MEASURED: THREE GRID ROWS, 25.59px / 7.20px / 7.20px. ***
+   This was `display:grid; place-items:center` and the mark sat about 7px high
+   in a 40px disc. WooCommerce's trigger is an <a> containing a text node and a
+   span, and in a grid container EACH OF THOSE IS ITS OWN ITEM IN ITS OWN ROW -
+   so place-items centred the mark inside the first row of three rather than
+   inside the button. Not a padding problem, a flow problem, and no amount of
+   padding would have found it.
+   The mark is out of flow now: the disc is a positioned box and ::before is
+   absolutely centred in it, so nothing a third party puts inside the anchor can
+   move it. Same geometry and same hover as .d-icon-btn - which is the component
+   this WOULD be, if we could put a class on markup WooCommerce emits. */
 .d-gallery__zoom{
 	position:absolute;
 	z-index:3;
 	top:var(--space-2xs);
 	inset-inline-end:var(--space-2xs);
-	display:grid;
-	place-items:center;
+	display:block;
+	font-size:0;
 	width:2.5rem;
 	height:2.5rem;
 	padding:0;
@@ -139,6 +150,10 @@
 }
 .d-gallery__zoom::before{
 	content:"";
+	position:absolute;
+	top:50%;
+	left:50%;
+	translate:-50% -50%;
 	width:1.15rem;
 	height:1.15rem;
 	background:currentColor;
@@ -271,6 +286,12 @@
 .d-product__atc .d-qty{ flex:none }
 .d-product__atc .d-btn,
 .d-product__atc button[type="submit"]{ flex:1 1 14rem }
+/* *** THE BUY BUTTON IS THE FINISH BUTTON. *** Owner's call, and the right one:
+   this is the single most important control on the site and it was rendering as
+   the plain cherry pill. .d-finish is the plywood texture with the fireflies.
+   overflow:visible so the click burst can leave the button - .d-finish clips its
+   own texture, and five stars inside a clipped box is five stars nobody sees. */
+.d-product__atc .d-finish{ position:relative; overflow:visible }
 
 /* Stripe's express-checkout buttons, with a caption above them so they read as
    an alternative to the buy button rather than a second one.
@@ -332,6 +353,20 @@
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
+/* *** THE PANELS IN HERE MUST CARRY .d-panel--gold, AND THAT IS MARKUP. ***
+   The owner: "hovering on the panel to the right makes the clickable area go
+   grey instead of the gold colour it is supposed to be. Isn't this panel the
+   same instance as the one above?" It is, and it was behaving identically -
+   measured, the trust panel resolved --panel-surface #F1F1F6 and --panel-quiet
+   #DEDEE6, which is .d-panel's DEFAULT grey family, and its hover came out
+   rgb(222,222,230), exactly what that family says it should be.
+
+   So the component was right and I was wrong: I put a default-variant panel on
+   a gold card. The fix belongs in the markup - `class="d-panel d-panel--gold"`
+   - and NOT in a `.d-trust .d-panel{ --panel-quiet: ... }` override here, which
+   would work and would also be the moment the variant system stops being the
+   single place a family is defined. Five variables copied into a second file is
+   how a design system starts disagreeing with itself. */
 .d-trust .d-panel{
 	border:0;
 	border-top:1px solid color-mix(in oklab, var(--g-core) 40%, transparent);

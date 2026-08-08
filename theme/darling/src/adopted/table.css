@@ -176,7 +176,15 @@
 }
 
 /* -- product attributes: a description list wearing a table ---------------- */
+/* *** A MEASURE, NOT THE WHOLE PAGE. *** Measured in the product fixture: this
+   table came out 1132px wide inside a tab panel whose prose wraps at about 330,
+   which puts a four-word label and a four-word value 340px apart with a
+   quarter-mile of nothing between them. Nobody had said how wide an attributes
+   table should be, so it took everything it was offered.
+   46rem is the same measure the review form uses. A table of short facts reads
+   like a list, and a list wants a column, not a page. */
 .woocommerce table.shop_attributes{
+	max-width:46rem;
 	width:100%;
 	border:0;
 	border-collapse:collapse;

@@ -2543,6 +2543,49 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
    properties and not one `transform`. */
 @keyframes d-burst-spin{ to{ rotate:360deg } }
 
+/* =============================================================================
+   THE POP - the same stars, thrown rather than shown.
+
+   Hover is a transition: it has a there and a back, and holding the pointer
+   still holds the stars out. A click has no "back" - the thing happened, and
+   the marks should leave and not return. That is an ANIMATION, and it is the
+   one shape a transition cannot make.
+
+   Fired by darling-ui.js putting data-pop on the burst and taking it off again,
+   the same bump() the cart icon's wheels use. Nothing here runs on its own.
+
+   *** THEY GO FURTHER THAN THE HOVER AND THEY DO NOT COME BACK. *** 1.9x the
+   hover distance, ending at opacity 0, so the last thing you see is the stars
+   leaving the frame rather than snapping off at full brightness. `forwards`
+   would hold them there invisible; they end at scale 0 instead, so the resting
+   state after the animation is the resting state before it and the attribute
+   can be re-added immediately for a second click.
+   ========================================================================== */
+.d-burst[data-pop] i{
+	animation:d-burst-pop 720ms var(--ease-star) 1 both;
+}
+.d-burst[data-pop] i:nth-child(2){ animation-delay:40ms }
+.d-burst[data-pop] i:nth-child(3){ animation-delay:80ms }
+.d-burst[data-pop] i:nth-child(4){ animation-delay:25ms }
+.d-burst[data-pop] i:nth-child(5){ animation-delay:65ms }
+@keyframes d-burst-pop{
+	0%{
+		translate:-50% -50%;
+		scale:0; opacity:0; rotate:0deg;
+	}
+	14%{ opacity:1; scale:1.15 }
+	100%{
+		translate:calc(-50% + var(--bx) * 1.9) calc(-50% + var(--by) * 1.9);
+		scale:0; opacity:0; rotate:220deg;
+	}
+}
+/* The button has to let them out. .d-finish clips its own texture, and a burst
+   inside a clipped box is five stars nobody sees. */
+.d-burst-host{ position:relative; overflow:visible }
+@media (prefers-reduced-motion: reduce){
+	.d-burst[data-pop] i{ animation:none }
+}
+
 @media (prefers-reduced-motion: reduce){
 	.d-burst{ display:none }
 }
@@ -5819,13 +5862,24 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    two absolutely-positioned pseudo-elements and `text-indent:-9999px`; ours is
    the icon pattern, so it inherits the mark, the hover and the focus ring that
    every other icon button on the site has. */
+/* *** MEASURED: THREE GRID ROWS, 25.59px / 7.20px / 7.20px. ***
+   This was `display:grid; place-items:center` and the mark sat about 7px high
+   in a 40px disc. WooCommerce's trigger is an <a> containing a text node and a
+   span, and in a grid container EACH OF THOSE IS ITS OWN ITEM IN ITS OWN ROW -
+   so place-items centred the mark inside the first row of three rather than
+   inside the button. Not a padding problem, a flow problem, and no amount of
+   padding would have found it.
+   The mark is out of flow now: the disc is a positioned box and ::before is
+   absolutely centred in it, so nothing a third party puts inside the anchor can
+   move it. Same geometry and same hover as .d-icon-btn - which is the component
+   this WOULD be, if we could put a class on markup WooCommerce emits. */
 .d-gallery__zoom{
 	position:absolute;
 	z-index:3;
 	top:var(--space-2xs);
 	inset-inline-end:var(--space-2xs);
-	display:grid;
-	place-items:center;
+	display:block;
+	font-size:0;
 	width:2.5rem;
 	height:2.5rem;
 	padding:0;
@@ -5840,6 +5894,10 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 }
 .d-gallery__zoom::before{
 	content:"";
+	position:absolute;
+	top:50%;
+	left:50%;
+	translate:-50% -50%;
 	width:1.15rem;
 	height:1.15rem;
 	background:currentColor;
@@ -5972,6 +6030,12 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 .d-product__atc .d-qty{ flex:none }
 .d-product__atc .d-btn,
 .d-product__atc button[type="submit"]{ flex:1 1 14rem }
+/* *** THE BUY BUTTON IS THE FINISH BUTTON. *** Owner's call, and the right one:
+   this is the single most important control on the site and it was rendering as
+   the plain cherry pill. .d-finish is the plywood texture with the fireflies.
+   overflow:visible so the click burst can leave the button - .d-finish clips its
+   own texture, and five stars inside a clipped box is five stars nobody sees. */
+.d-product__atc .d-finish{ position:relative; overflow:visible }
 
 /* Stripe's express-checkout buttons, with a caption above them so they read as
    an alternative to the buy button rather than a second one.
@@ -6033,6 +6097,20 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
+/* *** THE PANELS IN HERE MUST CARRY .d-panel--gold, AND THAT IS MARKUP. ***
+   The owner: "hovering on the panel to the right makes the clickable area go
+   grey instead of the gold colour it is supposed to be. Isn't this panel the
+   same instance as the one above?" It is, and it was behaving identically -
+   measured, the trust panel resolved --panel-surface #F1F1F6 and --panel-quiet
+   #DEDEE6, which is .d-panel's DEFAULT grey family, and its hover came out
+   rgb(222,222,230), exactly what that family says it should be.
+
+   So the component was right and I was wrong: I put a default-variant panel on
+   a gold card. The fix belongs in the markup - `class="d-panel d-panel--gold"`
+   - and NOT in a `.d-trust .d-panel{ --panel-quiet: ... }` override here, which
+   would work and would also be the moment the variant system stops being the
+   single place a family is defined. Five variables copied into a second file is
+   how a design system starts disagreeing with itself. */
 .d-trust .d-panel{
 	border:0;
 	border-top:1px solid color-mix(in oklab, var(--g-core) 40%, transparent);
@@ -6404,7 +6482,11 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	flex:none;
 	width:.7em;
 	height:.7em;
-	background:var(--c-cherry);
+	/* Owner's call: one of the deeper golds rather than cherry. --g-shadow is
+	   the gold ramp's shadow step, the same one --tint-gold-mark points at, so
+	   the bullet now matches every other "this is a gold mark" in the system
+	   instead of borrowing the buy button's colour for decoration. */
+	background:var(--g-shadow);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
 	-webkit-mask-size:contain;
@@ -8140,7 +8222,15 @@ li.product .wp-block-button__link{
 }
 
 /* -- product attributes: a description list wearing a table ---------------- */
+/* *** A MEASURE, NOT THE WHOLE PAGE. *** Measured in the product fixture: this
+   table came out 1132px wide inside a tab panel whose prose wraps at about 330,
+   which puts a four-word label and a four-word value 340px apart with a
+   quarter-mile of nothing between them. Nobody had said how wide an attributes
+   table should be, so it took everything it was offered.
+   46rem is the same measure the review form uses. A table of short facts reads
+   like a list, and a list wants a column, not a page. */
 .woocommerce table.shop_attributes{
+	max-width:46rem;
 	width:100%;
 	border:0;
 	border-collapse:collapse;
@@ -8858,8 +8948,14 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 	z-index:3;
 	top:var(--space-2xs);
 	right:var(--space-2xs);
-	display:grid;
-	place-items:center;
+	/* *** NOT A GRID. MEASURED: THREE ROWS, 25.59px / 7.20px / 7.20px. ***
+	   Woo's trigger is an <a> holding a text node AND a span. In a grid
+	   container each of those is its own item in its own row, so place-items
+	   centred the mark inside the first row rather than inside the disc - about
+	   7px high in a 40px button, which is exactly what the owner saw. The mark
+	   is absolutely positioned now, so nothing inside the anchor can move it and
+	   a WooCommerce update that adds another child cannot break it either. */
+	display:block;
 	width:2.5rem;
 	height:2.5rem;
 	padding:0;
@@ -8884,7 +8980,10 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 .woocommerce div.product div.images .woocommerce-product-gallery__trigger::before{
 	content:"";
-	position:static;
+	position:absolute;
+	top:50%;
+	left:50%;
+	translate:-50% -50%;
 	width:1.15rem;
 	height:1.15rem;
 	border:0;
