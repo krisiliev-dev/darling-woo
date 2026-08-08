@@ -1,0 +1,570 @@
+/* =============================================================================
+   PATTERN / PRODUCT PAGE
+   The single-product page: the gallery, the buy column, the trust panel, the
+   tabs under them, and the review list inside the tabs.
+
+   *** THIS IS THE MOST CONTESTED PAGE ON THE SITE. ***
+   collide.js counts 209 element/property pairs where our CSS and WooCommerce's
+   both have an opinion here - more than the other three page types put
+   together. Two thirds of them are the tabs and the review list, which is why
+   those two are in this file rather than being left to Woo.
+
+   -- WHAT I COULD AND COULD NOT MEASURE, STATED UP FRONT ---------------------
+   The live shop has ONE product, it has no images, and it has no reviews. So
+   the gallery, the thumbnail strip and the review list have NO live DOM to
+   probe: I read WooCommerce's own stylesheet for what they will look like when
+   the catalogue lands, and the gallery section of gallery.html renders our
+   replacement against a fixture. That is weaker evidence than a live page and
+   it should be re-checked the day the first photographed product goes up.
+
+   Everything about the TABS below, by contrast, was measured on the live page.
+
+   -- TWO DEFECTS THAT ARE LIVE RIGHT NOW, AND THE REASON FOR THEM ------------
+   Both are specificity losses in style.css that nobody noticed because they
+   fail quietly, and both were confirmed in the browser this morning:
+
+   1. Woo builds each tab's shape from two 5x5px pseudo-elements - li::before
+      and li::after - quarter-round corners carrying `box-shadow: 2px 2px 0
+      #e9e6ed`. style.css zeroes the LI's own background, border and radius but
+      says nothing about its pseudos, so all four nubs are still painting, in
+      Woo's lilac. Measured: 2 of 2 tabs, border rgb(207,200,216), shadow
+      rgb(233,230,237).
+   2. style.css sets `content:none` on `ul.tabs::before` to kill Woo's
+      full-width underline. It loses. `.woocommerce-tabs ul.tabs.wc-tabs::before`
+      is (0,3,1); Woo's `.woocommerce div.product .woocommerce-tabs ul.tabs
+      ::before` is (0,3,2). Measured on the live page: content is still " " and
+      the border is still rgb(207,200,216). Woo's underline and OUR underline
+      are both drawn, one on top of the other.
+
+   The same arithmetic ate the UL's padding: ours says 0, Woo says 1em, computed
+   is 17px. This is exactly the class of bug the adopted/ split exists to end -
+   the fixes live in adopted/product.css, unlayered, and out-specify Woo rather
+   than tying.
+
+   -- THE TAB UNDERLINE SLIDES, AND THAT IS THE ONLY MOTION HERE --------------
+   Tabs are the one control on this page where something MOVES when you use it,
+   so they get the treatment and nothing else does. The underline travels from
+   the old tab to the new one and a golden trail lags behind it, on the same
+   two-clocks trick the panel and the paginator use: one value transitioned
+   twice at different speeds, and the gap between the two IS the streak.
+
+   Tab widths are text-dependent, so this cannot be an index times a cell the
+   way the paginator is. assets/darling-ui.js measures the active tab and sets
+   --tab-x and --tab-w on .d-tabs; both transition. With no script the underline
+   simply sits under the active tab with no travel, which is a correct tab strip
+   with a dull one.
+   ========================================================================== */
+
+.d-product{
+	max-width:var(--page-max);
+	margin-inline:auto;
+	padding:var(--space-s) var(--gutter) var(--space-xl);
+}
+
+/* -- the two columns ---------------------------------------------------------
+   Grid rather than Woo's two 48% floats. The floats are why the page needs
+   `clear:both` on the tabs and why a tall buy column used to drag the tabs up
+   beside the gallery. `align-items:start` keeps the buy column from stretching
+   to the height of a tall photograph. */
+.d-product__top{
+	display:grid;
+	grid-template-columns:minmax(0, 1.05fr) minmax(0, 1fr);
+	gap:var(--space-l);
+	align-items:start;
+	margin-bottom:var(--space-l);
+}
+@media (max-width: 900px){
+	.d-product__top{ grid-template-columns:1fr; gap:var(--space-m) }
+}
+
+/* =============================================================================
+   THE GALLERY
+   Woo's gallery is FlexSlider: one wrapper of full-size images, a viewport that
+   clips it, and an <ol> of thumbnails underneath. We keep the machinery - it
+   works, it is what PhotoSwipe hooks into - and replace every surface.
+
+   *** THE THUMBS ARE A GRID, NOT FOUR FLOATS. ***
+   Woo floats them at width:25% and then needs `clear:left` on every 4n+1 child,
+   once per column count, to stop the rows interleaving. A grid needs none of
+   that and reflows to three columns on a phone by changing one number.
+
+   *** ACTIVE IS A RING, NOT AN OPACITY. ***
+   Woo dims every thumb to .5 and undims the active one. On a page whose whole
+   surface is warm grey, four half-faded photographs read as "still loading".
+   Ours are all at full strength and the active one is marked with a gold ring,
+   which says "this one" rather than "those ones are broken".
+   ========================================================================== */
+
+.d-gallery{
+	position:relative;
+	display:grid;
+	gap:var(--space-2xs);
+}
+.d-gallery__main{
+	position:relative;
+	overflow:hidden;
+	border-radius:var(--radius-l);
+	background:var(--placeholder-product, var(--surface-quiet));
+	aspect-ratio:1 / 1;
+}
+.d-gallery__main img{
+	display:block;
+	width:100%;
+	height:100%;
+	object-fit:cover;
+	box-shadow:none;
+}
+/* The zoom control. Woo ships a white disc with a hand-drawn magnifier made of
+   two absolutely-positioned pseudo-elements and `text-indent:-9999px`; ours is
+   the icon pattern, so it inherits the mark, the hover and the focus ring that
+   every other icon button on the site has. */
+.d-gallery__zoom{
+	position:absolute;
+	z-index:3;
+	top:var(--space-2xs);
+	inset-inline-end:var(--space-2xs);
+	display:grid;
+	place-items:center;
+	width:2.5rem;
+	height:2.5rem;
+	padding:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:color-mix(in oklab, var(--surface-raised) 88%, transparent);
+	color:var(--ink);
+	cursor:pointer;
+	box-shadow:var(--shadow-card);
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-gallery__zoom::before{
+	content:"";
+	width:1.15rem;
+	height:1.15rem;
+	background:currentColor;
+	mask-image:var(--icon-search);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon-search);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+}
+.d-gallery__zoom:hover{ background:var(--tint-gold); color:var(--c-cherry-deep) }
+.d-gallery__zoom:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+
+.d-gallery__thumbs{
+	display:grid;
+	grid-template-columns:repeat(4, 1fr);
+	gap:var(--space-2xs);
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+@media (max-width: 480px){
+	.d-gallery__thumbs{ grid-template-columns:repeat(3, 1fr) }
+}
+.d-gallery__thumbs li{ margin:0; list-style:none }
+.d-gallery__thumbs img,
+.d-gallery__thumb{
+	display:block;
+	width:100%;
+	aspect-ratio:1 / 1;
+	object-fit:cover;
+	margin:0;
+	border-radius:var(--radius-s);
+	background:var(--placeholder-product, var(--surface-quiet));
+	cursor:pointer;
+	opacity:1;
+	outline:2px solid transparent;
+	outline-offset:2px;
+	transition:outline-color var(--dur-ui) var(--ease-float);
+}
+.d-gallery__thumbs img:hover,
+.d-gallery__thumb:hover{ outline-color:var(--tint-gold-edge) }
+.d-gallery__thumbs img.is-active,
+.d-gallery__thumb[aria-current="true"]{ outline-color:var(--g-core) }
+
+/* =============================================================================
+   THE BUY COLUMN
+   ========================================================================== */
+
+.d-product__buy{ display:grid; gap:var(--space-2xs); align-content:start }
+
+.d-product__title{
+	margin:0;
+	font:var(--type-section);
+	line-height:var(--lh-title);
+	color:var(--ink);
+}
+/* Inter, not Playfair, and tabular. A price is a number to be compared with
+   another number, and the display face's old-style figures make 26,40 and
+   32,10 different widths. */
+.d-product__price{
+	margin:0;
+	font:var(--fw-bold) 26px/var(--lh-title) var(--font-ui);
+	font-variant-numeric:tabular-nums;
+	color:var(--price);
+}
+/* The lev half of the dual price. Bulgarian law requires both currencies
+   through the changeover, and this is the secondary one. */
+.d-product__price .d-bgn,
+.d-product__price .darling-bgn{
+	font-weight:var(--fw-regular);
+	font-size:.6em;
+	color:var(--ink-quiet);
+}
+.d-product__price del{
+	margin-inline-end:var(--space-3xs);
+	font-weight:var(--fw-regular);
+	font-size:.7em;
+	color:var(--ink-quiet);
+	text-decoration-thickness:1px;
+}
+.d-product__excerpt{
+	margin:var(--space-3xs) 0 var(--space-2xs);
+	max-width:52ch;
+	line-height:var(--lh-body);
+	color:var(--ink);
+}
+
+/* Stock. In stock is not news and is hidden - the buy button being enabled says
+   it. Low stock and backorder ARE news, so they are notices. */
+.d-product__stock{ margin:0; font-size:var(--fs-meta) }
+.d-product__stock--in{ display:none }
+.d-product__stock--low{
+	display:flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	color:var(--tint-gold-mark);
+	font-weight:var(--fw-medium);
+}
+.d-product__stock--backorder,
+.d-product__stock--out{
+	padding:var(--space-2xs) var(--space-xs);
+	border-radius:var(--radius-m);
+	background:var(--tint-gold);
+	color:var(--ink);
+}
+.d-product__stock--out{ background:var(--tint-grey-quiet); color:var(--ink-quiet) }
+
+/* The add-to-cart row: quantity stepper, then the button, and the button takes
+   the rest of the line. Both come from their own patterns; this only lays them
+   out. */
+.d-product__atc{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
+	margin-top:var(--space-2xs);
+}
+/* The stepper keeps its intrinsic width and the button takes the rest. Without
+   the `flex:none` the stepper is a flex item with an <input> in it and stretches
+   to share the row, which puts a 170px-wide box around a one-digit quantity. */
+.d-product__atc .d-quantity{ flex:none }
+.d-product__atc .d-btn,
+.d-product__atc button[type="submit"]{ flex:1 1 14rem }
+
+/* Stripe's express-checkout buttons, with a caption above them so they read as
+   an alternative to the buy button rather than a second one.
+
+   *** THE CAPTION IS TEXT LIVING IN A STYLESHEET, AND THAT IS A COMPROMISE. ***
+   Stripe owns the element and there is nowhere inside it to put markup, so the
+   only place the words can go without a template change is here. Consequences,
+   stated rather than discovered later: it cannot be translated by a plugin, it
+   cannot be edited by anyone who is not editing CSS, and `content` is not
+   reliably exposed to every screen reader. Carried over from style.css because
+   it is what ships today; the right fix is a real element emitted by the theme
+   template beside the Stripe container, and that is a PHP change.
+
+   Escaped rather than written in Cyrillic because this stylesheet is ASCII-only
+   (FINISH_AND_LAYER_DECISIONS) - the build has survived two round-trips through
+   the Windows ANSI codepage and literal UTF-8 in it is how the first preview
+   came out as mojibake. Six-digit escapes need no terminating space.
+   The string reads "ili plati barzo s" - Bulgarian for "or pay quickly with". */
+.d-product__express{
+	margin-block:var(--space-xs) 0;
+	max-width:100%;
+}
+.d-product__express::before{
+	content:"\000438\00043B\000438\000020\00043F\00043B\000430\000442\000438\000020\000431\00044A\000440\000437\00043E\000020\000441";
+	display:block;
+	margin-bottom:var(--space-2xs);
+	font:var(--fw-medium) var(--fs-fine)/1.4 var(--font-ui);
+	letter-spacing:.12em;
+	text-transform:uppercase;
+	text-align:center;
+	color:var(--ink-quiet);
+}
+
+/* =============================================================================
+   THE TRUST PANEL
+   Payment on delivery, who carries it, and two collapsibles for the long text.
+   The collapsibles are .d-panel - same swim, same arrow, same trail - so this
+   is a layout and a skin, not a second accordion.
+   ========================================================================== */
+
+.d-trust{
+	margin-top:var(--space-xs);
+	padding:var(--space-xs) var(--space-s);
+	border:1px solid var(--tint-gold-edge);
+	border-radius:var(--radius-l);
+	background:var(--tint-gold);
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.d-trust__cod{
+	display:flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	margin:0 0 var(--space-3xs);
+}
+.d-trust__cod strong{ color:var(--c-cherry-deep) }
+.d-trust__ship{
+	margin:0 0 var(--space-2xs);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-trust .d-panel{
+	border:0;
+	border-top:1px solid color-mix(in oklab, var(--g-core) 40%, transparent);
+	border-radius:0;
+	background:none;
+	padding-inline:0;
+}
+.d-trust .d-panel:first-of-type{ margin-top:var(--space-2xs) }
+
+/* =============================================================================
+   THE TABS
+   ========================================================================== */
+
+.d-tabs{
+	--tab-x:0px;      /* left edge of the active tab, set by darling-ui.js */
+	--tab-w:0px;      /* its width                                        */
+	clear:both;
+	margin-block:var(--space-l) var(--space-m);
+}
+.d-tabs__list{
+	position:relative;
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-3xs);
+	margin:0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+	border-bottom:1px solid var(--hairline);
+}
+.d-tabs__list > li{ margin:0; padding:0; list-style:none }
+
+.d-tabs__tab{
+	display:flex;
+	align-items:center;
+	min-height:44px;
+	padding-inline:var(--space-s);
+	border-radius:var(--radius-s) var(--radius-s) 0 0;
+	color:var(--ink-quiet);
+	text-decoration:none;
+	font:var(--fw-medium) var(--fs-ui)/1 var(--font-ui);
+	white-space:nowrap;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-tabs__tab:hover{ color:var(--ink); background:var(--tint-gold) }
+.d-tabs__tab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-3px }
+.d-tabs__tab[aria-selected="true"],
+.d-tabs li.active > .d-tabs__tab{ color:var(--c-cherry-deep) }
+
+/* -- the underline, and the trail behind it ---------------------------------
+   Two bars on one pair of values. The mark runs on the UI clock and arrives
+   first; the ghost runs on the wake clock, which barely moves for its first
+   third and then has a very long tail, so it is still catching up after the
+   mark has stopped. The lit gap between them is the streak, and it points
+   backwards on its own because the ghost is simply late - no direction is
+   computed anywhere.
+
+   Both are inset-inline-start + width rather than a transform: a transform's
+   percentages resolve against the element's OWN box, which is the bug that ate
+   two days on the slider, and here the box is the thing being animated. */
+.d-tabs__list::after,
+.d-tabs__list::before{
+	content:"";
+	position:absolute;
+	bottom:-1px;
+	height:2px;
+	border-radius:2px;
+	pointer-events:none;
+	inset-inline-start:var(--tab-x);
+	width:var(--tab-w);
+}
+.d-tabs__list::before{                 /* the ghost - the slow clock */
+	z-index:1;
+	background:var(--trail-gold);
+	transition:inset-inline-start var(--dur-wake) var(--ease-wake),
+	           width var(--dur-wake) var(--ease-wake);
+}
+.d-tabs__list::after{                  /* the mark - the fast clock  */
+	z-index:2;
+	background:var(--c-cherry-deep);
+	transition:inset-inline-start var(--dur-panel) var(--ease-float),
+	           width var(--dur-panel) var(--ease-float);
+}
+/* *** WITH NO SCRIPT THERE IS NO MEASUREMENT, SO THERE MUST BE NO BAR. ***
+   --tab-w starts at 0, which would park two zero-width bars at the left edge -
+   invisible, but only by accident. darling-ui.js adds .d-tabs-live once it has
+   measured, so the travelling pair exists only when something is driving it,
+   and until then the selected tab carries a plain static underline. The two are
+   never both drawn. */
+.d-tabs:not(.d-tabs-live) .d-tabs__list::before,
+.d-tabs:not(.d-tabs-live) .d-tabs__list::after{ content:none }
+.d-tabs:not(.d-tabs-live) .d-tabs__tab[aria-selected="true"],
+.d-tabs:not(.d-tabs-live) li.active > .d-tabs__tab{
+	box-shadow:inset 0 -2px 0 var(--c-cherry-deep);
+}
+
+.d-tabpanel{ margin:0 0 var(--space-m); padding:0 }
+.d-tabpanel[hidden]{ display:none }
+.d-tabpanel > :first-child{ margin-top:0 }
+.d-tabpanel h2,
+.d-tabpanel h3{ font:var(--type-section); font-size:var(--fs-lede); margin:0 0 var(--space-2xs) }
+
+/* =============================================================================
+   THE REVIEWS
+   Woo's review list is an absolutely-positioned 32px avatar with the body
+   pushed over by a 50px margin, inside a bordered box with a 4px radius. Ours
+   is a two-column grid, which means the body no longer has to know how wide the
+   avatar is - and an avatar that fails to load stops shifting the text.
+   ========================================================================== */
+
+.d-reviews{ margin:0 }
+.d-reviews__title{
+	margin:0 0 var(--space-s);
+	font:var(--type-section);
+	font-size:var(--fs-lede);
+}
+.d-reviews__title span{
+	margin-inline-start:var(--space-3xs);
+	font-weight:var(--fw-regular);
+	color:var(--ink-quiet);
+	font-variant-numeric:tabular-nums;
+}
+.d-reviews__list{
+	margin:0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+	display:grid;
+	gap:var(--space-s);
+}
+.d-reviews__list li{ margin:0; padding:0; list-style:none }
+.d-reviews__list li::before{ content:none }
+
+.d-review{
+	display:grid;
+	grid-template-columns:2.5rem 1fr;
+	gap:var(--space-2xs) var(--space-xs);
+	padding:var(--space-s);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+.d-review__avatar{
+	grid-row:span 2;
+	width:2.5rem;
+	height:2.5rem;
+	border-radius:var(--radius-circle);
+	object-fit:cover;
+	background:var(--tint-grey-quiet);
+	border:0;
+	padding:0;
+	margin:0;
+	box-shadow:none;
+	float:none;
+	position:static;
+}
+.d-review__meta{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-3xs) var(--space-2xs);
+	margin:0;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-review__meta strong{ color:var(--ink); font-weight:var(--fw-medium) }
+.d-review__meta time{ font-variant-numeric:tabular-nums }
+/* The verified-buyer mark. Woo emits it as a plain <em>; it earns a badge
+   because it is the one piece of a review a shopper actually weighs. */
+.d-review__verified{
+	display:inline-flex;
+	align-items:center;
+	gap:.25em;
+	padding:.1em .45em;
+	border-radius:var(--radius-pill);
+	background:var(--tint-gold-quiet);
+	color:var(--ink);
+	font-size:var(--fs-badge);
+	font-style:normal;
+	font-weight:var(--fw-medium);
+}
+.d-review__text{ margin:0; line-height:var(--lh-body) }
+.d-review__text p{ margin:0 0 var(--space-2xs) }
+.d-review__text p:last-child{ margin-bottom:0 }
+/* A reply to a review sits under it, indented once, and loses its rating -
+   a shop's answer has no stars. */
+.d-reviews__list ul.children{
+	margin:var(--space-s) 0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+	display:grid;
+	gap:var(--space-s);
+}
+.d-reviews__list ul.children .d-rating,
+.d-reviews__list ul.children .star-rating{ display:none }
+
+.d-reviews__empty{
+	margin:0 0 var(--space-m);
+	padding:var(--space-s);
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-l);
+	color:var(--ink-quiet);
+	text-align:center;
+}
+
+/* -- the review form ---------------------------------------------------------
+   The fields are the field pattern; this is the card around them and the two
+   rows that are not ordinary fields (the star picker and the consent line). */
+.d-reviews__form{
+	max-width:46rem;
+	padding:var(--space-m);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+.d-reviews__form-title{
+	margin:0 0 var(--space-xs);
+	font:var(--type-section);
+	font-size:var(--fs-lede);
+}
+.d-reviews__form .d-field + .d-field{ margin-top:var(--space-s) }
+.d-reviews__rating{
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+	margin:0 0 var(--space-s);
+}
+.d-reviews__rating > label{
+	margin:0;
+	font:var(--fw-medium) var(--fs-fine)/1.3 var(--font-ui);
+	color:var(--ink);
+}
+
+/* =============================================================================
+   RELATED PRODUCTS
+   The grid pattern with a heading. Hidden when empty rather than leaving a
+   heading over nothing, which is what a freshly-imported catalogue produces.
+   ========================================================================== */
+.d-related{ margin-top:var(--space-xl) }
+.d-related__title{ margin:0 0 var(--space-s); font:var(--type-section) }
+@supports selector(:has(*)){
+	.d-related:not(:has(li, .d-card)){ display:none }
+}

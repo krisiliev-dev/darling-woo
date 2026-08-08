@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1169,6 +1169,231 @@ reproduce it, so I know what to remove and not yet why. And
 <code>anchor(center)</code>, which is, computed to <code>top: auto</code> and
 dropped the button in the bottom-left corner. Two failures and a browser crash
 on one feature is where to stop.</div>
+</section>''')
+
+
+# ------------------------------------------------------------------ product ---
+# *** THE FIXTURE USES WOO'S CLASS NAMES, NOT OURS, AND THAT IS THE POINT. ***
+# The gallery, the tabs and the review list are WooCommerce's markup. The rules
+# that style them are in src/adopted/, unlayered, and their whole job is to beat
+# woocommerce.css. A fixture written with .d-gallery would render beautifully
+# and prove nothing. This one is shaped like the real page - .woocommerce >
+# div.product > div.images - so what it shows is whether we won.
+THUMB = ("data:image/svg+xml;utf8,"
+  "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E"
+  "%3Crect width='100' height='100' fill='%23e3d9cc'/%3E"
+  "%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E"
+  "%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E")
+
+A('''<section class="sec" id="product"><h2>Patterns</h2>
+<h3>Product page &mdash; gallery, buy column, trust, tabs, reviews</h3>
+<p class="note"><b>This is the most contested page on the site.</b>
+<code>collide.js</code> counts 209 element/property pairs here where our CSS and
+WooCommerce&rsquo;s both have an opinion &mdash; more than home, shop and checkout
+put together. Everything below is wrapped in
+<code>.woocommerce &gt; div.product</code> and uses <em>Woo&rsquo;s</em> class
+names, because a fixture written with our own classes would render perfectly and
+prove nothing about who wins.</p>
+<p class="note"><b>Two defects that are live on darlinghome.bg right now,
+measured this morning.</b> WooCommerce builds each tab&rsquo;s shape out of two
+5&times;5px pseudo-elements per tab &mdash; quarter-round corners with a lilac
+border and a lilac <code>box-shadow</code>. <code>style.css</code> zeroes the
+tab&rsquo;s own background and border but never touched its pseudos, so all four
+nubs are still painting: <em>2 of 2 tabs, border rgb(207,200,216), shadow
+rgb(233,230,237)</em>. And <code>style.css</code> tries to kill Woo&rsquo;s
+full-width underline with <code>content:none</code> at specificity (0,3,1)
+against Woo&rsquo;s (0,3,2) &mdash; it loses, so Woo&rsquo;s lilac rule and ours
+are both drawn, one over the other. The same arithmetic ate the strip&rsquo;s
+padding: ours says 0, Woo says 1em, computed is 17px.</p>
+<p class="note"><b>What is measured here and what is not.</b> The tab rules were
+verified against the live product page. The gallery and the review list were
+<em>not</em>: the shop has exactly one product, it has no images and no reviews,
+so there is no live DOM for either. They are written against WooCommerce&rsquo;s
+own stylesheet and its <code>review.php</code> markup and rendered against this
+fixture. Re-check them the day a photographed product with a review exists.</p>
+
+<div class="woocommerce"><div class="product">
+<div class="d-product__top">
+
+  <div class="woocommerce-product-gallery woocommerce-product-gallery--with-images woocommerce-product-gallery--columns-4 images">
+    <a href="#" class="woocommerce-product-gallery__trigger" aria-label="Уголеми">zoom<span aria-hidden="true"></span></a>
+    <div class="flex-viewport">
+      <div class="woocommerce-product-gallery__wrapper">
+        <div class="woocommerce-product-gallery__image"><a href="#"><img src="''' + CUTOUT + '''" alt=""></a></div>
+      </div>
+    </div>
+    <ol class="flex-control-nav flex-control-thumbs">''')
+for i in range(4):
+    A('<li><img src="%s" class="%s" alt=""></li>' % (THUMB, 'flex-active' if i == 0 else ''))
+A('''</ol>
+  </div>
+
+  <div class="summary entry-summary d-product__buy">
+    <h1 class="d-product__title">Керамична купа &bdquo;Пясък&ldquo;</h1>
+    <p class="d-product__price"><del>32,10</del>&nbsp;26,40&nbsp;&euro;
+      <span class="d-bgn">/ 51,64 лв.</span></p>
+    <p class="d-product__excerpt">Ръчно глазирана, 22 см. Всяка е малко различна
+    &mdash; това е глазурата, не дефект.</p>
+    <p class="d-product__stock d-product__stock--low">
+      <span class="d-icon d-icon--warning"></span> Остават само 3</p>
+    <div class="d-product__atc">
+      <div class="d-quantity">
+        <button class="d-quantity__btn" aria-label="По-малко"><span class="d-icon d-icon--minus"></span></button>
+        <input class="d-quantity__input" type="number" value="1" min="1" aria-label="Количество">
+        <button class="d-quantity__btn" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
+      </div>
+      <button class="d-btn d-btn--primary">Добавяне в количката</button>
+    </div>
+    <div class="d-product__express">
+      <div style="display:grid;gap:8px">
+        <div style="height:44px;border-radius:var(--radius-pill);background:var(--c-cocoa)"></div>
+        <div style="height:44px;border-radius:var(--radius-pill);background:var(--c-grey-300)"></div>
+      </div>
+    </div>
+
+    <div class="d-trust">
+      <p class="d-trust__cod"><span class="d-icon d-icon--shield"></span>
+        <strong>Наложен платеж</strong> &mdash; плащаш при получаване</p>
+      <p class="d-trust__ship">Еконт и Спиди &middot; до адрес или до офис &middot;
+        безплатна доставка над 77&nbsp;&euro;</p>
+      <details class="d-panel"><summary class="d-panel__summary">Доставка</summary>
+        <div class="d-panel__body"><p>Изпращаме с Еконт или Спиди &mdash; ти избираш
+        при поръчката. Обикновено тръгва в рамките на един работен ден.</p></div></details>
+      <details class="d-panel"><summary class="d-panel__summary">Връщане и замяна</summary>
+        <div class="d-panel__body"><p>14 дни за връщане без причина, стига опаковката
+        да е запазена.</p></div></details>
+    </div>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:30px">Tabs &mdash; the underline travels, and the
+trail lags behind it</p>
+<div class="woocommerce-tabs wc-tabs-wrapper">
+  <ul class="tabs wc-tabs">
+    <li class="description_tab active" id="tab-title-description"><a href="#tab-description">Описание</a></li>
+    <li class="reviews_tab" id="tab-title-reviews"><a href="#tab-reviews">Отзиви (2)</a></li>
+    <li class="darling_gpsr_tab" id="tab-title-gpsr"><a href="#tab-gpsr">Безопасност и производител</a></li>
+  </ul>
+  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-description">
+    <h2>Описание</h2>
+    <p>Купата е хвърлена на колело и глазирана на ръка, затова две съседни купи
+    никога не са напълно еднакви. Издържа на съдомиялна и микровълнова.</p>
+  </div>
+  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-reviews" style="display:none">
+    <div id="reviews" class="woocommerce-Reviews">
+      <div id="comments">
+        <h2 class="woocommerce-Reviews-title">Отзиви <small>(2)</small></h2>
+        <ol class="commentlist">
+          <li class="review byuser">
+            <div class="comment_container">
+              <img class="avatar" src="''' + THUMB + '''" alt="">
+              <div class="comment-text">
+                <div class="star-rating" role="img" aria-label="5 от 5"><span style="width:100%">5</span></div>
+                <p class="meta">
+                  <strong class="woocommerce-review__author">Мария</strong>
+                  <em class="woocommerce-review__verified verified">потвърдена покупка</em>
+                  <span class="woocommerce-review__dash">&ndash;</span>
+                  <time class="woocommerce-review__published-date">12 юли 2026</time>
+                </p>
+                <div class="description"><p>По-голяма е, отколкото изглежда на снимката,
+                и точно затова я използвам всеки ден. Глазурата е равна.</p></div>
+              </div>
+            </div>
+            <ul class="children"><li class="comment">
+              <div class="comment_container">
+                <img class="avatar" src="''' + THUMB + '''" alt="">
+                <div class="comment-text">
+                  <p class="meta"><strong class="woocommerce-review__author">Дарлинг</strong>
+                  <span class="woocommerce-review__dash">&ndash;</span>
+                  <time>13 юли 2026</time></p>
+                  <div class="description"><p>Благодарим, Мария! Радваме се, че е намерила място на масата.</p></div>
+                </div>
+              </div>
+            </li></ul>
+          </li>
+          <li class="review">
+            <div class="comment_container">
+              <img class="avatar" src="''' + THUMB + '''" alt="">
+              <div class="comment-text">
+                <div class="star-rating" role="img" aria-label="4 от 5"><span style="width:80%">4</span></div>
+                <p class="meta"><strong class="woocommerce-review__author">Иван</strong>
+                <span class="woocommerce-review__dash">&ndash;</span>
+                <time>2 август 2026</time></p>
+                <div class="description"><p>Хубава е. Свалям една звезда само защото
+                чакахме доставката четири дни.</p></div>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div id="review_form_wrapper"><div id="review_form"><div id="respond" class="comment-respond">
+        <span id="reply-title" class="comment-reply-title">Напиши отзив</span>
+        <form class="comment-form">
+          <p class="comment-form-rating"><label>Твоята оценка</label>
+            <span class="stars"><a href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a></span></p>
+          <p class="comment-form-comment"><label class="d-field__label" for="comment">Отзив</label>
+            <textarea id="comment" class="d-field__input" rows="4"></textarea></p>
+          <p class="comment-form-author"><label class="d-field__label" for="author">Име</label>
+            <input id="author" class="d-field__input" type="text"></p>
+          <p class="comment-form-cookies-consent">
+            <input id="wp-comment-cookies-consent" type="checkbox">
+            <label for="wp-comment-cookies-consent">Запомни името ми за следващия път</label></p>
+          <p class="form-submit"><input type="submit" id="submit" class="submit" value="Изпрати"></p>
+        </form>
+      </div></div></div>
+    </div>
+  </div>
+  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-gpsr" style="display:none">
+    <h2>Безопасност и производител</h2>
+    <p><strong>Производител:</strong> Дарлинг 7 ООД, София</p>
+    <p><strong>Предупреждения:</strong> не е играчка; ръбовете могат да се нащърбят при удар.</p>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:26px">No reviews yet</p>
+<div class="woocommerce"><p class="woocommerce-noreviews">Все още няма отзиви.</p></div>
+
+</div></div>
+<div class="todo"><b>The travelling underline is not a background on the active
+tab.</b> A background cannot move between two elements, and moving is the whole
+point. It is two bars on one pair of values &mdash; <code>--tab-x</code> and
+<code>--tab-w</code> &mdash; transitioned on two different clocks: the cherry
+mark on the UI curve arrives first, the gold ghost on the wake curve is still
+catching up, and the lit gap between them <em>is</em> the trail. It points
+backwards without anything computing a direction, because the ghost is simply
+late. Same trick as the panel&rsquo;s swimmer and the paginator&rsquo;s wake.<br><br>
+<b>They are Woo&rsquo;s own pseudo-elements, taken over rather than added.</b>
+<code>ul.tabs::before</code> is Woo&rsquo;s lilac rule and <code>::after</code>
+is a clearfix; both are redefined, which kills the lilac and costs no extra
+markup. Hanging them on the first <code>li</code> instead does not work &mdash;
+a pseudo-element is positioned against its own element, so it would measure
+<code>--tab-x</code> from that tab&rsquo;s left edge rather than the
+strip&rsquo;s.<br><br>
+<b>With no script there is no bar at all.</b> Tab widths depend on their text, so
+something has to measure; <code>darling-ui.js</code> adds
+<code>.d-tabs-live</code> once it has, and until then the selected tab carries a
+plain static underline. The two are never both drawn.<br><br>
+<b>The thumbnails are a grid and none of them are dimmed.</b> Woo floats them at
+25% and then needs <code>clear:left</code> on every 4n+1 child, once per column
+count; and it fades every inactive thumb to <code>opacity:.5</code>, which on a
+warm-grey page reads as &ldquo;still loading&rdquo;. Ours are all at full
+strength with a gold ring on the active one &mdash; a mark that says
+&ldquo;this one&rdquo; rather than dimming everything that is not.</div>
+<script>
+/* Gallery chrome only. On the real page WooCommerce's own tabs script does this;
+   here there is nothing to toggle .active, and without a toggle the underline
+   has nowhere to travel to. */
+(function(){
+  var w=document.querySelector('#product .woocommerce-tabs'); if(!w) return;
+  w.querySelector('ul.tabs').addEventListener('click',function(e){
+    var a=e.target.closest('a'); if(!a) return; e.preventDefault();
+    w.querySelectorAll('ul.tabs > li').forEach(function(li){li.classList.remove('active')});
+    a.parentNode.classList.add('active');
+    w.querySelectorAll('.wc-tab').forEach(function(p){p.style.display='none'});
+    var t=w.querySelector(a.getAttribute('href')); if(t) t.style.display='';
+  });
+})();
+</script>
 </section>''')
 
 A('''<section class="sec" id="next"><h2>Status</h2>

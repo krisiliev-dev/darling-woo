@@ -79,6 +79,7 @@
 @import url("patterns/panel.css")      layer(patterns);
 @import url("patterns/badge.css")      layer(patterns);
 @import url("patterns/quantity.css")   layer(patterns);
+@import url("patterns/product.css") layer(patterns);
 @import url("finish.css")        layer(finish);
 
 /* card, field, badge, placeholder, utilities: not written yet. */
@@ -97,3 +98,4 @@
 @import url("adopted/pagination.css");
 @import url("adopted/slider.css");
 @import url("adopted/skeleton.css");
+@import url("adopted/product.css");

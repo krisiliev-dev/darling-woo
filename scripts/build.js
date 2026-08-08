@@ -29,8 +29,9 @@
    chose. The cron is the belt to that braces: it catches an edit made directly
    on the box, which is exactly the edit nobody remembers.
 
-     # /etc/cron.d/darling-build   - every 15 minutes, only if src/ moved
-     */15 * * * * www-data cd /srv/darling/darling-woo && node scripts/build.js >> /var/log/darling-build.log 2>&1
+     (the crontab line is below this comment block, in line comments - a
+     schedule that starts with a star and a slash cannot live inside a C-style
+     comment, which is how this file came to be a syntax error for an hour)
 
    build.js is already safe to run on a timer: it skips the browser step when
    src/tokens is unchanged, so an idle run is under three seconds and writes
@@ -56,6 +57,14 @@
    is milliseconds and a stale artefact is worse than a slow build. --force
    ignores the cache.
    ========================================================================== */
+// -- the cron line, in line comments so its leading `*` + `/` is harmless -----
+// # /etc/cron.d/darling-build   - every 15 minutes; an idle run is a no-op
+// */15 * * * * www-data cd /srv/darling/darling-woo && node scripts/build.js >> /var/log/darling-build.log 2>&1
+//
+// Owned by www-data, not root. www-data must own theme/darling/generated/ and
+// scripts/.build-cache.json or the first run fails on a permission error that
+// nobody sees, because cron mails it to a local mailbox nobody reads.
+
 'use strict';
 const fs = require('fs');
 const path = require('path');

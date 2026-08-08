@@ -5621,6 +5621,581 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 
 }
 
+/* ==== patterns/product.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / PRODUCT PAGE
+   The single-product page: the gallery, the buy column, the trust panel, the
+   tabs under them, and the review list inside the tabs.
+
+   *** THIS IS THE MOST CONTESTED PAGE ON THE SITE. ***
+   collide.js counts 209 element/property pairs where our CSS and WooCommerce's
+   both have an opinion here - more than the other three page types put
+   together. Two thirds of them are the tabs and the review list, which is why
+   those two are in this file rather than being left to Woo.
+
+   -- WHAT I COULD AND COULD NOT MEASURE, STATED UP FRONT ---------------------
+   The live shop has ONE product, it has no images, and it has no reviews. So
+   the gallery, the thumbnail strip and the review list have NO live DOM to
+   probe: I read WooCommerce's own stylesheet for what they will look like when
+   the catalogue lands, and the gallery section of gallery.html renders our
+   replacement against a fixture. That is weaker evidence than a live page and
+   it should be re-checked the day the first photographed product goes up.
+
+   Everything about the TABS below, by contrast, was measured on the live page.
+
+   -- TWO DEFECTS THAT ARE LIVE RIGHT NOW, AND THE REASON FOR THEM ------------
+   Both are specificity losses in style.css that nobody noticed because they
+   fail quietly, and both were confirmed in the browser this morning:
+
+   1. Woo builds each tab's shape from two 5x5px pseudo-elements - li::before
+      and li::after - quarter-round corners carrying `box-shadow: 2px 2px 0
+      #e9e6ed`. style.css zeroes the LI's own background, border and radius but
+      says nothing about its pseudos, so all four nubs are still painting, in
+      Woo's lilac. Measured: 2 of 2 tabs, border rgb(207,200,216), shadow
+      rgb(233,230,237).
+   2. style.css sets `content:none` on `ul.tabs::before` to kill Woo's
+      full-width underline. It loses. `.woocommerce-tabs ul.tabs.wc-tabs::before`
+      is (0,3,1); Woo's `.woocommerce div.product .woocommerce-tabs ul.tabs
+      ::before` is (0,3,2). Measured on the live page: content is still " " and
+      the border is still rgb(207,200,216). Woo's underline and OUR underline
+      are both drawn, one on top of the other.
+
+   The same arithmetic ate the UL's padding: ours says 0, Woo says 1em, computed
+   is 17px. This is exactly the class of bug the adopted/ split exists to end -
+   the fixes live in adopted/product.css, unlayered, and out-specify Woo rather
+   than tying.
+
+   -- THE TAB UNDERLINE SLIDES, AND THAT IS THE ONLY MOTION HERE --------------
+   Tabs are the one control on this page where something MOVES when you use it,
+   so they get the treatment and nothing else does. The underline travels from
+   the old tab to the new one and a golden trail lags behind it, on the same
+   two-clocks trick the panel and the paginator use: one value transitioned
+   twice at different speeds, and the gap between the two IS the streak.
+
+   Tab widths are text-dependent, so this cannot be an index times a cell the
+   way the paginator is. assets/darling-ui.js measures the active tab and sets
+   --tab-x and --tab-w on .d-tabs; both transition. With no script the underline
+   simply sits under the active tab with no travel, which is a correct tab strip
+   with a dull one.
+   ========================================================================== */
+
+.d-product{
+	max-width:var(--page-max);
+	margin-inline:auto;
+	padding:var(--space-s) var(--gutter) var(--space-xl);
+}
+
+/* -- the two columns ---------------------------------------------------------
+   Grid rather than Woo's two 48% floats. The floats are why the page needs
+   `clear:both` on the tabs and why a tall buy column used to drag the tabs up
+   beside the gallery. `align-items:start` keeps the buy column from stretching
+   to the height of a tall photograph. */
+.d-product__top{
+	display:grid;
+	grid-template-columns:minmax(0, 1.05fr) minmax(0, 1fr);
+	gap:var(--space-l);
+	align-items:start;
+	margin-bottom:var(--space-l);
+}
+@media (max-width: 900px){
+	.d-product__top{ grid-template-columns:1fr; gap:var(--space-m) }
+}
+
+/* =============================================================================
+   THE GALLERY
+   Woo's gallery is FlexSlider: one wrapper of full-size images, a viewport that
+   clips it, and an <ol> of thumbnails underneath. We keep the machinery - it
+   works, it is what PhotoSwipe hooks into - and replace every surface.
+
+   *** THE THUMBS ARE A GRID, NOT FOUR FLOATS. ***
+   Woo floats them at width:25% and then needs `clear:left` on every 4n+1 child,
+   once per column count, to stop the rows interleaving. A grid needs none of
+   that and reflows to three columns on a phone by changing one number.
+
+   *** ACTIVE IS A RING, NOT AN OPACITY. ***
+   Woo dims every thumb to .5 and undims the active one. On a page whose whole
+   surface is warm grey, four half-faded photographs read as "still loading".
+   Ours are all at full strength and the active one is marked with a gold ring,
+   which says "this one" rather than "those ones are broken".
+   ========================================================================== */
+
+.d-gallery{
+	position:relative;
+	display:grid;
+	gap:var(--space-2xs);
+}
+.d-gallery__main{
+	position:relative;
+	overflow:hidden;
+	border-radius:var(--radius-l);
+	background:var(--placeholder-product, var(--surface-quiet));
+	aspect-ratio:1 / 1;
+}
+.d-gallery__main img{
+	display:block;
+	width:100%;
+	height:100%;
+	object-fit:cover;
+	box-shadow:none;
+}
+/* The zoom control. Woo ships a white disc with a hand-drawn magnifier made of
+   two absolutely-positioned pseudo-elements and `text-indent:-9999px`; ours is
+   the icon pattern, so it inherits the mark, the hover and the focus ring that
+   every other icon button on the site has. */
+.d-gallery__zoom{
+	position:absolute;
+	z-index:3;
+	top:var(--space-2xs);
+	inset-inline-end:var(--space-2xs);
+	display:grid;
+	place-items:center;
+	width:2.5rem;
+	height:2.5rem;
+	padding:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:color-mix(in oklab, var(--surface-raised) 88%, transparent);
+	color:var(--ink);
+	cursor:pointer;
+	box-shadow:var(--shadow-card);
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-gallery__zoom::before{
+	content:"";
+	width:1.15rem;
+	height:1.15rem;
+	background:currentColor;
+	mask-image:var(--icon-search);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon-search);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+}
+.d-gallery__zoom:hover{ background:var(--tint-gold); color:var(--c-cherry-deep) }
+.d-gallery__zoom:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+
+.d-gallery__thumbs{
+	display:grid;
+	grid-template-columns:repeat(4, 1fr);
+	gap:var(--space-2xs);
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+@media (max-width: 480px){
+	.d-gallery__thumbs{ grid-template-columns:repeat(3, 1fr) }
+}
+.d-gallery__thumbs li{ margin:0; list-style:none }
+.d-gallery__thumbs img,
+.d-gallery__thumb{
+	display:block;
+	width:100%;
+	aspect-ratio:1 / 1;
+	object-fit:cover;
+	margin:0;
+	border-radius:var(--radius-s);
+	background:var(--placeholder-product, var(--surface-quiet));
+	cursor:pointer;
+	opacity:1;
+	outline:2px solid transparent;
+	outline-offset:2px;
+	transition:outline-color var(--dur-ui) var(--ease-float);
+}
+.d-gallery__thumbs img:hover,
+.d-gallery__thumb:hover{ outline-color:var(--tint-gold-edge) }
+.d-gallery__thumbs img.is-active,
+.d-gallery__thumb[aria-current="true"]{ outline-color:var(--g-core) }
+
+/* =============================================================================
+   THE BUY COLUMN
+   ========================================================================== */
+
+.d-product__buy{ display:grid; gap:var(--space-2xs); align-content:start }
+
+.d-product__title{
+	margin:0;
+	font:var(--type-section);
+	line-height:var(--lh-title);
+	color:var(--ink);
+}
+/* Inter, not Playfair, and tabular. A price is a number to be compared with
+   another number, and the display face's old-style figures make 26,40 and
+   32,10 different widths. */
+.d-product__price{
+	margin:0;
+	font:var(--fw-bold) 26px/var(--lh-title) var(--font-ui);
+	font-variant-numeric:tabular-nums;
+	color:var(--price);
+}
+/* The lev half of the dual price. Bulgarian law requires both currencies
+   through the changeover, and this is the secondary one. */
+.d-product__price .d-bgn,
+.d-product__price .darling-bgn{
+	font-weight:var(--fw-regular);
+	font-size:.6em;
+	color:var(--ink-quiet);
+}
+.d-product__price del{
+	margin-inline-end:var(--space-3xs);
+	font-weight:var(--fw-regular);
+	font-size:.7em;
+	color:var(--ink-quiet);
+	text-decoration-thickness:1px;
+}
+.d-product__excerpt{
+	margin:var(--space-3xs) 0 var(--space-2xs);
+	max-width:52ch;
+	line-height:var(--lh-body);
+	color:var(--ink);
+}
+
+/* Stock. In stock is not news and is hidden - the buy button being enabled says
+   it. Low stock and backorder ARE news, so they are notices. */
+.d-product__stock{ margin:0; font-size:var(--fs-meta) }
+.d-product__stock--in{ display:none }
+.d-product__stock--low{
+	display:flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	color:var(--tint-gold-mark);
+	font-weight:var(--fw-medium);
+}
+.d-product__stock--backorder,
+.d-product__stock--out{
+	padding:var(--space-2xs) var(--space-xs);
+	border-radius:var(--radius-m);
+	background:var(--tint-gold);
+	color:var(--ink);
+}
+.d-product__stock--out{ background:var(--tint-grey-quiet); color:var(--ink-quiet) }
+
+/* The add-to-cart row: quantity stepper, then the button, and the button takes
+   the rest of the line. Both come from their own patterns; this only lays them
+   out. */
+.d-product__atc{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
+	margin-top:var(--space-2xs);
+}
+/* The stepper keeps its intrinsic width and the button takes the rest. Without
+   the `flex:none` the stepper is a flex item with an <input> in it and stretches
+   to share the row, which puts a 170px-wide box around a one-digit quantity. */
+.d-product__atc .d-quantity{ flex:none }
+.d-product__atc .d-btn,
+.d-product__atc button[type="submit"]{ flex:1 1 14rem }
+
+/* Stripe's express-checkout buttons, with a caption above them so they read as
+   an alternative to the buy button rather than a second one.
+
+   *** THE CAPTION IS TEXT LIVING IN A STYLESHEET, AND THAT IS A COMPROMISE. ***
+   Stripe owns the element and there is nowhere inside it to put markup, so the
+   only place the words can go without a template change is here. Consequences,
+   stated rather than discovered later: it cannot be translated by a plugin, it
+   cannot be edited by anyone who is not editing CSS, and `content` is not
+   reliably exposed to every screen reader. Carried over from style.css because
+   it is what ships today; the right fix is a real element emitted by the theme
+   template beside the Stripe container, and that is a PHP change.
+
+   Escaped rather than written in Cyrillic because this stylesheet is ASCII-only
+   (FINISH_AND_LAYER_DECISIONS) - the build has survived two round-trips through
+   the Windows ANSI codepage and literal UTF-8 in it is how the first preview
+   came out as mojibake. Six-digit escapes need no terminating space.
+   The string reads "ili plati barzo s" - Bulgarian for "or pay quickly with". */
+.d-product__express{
+	margin-block:var(--space-xs) 0;
+	max-width:100%;
+}
+.d-product__express::before{
+	content:"\000438\00043B\000438\000020\00043F\00043B\000430\000442\000438\000020\000431\00044A\000440\000437\00043E\000020\000441";
+	display:block;
+	margin-bottom:var(--space-2xs);
+	font:var(--fw-medium) var(--fs-fine)/1.4 var(--font-ui);
+	letter-spacing:.12em;
+	text-transform:uppercase;
+	text-align:center;
+	color:var(--ink-quiet);
+}
+
+/* =============================================================================
+   THE TRUST PANEL
+   Payment on delivery, who carries it, and two collapsibles for the long text.
+   The collapsibles are .d-panel - same swim, same arrow, same trail - so this
+   is a layout and a skin, not a second accordion.
+   ========================================================================== */
+
+.d-trust{
+	margin-top:var(--space-xs);
+	padding:var(--space-xs) var(--space-s);
+	border:1px solid var(--tint-gold-edge);
+	border-radius:var(--radius-l);
+	background:var(--tint-gold);
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.d-trust__cod{
+	display:flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	margin:0 0 var(--space-3xs);
+}
+.d-trust__cod strong{ color:var(--c-cherry-deep) }
+.d-trust__ship{
+	margin:0 0 var(--space-2xs);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-trust .d-panel{
+	border:0;
+	border-top:1px solid color-mix(in oklab, var(--g-core) 40%, transparent);
+	border-radius:0;
+	background:none;
+	padding-inline:0;
+}
+.d-trust .d-panel:first-of-type{ margin-top:var(--space-2xs) }
+
+/* =============================================================================
+   THE TABS
+   ========================================================================== */
+
+.d-tabs{
+	--tab-x:0px;      /* left edge of the active tab, set by darling-ui.js */
+	--tab-w:0px;      /* its width                                        */
+	clear:both;
+	margin-block:var(--space-l) var(--space-m);
+}
+.d-tabs__list{
+	position:relative;
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-3xs);
+	margin:0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+	border-bottom:1px solid var(--hairline);
+}
+.d-tabs__list > li{ margin:0; padding:0; list-style:none }
+
+.d-tabs__tab{
+	display:flex;
+	align-items:center;
+	min-height:44px;
+	padding-inline:var(--space-s);
+	border-radius:var(--radius-s) var(--radius-s) 0 0;
+	color:var(--ink-quiet);
+	text-decoration:none;
+	font:var(--fw-medium) var(--fs-ui)/1 var(--font-ui);
+	white-space:nowrap;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-tabs__tab:hover{ color:var(--ink); background:var(--tint-gold) }
+.d-tabs__tab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-3px }
+.d-tabs__tab[aria-selected="true"],
+.d-tabs li.active > .d-tabs__tab{ color:var(--c-cherry-deep) }
+
+/* -- the underline, and the trail behind it ---------------------------------
+   Two bars on one pair of values. The mark runs on the UI clock and arrives
+   first; the ghost runs on the wake clock, which barely moves for its first
+   third and then has a very long tail, so it is still catching up after the
+   mark has stopped. The lit gap between them is the streak, and it points
+   backwards on its own because the ghost is simply late - no direction is
+   computed anywhere.
+
+   Both are inset-inline-start + width rather than a transform: a transform's
+   percentages resolve against the element's OWN box, which is the bug that ate
+   two days on the slider, and here the box is the thing being animated. */
+.d-tabs__list::after,
+.d-tabs__list::before{
+	content:"";
+	position:absolute;
+	bottom:-1px;
+	height:2px;
+	border-radius:2px;
+	pointer-events:none;
+	inset-inline-start:var(--tab-x);
+	width:var(--tab-w);
+}
+.d-tabs__list::before{                 /* the ghost - the slow clock */
+	z-index:1;
+	background:var(--trail-gold);
+	transition:inset-inline-start var(--dur-wake) var(--ease-wake),
+	           width var(--dur-wake) var(--ease-wake);
+}
+.d-tabs__list::after{                  /* the mark - the fast clock  */
+	z-index:2;
+	background:var(--c-cherry-deep);
+	transition:inset-inline-start var(--dur-panel) var(--ease-float),
+	           width var(--dur-panel) var(--ease-float);
+}
+/* *** WITH NO SCRIPT THERE IS NO MEASUREMENT, SO THERE MUST BE NO BAR. ***
+   --tab-w starts at 0, which would park two zero-width bars at the left edge -
+   invisible, but only by accident. darling-ui.js adds .d-tabs-live once it has
+   measured, so the travelling pair exists only when something is driving it,
+   and until then the selected tab carries a plain static underline. The two are
+   never both drawn. */
+.d-tabs:not(.d-tabs-live) .d-tabs__list::before,
+.d-tabs:not(.d-tabs-live) .d-tabs__list::after{ content:none }
+.d-tabs:not(.d-tabs-live) .d-tabs__tab[aria-selected="true"],
+.d-tabs:not(.d-tabs-live) li.active > .d-tabs__tab{
+	box-shadow:inset 0 -2px 0 var(--c-cherry-deep);
+}
+
+.d-tabpanel{ margin:0 0 var(--space-m); padding:0 }
+.d-tabpanel[hidden]{ display:none }
+.d-tabpanel > :first-child{ margin-top:0 }
+.d-tabpanel h2,
+.d-tabpanel h3{ font:var(--type-section); font-size:var(--fs-lede); margin:0 0 var(--space-2xs) }
+
+/* =============================================================================
+   THE REVIEWS
+   Woo's review list is an absolutely-positioned 32px avatar with the body
+   pushed over by a 50px margin, inside a bordered box with a 4px radius. Ours
+   is a two-column grid, which means the body no longer has to know how wide the
+   avatar is - and an avatar that fails to load stops shifting the text.
+   ========================================================================== */
+
+.d-reviews{ margin:0 }
+.d-reviews__title{
+	margin:0 0 var(--space-s);
+	font:var(--type-section);
+	font-size:var(--fs-lede);
+}
+.d-reviews__title span{
+	margin-inline-start:var(--space-3xs);
+	font-weight:var(--fw-regular);
+	color:var(--ink-quiet);
+	font-variant-numeric:tabular-nums;
+}
+.d-reviews__list{
+	margin:0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+	display:grid;
+	gap:var(--space-s);
+}
+.d-reviews__list li{ margin:0; padding:0; list-style:none }
+.d-reviews__list li::before{ content:none }
+
+.d-review{
+	display:grid;
+	grid-template-columns:2.5rem 1fr;
+	gap:var(--space-2xs) var(--space-xs);
+	padding:var(--space-s);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+.d-review__avatar{
+	grid-row:span 2;
+	width:2.5rem;
+	height:2.5rem;
+	border-radius:var(--radius-circle);
+	object-fit:cover;
+	background:var(--tint-grey-quiet);
+	border:0;
+	padding:0;
+	margin:0;
+	box-shadow:none;
+	float:none;
+	position:static;
+}
+.d-review__meta{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-3xs) var(--space-2xs);
+	margin:0;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-review__meta strong{ color:var(--ink); font-weight:var(--fw-medium) }
+.d-review__meta time{ font-variant-numeric:tabular-nums }
+/* The verified-buyer mark. Woo emits it as a plain <em>; it earns a badge
+   because it is the one piece of a review a shopper actually weighs. */
+.d-review__verified{
+	display:inline-flex;
+	align-items:center;
+	gap:.25em;
+	padding:.1em .45em;
+	border-radius:var(--radius-pill);
+	background:var(--tint-gold-quiet);
+	color:var(--ink);
+	font-size:var(--fs-badge);
+	font-style:normal;
+	font-weight:var(--fw-medium);
+}
+.d-review__text{ margin:0; line-height:var(--lh-body) }
+.d-review__text p{ margin:0 0 var(--space-2xs) }
+.d-review__text p:last-child{ margin-bottom:0 }
+/* A reply to a review sits under it, indented once, and loses its rating -
+   a shop's answer has no stars. */
+.d-reviews__list ul.children{
+	margin:var(--space-s) 0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+	display:grid;
+	gap:var(--space-s);
+}
+.d-reviews__list ul.children .d-rating,
+.d-reviews__list ul.children .star-rating{ display:none }
+
+.d-reviews__empty{
+	margin:0 0 var(--space-m);
+	padding:var(--space-s);
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-l);
+	color:var(--ink-quiet);
+	text-align:center;
+}
+
+/* -- the review form ---------------------------------------------------------
+   The fields are the field pattern; this is the card around them and the two
+   rows that are not ordinary fields (the star picker and the consent line). */
+.d-reviews__form{
+	max-width:46rem;
+	padding:var(--space-m);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+.d-reviews__form-title{
+	margin:0 0 var(--space-xs);
+	font:var(--type-section);
+	font-size:var(--fs-lede);
+}
+.d-reviews__form .d-field + .d-field{ margin-top:var(--space-s) }
+.d-reviews__rating{
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+	margin:0 0 var(--space-s);
+}
+.d-reviews__rating > label{
+	margin:0;
+	font:var(--fw-medium) var(--fs-fine)/1.3 var(--font-ui);
+	color:var(--ink);
+}
+
+/* =============================================================================
+   RELATED PRODUCTS
+   The grid pattern with a heading. Hidden when empty rather than leaving a
+   heading over nothing, which is what a freshly-imported catalogue produces.
+   ========================================================================== */
+.d-related{ margin-top:var(--space-xl) }
+.d-related__title{ margin:0 0 var(--space-s); font:var(--type-section) }
+@supports selector(:has(*)){
+	.d-related:not(:has(li, .d-card)){ display:none }
+}
+
+}
+
 /* ==== finish.css ==== */
 /* =============================================================================
    FINISH - the amber ramp, its light, its glow, its fireflies, and the plywood
@@ -7929,6 +8504,617 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 
 
+/* ==== adopted/product.css ==== */
+/* =============================================================================
+   ADOPTED / product page - gallery, tabs, reviews
+   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+
+   Same reason as every other file in adopted/: it styles markup WooCommerce
+   emits, which we cannot add classes to, and Woo's sheets are unlayered.
+   Unlayered beats layered whatever the specificity, so these rules cannot live
+   in @layer patterns.
+
+   *** AND ON THIS PAGE, UNLAYERED IS NOT ENOUGH - THEY MUST ALSO OUT-SPECIFY. ***
+   Being unlayered only gets us into the same fight; it does not win it. Woo
+   reaches for `.woocommerce div.product .woocommerce-tabs ul.tabs` (0,3,2) and,
+   in the reviews, for TWO IDs at once - `.woocommerce #reviews #comments
+   ol.commentlist li .comment-text` is (2,3,1). style.css tried to beat the
+   first of those with (0,3,1) and lost, silently, and Woo's lilac tab
+   underline and corner nubs have been painting on the live product page ever
+   since. Measured this morning, not inferred.
+
+   So every selector here is deliberately at least one step above the Woo rule
+   it replaces. Where Woo uses IDs I repeat a class - `.comment-text.comment-text`
+   - which is the cheapest legitimate way to add specificity without inventing
+   an ancestor that might not be there. It looks odd on purpose: an odd-looking
+   selector in this file means "there is a fight here", and that is information.
+
+   Ties are avoided rather than relied on. A tie resolves by source order, and
+   source order is an enqueue detail that a plugin update, a caching layer or a
+   concatenator can quietly change. Nothing in this file should depend on it.
+
+   -- WHAT IS MEASURED AND WHAT IS NOT ----------------------------------------
+   The tab rules were verified against the live product page. The gallery and
+   review-list rules were NOT: the shop has one product, with no images and no
+   reviews, so there is no live DOM for either. They are written against
+   WooCommerce's own stylesheet and its review.php / product-image.php markup,
+   and rendered against a fixture in gallery.html. Re-check them the day a
+   photographed product with a review exists.
+   ========================================================================== */
+
+/* =============================================================================
+   THE PRODUCT LAYOUT
+   woocommerce-layout.css floats the gallery left at 48% and the summary right
+   at 48%. Our page is a block-editor two-column layout, so the float applies to
+   a grid item and produces a gallery half the width of its own column. Killed
+   here rather than fought column by column.
+   ========================================================================== */
+.woocommerce div.product div.images,
+.woocommerce div.product div.summary,
+.woocommerce #content div.product div.images,
+.woocommerce #content div.product div.summary{
+	float:none;
+	width:auto;
+	margin-bottom:0;
+}
+
+/* =============================================================================
+   THE GALLERY
+   FlexSlider's machinery is kept and every surface is replaced.
+   ========================================================================== */
+.woocommerce div.product div.images.woocommerce-product-gallery{
+	position:relative;
+	display:grid;
+	gap:var(--space-2xs);
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__wrapper{
+	margin:0;
+	padding:0;
+	/* Woo animates the strip with a .5s cubic-bezier that overshoots
+	   (-.035 on the second control point). Left alone it makes the slide bounce
+	   past and come back, which on a photograph reads as a wobble. */
+	transition:transform 380ms var(--ease-float);
+}
+/* The frame around whichever image is showing. .flex-viewport exists only once
+   FlexSlider has initialised; before that the wrapper itself is the frame, so
+   both get it and the radius does not pop in when the script lands. */
+.woocommerce div.product div.images .flex-viewport,
+.woocommerce div.product div.images .woocommerce-product-gallery__wrapper{
+	border-radius:var(--radius-l);
+	overflow:hidden;
+	background:var(--placeholder-product, var(--surface-quiet));
+}
+.woocommerce div.product div.images img{
+	display:block;
+	width:100%;
+	height:auto;
+	box-shadow:none;
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__image--placeholder{
+	border:0;
+	border-radius:var(--radius-l);
+	background:var(--placeholder-product, var(--surface-quiet));
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__image a{
+	display:block;
+	outline-offset:-2px;
+	border-radius:inherit;
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__image a:focus-visible{
+	outline:2px solid var(--focus-ring);
+}
+
+/* -- the zoom trigger --------------------------------------------------------
+   Woo draws a magnifier out of two pseudo-elements: ::before is a 10px ring
+   with a 2px black border, ::after a 2px black bar rotated -45deg. Both are
+   replaced by one mask, so the mark is the same lens the header's search button
+   uses and it follows currentColor into hover and forced-colors.
+
+   font-size:0 rather than Woo's text-indent:-9999px. The indent moves the glyph
+   off-screen but leaves it in the line box, which is why the disc has to be
+   36px of content-box with no padding to stay round. */
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger{
+	position:absolute;
+	z-index:3;
+	top:var(--space-2xs);
+	right:var(--space-2xs);
+	display:grid;
+	place-items:center;
+	width:2.5rem;
+	height:2.5rem;
+	padding:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:color-mix(in oklab, var(--surface-raised) 88%, transparent);
+	color:var(--ink);
+	font-size:0;
+	text-indent:0;
+	cursor:pointer;
+	box-shadow:var(--shadow-card);
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger:hover{
+	background:var(--tint-gold);
+	color:var(--c-cherry-deep);
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before{
+	content:"";
+	position:static;
+	width:1.15rem;
+	height:1.15rem;
+	border:0;
+	border-radius:0;
+	background:currentColor;
+	-webkit-mask-image:var(--icon-search);
+	        mask-image:var(--icon-search);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	        mask-position:center;
+}
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger::after{
+	content:none;
+}
+
+/* -- the thumbnails ----------------------------------------------------------
+   A grid instead of four floats. The float version needs `clear:left` on every
+   nth-child(4n+1), and a separate rule for three and five columns; the grid
+   needs one line and reflows on a phone by changing one number.
+
+   The column count still comes from Woo's --columns-N class so the shop setting
+   is respected, and the clear rules are switched off because a grid item that
+   clears is a grid item with a stray blank cell after it. */
+.woocommerce div.product div.images .flex-control-thumbs{
+	display:grid;
+	grid-template-columns:repeat(4, 1fr);
+	gap:var(--space-2xs);
+	margin:0;
+	padding:0;
+	overflow:visible;
+	list-style:none;
+}
+.woocommerce div.product .woocommerce-product-gallery--columns-3 .flex-control-thumbs{
+	grid-template-columns:repeat(3, 1fr);
+}
+.woocommerce div.product .woocommerce-product-gallery--columns-5 .flex-control-thumbs{
+	grid-template-columns:repeat(5, 1fr);
+}
+.woocommerce div.product .woocommerce-product-gallery--columns-3 .flex-control-thumbs li:nth-child(3n+1),
+.woocommerce div.product .woocommerce-product-gallery--columns-4 .flex-control-thumbs li:nth-child(4n+1),
+.woocommerce div.product .woocommerce-product-gallery--columns-5 .flex-control-thumbs li:nth-child(5n+1){
+	clear:none;
+}
+@media (max-width: 480px){
+	.woocommerce div.product div.images .flex-control-thumbs,
+	.woocommerce div.product .woocommerce-product-gallery--columns-4 .flex-control-thumbs,
+	.woocommerce div.product .woocommerce-product-gallery--columns-5 .flex-control-thumbs{
+		grid-template-columns:repeat(3, 1fr);
+	}
+}
+.woocommerce div.product div.images .flex-control-thumbs li{
+	width:auto;
+	float:none;
+	margin:0;
+	list-style:none;
+}
+/* Full strength, always. Woo's .5 opacity on the inactive thumbs makes a row of
+   photographs look like it is still loading, on a page whose entire surface is
+   already warm grey. The active one gets a gold ring instead - a mark that says
+   "this one" rather than dimming everything that is not. */
+.woocommerce div.product div.images .flex-control-thumbs li img{
+	display:block;
+	width:100%;
+	aspect-ratio:1 / 1;
+	object-fit:cover;
+	margin:0;
+	border-radius:var(--radius-s);
+	background:var(--placeholder-product, var(--surface-quiet));
+	cursor:pointer;
+	opacity:1;
+	outline:2px solid transparent;
+	outline-offset:2px;
+	transition:outline-color var(--dur-ui) var(--ease-float);
+}
+.woocommerce div.product div.images .flex-control-thumbs li img:hover{
+	opacity:1;
+	outline-color:var(--tint-gold-edge);
+}
+.woocommerce div.product div.images .flex-control-thumbs li img.flex-active{
+	opacity:1;
+	outline-color:var(--g-core);
+}
+
+/* =============================================================================
+   THE TABS
+   The two live defects named in patterns/product.css are fixed here, and the
+   sliding underline is attached to Woo's own markup so no template changes.
+   ========================================================================== */
+
+/* Woo's four corner nubs - two 5x5 quarter-rounds per tab, each with a lilac
+   border and a lilac box-shadow, which is how Woo fakes the curve where a tab
+   meets the rule. style.css never addressed them at all, so they are painting
+   on the live page right now: measured 2 of 2 tabs, border rgb(207,200,216),
+   shadow rgb(233,230,237). */
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li::before,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li::after{
+	content:none;
+}
+.woocommerce div.product .woocommerce-tabs{
+	--tab-x:0px;
+	--tab-w:0px;
+	clear:both;
+	margin-block:var(--space-l) var(--space-m);
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs{
+	position:relative;
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-3xs);
+	/* 0, and it matters: Woo's `padding:0 0 0 1em` is (0,3,2) and computed to
+	   17px on the live page against our (0,3,1) zero. The strip was indented by
+	   a value nobody in this codebase had chosen. */
+	padding:0;
+	margin:0 0 var(--space-m);
+	overflow:visible;
+	list-style:none;
+	border-bottom:1px solid var(--hairline);
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li{
+	position:relative;
+	z-index:auto;
+	display:block;
+	margin:0;
+	padding:0;
+	border:0;
+	border-radius:0;
+	background:none;
+	background-color:transparent;
+	color:inherit;
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a{
+	display:flex;
+	align-items:center;
+	min-height:44px;
+	padding:0 var(--space-s);
+	border-radius:var(--radius-s) var(--radius-s) 0 0;
+	color:var(--ink-quiet);
+	text-decoration:none;
+	font:var(--fw-medium) var(--fs-ui)/1 var(--font-ui);
+	white-space:nowrap;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a:hover{
+	color:var(--ink);
+	background:var(--tint-gold);
+	text-decoration:none;
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-3px;
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li.active{
+	background:none;
+	background-color:transparent;
+	border-bottom-color:transparent;
+	box-shadow:none;
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li.active > a{
+	color:var(--c-cherry-deep);
+}
+
+/* -- the travelling underline and its trail ---------------------------------
+   *** THE TWO BARS ARE WOO'S OWN PSEUDO-ELEMENTS, REDEFINED. ***
+   The obvious place to hang them is the LI, and that is wrong: a pseudo-element
+   is positioned against its own element, so a bar on li:first-child measures
+   --tab-x from that tab's left edge rather than from the strip's. The UL is the
+   only element whose origin is the origin the script measures against.
+
+   Woo already owns both of the UL's pseudos - ::before is its lilac full-width
+   rule, ::after is a clearfix from woocommerce-layout.css - so rather than
+   killing them and inventing an element, they are taken over. The lilac rule is
+   gone because every one of its properties is overwritten here, and the
+   clearfix is not needed once the strip is a flex container.
+
+   Two bars, one pair of values, two clocks: the mark on the UI curve arrives
+   first, the ghost on the wake curve is still catching up, and the lit gap
+   between them is the streak. It points backwards without anything computing a
+   direction, because the ghost is simply late. Same trick as the panel's swim
+   and the paginator's wake - see patterns/product.css for the full note.
+
+   left+width rather than a transform, because a transform's percentages resolve
+   against the element's OWN box, and the box is the thing being animated. */
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs::before,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs::after{
+	content:"";
+	position:absolute;
+	z-index:auto;
+	top:auto;
+	bottom:-1px;
+	left:var(--tab-x);
+	width:var(--tab-w);
+	height:2px;
+	border:0;
+	border-radius:2px;
+	pointer-events:none;
+	display:block;
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs::before{
+	z-index:1;
+	background:var(--trail-gold);
+	transition:left var(--dur-wake) var(--ease-wake),
+	           width var(--dur-wake) var(--ease-wake);
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs::after{
+	z-index:2;
+	background:var(--c-cherry-deep);
+	transition:left var(--dur-panel) var(--ease-float),
+	           width var(--dur-panel) var(--ease-float);
+}
+/* *** WITH NO SCRIPT THERE IS NO MEASUREMENT, SO THERE MUST BE NO BAR. ***
+   --tab-w starts at 0, which would leave two zero-width bars parked at the left
+   edge - invisible, but only by accident, and any later `min-width` would make
+   them appear. darling-ui.js adds .d-tabs-live once it has measured, so the
+   travelling pair only exists when something is driving it, and until then the
+   selected tab carries a plain static underline of its own. The two are never
+   both drawn. */
+.woocommerce div.product .woocommerce-tabs:not(.d-tabs-live) ul.tabs.wc-tabs::before,
+.woocommerce div.product .woocommerce-tabs:not(.d-tabs-live) ul.tabs.wc-tabs::after{
+	content:none;
+}
+.woocommerce div.product .woocommerce-tabs:not(.d-tabs-live) ul.tabs.wc-tabs > li.active > a{
+	box-shadow:inset 0 -2px 0 var(--c-cherry-deep);
+}
+
+.woocommerce div.product .woocommerce-tabs .panel{
+	margin:0 0 var(--space-m);
+	padding:0;
+}
+.woocommerce div.product .woocommerce-tabs .panel > :first-child{ margin-top:0 }
+.woocommerce div.product .woocommerce-tabs .panel h2,
+.woocommerce div.product .woocommerce-tabs .panel > h3{
+	margin:0 0 var(--space-2xs);
+	font:var(--fw-bold) var(--fs-lede)/var(--lh-heading) var(--font-display);
+}
+
+/* =============================================================================
+   THE REVIEWS
+   Woo positions a 32px avatar absolutely and pushes the body over with a 50px
+   margin. That is a layout held together by two numbers agreeing, and they stop
+   agreeing the moment the avatar fails to load or a translation makes the meta
+   line wrap. A two-column grid needs neither number.
+
+   Woo reaches for two IDs here, so the class-repeat trick earns its keep: our
+   `.comment-text.comment-text` is (2,3,2) against Woo's (2,3,1).
+   ========================================================================== */
+.woocommerce #reviews h2,
+.woocommerce #reviews #comments h2{
+	clear:none;
+	margin:0 0 var(--space-s);
+	font:var(--fw-bold) var(--fs-lede)/var(--lh-heading) var(--font-display);
+}
+.woocommerce #reviews h2 small{
+	float:none;
+	margin:0 0 0 var(--space-3xs);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+}
+.woocommerce #reviews h2 small a{ color:var(--ink-quiet); text-decoration:underline }
+.woocommerce .woocommerce-noreviews{
+	margin:0 0 var(--space-m);
+	padding:var(--space-s);
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-l);
+	color:var(--ink-quiet);
+	text-align:center;
+}
+
+.woocommerce #reviews #comments ol.commentlist{
+	display:grid;
+	gap:var(--space-s);
+	width:100%;
+	margin:0 0 var(--space-m);
+	padding:0;
+	background:none;
+	list-style:none;
+}
+.woocommerce #reviews #comments ol.commentlist::before,
+.woocommerce #reviews #comments ol.commentlist::after{ content:none }
+.woocommerce #reviews #comments ol.commentlist li{
+	position:static;
+	margin:0;
+	padding:0;
+	border:0;
+	background:none;
+}
+.woocommerce #reviews #comments ol.commentlist li::before{ content:none }
+
+/* The card. .comment_container is Woo's own wrapper, so the grid can go on it
+   and the avatar and the body become its two children with no extra markup. */
+.woocommerce #reviews #comments ol.commentlist li .comment_container{
+	display:grid;
+	grid-template-columns:2.5rem 1fr;
+	gap:var(--space-2xs) var(--space-xs);
+	align-items:start;
+	padding:var(--space-s);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+.woocommerce #reviews #comments ol.commentlist li img.avatar{
+	position:static;
+	float:none;
+	width:2.5rem;
+	height:2.5rem;
+	padding:0;
+	margin:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	object-fit:cover;
+	background:var(--tint-grey-quiet);
+	box-shadow:none;
+}
+.woocommerce #reviews #comments ol.commentlist li .comment-text.comment-text{
+	margin:0;
+	padding:0;
+	border:0;
+	border-radius:0;
+}
+.woocommerce #reviews #comments ol.commentlist li .comment-text::before,
+.woocommerce #reviews #comments ol.commentlist li .comment-text::after{ content:none }
+/* The rating sits above the name rather than floating right of it. Woo's
+   `.woocommerce .star-rating{float:right}` is (0,2,0) and beats the (0,1,0)
+   rule in adopted/rating.css, which is why this is spelled out here. */
+.woocommerce #reviews #comments ol.commentlist li .comment-text .star-rating{
+	float:none;
+	display:block;
+	margin:0 0 var(--space-3xs);
+}
+.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-3xs) var(--space-2xs);
+	margin:0 0 var(--space-2xs);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.woocommerce:where(body:not(.woocommerce-uses-block-theme)) #reviews #comments ol.commentlist li .meta{
+	color:var(--ink-quiet);
+	font-size:var(--fs-fine);
+}
+.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta strong{
+	color:var(--ink);
+	font-weight:var(--fw-medium);
+}
+/* Verified buyer. Woo emits a bare <em>; it is the one fact in a review a
+   shopper actually weighs, so it gets a badge rather than italics. */
+.woocommerce #reviews #comments ol.commentlist li .woocommerce-review__verified{
+	display:inline-flex;
+	align-items:center;
+	padding:.1em .45em;
+	border-radius:var(--radius-pill);
+	background:var(--tint-gold-quiet);
+	color:var(--ink);
+	font:var(--fw-medium) var(--fs-badge)/1.5 var(--font-ui);
+	font-style:normal;
+}
+/* The en-dash Woo puts between the name and the date. The flex gap already
+   separates them, so the dash is one more mark to read out. */
+.woocommerce #reviews #comments ol.commentlist li .woocommerce-review__dash{ display:none }
+.woocommerce #reviews #comments ol.commentlist li .comment-text .description p:last-child{
+	margin-bottom:0;
+}
+.woocommerce #reviews #comments ol.commentlist ul.children{
+	display:grid;
+	gap:var(--space-s);
+	margin:var(--space-s) 0 0 var(--space-m);
+	padding:0;
+	list-style:none;
+}
+.woocommerce #reviews #comments ol.commentlist ul.children .star-rating{ display:none }
+.woocommerce #reviews #comments ol.commentlist #respond{
+	margin:var(--space-s) 0 0 var(--space-m);
+	padding:var(--space-s);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+}
+
+/* -- the review form ---------------------------------------------------------
+   The inputs are already the field pattern (adopted/field.css). This is the
+   card around them, the heading, and the two rows that are not ordinary fields.
+   ========================================================================== */
+.woocommerce #review_form_wrapper #review_form #respond,
+.woocommerce #reviews #review_form #respond{
+	position:static;
+	width:auto;
+	max-width:46rem;
+	margin:var(--space-m) 0 0;
+	padding:var(--space-m);
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
+.woocommerce #review_form #respond::before,
+.woocommerce #review_form #respond::after{ content:none }
+.woocommerce #reviews .comment-reply-title,
+.woocommerce .woocommerce-Reviews .comment-reply-title{
+	display:block;
+	margin:0 0 var(--space-xs);
+	font:var(--fw-bold) var(--fs-lede)/var(--lh-heading) var(--font-display);
+	font-size:var(--fs-lede);
+	color:var(--ink);
+}
+.woocommerce #review_form #respond p{ margin:0 0 var(--space-s) }
+.woocommerce #review_form #respond p:last-child{ margin-bottom:0 }
+.woocommerce #review_form #respond .comment-form-rating{
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+.woocommerce #review_form #respond .comment-form-rating label{
+	margin:0;
+	font:var(--fw-medium) var(--fs-fine)/1.3 var(--font-ui);
+	color:var(--ink);
+}
+.woocommerce #reviews #comment{
+	height:auto;
+	min-height:8rem;
+	resize:vertical;
+}
+.woocommerce #review_form #respond textarea{
+	box-sizing:border-box;
+	width:100%;
+}
+.woocommerce #review_form #respond .comment-form-cookies-consent{
+	display:flex;
+	align-items:flex-start;
+	gap:var(--space-2xs);
+}
+.woocommerce #review_form #respond .comment-form-cookies-consent label{
+	margin:0;
+	font-weight:var(--fw-regular);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+}
+.woocommerce #review_form #respond .comment-notes{
+	font-size:var(--fs-meta);
+	line-height:var(--lh-body);
+	color:var(--ink-quiet);
+}
+/* The submit. Woo's own button rules are guarded by
+   :where(body:not(.woocommerce-block-theme-has-button-styles)), which makes
+   them zero-specificity on the left and easy to beat - but only if we actually
+   say something, which style.css never did for this one button. */
+.woocommerce #review_form #respond .form-submit input#submit{
+	left:auto;
+	padding:var(--space-2xs) var(--space-m);
+	border:0;
+	border-radius:var(--radius-pill);
+	background:var(--action);
+	color:var(--action-ink);
+	font:var(--fw-medium) var(--fs-ui)/1.4 var(--font-ui);
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.woocommerce #review_form #respond .form-submit input#submit:hover{
+	background:var(--c-cherry-deep);
+	color:var(--action-ink);
+	opacity:1;
+}
+.woocommerce #review_form #respond .form-submit input#submit:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+
+
 /* gallery chrome only - not part of the system */
 body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-body)}
 .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 120px}
@@ -7965,7 +9151,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#product">Product page</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -8425,6 +9611,11 @@ that is the next component.</div>
       trail - needs a clock. Publishing --sc-pos gives the stylesheet something
       to transition, and --sc-lag falls out of that.
 
+   4. TAB UNDERLINE GEOMETRY.  Tab widths depend on their text, so unlike the
+      paginator there is no cell size to multiply an index by. CSS cannot
+      measure a box. Without this the strip is still a correct tab strip, with a
+      static underline on the selected tab and no travel.
+
    Plus dragging, which is not a CSS gap but an OS one: a native scrollbar thumb
    is draggable because the operating system draws it. Ours is a div.
 
@@ -8616,6 +9807,66 @@ that is the next component.</div>
 		});
 	}
 
+	/* 8. THE TABS. The underline travels; CSS does the travelling. All this
+	      does is measure, because CSS cannot: tab widths depend on their text,
+	      so there is no cell size to multiply an index by the way the paginator
+	      does. Two custom properties - --tab-x and --tab-w - and the two bars
+	      transition them on two different clocks.
+
+	      It also adds .d-tabs-live. Until that class is on, the CSS draws NO
+	      travelling bar at all and the active tab carries a plain static
+	      underline instead, so a page whose script failed to load still has a
+	      correct tab strip - just a still one. The class is what says "something
+	      is driving this now".
+
+	      Woo's own tabs script toggles .active on the LI and does not fire an
+	      event, so the click is watched directly. requestAnimationFrame, not an
+	      immediate read: on the click that switches tabs, .active has not moved
+	      yet at the moment the handler runs, and measuring then measures the tab
+	      we are leaving. */
+	function tabs(wrap) {
+		var list = wrap.querySelector('ul.tabs, .d-tabs__list');
+		if (!list) return;
+
+		function measure() {
+			var on = list.querySelector('li.active > a, [aria-selected="true"]');
+			if (!on) { wrap.classList.remove('d-tabs-live'); return; }
+			var li = on.closest('li') || on;
+			/* offsetLeft is relative to the nearest positioned ancestor, and the
+			   list is position:relative, so this is already in the list's own
+			   coordinates - which is the space the bars are positioned in. */
+			wrap.style.setProperty('--tab-x', li.offsetLeft + 'px');
+			wrap.style.setProperty('--tab-w', li.offsetWidth + 'px');
+			wrap.classList.add('d-tabs-live');
+		}
+
+		/* First measurement with no transition, or the underline slides in from
+		   the left edge on every page load, which reads as a page still
+		   settling rather than a tab being chosen. */
+		list.style.transition = 'none';
+		measure();
+		requestAnimationFrame(function () { list.style.removeProperty('transition'); });
+
+		list.addEventListener('click', function (e) {
+			if (!e.target.closest('a')) return;
+			requestAnimationFrame(function () { requestAnimationFrame(measure); });
+		});
+		list.addEventListener('keyup', function (e) {
+			if (e.key === 'Enter' || e.key === ' ') requestAnimationFrame(measure);
+		});
+
+		/* A tab strip wraps to two rows on a narrow viewport, and a wrapped tab
+		   is somewhere else entirely. ResizeObserver rather than a window resize
+		   listener, because the strip also changes width when a sidebar opens
+		   and the window does not. */
+		if (window.ResizeObserver) new ResizeObserver(measure).observe(list);
+
+		/* Fonts land after first paint and every tab changes width when they do.
+		   One late re-measure is cheaper than living with a bar that is a few
+		   pixels wrong until the next click. */
+		if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -8629,6 +9880,9 @@ that is the next component.</div>
 		});
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
+		});
+		(root || document).querySelectorAll('.woocommerce-tabs, .d-tabs').forEach(function (el) {
+			if (!el.dataset.dTabs) { el.dataset.dTabs = '1'; tabs(el); }
 		});
 	}
 
@@ -9007,6 +10261,212 @@ reproduce it, so I know what to remove and not yet why. And
 <code>anchor(center)</code>, which is, computed to <code>top: auto</code> and
 dropped the button in the bottom-left corner. Two failures and a browser crash
 on one feature is where to stop.</div>
+</section><section class="sec" id="product"><h2>Patterns</h2>
+<h3>Product page &mdash; gallery, buy column, trust, tabs, reviews</h3>
+<p class="note"><b>This is the most contested page on the site.</b>
+<code>collide.js</code> counts 209 element/property pairs here where our CSS and
+WooCommerce&rsquo;s both have an opinion &mdash; more than home, shop and checkout
+put together. Everything below is wrapped in
+<code>.woocommerce &gt; div.product</code> and uses <em>Woo&rsquo;s</em> class
+names, because a fixture written with our own classes would render perfectly and
+prove nothing about who wins.</p>
+<p class="note"><b>Two defects that are live on darlinghome.bg right now,
+measured this morning.</b> WooCommerce builds each tab&rsquo;s shape out of two
+5&times;5px pseudo-elements per tab &mdash; quarter-round corners with a lilac
+border and a lilac <code>box-shadow</code>. <code>style.css</code> zeroes the
+tab&rsquo;s own background and border but never touched its pseudos, so all four
+nubs are still painting: <em>2 of 2 tabs, border rgb(207,200,216), shadow
+rgb(233,230,237)</em>. And <code>style.css</code> tries to kill Woo&rsquo;s
+full-width underline with <code>content:none</code> at specificity (0,3,1)
+against Woo&rsquo;s (0,3,2) &mdash; it loses, so Woo&rsquo;s lilac rule and ours
+are both drawn, one over the other. The same arithmetic ate the strip&rsquo;s
+padding: ours says 0, Woo says 1em, computed is 17px.</p>
+<p class="note"><b>What is measured here and what is not.</b> The tab rules were
+verified against the live product page. The gallery and the review list were
+<em>not</em>: the shop has exactly one product, it has no images and no reviews,
+so there is no live DOM for either. They are written against WooCommerce&rsquo;s
+own stylesheet and its <code>review.php</code> markup and rendered against this
+fixture. Re-check them the day a photographed product with a review exists.</p>
+
+<div class="woocommerce"><div class="product">
+<div class="d-product__top">
+
+  <div class="woocommerce-product-gallery woocommerce-product-gallery--with-images woocommerce-product-gallery--columns-4 images">
+    <a href="#" class="woocommerce-product-gallery__trigger" aria-label="Уголеми">zoom<span aria-hidden="true"></span></a>
+    <div class="flex-viewport">
+      <div class="woocommerce-product-gallery__wrapper">
+        <div class="woocommerce-product-gallery__image"><a href="#"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></a></div>
+      </div>
+    </div>
+    <ol class="flex-control-nav flex-control-thumbs"><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="flex-active" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li><li><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" class="" alt=""></li></ol>
+  </div>
+
+  <div class="summary entry-summary d-product__buy">
+    <h1 class="d-product__title">Керамична купа &bdquo;Пясък&ldquo;</h1>
+    <p class="d-product__price"><del>32,10</del>&nbsp;26,40&nbsp;&euro;
+      <span class="d-bgn">/ 51,64 лв.</span></p>
+    <p class="d-product__excerpt">Ръчно глазирана, 22 см. Всяка е малко различна
+    &mdash; това е глазурата, не дефект.</p>
+    <p class="d-product__stock d-product__stock--low">
+      <span class="d-icon d-icon--warning"></span> Остават само 3</p>
+    <div class="d-product__atc">
+      <div class="d-quantity">
+        <button class="d-quantity__btn" aria-label="По-малко"><span class="d-icon d-icon--minus"></span></button>
+        <input class="d-quantity__input" type="number" value="1" min="1" aria-label="Количество">
+        <button class="d-quantity__btn" aria-label="Повече"><span class="d-icon d-icon--plus"></span></button>
+      </div>
+      <button class="d-btn d-btn--primary">Добавяне в количката</button>
+    </div>
+    <div class="d-product__express">
+      <div style="display:grid;gap:8px">
+        <div style="height:44px;border-radius:var(--radius-pill);background:var(--c-cocoa)"></div>
+        <div style="height:44px;border-radius:var(--radius-pill);background:var(--c-grey-300)"></div>
+      </div>
+    </div>
+
+    <div class="d-trust">
+      <p class="d-trust__cod"><span class="d-icon d-icon--shield"></span>
+        <strong>Наложен платеж</strong> &mdash; плащаш при получаване</p>
+      <p class="d-trust__ship">Еконт и Спиди &middot; до адрес или до офис &middot;
+        безплатна доставка над 77&nbsp;&euro;</p>
+      <details class="d-panel"><summary class="d-panel__summary">Доставка</summary>
+        <div class="d-panel__body"><p>Изпращаме с Еконт или Спиди &mdash; ти избираш
+        при поръчката. Обикновено тръгва в рамките на един работен ден.</p></div></details>
+      <details class="d-panel"><summary class="d-panel__summary">Връщане и замяна</summary>
+        <div class="d-panel__body"><p>14 дни за връщане без причина, стига опаковката
+        да е запазена.</p></div></details>
+    </div>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:30px">Tabs &mdash; the underline travels, and the
+trail lags behind it</p>
+<div class="woocommerce-tabs wc-tabs-wrapper">
+  <ul class="tabs wc-tabs">
+    <li class="description_tab active" id="tab-title-description"><a href="#tab-description">Описание</a></li>
+    <li class="reviews_tab" id="tab-title-reviews"><a href="#tab-reviews">Отзиви (2)</a></li>
+    <li class="darling_gpsr_tab" id="tab-title-gpsr"><a href="#tab-gpsr">Безопасност и производител</a></li>
+  </ul>
+  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-description">
+    <h2>Описание</h2>
+    <p>Купата е хвърлена на колело и глазирана на ръка, затова две съседни купи
+    никога не са напълно еднакви. Издържа на съдомиялна и микровълнова.</p>
+  </div>
+  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-reviews" style="display:none">
+    <div id="reviews" class="woocommerce-Reviews">
+      <div id="comments">
+        <h2 class="woocommerce-Reviews-title">Отзиви <small>(2)</small></h2>
+        <ol class="commentlist">
+          <li class="review byuser">
+            <div class="comment_container">
+              <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+              <div class="comment-text">
+                <div class="star-rating" role="img" aria-label="5 от 5"><span style="width:100%">5</span></div>
+                <p class="meta">
+                  <strong class="woocommerce-review__author">Мария</strong>
+                  <em class="woocommerce-review__verified verified">потвърдена покупка</em>
+                  <span class="woocommerce-review__dash">&ndash;</span>
+                  <time class="woocommerce-review__published-date">12 юли 2026</time>
+                </p>
+                <div class="description"><p>По-голяма е, отколкото изглежда на снимката,
+                и точно затова я използвам всеки ден. Глазурата е равна.</p></div>
+              </div>
+            </div>
+            <ul class="children"><li class="comment">
+              <div class="comment_container">
+                <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+                <div class="comment-text">
+                  <p class="meta"><strong class="woocommerce-review__author">Дарлинг</strong>
+                  <span class="woocommerce-review__dash">&ndash;</span>
+                  <time>13 юли 2026</time></p>
+                  <div class="description"><p>Благодарим, Мария! Радваме се, че е намерила място на масата.</p></div>
+                </div>
+              </div>
+            </li></ul>
+          </li>
+          <li class="review">
+            <div class="comment_container">
+              <img class="avatar" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='54' r='28' fill='%23c9b9a6'/%3E%3Cellipse cx='50' cy='34' rx='28' ry='7' fill='%23efe6d9'/%3E%3C/svg%3E" alt="">
+              <div class="comment-text">
+                <div class="star-rating" role="img" aria-label="4 от 5"><span style="width:80%">4</span></div>
+                <p class="meta"><strong class="woocommerce-review__author">Иван</strong>
+                <span class="woocommerce-review__dash">&ndash;</span>
+                <time>2 август 2026</time></p>
+                <div class="description"><p>Хубава е. Свалям една звезда само защото
+                чакахме доставката четири дни.</p></div>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div id="review_form_wrapper"><div id="review_form"><div id="respond" class="comment-respond">
+        <span id="reply-title" class="comment-reply-title">Напиши отзив</span>
+        <form class="comment-form">
+          <p class="comment-form-rating"><label>Твоята оценка</label>
+            <span class="stars"><a href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a></span></p>
+          <p class="comment-form-comment"><label class="d-field__label" for="comment">Отзив</label>
+            <textarea id="comment" class="d-field__input" rows="4"></textarea></p>
+          <p class="comment-form-author"><label class="d-field__label" for="author">Име</label>
+            <input id="author" class="d-field__input" type="text"></p>
+          <p class="comment-form-cookies-consent">
+            <input id="wp-comment-cookies-consent" type="checkbox">
+            <label for="wp-comment-cookies-consent">Запомни името ми за следващия път</label></p>
+          <p class="form-submit"><input type="submit" id="submit" class="submit" value="Изпрати"></p>
+        </form>
+      </div></div></div>
+    </div>
+  </div>
+  <div class="woocommerce-Tabs-panel panel entry-content wc-tab" id="tab-gpsr" style="display:none">
+    <h2>Безопасност и производител</h2>
+    <p><strong>Производител:</strong> Дарлинг 7 ООД, София</p>
+    <p><strong>Предупреждения:</strong> не е играчка; ръбовете могат да се нащърбят при удар.</p>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:26px">No reviews yet</p>
+<div class="woocommerce"><p class="woocommerce-noreviews">Все още няма отзиви.</p></div>
+
+</div></div>
+<div class="todo"><b>The travelling underline is not a background on the active
+tab.</b> A background cannot move between two elements, and moving is the whole
+point. It is two bars on one pair of values &mdash; <code>--tab-x</code> and
+<code>--tab-w</code> &mdash; transitioned on two different clocks: the cherry
+mark on the UI curve arrives first, the gold ghost on the wake curve is still
+catching up, and the lit gap between them <em>is</em> the trail. It points
+backwards without anything computing a direction, because the ghost is simply
+late. Same trick as the panel&rsquo;s swimmer and the paginator&rsquo;s wake.<br><br>
+<b>They are Woo&rsquo;s own pseudo-elements, taken over rather than added.</b>
+<code>ul.tabs::before</code> is Woo&rsquo;s lilac rule and <code>::after</code>
+is a clearfix; both are redefined, which kills the lilac and costs no extra
+markup. Hanging them on the first <code>li</code> instead does not work &mdash;
+a pseudo-element is positioned against its own element, so it would measure
+<code>--tab-x</code> from that tab&rsquo;s left edge rather than the
+strip&rsquo;s.<br><br>
+<b>With no script there is no bar at all.</b> Tab widths depend on their text, so
+something has to measure; <code>darling-ui.js</code> adds
+<code>.d-tabs-live</code> once it has, and until then the selected tab carries a
+plain static underline. The two are never both drawn.<br><br>
+<b>The thumbnails are a grid and none of them are dimmed.</b> Woo floats them at
+25% and then needs <code>clear:left</code> on every 4n+1 child, once per column
+count; and it fades every inactive thumb to <code>opacity:.5</code>, which on a
+warm-grey page reads as &ldquo;still loading&rdquo;. Ours are all at full
+strength with a gold ring on the active one &mdash; a mark that says
+&ldquo;this one&rdquo; rather than dimming everything that is not.</div>
+<script>
+/* Gallery chrome only. On the real page WooCommerce's own tabs script does this;
+   here there is nothing to toggle .active, and without a toggle the underline
+   has nowhere to travel to. */
+(function(){
+  var w=document.querySelector('#product .woocommerce-tabs'); if(!w) return;
+  w.querySelector('ul.tabs').addEventListener('click',function(e){
+    var a=e.target.closest('a'); if(!a) return; e.preventDefault();
+    w.querySelectorAll('ul.tabs > li').forEach(function(li){li.classList.remove('active')});
+    a.parentNode.classList.add('active');
+    w.querySelectorAll('.wc-tab').forEach(function(p){p.style.display='none'});
+    var t=w.querySelector(a.getAttribute('href')); if(t) t.style.display='';
+  });
+})();
+</script>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>
 <p class="note">card, button, band, notice, rating, field, table, quantity, badge,

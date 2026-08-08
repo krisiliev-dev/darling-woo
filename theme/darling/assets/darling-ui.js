@@ -22,6 +22,11 @@
       trail - needs a clock. Publishing --sc-pos gives the stylesheet something
       to transition, and --sc-lag falls out of that.
 
+   4. TAB UNDERLINE GEOMETRY.  Tab widths depend on their text, so unlike the
+      paginator there is no cell size to multiply an index by. CSS cannot
+      measure a box. Without this the strip is still a correct tab strip, with a
+      static underline on the selected tab and no travel.
+
    Plus dragging, which is not a CSS gap but an OS one: a native scrollbar thumb
    is draggable because the operating system draws it. Ours is a div.
 
@@ -213,6 +218,66 @@
 		});
 	}
 
+	/* 8. THE TABS. The underline travels; CSS does the travelling. All this
+	      does is measure, because CSS cannot: tab widths depend on their text,
+	      so there is no cell size to multiply an index by the way the paginator
+	      does. Two custom properties - --tab-x and --tab-w - and the two bars
+	      transition them on two different clocks.
+
+	      It also adds .d-tabs-live. Until that class is on, the CSS draws NO
+	      travelling bar at all and the active tab carries a plain static
+	      underline instead, so a page whose script failed to load still has a
+	      correct tab strip - just a still one. The class is what says "something
+	      is driving this now".
+
+	      Woo's own tabs script toggles .active on the LI and does not fire an
+	      event, so the click is watched directly. requestAnimationFrame, not an
+	      immediate read: on the click that switches tabs, .active has not moved
+	      yet at the moment the handler runs, and measuring then measures the tab
+	      we are leaving. */
+	function tabs(wrap) {
+		var list = wrap.querySelector('ul.tabs, .d-tabs__list');
+		if (!list) return;
+
+		function measure() {
+			var on = list.querySelector('li.active > a, [aria-selected="true"]');
+			if (!on) { wrap.classList.remove('d-tabs-live'); return; }
+			var li = on.closest('li') || on;
+			/* offsetLeft is relative to the nearest positioned ancestor, and the
+			   list is position:relative, so this is already in the list's own
+			   coordinates - which is the space the bars are positioned in. */
+			wrap.style.setProperty('--tab-x', li.offsetLeft + 'px');
+			wrap.style.setProperty('--tab-w', li.offsetWidth + 'px');
+			wrap.classList.add('d-tabs-live');
+		}
+
+		/* First measurement with no transition, or the underline slides in from
+		   the left edge on every page load, which reads as a page still
+		   settling rather than a tab being chosen. */
+		list.style.transition = 'none';
+		measure();
+		requestAnimationFrame(function () { list.style.removeProperty('transition'); });
+
+		list.addEventListener('click', function (e) {
+			if (!e.target.closest('a')) return;
+			requestAnimationFrame(function () { requestAnimationFrame(measure); });
+		});
+		list.addEventListener('keyup', function (e) {
+			if (e.key === 'Enter' || e.key === ' ') requestAnimationFrame(measure);
+		});
+
+		/* A tab strip wraps to two rows on a narrow viewport, and a wrapped tab
+		   is somewhere else entirely. ResizeObserver rather than a window resize
+		   listener, because the strip also changes width when a sidebar opens
+		   and the window does not. */
+		if (window.ResizeObserver) new ResizeObserver(measure).observe(list);
+
+		/* Fonts land after first paint and every tab changes width when they do.
+		   One late re-measure is cheaper than living with a bar that is a few
+		   pixels wrong until the next click. */
+		if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -226,6 +291,9 @@
 		});
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
+		});
+		(root || document).querySelectorAll('.woocommerce-tabs, .d-tabs').forEach(function (el) {
+			if (!el.dataset.dTabs) { el.dataset.dTabs = '1'; tabs(el); }
 		});
 	}
 
