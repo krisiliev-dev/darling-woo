@@ -82,6 +82,8 @@
 @import url("patterns/product.css") layer(patterns);
 @import url("patterns/cart.css") layer(patterns);
 @import url("patterns/footer.css") layer(patterns);
+@import url("patterns/page.css") layer(patterns);
+@import url("patterns/a11y.css") layer(patterns);
 @import url("finish.css")        layer(finish);
 
 /* card, field, badge, placeholder, utilities: not written yet. */

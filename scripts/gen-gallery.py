@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1692,7 +1692,7 @@ I reintroduced it anyway by reading the legacy <code>.darling-wordmark</code>
 mapping without noticing that what it maps to is a comment rather than a rule.
 The check caught it.<br><br>
 <b>The two stars on the newsletter band are masks, not dingbats.</b> The legacy
-pair were <code>content:"\2726"</code>, which made them <em>text</em>:
+pair were <code>content</code> set to a dingbat character, which made them <em>text</em>:
 selectable, copied with the page, and read out by a screen reader as
 &ldquo;black four pointed star&rdquo;.<br><br>
 <b>The email field cannot be the field pattern.</b> <code>.d-field</code> draws a
@@ -1710,6 +1710,120 @@ box-shadow, all on a 42px circle.</div>
 
 # ------------------------------------------------------------------- footer ---
 A(FOOTER_MARKUP)
+
+
+PAGES_MARKUP = '''<section class="sec" id="pages"><h2>Patterns</h2>
+<h3>Accessibility mode, prose, blog, 404, consent, GPSR</h3>
+<p class="note"><b>The accessibility switch existed and the mode did not.</b>
+Three <code>html.d-a11y</code> rules were already scattered across the hero, the
+season band and the category banner, each forcing a title to white on a dark
+photograph. That was all of it: no text size, no underlines, no animation kill,
+no focus change. The switch was in the markup and in the legacy stylesheet, and
+in our system it did three things to three headings.</p>
+<p class="note"><b>And the type scale cannot be scaled from the root.</b> The
+legacy mode did <code>html.darling-a11y body{ font-size:17px }</code>, which
+works because those sizes were relative. Ours are not &mdash;
+<code>tokens/type.css</code> declares <code>--fs-body:16px</code> and the rest in
+<em>pixels</em>, so a root font-size change moves nothing at all. The mode
+redeclares nine size tokens instead, which is the mechanism a token system is
+for. The better fix some day is one multiplier, and then those nine lines become
+one.</p>
+<p class="note"><b>Two of these are not new components.</b> The GPSR block is a
+disclosure and a warning, and we already have <code>.d-panel</code> and
+<code>.d-notice</code>. The legacy stylesheet wrote a third disclosure and a
+fourth notice for it. Both are gone.</p>
+
+<p class="lbl">Prose page &mdash; and an authored &lt;details&gt;, which gets the
+floor treatment rather than the panel</p>
+<div class="d-prose d-prose--card">
+  <h2>Доставка и плащане</h2>
+  <p>Изпращаме с Еконт и Спиди, до адрес или до офис. Поръчките, направени до
+  16:00 в работен ден, обикновено тръгват същия ден.</p>
+  <ul><li>Безплатна доставка над 77&nbsp;&euro;</li><li>Наложен платеж или карта</li>
+  <li>14 дни за връщане</li></ul>
+  <details><summary>Колко време отнема доставката?</summary>
+  <p>До офис обикновено един работен ден, до адрес един до два.</p></details>
+  <details><summary>Мога ли да сменя адреса след поръчка?</summary>
+  <p>Да, ако пратката още не е предадена на куриера. <a href="#">Пишете ни</a>.</p></details>
+</div>
+
+<p class="lbl" style="margin-top:26px">Blog list</p>
+<ul class="d-postlist">
+  <li><article class="d-post">
+    <h2 class="d-post__title"><a href="#">Как да подредим масата за гости</a></h2>
+    <p class="d-post__date">12 юли 2026</p>
+    <p class="d-post__excerpt">Три чинии, две чаши и малко търпение &mdash; и
+    защо ленената покривка е по-прощаваща от памучната. <a href="#">Прочети още</a></p>
+  </article></li>
+  <li><article class="d-post">
+    <h2 class="d-post__title"><a href="#">Грижа за ръчно глазирана керамика</a></h2>
+    <p class="d-post__date">2 август 2026</p>
+    <p class="d-post__excerpt">Съдомиялна &mdash; да. Фурна &mdash; не. И какво
+    всъщност значи, когато две купи не са еднакви.</p>
+  </article></li>
+</ul>
+
+<p class="lbl" style="margin-top:26px">404</p>
+<div class="d-404" style="background:var(--surface-raised);border-radius:var(--radius-l)">
+  <h2 class="d-404__title">Тази страница я няма</h2>
+  <p class="d-404__sub">Може да е преместена, а може и никога да не е била тук.
+  Ето откъде да продължиш.</p>
+  <div class="d-404__actions">
+    <a class="d-btn d-finish" href="#">Към магазина</a>
+    <a class="d-btn d-btn--quiet" href="#">Начало</a>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:26px">GPSR &mdash; a panel and a notice, not a
+third disclosure and a fourth notice</p>
+<details class="d-panel d-gpsr"><summary class="d-panel__summary">Безопасност и производител</summary>
+  <div class="d-panel__body">
+    <p><strong>Производител:</strong> Дарлинг 7 ООД, ул. Пример 12, София 1000</p>
+    <p class="d-gpsr__warn">Не е играчка. Ръбовете могат да се нащърбят при удар.</p>
+  </div>
+</details>
+<div class="d-notice d-notice--error" style="margin-top:14px" role="alert">
+  <p class="d-notice__body">Този артикул не може да бъде изпратен до избраната държава.</p>
+</div>
+
+<p class="lbl" style="margin-top:26px">Consent card and the two buttons &mdash;
+shown here in place rather than fixed to the window</p>
+<div style="position:relative;height:230px;background:var(--surface-quiet);border-radius:var(--radius-l);overflow:hidden">
+  <div class="d-consent" style="position:absolute">
+    <p>Използваме бисквитки, за да работи количката и да разберем кое си струва.
+    <a href="#">Повече</a></p>
+    <div class="d-consent__actions">
+      <button class="d-btn d-finish">Приемам</button>
+      <button class="d-btn d-btn--quiet">Само необходимите</button>
+    </div>
+  </div>
+  <button class="d-fab d-fab--a11y" style="position:absolute" aria-label="Достъпност">
+    <span class="d-icon d-icon--user"></span></button>
+  <a class="d-fab d-fab--lang" style="position:absolute" href="#" aria-label="English">EN</a>
+</div>
+<div class="todo"><b>The two buttons are bottom-LEFT, and that is not
+arbitrary.</b> Bottom-right is where every chat widget, cookie nag and
+back-to-top button goes, and this is the control somebody needs when all of those
+are in the way.<br><br>
+<b>The consent card clears them by variable, not by 78px.</b> The legacy version
+hard-coded the gap, which is correct until somebody changes a button&rsquo;s size
+&mdash; and then it is a card sitting on top of the accessibility switch, the one
+control a person in that situation most needs to reach.<br><br>
+<b>The mode is the only place <code>!important</code> is allowed.</b> Everywhere
+else in this system an <code>!important</code> is a specificity argument somebody
+lost. Here it is the point: a person who asked for the plain version gets it
+whatever any component says, including components written after this file.<br><br>
+<b>Quiet ink becomes ordinary ink in the mode</b>, which flattens the hierarchy
+on purpose &mdash; it trades &ldquo;you can see what is secondary&rdquo; for
+&ldquo;you can read everything&rdquo;, which is the trade somebody makes by
+turning it on. Worth a look with the switch flipped before it ships.</div>
+<p class="lbl" style="margin-top:22px">Flip the mode on this page</p>
+<button class="d-btn d-btn--quiet" onclick="document.documentElement.classList.toggle('d-a11y')">
+  Превключи достъпен режим</button>
+</section>'''
+
+# -------------------------------------------------------------------- pages ---
+A(PAGES_MARKUP)
 
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>

@@ -1,0 +1,147 @@
+/* =============================================================================
+   PATTERN / ACCESSIBILITY MODE
+   A switch in the corner that makes the whole site plainer, and the two buttons
+   that live next to it.
+
+   *** THIS IS A MODE, NOT A COMPONENT, AND IT IS THE ONLY PLACE !important IS
+   ALLOWED. *** Everywhere else in this system an !important is a specificity
+   argument that somebody lost. Here it is the point: a person who has asked for
+   the plain version must get it whatever any component says, including
+   components written after this file.
+
+   -- WHAT WAS ALREADY HERE, AND WHAT WAS NOT --------------------------------
+   Three `html.d-a11y` rules already existed, scattered across hero.css,
+   catalogue.css and the season band - each forcing a title to white on a dark
+   photograph. The MODE ITSELF had never been written: no text size, no
+   underlines, no animation kill, no focus change. The switch existed in the
+   legacy stylesheet and in the markup, and in our system it did three things to
+   three headings.
+
+   *** AND THE TYPE SCALE CANNOT BE SCALED BY THE ROOT. ***
+   The legacy version did `html.darling-a11y body{ font-size:17px }`, which works
+   because the legacy sizes were relative. Ours are not: tokens/type.css declares
+   --fs-body:16px, --fs-meta:14px and the rest in PIXELS, so a root font-size
+   change moves nothing at all. Measured before writing this - the whole page
+   stays put.
+
+   That is a real limitation of the token file rather than of this one, and the
+   honest fix at this level is to redeclare the sizes for the mode. It is nine
+   lines and it is the mechanism a token system is FOR. The better fix, some day,
+   is a scale expressed as one multiplier - and when that lands, these nine lines
+   become one.
+   ========================================================================== */
+
+html.d-a11y{
+	/* +12.5% on everything that carries words. The display sizes move less,
+	   because a hero at 54px is already large and the person who turned this on
+	   is asking to read the paragraph, not the poster. */
+	--fs-body:  18px;
+	--fs-ui:    17px;
+	--fs-meta:  16px;
+	--fs-fine:  15px;
+	--fs-badge: 13px;
+	--fs-lede:  20px;
+	--fs-section: 29px;
+	--fs-band:  32px;
+	--fs-hero:  clamp(36px, 4vw, 56px);
+
+	/* Quiet ink becomes ordinary ink. This flattens the hierarchy on purpose:
+	   the mode trades "you can see what is secondary" for "you can read
+	   everything", which is the trade the person asked for by turning it on. */
+	--ink-quiet: var(--ink);
+	--ink-placeholder: var(--c-mauve);
+}
+
+/* Decoration off. The page's own patterned background is the loudest of it. */
+html.d-a11y body{ background-image:none !important }
+html.d-a11y .d-ambient{ display:none !important }
+
+/* *** EVERY ANIMATION AND EVERY TRANSITION, OFF. ***
+   Same shape as the reduced-motion kill in motion.css and deliberately a second
+   rule rather than a shared one: prefers-reduced-motion is a SYSTEM setting the
+   browser reports, this is a choice the person made on this site, and the two
+   want to be switchable independently. */
+html.d-a11y *,
+html.d-a11y *::before,
+html.d-a11y *::after{
+	animation:none !important;
+	transition:none !important;
+}
+
+/* Links are underlined, everywhere, including the ones a component deliberately
+   un-underlined. In prose an underline is how a link is a link. */
+html.d-a11y a{ text-decoration:underline }
+html.d-a11y .d-btn,
+html.d-a11y .d-icon-btn,
+html.d-a11y .d-tabs__tab{ text-decoration:none }   /* a button is not a link */
+
+/* A thicker ring, further out. 2px at 2px offset is enough on a calm page and
+   not enough for somebody who turned this on. */
+html.d-a11y :focus-visible{
+	outline:3px solid var(--focus-ring) !important;
+	outline-offset:3px !important;
+}
+
+/* Card edges become ink rather than hairline, so a grid of products reads as a
+   grid of separate things rather than as a wash. */
+html.d-a11y .d-card,
+html.d-a11y .d-collection,
+html.d-a11y .d-review{ border-color:var(--ink) }
+
+/* =============================================================================
+   THE TWO BUTTONS
+   The accessibility switch and the language switch, bottom-left, always there.
+
+   *** BOTTOM-LEFT, AND THAT IS NOT ARBITRARY. *** Bottom-RIGHT is where every
+   chat widget, cookie nag and back-to-top button goes, and this is the control
+   somebody needs when all of those are in the way.
+
+   The stack is a variable rather than three files each knowing the number. The
+   consent card sits above them and used to hard-code `bottom:78px`, which is
+   the sort of number that is correct until somebody changes a button's size.
+   ========================================================================== */
+
+:root{
+	--fab-size: 2.75rem;
+	--fab-inset: 1.125rem;
+	/* what anything else pinned to the bottom-left has to clear */
+	--fab-stack: calc(var(--fab-inset) * 2 + var(--fab-size));
+}
+
+.d-fab{
+	position:fixed;
+	z-index:80;
+	bottom:var(--fab-inset);
+	display:grid;
+	place-items:center;
+	width:var(--fab-size);
+	height:var(--fab-size);
+	padding:0;
+	border:2px solid var(--c-cream);
+	border-radius:var(--radius-circle);
+	background:var(--c-cocoa);
+	color:var(--ink-on-dark);
+	cursor:pointer;
+	box-shadow:var(--shadow-card);
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.d-fab:hover{ background:var(--c-cherry-deep) }
+.d-fab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:3px }
+.d-fab .d-icon{ width:1.4rem; height:1.4rem }
+
+.d-fab--a11y{ inset-inline-start:var(--fab-inset) }
+.d-fab--lang{
+	inset-inline-start:calc(var(--fab-inset) * 2 + var(--fab-size));
+	font:var(--fw-bold) var(--fs-fine)/1 var(--font-ui);
+	letter-spacing:.04em;
+	text-decoration:none;
+}
+/* When the mode is on, its own switch says so - gold, and cocoa ink. A toggle
+   that looks identical in both states is a toggle nobody trusts. */
+html.d-a11y .d-fab--a11y{
+	background:var(--g-core);
+	border-color:var(--c-cocoa);
+	color:var(--c-cocoa);
+}
+html.d-a11y .d-fab{ text-decoration:none }
