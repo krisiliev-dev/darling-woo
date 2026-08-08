@@ -1,27 +1,29 @@
-"""notice.css rev2 - the stars.
+"""notice.css rev3 - the stars leave the icon column and take the whole element.
 
 Owner, 2026-08-08:
-  - no green; success uses the gold theme, and the texture can work for it
-  - drop the left rim
-  - the icons should be part of the brand, not generic glyphs:
-      error    stars falling, going dark, dying out
-      warning  a star orbiting the message
-      success  stars excited, flying around
-      info     a star poking at the text with a boing
-  - the close button wants a darling treatment too
+  - the text takes the full width; the stars roam the element, constrained to it
+  - error: stars spawn continuously from above, along the whole width
+  - warning: the star circles the TEXT
+  - success: the stars zoom around the whole element
+  - info: the star points from above, below or the other side
+  - the close button is a star, and a SINGLE SPIN - no growing, nothing flashy
 
-*** THE STARS ARE DRAWN, NOT TYPED. *** The live site inserts U+2726 as text,
-which is fine there because it is decorative. Here the star IS the state
-indicator, and U+2726 is missing from plenty of system fonts and falls back to a
-tofu box. clip-path costs nothing and cannot fall back.
+*** WHY THERE ARE EXACTLY FIVE STARS AND NOT MORE. ***
+No JavaScript on this, so every star is an element or a pseudo-element. The
+notice gives two (::before, ::after) and a single decorative <span> gives three
+more (itself plus its two). Five bodies, staggered on different delays and
+durations, is enough to read as "continuously" without a script, and it costs
+one empty span in markup we already control. WooCommerce's own notices get none
+of it - see the adopted block.
 
-*** EVERY ONE OF THESE IS STATIC ON THE MONEY PATH. ***
-motion.css kills all animation on cart, checkout and order-received, and under
-prefers-reduced-motion. That is not a limitation to work around - notices are
-used MORE on checkout than anywhere else, so the resting frame is the real
-design and the animation is the bonus. Each state below is therefore composed so
-that frame zero already reads: the error stars sit low and dim, the warning star
-sits to one side, the success cluster sits spread, the info star sits leaning in.
+*** THE STARS SIT BEHIND THE TEXT. ***
+A star crossing a word is a legibility bug dressed as whimsy. The stars layer at
+z-index 0 and the body sits at 1, so they pass behind the message.
+
+*** overflow:hidden IS BACK, deliberately. ***
+"constrained to the element" - a star that leaves the box is a star sliced in
+half by the next element's background. The rain enters from above and the orbit
+stays inside because both are composed against the box, not against the icon.
 """
 import io, os, re, sys
 
@@ -33,36 +35,40 @@ NOTICE = '''/* =================================================================
    Error, warning, success, info - plus the dismiss and the store-wide bar.
 
    A NOTICE IS A TINTED SURFACE, never a solid block: a full-bleed red panel
-   across a checkout reads as a crash rather than as a correction, and the
-   checkout is where a customer is most likely to abandon. No left rim - the
-   owner reviewed it and it read as an admin panel rather than as us. The tint
-   and the star carry the state instead, plus a soft ring in the state colour so
-   the shape still holds on a busy page.
+   across a checkout reads as a crash rather than as a correction, and checkout
+   is where a customer is most likely to abandon. No left rim - it read as an
+   admin panel. The tint plus the stars carry the state, with a soft ring in the
+   state colour so the shape still holds on a busy page.
 
-   *** THE STAR IS THE ICON, AND IT IS DRAWN, NOT TYPED. ***
-   The star is the brand's one recurring mark, so the state indicator is a star
-   behaving differently rather than a different glyph. clip-path draws it:
-   U+2726 is missing from plenty of system fonts and falls back to tofu, and a
-   missing glyph on an error message is the worst place to discover that.
+   *** THE STARS ARE THE ICON, AND THEY OWN THE WHOLE ELEMENT. ***
+   Not a glyph in a column. The star is the brand's one recurring mark, so the
+   state is a star BEHAVING differently across the notice: rain on error, an
+   orbit around the text on warning, darting on success, a poke on info.
+
+   FIVE STAR BODIES, NO SCRIPT. The notice gives two pseudo-elements and one
+   decorative <span class="d-notice__stars"> gives three more. Staggered delays
+   and durations make five read as continuous. They sit at z-index 0, behind the
+   body at z-index 1, because a star crossing a word is a legibility bug dressed
+   up as whimsy. overflow:hidden keeps them inside the box.
 
    *** EVERY ANIMATION HERE IS OFF ON THE MONEY PATH. ***
    motion.css kills animation on cart, checkout and order-received and under
-   prefers-reduced-motion - and notices appear MORE on those pages than anywhere
-   else. So the resting frame is the actual design and the motion is a bonus:
-   each state is composed to read at frame zero, with the stars already in
-   position rather than starting stacked at the centre.
+   prefers-reduced-motion - and notices appear on those pages more than anywhere
+   else. So the resting frame is the real design: each state is composed so that
+   at frame zero its stars are already spread across the box rather than stacked
+   at one point.
 
    *** SUCCESS IS GOLD, AND IT CARRIES THE FINISH. ***
-   The owner: "we shouldn't introduce green... even the texture can work for
-   us." So success has no colour of its own - it is the amber ramp, and its star
-   is a real .d-finish object with the plywood on it. The happiest state is the
-   one that carries the material.
+   No green. Success is the amber ramp, and its stars are the vanilla end of it.
+   Note that .d-finish OWNS both pseudo-elements - fireflies and grain - so
+   nothing here can be a finished object and carry star pseudos at the same
+   time. The finish is a leaf, not a mixin.
    ========================================================================== */
 
 .d-notice{
 	position:relative;
 	display:grid;
-	grid-template-columns:auto 1fr auto;
+	grid-template-columns:1fr auto;
 	align-items:start;
 	gap:var(--space-2xs);
 	padding:var(--space-2xs) var(--space-xs);
@@ -72,171 +78,189 @@ NOTICE = '''/* =================================================================
 	color:var(--ink);
 	font-size:var(--fs-meta);
 	line-height:var(--lh-body);
-	/* NOT overflow:hidden. The stars orbit and fly, and a clip at the box edge
-	   turns a star leaving the frame into a star being sliced in half. */
+	overflow:hidden;
+	isolation:isolate;
 }
+.d-notice__body{ position:relative; z-index:1 }
 .d-notice__title{ display:block; font-weight:var(--fw-medium) }
 .d-notice a{ color:inherit }
 
-/* -- the star ---------------------------------------------------------------
-   One shape, four behaviours. The icon box is the first star; its two
-   pseudo-elements are the second and third, so a state can have up to three
-   without asking the markup for anything. */
-.d-notice__icon,
-.d-notice__icon::before,
-.d-notice__icon::after{
+/* -- the five star bodies ---------------------------------------------------
+   One shape. Position, timing and behaviour are all a state's business. */
+.d-notice::before,
+.d-notice::after,
+.d-notice__stars,
+.d-notice__stars::before,
+.d-notice__stars::after{
 	content:"";
-	display:block;
-	width:1.02em;
-	height:1.02em;
+	position:absolute;
+	z-index:0;
+	width:.8em;
+	height:.8em;
+	pointer-events:none;
 	background:var(--notice-info-edge);
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
 }
-.d-notice__icon{
-	position:relative;
-	margin:.16em .25em 0 .1em;
-	width:2em;
-	height:2em;
-	background:none;
-	clip-path:none;
-}
-.d-notice__icon::before{ position:absolute; left:.16em; top:.20em }
-.d-notice__icon::after{  position:absolute; left:.92em; top:.86em; width:.68em; height:.68em }
+/* The span is a star AND the container for two more, so its children position
+   against the notice rather than against it - hence inset:0 and its own
+   absolute children placed in element percentages. */
+.d-notice__stars{ left:22%; top:34% }
 
-/* -- error: the stars fall, go dark, and go out ---------------------------- */
+/* -- error: it rains stars, and they go out ---------------------------------
+   Five columns across the width, five different speeds. Each falls from above
+   the box, darkens to cocoa on the way down and is gone before it lands - the
+   dying feel the owner asked for. */
 .d-notice--error{
 	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-error-edge) 22%, transparent);
 }
-.d-notice--error .d-notice__icon::before,
-.d-notice--error .d-notice__icon::after{
+.d-notice--error::before,
+.d-notice--error::after,
+.d-notice--error .d-notice__stars,
+.d-notice--error .d-notice__stars::before,
+.d-notice--error .d-notice__stars::after{
 	background:var(--notice-error-edge);
-	animation:d-star-die 3.2s var(--ease-float) infinite;
+	top:0;
+	animation:d-star-rain 4.2s linear infinite;
 }
-.d-notice--error .d-notice__icon::after{ animation-delay:1.1s; animation-duration:3.9s }
-@keyframes d-star-die{
-	0%   { transform:translateY(-.34em) scale(1);   background:var(--notice-error-edge); opacity:1 }
-	62%  { transform:translateY(.30em)  scale(.82); background:var(--c-cocoa); opacity:.85 }
-	100% { transform:translateY(.62em)  scale(.34); background:var(--c-cocoa); opacity:0 }
+.d-notice--error::before                    { left:9%;  animation-duration:4.2s; animation-delay:0s }
+.d-notice--error::after                     { left:31%; animation-duration:5.6s; animation-delay:1.4s }
+.d-notice--error .d-notice__stars           { left:52%; animation-duration:3.7s; animation-delay:2.6s }
+.d-notice--error .d-notice__stars::before   { left:71%; animation-duration:6.1s; animation-delay:.7s }
+.d-notice--error .d-notice__stars::after    { left:88%; animation-duration:4.9s; animation-delay:3.3s }
+@keyframes d-star-rain{
+	0%   { transform:translateY(-1.4em) scale(.9) rotate(0deg);
+	       background:var(--notice-error-edge); opacity:0 }
+	14%  { opacity:.85 }
+	64%  { background:var(--c-cocoa); opacity:.6 }
+	100% { transform:translateY(4.6em) scale(.35) rotate(150deg);
+	       background:var(--c-cocoa); opacity:0 }
 }
 
-/* -- warning: one star orbits ---------------------------------------------- */
+/* -- warning: one star circles the text -------------------------------------
+   An ellipse, walked in eight steps rather than rotated about an origin: a
+   rotation gives a circle, and a circle around a wide box either clips at the
+   top or barely moves at the sides. The eight stops trace the box's own
+   proportions. */
 .d-notice--warning{
 	background:color-mix(in oklab, var(--notice-warning-edge) 11%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-warning-edge) 24%, transparent);
 }
-.d-notice--warning .d-notice__icon::before{
+.d-notice--warning::before,
+.d-notice--warning::after{
 	background:var(--notice-warning-edge);
-	left:.38em; top:.38em;
-	/* The orbit is a rotation about a point OUTSIDE the star, which is what
-	   transform-origin is for - no wrapper element and no second animation. */
-	transform-origin:-.05em .51em;
-	animation:d-star-orbit 5.5s linear infinite;
+	left:50%; top:50%;
+	margin:-.4em 0 0 -.4em;
+	animation:d-star-circle 9s linear infinite;
 }
-.d-notice--warning .d-notice__icon::after{
-	background:var(--notice-warning-edge); opacity:.45;
-	left:.2em; top:.9em; width:.5em; height:.5em;
+.d-notice--warning::after{ animation-delay:-4.5s; opacity:.45; width:.55em; height:.55em }
+.d-notice--warning .d-notice__stars,
+.d-notice--warning .d-notice__stars::before,
+.d-notice--warning .d-notice__stars::after{ display:none }
+@keyframes d-star-circle{
+	0%   { transform:translate(-15em, -1.05em) }
+	12.5%{ transform:translate(-10.6em, -1.55em) }
+	25%  { transform:translate(0em, -1.75em) }
+	37.5%{ transform:translate(10.6em, -1.55em) }
+	50%  { transform:translate(15em, 0) }
+	62.5%{ transform:translate(10.6em, 1.55em) }
+	75%  { transform:translate(0em, 1.75em) }
+	87.5%{ transform:translate(-10.6em, 1.55em) }
+	100% { transform:translate(-15em, -1.05em) }
 }
-@keyframes d-star-orbit{ to{ transform:rotate(360deg) } }
 
-/* -- success: gold, textured, and the stars are pleased -------------------- */
+/* -- success: the stars are pleased and will not settle ---------------------- */
 .d-notice--success{
 	background:color-mix(in oklab, var(--g-core) 13%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--g-core) 30%, transparent);
 }
-/* *** .d-finish OWNS BOTH PSEUDO-ELEMENTS - ::before is its fireflies and
-   ::after is its grain. *** So the success icon cannot be a finished object AND
-   carry star pseudos; they collided and the stars vanished behind the disc.
-   The stars move onto the NOTICE's own pseudo-elements instead, which is closer
-   to what was asked for anyway - "stars flying around the message" rather than
-   around the icon. Any future pattern that wants .d-finish and its own
-   pseudo-elements hits this same wall: the finish is a leaf, not a mixin. */
-.d-notice--success .d-notice__icon{
-	--firefly-reach:0em;
-	--grain-size:5em;
-	border-radius:var(--radius-circle);
-	width:1.7em; height:1.7em;
-	margin-top:.24em;
-}
 .d-notice--success::before,
-.d-notice--success::after{
-	content:"";
-	position:absolute;
-	width:.62em;
-	height:.62em;
+.d-notice--success::after,
+.d-notice--success .d-notice__stars,
+.d-notice--success .d-notice__stars::before,
+.d-notice--success .d-notice__stars::after{
 	background:var(--g-core);
-	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
-	pointer-events:none;
-	animation:d-star-cheer 2.6s var(--ease-float) infinite;
+	animation:d-star-zoom 6.5s var(--ease-float) infinite;
 }
-.d-notice--success::before{ left:2.3em;  top:.5em }
-.d-notice--success::after{  left:1.15em; top:2.1em; animation-delay:.9s; opacity:.7 }
-@keyframes d-star-cheer{
-	0%, 100% { transform:translate(0,0) scale(.7) rotate(0deg);      opacity:.55 }
-	40%      { transform:translate(.1em,-.3em) scale(1.15) rotate(28deg); opacity:1 }
-	70%      { transform:translate(-.08em,-.1em) scale(.9) rotate(-14deg); opacity:.8 }
-}
-
-/* -- info: the star leans in and pokes ------------------------------------- */
-.d-notice--info .d-notice__icon::before{
-	animation:d-star-poke 3.4s var(--ease-float) infinite;
-}
-/* The boing: overshoot past the target, then settle back through it. The
-   settle is what makes it read as springy rather than as a slide. */
-@keyframes d-star-poke{
-	0%, 52%, 100% { transform:translateX(0) }
-	62%           { transform:translateX(.34em) scale(1.1) }
-	70%           { transform:translateX(-.10em) }
-	78%           { transform:translateX(.14em) }
-	86%           { transform:translateX(-.04em) }
+.d-notice--success::before                  { left:6%;  top:20%; animation-delay:0s }
+.d-notice--success::after                   { left:37%; top:66%; animation-delay:1.3s }
+.d-notice--success .d-notice__stars         { left:62%; top:16%; animation-delay:2.6s }
+.d-notice--success .d-notice__stars::before { left:81%; top:58%; animation-delay:3.9s; width:.6em; height:.6em }
+.d-notice--success .d-notice__stars::after  { left:21%; top:72%; animation-delay:5.2s; width:.55em; height:.55em }
+@keyframes d-star-zoom{
+	0%   { transform:translate(0,0) scale(.55) rotate(0deg);          opacity:.35 }
+	18%  { transform:translate(1.6em,-.7em) scale(1.05) rotate(70deg); opacity:.95 }
+	38%  { transform:translate(3.4em,.5em) scale(.75) rotate(150deg);  opacity:.7 }
+	58%  { transform:translate(1.2em,1.1em) scale(1) rotate(240deg);   opacity:.9 }
+	80%  { transform:translate(-.9em,.2em) scale(.65) rotate(310deg);  opacity:.5 }
+	100% { transform:translate(0,0) scale(.55) rotate(360deg);         opacity:.35 }
 }
 
-/* -- the dismiss ------------------------------------------------------------
-   Cocoa at rest, not the state colour: closing a notice is not an action anyone
-   should be drawn to, and a red X on an error message reads as a second error.
-   On hover it turns claret and the star behind it flares - so the one brand
-   flourish here happens on intent, not on arrival. */
+/* -- info: the star points, from above and from the far side ----------------
+   The overshoot is the boing: it goes past the text, comes back through, and
+   settles. Two stars point from opposite sides so the message is addressed
+   rather than approached. */
+.d-notice--info::before{
+	left:14%; top:-.1em;
+	animation:d-star-poke-down 4.2s var(--ease-float) infinite;
+}
+.d-notice--info::after{
+	right:16%; left:auto; top:52%;
+	width:.62em; height:.62em; opacity:.6;
+	animation:d-star-poke-side 5.1s var(--ease-float) infinite;
+	animation-delay:1.6s;
+}
+.d-notice--info .d-notice__stars,
+.d-notice--info .d-notice__stars::before,
+.d-notice--info .d-notice__stars::after{ display:none }
+@keyframes d-star-poke-down{
+	0%, 46%, 100% { transform:translateY(0) }
+	58%           { transform:translateY(.8em) rotate(18deg) }
+	68%           { transform:translateY(-.22em) }
+	78%           { transform:translateY(.3em) }
+	88%           { transform:translateY(-.08em) }
+}
+@keyframes d-star-poke-side{
+	0%, 50%, 100% { transform:translateX(0) }
+	60%           { transform:translateX(-.9em) rotate(-20deg) }
+	70%           { transform:translateX(.25em) }
+	80%           { transform:translateX(-.32em) }
+	90%           { transform:translateX(.09em) }
+}
+
+/* -- the dismiss: a star, and one quiet turn --------------------------------
+   The owner: "a single spin will do, no making it bigger." So there is no
+   scale, no flare and no colour flash - one 180 degree turn and a shift from
+   cocoa to claret. Closing a notice is not an action anyone should be drawn to,
+   and a red X sitting on an error message reads as a second error. The button
+   carries no glyph: the star IS the control, which is why the accessible name
+   has to come from aria-label in the markup. */
 .d-notice__dismiss{
+	grid-column:2;
 	position:relative;
-	grid-column:3;
+	z-index:2;
 	appearance:none;
 	border:0;
-	background:none;
-	width:1.7em;
-	height:1.7em;
+	background:var(--c-cocoa);
+	width:.95em;
+	height:.95em;
+	margin:.35em .1em 0 0;
 	padding:0;
-	color:var(--c-cocoa);
-	font:400 1.2em/1 var(--font-ui);
+	font-size:inherit;
 	cursor:pointer;
-	border-radius:var(--radius-circle);
-	transition:color var(--dur-ui) var(--ease-float),
-	           transform var(--dur-ui) var(--ease-float);
-}
-.d-notice__dismiss::before{
-	content:"";
-	position:absolute;
-	inset:-.1em;
-	border-radius:inherit;
-	background:var(--g-vanilla);
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
-	opacity:0;
-	transform:scale(.4) rotate(-30deg);
-	transition:opacity 260ms var(--ease-float), transform 260ms var(--ease-float);
+	transition:background 240ms var(--ease-float), transform 420ms var(--ease-float);
 }
 .d-notice__dismiss:hover,
 .d-notice__dismiss:focus-visible{
-	color:var(--c-claret);
-	transform:rotate(90deg);
-}
-.d-notice__dismiss:hover::before,
-.d-notice__dismiss:focus-visible::before{
-	opacity:.85;
-	transform:scale(1.25) rotate(20deg);
+	background:var(--c-claret);
+	transform:rotate(180deg);
 }
 
 /* -- the store-wide bar -----------------------------------------------------
    The only notice that IS a solid block, because it is not reporting on an
-   action - it is the shop talking. */
+   action - it is the shop talking. No stars: it is present on every page, and
+   motion that is always there stops being a flourish and becomes a tic. */
 .d-notice--bar{
 	display:block;
 	border-radius:0;
@@ -247,13 +271,16 @@ NOTICE = '''/* =================================================================
 	color:var(--ink-on-dark);
 	font-size:var(--fs-fine);
 }
+.d-notice--bar::before,
+.d-notice--bar::after{ content:none }
 
 /* -- ADOPTED: WooCommerce's notices -----------------------------------------
-   Both generations. *** THESE GET THE TINT AND THE SHAPE, NOT THE STARS. ***
-   Woo emits its own SVG inside the block banners and we cannot remove it, so a
-   star of ours would be a SECOND icon in the same box. The classic notices have
-   no icon at all and get a single static star. When the handles are dequeued
-   and we own the markup, they move to .d-notice and inherit everything. */
+   *** THESE GET THE TINT AND THE SHAPE, NOT THE STARS. ***
+   Woo emits its own SVG inside the block banners and we cannot remove it, so
+   our stars would be a second icon in the same box; and its markup has no span
+   for us to hang the other three on. The classic notices get one static star.
+   When these handles are dequeued and we own the markup, they move to .d-notice
+   and inherit the whole treatment. */
 .wc-block-components-notice-banner,
 .woocommerce-message,
 .woocommerce-error,
@@ -314,17 +341,8 @@ NOTICE = '''/* =================================================================
 }
 '''
 
-TOKEN_FIX = '''	--notice-success-edge: var(--g-core);   /* gold. The owner ruled out green. */'''
-
 
 def main():
-    cp = os.path.join(SRC, 'tokens', 'colour.css')
-    c = io.open(cp, encoding='utf-8').read()
-    c = re.sub(r'^\s*--c-sage\s*:.*\n', '', c, flags=re.M)
-    c = re.sub(r'^\s*--notice-success-edge\s*:.*$', TOKEN_FIX, c, flags=re.M)
-    io.open(cp, 'w', encoding='utf-8', newline='\n').write(c)
-    print('colour.css: --c-sage removed, success is gold')
-
     p = os.path.join(SRC, 'patterns', 'notice.css')
     assert all(ord(ch) < 128 for ch in NOTICE)
     io.open(p, 'w', encoding='ascii', newline='\n').write(NOTICE)
