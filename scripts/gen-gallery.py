@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1598,6 +1598,118 @@ same name, which is how one gets restyled by accident. Here they are
 down at the top of <code>patterns/cart.css</code> so nobody has to guess
 twice.</div>
 </section>''')
+
+
+FOOTER_MARKUP = '''</div>
+<section class="sec" id="footer" style="max-width:none;padding-inline:0">
+<div class="wrap" style="padding-bottom:0">
+<h2>Patterns</h2><h3>Footer, flair, legal strip, newsletter</h3>
+<p class="note"><b>113 legacy rules, and the most valuable line in all of them
+is <code>min-height:44px</code> on every link.</b> A column of 13px links at
+their natural line height is a stack of 18px targets &mdash; and the footer is
+where the policy links live, the ones somebody reaches for on a phone when they
+are already annoyed. Kept exactly as it was.</p>
+<p class="note"><b>The flair comes first on a phone</b>, as it did before: on a
+narrow screen the wordmark and the social links are what a footer is <em>for</em>,
+and three columns of text ahead of them is three screens of scrolling past the
+point.</p>
+<p class="note"><b>The rule between the links and the bow is not a new divider.</b>
+<code>patterns/band.css</code> already draws the plywood rule as
+<code>.d-band__rule</code>; the footer&rsquo;s name joins that selector list
+rather than a second block being written. Same for the gold surface: the gap
+report says <code>.d-metal</code> is missing, and it is not &mdash; it is
+<code>.d-finish</code>, and <code>.darling-wordmark</code> is
+<code>.d-finish--text</code>. The tool cannot see a rename.</p>
+</div>
+
+<div class="d-band" style="--surface-band:var(--c-claret)">
+  <div class="d-news">
+    <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
+    <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
+    дома. Без спам, обещаваме.</p>
+    <form class="d-news__form">
+      <label class="d-news__hp">Не попълвайте<input type="text" tabindex="-1" autocomplete="off"></label>
+      <input type="email" placeholder="твоят имейл" aria-label="Имейл">
+      <button class="d-btn d-finish" type="submit">Абонирай ме</button>
+    </form>
+    <p class="d-news__note">Може да се отпишеш по всяко време.</p>
+  </div>
+</div>
+
+<footer class="d-footer">
+  <div>
+    <h2 class="d-footer__head">Дарлинг</h2>
+    <nav class="d-footer__links">
+      <a href="#">За нас</a><a href="#">Контакти</a><a href="#">Доставка</a>
+      <a href="#">Връщане и замяна</a><a href="#">Често задавани въпроси</a>
+    </nav>
+  </div>
+
+  <div class="d-footflair">
+    <span class="d-finish d-footflair__rule" aria-hidden="true"></span>
+    <span class="d-footflair__mark">
+      <span class="d-footflair__bow" aria-hidden="true"></span>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+    </span>
+    <p class="d-footflair__word">Дарлинг</p>
+    <p class="d-footflair__tag">Неща за дома, подбрани с внимание</p>
+    <ul class="d-footflair__social">
+      <li><a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6A21 21 0 0 0 14.3 3.5c-2.4 0-4 1.46-4 4.14V9.9H7.6V13h2.7v8z"/></svg></a></li>
+      <li><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 7.2A4.8 4.8 0 1 0 16.8 12 4.81 4.81 0 0 0 12 7.2m0 7.92A3.12 3.12 0 1 1 15.12 12 3.12 3.12 0 0 1 12 15.12M18.1 7a1.12 1.12 0 1 1-1.12-1.12A1.12 1.12 0 0 1 18.1 7M16.2 3H7.8A4.8 4.8 0 0 0 3 7.8v8.4A4.8 4.8 0 0 0 7.8 21h8.4a4.8 4.8 0 0 0 4.8-4.8V7.8A4.8 4.8 0 0 0 16.2 3m3 13.2a3 3 0 0 1-3 3H7.8a3 3 0 0 1-3-3V7.8a3 3 0 0 1 3-3h8.4a3 3 0 0 1 3 3Z"/></svg></a></li>
+      <li><a href="#" aria-label="Имейл"><span class="d-icon d-icon--mail"></span></a></li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="d-footer__head">Дарлинг 7 ООД</h2>
+    <p class="d-footer__pledge">Всяка поръчка се опакова на ръка в София.</p>
+    <div class="d-footer__policies">
+      <a href="#">Общи условия</a><a href="#">Поверителност</a><a href="#">Бисквитки</a>
+    </div>
+    <p class="d-footer__map"><a href="#">ул. Пример 12, София 1000</a></p>
+  </div>
+</footer>
+<div class="d-footer__legal">
+  <p>&copy; 2026 Дарлинг 7 ООД &middot; ЕИК 000000000</p>
+  <p><a href="#">Условия</a> &middot; <a href="#">Поверителност</a></p>
+</div>
+
+<div class="wrap" style="padding-top:0">
+<div class="todo"><b>The footer idles, and that is the one deliberate exception.</b>
+Everywhere else in this system a mark moves only when something happens. The bow
+is the brand mark at the very bottom of the page, and a slow rise and fall reads
+as the page breathing rather than as something asking for attention &mdash; the
+same call you already made on the hero. Three stars twinkle with it, staggered,
+so they are never all bright at once. <code>motion.css</code> still kills every
+one of them on cart, checkout and order-received.<br><br>
+<b>The wordmark is plain ink, and that is your ruling, not a shortcut.</b>
+&ldquo;We shouldn&rsquo;t use the texture on text &mdash; it makes it hard to
+read.&rdquo; <code>finish.css</code> records the deleted
+<code>.d-finish--text</code> with <em>do not reintroduce this</em> beside it, and
+I reintroduced it anyway by reading the legacy <code>.darling-wordmark</code>
+mapping without noticing that what it maps to is a comment rather than a rule.
+The check caught it.<br><br>
+<b>The two stars on the newsletter band are masks, not dingbats.</b> The legacy
+pair were <code>content:"\2726"</code>, which made them <em>text</em>:
+selectable, copied with the page, and read out by a screen reader as
+&ldquo;black four pointed star&rdquo;.<br><br>
+<b>The email field cannot be the field pattern.</b> <code>.d-field</code> draws a
+light surface with a grey edge, which on claret is a hole. This one is the
+band&rsquo;s own colour a shade deeper with a lit edge &mdash; and its focus ring
+is cream rather than <code>--focus-ring</code>, because a cocoa ring on claret is
+invisible. That is the only place in the system where the focus token is
+deliberately not used.<br><br>
+<b>The social circles lost three of their four hover properties.</b> Legacy moved
+them, recoloured them, changed the background <em>and</em> grew a coloured
+box-shadow, all on a 42px circle.</div>
+</div>
+</section>
+<div class="wrap">'''
+
+# ------------------------------------------------------------------- footer ---
+A(FOOTER_MARKUP)
 
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>

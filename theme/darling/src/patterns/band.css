@@ -34,7 +34,12 @@
    scale from, and --firefly-reach is 0 because a full-bleed rule touches the
    viewport edge, where an overhanging pseudo-element is a horizontal
    scrollbar. */
-.d-band__rule{
+/* *** AND THE FOOTER'S RULE IS THIS RULE. *** The footer flair wants the same
+   object between the links and the wordmark. It gets the same declarations by
+   joining this selector list, not by a second block in footer.css - the
+   difference between "the system has a rule" and "two files each have one". */
+.d-band__rule,
+.d-footflair__rule{
 	height:var(--radius-rule);
 	border-radius:var(--radius-rule);
 	--grain-size:60px;
