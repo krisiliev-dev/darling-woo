@@ -43,10 +43,12 @@
 .wc-block-cart-items.wc-block-cart-items td{
 	padding:var(--space-xs) var(--space-2xs);
 	border-top:0;
-	border-bottom:1px solid var(--hairline);
+	border-bottom:0;
 	vertical-align:top;
 }
-.wc-block-cart-items.wc-block-cart-items tbody tr:last-child td{ border-bottom:0 }
+.wc-block-cart-items.wc-block-cart-items td + td{ border-left:1px solid var(--hairline) }
+.wc-block-cart-items.wc-block-cart-items tbody tr:nth-of-type(odd){ background:var(--c-grey-050) }
+.wc-block-cart-items.wc-block-cart-items tbody tr:nth-of-type(even){ background:var(--c-grey-200) }
 .wc-block-cart-item__image.wc-block-cart-item__image{
 	width:5.5em;
 	padding-left:0;
@@ -131,9 +133,19 @@
 .woocommerce-table--order-details td{
 	padding:var(--space-2xs);
 	border:0;
-	border-bottom:1px solid var(--hairline);
 	vertical-align:top;
 }
+.woocommerce table.shop_table td + td,
+.woocommerce-orders-table td + td,
+.woocommerce-table--order-details td + td{ border-left:1px solid var(--hairline) }
+.woocommerce table.shop_table tbody tr:nth-of-type(odd),
+.woocommerce-orders-table tbody tr:nth-of-type(odd),
+.woocommerce-table--order-details tbody tr:nth-of-type(odd){ background:var(--c-grey-050) }
+.woocommerce table.shop_table tbody tr:nth-of-type(even),
+.woocommerce-orders-table tbody tr:nth-of-type(even),
+.woocommerce-table--order-details tbody tr:nth-of-type(even){ background:var(--c-grey-200) }
+.woocommerce table.shop_table tfoot tr,
+.woocommerce-table--order-details tfoot tr{ background:transparent }
 .woocommerce table.shop_table tfoot td,
 .woocommerce table.shop_table tfoot th{
 	font-weight:var(--fw-bold);
@@ -200,9 +212,11 @@
 	.woocommerce table.shop_table_responsive tr,
 	.woocommerce-orders-table tr{
 		display:block;
-		padding:var(--space-2xs) 0;
-		border-bottom:1px solid var(--hairline);
+		padding:var(--space-2xs);
+		border-bottom:0;
 	}
+	.woocommerce table.shop_table_responsive td + td,
+	.woocommerce-orders-table td + td{ border-left:0 }
 	.woocommerce table.shop_table_responsive td,
 	.woocommerce-orders-table td{
 		display:grid;
