@@ -95,6 +95,11 @@
 					"slug": "ash-400",
 					"color": "#A89A92",
 					"name": "Ash 400"
+				},
+				{
+					"slug": "sage",
+					"color": "#4F6B55",
+					"name": "sage"
 				}
 			]
 		},

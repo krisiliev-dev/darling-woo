@@ -91,7 +91,13 @@
 	--price:      var(--c-cherry-deep);
 
 	/* -- an absent image is still designed: a ramp, never a flat fill ------- */
-	--placeholder-product:  linear-gradient(150deg, var(--c-ash-100), var(--c-ash-200));
+
+	--placeholder-product:
+		radial-gradient(64% 54% at 50% 12%,
+			color-mix(in oklab, var(--g-vanilla) 34%, #FFF) 0%, transparent 68%),
+		linear-gradient(180deg,
+			color-mix(in oklab, var(--g-light) 20%, var(--c-grey-050)) 0%,
+			color-mix(in oklab, var(--g-core) 30%, var(--c-grey-300)) 100%);
 	--placeholder-category: linear-gradient(160deg, var(--c-ash-300), var(--c-ash-400));
 
 	/* -- the second action ---------------------------------------------------
@@ -111,4 +117,15 @@
 	   page that colour wherever cards are dense. */
 	--shadow-card: 0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -8px rgb(0 0 0 / .13);
 	--shadow-card-hover: 0 2px 4px rgb(0 0 0 / .06), 0 18px 38px -10px rgb(0 0 0 / .20);
+
+	/* -- notices -------------------------------------------------------------
+	   Four states. Three of them are brand colours we already had; SUCCESS IS
+	   NEW and is a proposal, not a decision - see patterns/notice.css. A notice
+	   is a tinted surface with a solid edge, never a solid block: a full-bleed
+	   red panel on a checkout reads as a crash rather than as a correction. */
+	--c-sage: #4F6B55;                    /* PROPOSED - awaiting the owner */
+	--notice-error-edge:   var(--c-claret);
+	--notice-warning-edge: var(--g-shadow);
+	--notice-success-edge: var(--c-sage);
+	--notice-info-edge:    var(--c-mauve);
 }
