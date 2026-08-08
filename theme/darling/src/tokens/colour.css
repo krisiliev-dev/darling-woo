@@ -14,6 +14,12 @@
 	/* -- primitives: neutrals -------------------------------------------------
 	   Four cool greys. They are a TONAL RAMP - at most 1.31:1 apart - so no
 	   control edge can ever be drawn from them. Edges come from the ink. */
+	/* Added 2026-08-08. Nothing sat between grey-100 and white, so a raised
+	   surface had to be white, and white was the one exception left to "the
+	   page is grey". Measured against the grey-100 page it is a 1.104:1 step
+	   where white was 1.243 - close enough that the SHADOW, not the tone, is
+	   what makes a card read as lifted. */
+	--c-grey-050: #F1F1F6;
 	--c-grey-100:#E6E6EC;
 	--c-grey-200:#DEDEE6;
 	--c-grey-300:#D4D4DD;
@@ -58,7 +64,7 @@
 	/* -- surfaces: grey is the ground, white is what is raised -------------- */
 	--surface-page:   var(--c-grey-100);   /* page, header and footer alike */
 	--surface-quiet:  var(--c-grey-200);   /* a lift that is not a card */
-	--surface-raised: var(--c-white);      /* cards, fields */
+	--surface-raised: var(--c-grey-050);      /* cards, fields */
 	--surface-band:   var(--c-claret);     /* LARGE red fields only */
 
 	/* -- lines -------------------------------------------------------------- */
@@ -96,4 +102,13 @@
 	   smaller or lighter - do not switch the ink to cocoa, that measures 3.1:1. */
 	--action-cart: var(--c-cherry);
 	--action-cart-ink: var(--c-white);
+
+	/* -- lift ----------------------------------------------------------------
+	   Two shadows, not one. A single 20px blur reads as a smudge; a short tight
+	   shadow gives the contact edge and a long soft one gives the height, which
+	   is how a real object sits on a surface. Both are pure black at low alpha
+	   rather than a tinted shadow - a coloured shadow on a grey page turns the
+	   page that colour wherever cards are dense. */
+	--shadow-card: 0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -8px rgb(0 0 0 / .13);
+	--shadow-card-hover: 0 2px 4px rgb(0 0 0 / .06), 0 18px 38px -10px rgb(0 0 0 / .20);
 }

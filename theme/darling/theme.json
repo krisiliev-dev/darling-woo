@@ -12,6 +12,11 @@
 			"customGradient": false,
 			"palette": [
 				{
+					"slug": "grey-050",
+					"color": "#F1F1F6",
+					"name": "grey-050"
+				},
+				{
 					"slug": "grey-100",
 					"color": "#E6E6EC",
 					"name": "Grey 100"
