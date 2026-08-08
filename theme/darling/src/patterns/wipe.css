@@ -34,12 +34,36 @@
 	--wipe-trail: var(--trail-gold);
 	position:relative;
 }
-/* Set by darling-ui.js for the length of the sweep, then removed. */
+/* *** OUT AND BACK IS ONE ANIMATION, NOT A TRANSITION. ***
+   A transition to --wipe:0 sweeps the button across and leaves it there; the
+   attribute coming off then SNAPS it home. The owner asked for it to swoop
+   across and back, which is a there-and-return - so --wipe is animated 1 -> 0
+   -> 1 on a registered property. It also holds at 0 for a beat in the middle,
+   which is the moment the text is actually emptied.
+
+   1.9s where it was 620ms: three times slower, on the note. A wipe you cannot
+   watch is just a delay before the field empties. */
 .d-wipe[data-wiping]{
-	--wipe: 0;
-	--wipe-b: 0;
-	transition:--wipe   var(--dur-panel) var(--ease-float),
-	           --wipe-b var(--dur-wake)  var(--ease-wake);
+	animation:d-wipe-sweep 1.9s var(--ease-float) 1 forwards,
+	          /* MEASURED: with no delay the ghost tracked the button almost
+	             exactly on the way out - 0.55 against 0.56 at 200ms - so the
+	             streak was nearly zero-width for the whole outward leg and only
+	             appeared on the return. 90ms of head start is what separates
+	             them. */
+	          d-wipe-ghost 1.9s var(--ease-wake) 90ms 1 forwards;
+}
+@keyframes d-wipe-sweep{
+	0%   { --wipe:1 }
+	42%  { --wipe:0 }
+	54%  { --wipe:0 }
+	100% { --wipe:1 }
+}
+/* The ghost is the same track, late. Its lag is what the streak is made of. */
+@keyframes d-wipe-ghost{
+	0%   { --wipe-b:1 }
+	52%  { --wipe-b:0 }
+	64%  { --wipe-b:0 }
+	100% { --wipe-b:1 }
 }
 /* The text is masked to the LEFT of the button's position, so everything the
    button has already passed is gone. */
@@ -69,10 +93,19 @@
 .d-wipe__clear:hover{ color:var(--c-claret); background:var(--tint-gold) }
 .d-wipe__clear:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
 .d-wipe__clear .d-icon{ width:.85rem; height:.85rem }
+/* *** THE x HAS TO OUTLIVE THE TEXT IT DELETED. ***
+   :placeholder-shown flips the instant the value is emptied - halfway through
+   the sweep - so the button vanished mid-flight and never got home. A delay on
+   the hide direction only (the show direction has none) keeps it visible long
+   enough to travel back and settle, and then it goes. */
 .d-wipe:not(:has(.d-wipe__input:not(:placeholder-shown))) .d-wipe__clear{
 	opacity:0;
 	pointer-events:none;
+	transition:opacity 220ms var(--ease-float) 1.25s;
 }
+.d-wipe__clear{ transition:opacity 120ms var(--ease-float) 0s,
+	                       color var(--dur-ui) var(--ease-float),
+	                       background var(--dur-ui) var(--ease-float) }
 .d-wipe[data-wiping] .d-wipe__clear{
 	translate:calc((var(--wipe) - 1) * var(--wipe-travel, 0px)) 0;
 	rotate:calc((1 - var(--wipe)) * -220deg);

@@ -199,21 +199,21 @@
 	offset-anchor:50% 50%;
 }
 .d-mega__link::before{
-	width:.62em;
-	height:.62em;
+	width:.85em;
+	height:.85em;
 	offset-path:path("M -26 12 C 10 -12, 60 -14, 100 2 C 132 16, 110 30, 74 26 C 40 22, 46 8, 96 8 C 150 8, 180 14, 220 12");
 }
 .d-mega__link::after{
-	width:.5em;
-	height:.5em;
+	width:.7em;
+	height:.7em;
 	background:var(--c-cherry);
 	offset-path:path("M -26 22 C 20 34, 70 34, 108 20 C 140 8, 116 -4, 80 2 C 48 8, 58 24, 110 24 C 168 24, 190 20, 220 20");
 }
 .d-mega__link:hover{ color:var(--c-cherry-deep) }
 /* The same flight as the drawer rows, on a shorter path because a mega link is
    a word and not a full-width row. */
-.d-mega__link:hover::before{ animation:d-swoop 2.2s linear infinite }
-.d-mega__link:hover::after{  animation:d-swoop 2.2s linear infinite .55s }
+.d-mega__link:hover::before{ animation:d-swoop 2.4s linear 1 forwards }
+.d-mega__link:hover::after{  animation:d-swoop 2.4s linear .3s 1 forwards }
 /* d-twinkle now lives in tokens/motion.css - three components use it. */.d-mega__link:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
@@ -249,7 +249,12 @@
 	outline:none;
 }
 .d-search .d-icon{ width:1.1rem; height:1.1rem; flex:none }
-.d-search input[type="search"]{
+/* Any input, not input[type=search]: the wipe needs a plain text input (a
+   search input paints its own clear button), and when the type changed this
+   rule stopped matching - so the field fell through to base/elements.css and
+   rendered a whole second bordered box INSIDE the pill. That is the box the
+   owner saw. */
+.d-search input{
 	flex:1 1 auto;
 	min-width:0;
 	border:0;
@@ -258,11 +263,11 @@
 	font:inherit;
 	color:var(--ink);
 }
-.d-search input[type="search"]::placeholder{
+.d-search input::placeholder{
 	color:var(--ink-placeholder);
 	opacity:1;   /* Firefox dims placeholders by default; the token already is dim */
 }
-.d-search input[type="search"]::-webkit-search-cancel-button{
+.d-search input::-webkit-search-cancel-button{
 	appearance:none;
 	width:.9em;
 	height:.9em;

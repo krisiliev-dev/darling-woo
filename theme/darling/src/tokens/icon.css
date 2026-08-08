@@ -77,7 +77,12 @@
 	   wheels, or one bow, or one lens flare - and that limit is the reason the
 	   trail on an added-to-cart lives on the BUTTON rather than on the icon. */
 	--icon-cart-body: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 2.6h2.6l2.4 10.8a1.9 1.9 0 0 0 1.9 1.5h8.1a1.9 1.9 0 0 0 1.85-1.45L20.4 6H6'/%3E%3C/svg%3E");
-	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 4.5v15M4.9 8.2l14.2 7.6M4.9 15.8l14.2-7.6'/%3E%3C/svg%3E");
+	/* *** A CIRCLE CANNOT LOOK LIKE IT IS SPINNING. *** The first wheel was a
+	   ring with three spokes, which at the size it actually renders - under 4px
+	   in a 20px icon - blurs into a plain disc, and a disc rotating is a disc.
+	   It now has ONE slit from centre to rim: a single asymmetry is all the eye
+	   needs to see rotation, and it survives being four pixels across. */
+	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 0a12 12 0 1 0 12 12A12 12 0 0 0 12 0zm0 4.2A7.8 7.8 0 1 1 4.2 12 7.8 7.8 0 0 1 12 4.2z'/%3E%3Cpath fill='%23000' d='M10.2 1.2h3.6v11.4h-3.6z'/%3E%3C/svg%3E");
 	/* The bow. Small, symmetric, and the same shape as the big brand bow so the
 	   two read as one mark at two sizes. */
 	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E");

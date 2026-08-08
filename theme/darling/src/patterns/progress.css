@@ -74,6 +74,14 @@
 	background:var(--pr-track);
 }
 .d-progress__bar{
+	/* *** THE SHEEN WAS ESCAPING THE FILL, WHICH IS THE ONE THING THIS
+	   COMPONENT PROMISES IT WOULD NOT DO. *** The shine is a child of the bar
+	   with inset:0, so it looked clipped by construction - but it TRANSLATES to
+	   +/-110%, and without overflow:hidden here it simply slid out of its
+	   parent and travelled across the empty track. The track's own
+	   overflow:hidden stopped it at the far end, which is exactly why it looked
+	   like it "stops partway". One line, and now the promise is structural. */
+	overflow:hidden;
 	position:absolute;
 	inset-block:0;
 	inset-inline-start:0;

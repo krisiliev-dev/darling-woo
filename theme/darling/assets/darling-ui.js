@@ -189,21 +189,27 @@
 			var travel = wrap.clientWidth - clear.offsetWidth - 12;
 			wrap.style.setProperty('--wipe-travel', travel + 'px');
 			wrap.setAttribute('data-wiping', '');
-			var done = function () {
+
+			/* The sweep is now an ANIMATION that goes out and back, so there
+			   are two moments, not one: the text is emptied at the far end of
+			   the stroke (42% of 1.9s) and the attribute comes off when the
+			   button is home. Clearing at the end would have the field still
+			   showing text on the return leg; clearing at the start would have
+			   the x wiping nothing. */
+			setTimeout(function () {
 				input.value = '';
 				input.dispatchEvent(new Event('input', { bubbles: true }));
+			}, 830);
+			var end = function () {
 				wrap.removeAttribute('data-wiping');
 				wrap.style.removeProperty('--wipe-travel');
 			};
-			/* Wait for the SWEEP, not for a guessed number: --wipe is the
-			   button's own transition, so its end is the moment the text is
-			   fully gone. transitionend fires per property, so filter. */
 			var fired = false;
-			wrap.addEventListener('transitionend', function h(e) {
-				if (e.propertyName !== '--wipe' || fired) return;
-				fired = true; wrap.removeEventListener('transitionend', h); done();
+			wrap.addEventListener('animationend', function h(e) {
+				if (e.animationName !== 'd-wipe-sweep' || fired) return;
+				fired = true; wrap.removeEventListener('animationend', h); end();
 			});
-			setTimeout(function () { if (!fired) { fired = true; done(); } }, 900);
+			setTimeout(function () { if (!fired) { fired = true; end(); } }, 2200);
 		});
 	}
 

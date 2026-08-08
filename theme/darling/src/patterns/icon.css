@@ -163,17 +163,27 @@
    orbiting star, the excited ones - and two animations on one object compete.
    ========================================================================== */
 
-/* -- spinner: the system trail, bent into a circle --------------------------
-   Gold by default, thicker, and slower - and the trail is deliberately the SAME
-   trail as the panel's wake, the paginator's and the slider's, so that a person
-   who has seen one recognises the others. The recipe is the one every other
-   wake in the system uses: a soft ramp that reaches full colour across the
-   middle and is gone at both ends. Here it is wrapped round a circle by
-   conic-gradient instead of run along a line by linear-gradient, and the sparks
-   are radial dots at the head, exactly as on the others.
+/* -- spinner: a star going round, dragging a trail --------------------------
+   *** IT READ AS "A RING SPINNING", WHICH IS NOT THE SAME THING. ***
+   The first version was a 0.93turn conic sweep - nearly a whole circle of
+   colour with a soft join - so what rotated was a ring with a gradient on it.
+   The eye had nothing to follow. Three changes, and the third is the one that
+   matters:
 
-   1.2s rather than 820ms: a spinner is watched, and a fast one reads as
-   agitation on a page that is already making somebody wait.
+     SHORTER TAIL   0.93turn -> 0.34turn. A trail is short by definition; a
+                    trail that reaches most of the way back to its own head is
+                    a ring.
+     SLOWER         1.2s -> 2.1s. You cannot follow a point that laps three
+                    times before you have found it.
+     A STAR AT THE  the head is now the star mark, not a dot, so there is
+     HEAD           something to follow rather than a bright end of a stripe.
+
+   *** AND THE SPARKS RUN ON A DIFFERENT CLOCK ON PURPOSE. ***
+   Sparks that rotate with the head are a rigid pattern going round - the same
+   six dots in the same six places forever. Turning them at a different rate
+   makes them beat against the head, so they drift, cluster and separate. It is
+   deterministic and it looks random, which is the trick the finish's fireflies
+   use for exactly the same reason.
    ========================================================================== */
 .d-icon--spinner{
 	--icon:none;
@@ -182,46 +192,53 @@
 	border-radius:var(--radius-circle);
 	background:conic-gradient(from 0turn,
 		transparent 0turn,
-		color-mix(in oklab, var(--spin-trail) 14%, transparent) .18turn,
-		color-mix(in oklab, var(--spin-trail) 62%, transparent) .46turn,
-		color-mix(in oklab, var(--spin-trail) 92%, transparent) .68turn,
-		var(--spin-trail) .80turn,
-		var(--spin-trail) .88turn,
-		transparent .93turn);
-	/* thicker: a 3.4px ring instead of 2.5 */
+		transparent .66turn,
+		color-mix(in oklab, var(--spin-trail) 10%, transparent) .72turn,
+		color-mix(in oklab, var(--spin-trail) 42%, transparent) .84turn,
+		color-mix(in oklab, var(--spin-trail) 78%, transparent) .93turn,
+		var(--spin-trail) 1turn);
 	mask-image:radial-gradient(farthest-side, transparent calc(100% - 3.4px), #000 calc(100% - 3.4px));
 	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 3.4px), #000 calc(100% - 3.4px));
-	animation:d-icon-spin 1.2s linear infinite;
+	animation:d-icon-spin 2.1s linear infinite;
 }
-/* The head, and one spark behind it - the same two things the other wakes have.
-   ::before is the spark so ::after can stay the bright head. */
+/* The head: a star, and it is what the trail is behind. */
 .d-icon--spinner::after{
 	content:"";
 	position:absolute;
-	top:0;
+	top:-9%;
 	left:50%;
-	width:3.4px;
-	height:3.4px;
-	margin-left:-1.7px;
-	border-radius:var(--radius-circle);
+	width:44%;
+	height:44%;
+	margin-left:-22%;
 	background:var(--spin-trail);
-	box-shadow:0 0 4px color-mix(in oklab, var(--spin-trail) 70%, transparent);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	filter:drop-shadow(0 0 3px color-mix(in oklab, var(--spin-trail) 70%, transparent));
 }
+/* The sparks. Odd positions, odd sizes, and a period that does not divide the
+   head's - 1.55s against 2.1s, so the pattern does not repeat for 21 turns. */
 .d-icon--spinner::before{
 	content:"";
 	position:absolute;
-	inset:0;
+	inset:-6%;
 	border-radius:inherit;
 	background:
-		radial-gradient(circle at 50% 8%,  color-mix(in oklab, var(--spin-trail) 85%, transparent) 0 .8px, transparent 2px),
-		radial-gradient(circle at 78% 22%, color-mix(in oklab, var(--spin-trail) 60%, transparent) 0 .6px, transparent 1.6px),
-		radial-gradient(circle at 90% 52%, color-mix(in oklab, var(--spin-trail) 40%, transparent) 0 .5px, transparent 1.4px);
+		radial-gradient(circle at 51% 6%,  color-mix(in oklab, var(--spin-trail) 90%, transparent) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 79% 19%, color-mix(in oklab, var(--spin-trail) 55%, transparent) 0 .6px, transparent 1.7px),
+		radial-gradient(circle at 93% 47%, color-mix(in oklab, var(--spin-trail) 70%, transparent) 0 .7px, transparent 1.9px),
+		radial-gradient(circle at 74% 81%, color-mix(in oklab, var(--spin-trail) 38%, transparent) 0 .5px, transparent 1.5px),
+		radial-gradient(circle at 26% 74%, color-mix(in oklab, var(--spin-trail) 62%, transparent) 0 .8px, transparent 2px),
+		radial-gradient(circle at 11% 34%, color-mix(in oklab, var(--spin-trail) 30%, transparent) 0 .5px, transparent 1.4px);
 	background-repeat:no-repeat;
+	animation:d-icon-spin 1.55s linear infinite reverse;
+	opacity:.85;
 }
-/* Cocoa and cherry variants for the places gold would vanish. */
 .d-icon--spinner.d-icon--ink{ --spin-trail: var(--c-cocoa) }
 .d-icon--spinner.d-icon--cherry{ --spin-trail: var(--c-cherry) }
-
 /* -- cart: up on its back wheel ----------------------------------------------
    *** THE WHEELS WERE INVISIBLE, AND THE CAUSE IS WORTH KEEPING. ***
    A mask on an element clips EVERYTHING the element paints, including its
@@ -264,10 +281,10 @@
 .d-icon--cart::after{
 	content:"";
 	position:absolute;
-	left:29%;
-	bottom:2%;
-	width:19%;
-	height:19%;
+	left:27%;
+	bottom:0%;
+	width:25%;
+	height:25%;
 	background:currentColor;
 	mask-image:var(--icon-wheel);
 	mask-size:contain;
@@ -278,10 +295,15 @@
 }
 [data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
 [data-added] .d-icon--cart::after{  animation:d-icon-roll 820ms var(--ease-float) }
+/* The tilt was 16deg at one instant and back through 11 immediately - so the
+   cart passed through the pose rather than holding it and the owner read it as
+   barely tilted. It now snaps up past the mark, settles ON 15deg, HOLDS there
+   for half the animation, and drops. A pose you can see is a pose that is held. */
 @keyframes d-icon-wheelie{
 	0%   { rotate:0deg }
-	30%  { rotate:-16deg }
-	62%  { rotate:-11deg }
+	22%  { rotate:-21deg }
+	38%  { rotate:-15deg }
+	72%  { rotate:-15deg }
 	100% { rotate:0deg }
 }
 @keyframes d-icon-roll{ to{ rotate:720deg } }

@@ -148,13 +148,15 @@ body.woocommerce-order-received *, body.woocommerce-order-received *::before{
    does not break, because the path is drawn round the middle of the row and the
    ends are off-screen either way.
    ========================================================================== */
+/* Fast in, SLOW round, fast out. The easing is in the STOPS, because a single
+   timing function cannot be fast, then slow, then fast again - and the middle
+   is now slower still on the owner's note: 20% of the run covers 60% of the
+   distance at the ends, and 60% of the run covers 40% in the loop. */
 @keyframes d-swoop{
-	0%   { offset-distance:0%;   opacity:0; scale:.3 }
-	9%   { opacity:1; scale:1 }
-	/* fast in, slow round, fast out - the easing is in the STOPS, because a
-	   single timing function cannot be fast, then slow, then fast again. */
-	18%  { offset-distance:26%;  animation-timing-function:cubic-bezier(.4,0,.15,1) }
-	72%  { offset-distance:74%;  opacity:1; scale:1 }
-	91%  { opacity:0; scale:.4 }
-	100% { offset-distance:100%; opacity:0; scale:.3 }
+	0%   { offset-distance:0%;  opacity:0; scale:.25 }
+	8%   { opacity:1; scale:1.15 }
+	20%  { offset-distance:30%; scale:1 }
+	80%  { offset-distance:70%; opacity:1; scale:1 }
+	92%  { opacity:0; scale:.45 }
+	100% { offset-distance:100%; opacity:0; scale:.25 }
 }
