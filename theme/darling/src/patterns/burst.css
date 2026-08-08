@@ -1,0 +1,90 @@
+/* =============================================================================
+   PATTERN / BURST
+   Stars that live behind a button and come out when it is hovered.
+
+   *** IT IS ITS OWN COMPONENT BECAUSE TWO PSEUDO-ELEMENTS IS TWO STARS. ***
+   The season panel wanted several, settling in different places at different
+   sizes, each spinning at its own rate. That is more than a button's ::before
+   and ::after can carry, and it is wanted in more than one place - so it is a
+   small piece of markup rather than a private trick inside one component:
+
+     <a class="d-season__cta">
+       Text
+       <span class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+     </a>
+
+   aria-hidden, because five empty spans are decoration and a screen reader
+   reading the button should hear the label and stop.
+
+   *** THEY START AT THE CENTRE, NOT AT THEIR DESTINATIONS. ***
+   All five sit at the button's middle at scale 0, so they are literally behind
+   it - and they arrive by travelling outward rather than fading in where they
+   will end up. On the way out they go back the same way, faster, which is the
+   difference between "hiding behind the button again" and "switching off".
+
+   Slow out, quick back: the hover rule owns the long transition and the resting
+   rule owns the short one, the same asymmetry the search lens uses.
+   ========================================================================== */
+
+.d-burst{
+	position:absolute;
+	inset:0;
+	pointer-events:none;
+	/* Behind the button's own background, so a star that has not left yet is
+	   genuinely hidden rather than sitting on top of the label. */
+	z-index:-1;
+}
+.d-burst i{
+	position:absolute;
+	top:50%;
+	left:50%;
+	width:var(--bs, .6rem);
+	height:var(--bs, .6rem);
+	translate:-50% -50%;
+	scale:0;
+	opacity:0;
+	background:var(--burst-colour, var(--g-hi));
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	/* out: quick */
+	transition:translate 170ms var(--ease-float),
+	           scale     170ms var(--ease-float),
+	           opacity   120ms linear;
+}
+/* Five destinations, five sizes, five spin rates. Deliberately not on a circle:
+   evenly spaced points read as a diagram, and these should read as a handful. */
+.d-burst i:nth-child(1){ --bx:-58%; --by:-118%; --bs:.62rem }
+.d-burst i:nth-child(2){ --bx: 46%; --by:-132%; --bs:.46rem }
+.d-burst i:nth-child(3){ --bx: 74%; --by:  16%; --bs:.7rem  }
+.d-burst i:nth-child(4){ --bx:-78%; --by:  42%; --bs:.5rem  }
+.d-burst i:nth-child(5){ --bx: 10%; --by: 140%; --bs:.56rem }
+.d-burst i:nth-child(2),
+.d-burst i:nth-child(5){ background:var(--burst-alt, var(--c-cream)) }
+
+:hover > .d-burst i,
+:focus-visible > .d-burst i{
+	translate:calc(-50% + var(--bx)) calc(-50% + var(--by));
+	scale:1;
+	opacity:1;
+	/* in: slower, and staggered so they leave one after another */
+	transition:translate 420ms var(--ease-float),
+	           scale     420ms var(--ease-float),
+	           opacity   200ms linear;
+	animation:d-burst-spin var(--bspin, 4s) linear infinite;
+}
+:hover > .d-burst i:nth-child(2), :focus-visible > .d-burst i:nth-child(2){ transition-delay:60ms;  --bspin:5.4s }
+:hover > .d-burst i:nth-child(3), :focus-visible > .d-burst i:nth-child(3){ transition-delay:120ms; --bspin:3.1s }
+:hover > .d-burst i:nth-child(4), :focus-visible > .d-burst i:nth-child(4){ transition-delay:180ms; --bspin:6.2s }
+:hover > .d-burst i:nth-child(5), :focus-visible > .d-burst i:nth-child(5){ transition-delay:240ms; --bspin:4.7s }
+/* Spinning about its own centre while sitting at an offset means the rotation
+   cannot live in `translate` - which is exactly why these are separate
+   properties and not one `transform`. */
+@keyframes d-burst-spin{ to{ rotate:360deg } }
+
+@media (prefers-reduced-motion: reduce){
+	.d-burst{ display:none }
+}

@@ -103,6 +103,7 @@
 .d-icon--info{ --icon:var(--icon-info) }
 .d-icon--warning{ --icon:var(--icon-warning) }
 .d-icon--chevron-down{ --icon:var(--icon-chevron-down) }
+.d-icon--chevron-left{ --icon:var(--icon-chevron-left) }
 .d-icon--chevron-right{ --icon:var(--icon-chevron-right) }
 .d-icon--download{ --icon:var(--icon-download) }
 .d-icon--mail{ --icon:var(--icon-mail) }
@@ -484,7 +485,10 @@ a:hover > .d-icon--close,
 button:hover > .d-icon--close{ rotate:90deg }
 .d-icon--close{ transition:rotate 220ms var(--ease-float) }
 
+.d-icon--chevron-left,
 .d-icon--chevron-right{ transition:translate 180ms var(--ease-float) }
+a:hover > .d-icon--chevron-left,
+button:hover > .d-icon--chevron-left{ translate:-3px 0 }
 a:hover > .d-icon--chevron-right,
 button:hover > .d-icon--chevron-right{ translate:3px 0 }
 .d-icon--chevron-down{ transition:translate 180ms var(--ease-float) }

@@ -222,15 +222,20 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 	overflow-x:auto;
 	scroll-snap-type:x mandatory;
 	scroll-behavior:smooth;
-	padding-bottom:var(--space-xs);
-	scrollbar-width:thin;
-	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+	padding-bottom:var(--space-3xs);
+	/* No visible bar: the two buttons ARE the control, and a scrollbar under a
+	   row of tiles reads as a second one. The row is still a real scroller, so
+	   swipe, flick, trackpad and keyboard all still work - only the paint is
+	   gone. */
+	scrollbar-width:none;
 	overscroll-behavior-x:contain;
 }
 .d-carousel__row > *{
 	flex:0 0 clamp(160px, 17vw, 210px);
 	scroll-snap-align:start;
 }
+
+.d-carousel__row::-webkit-scrollbar{ display:none }
 
 .d-carousel__btn{
 	position:absolute;

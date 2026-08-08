@@ -389,6 +389,12 @@
 	--icon-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2L22 20H2z'/%3E%3Cpath d='M12 9.5v5'/%3E%3Ccircle cx='12' cy='17.4' r='1.1' fill='%23000' stroke='none'/%3E%3C/svg%3E");
 	/* \e019 shipping-calculator toggle */
 	--icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+	/* Its own mark rather than the right one rotated 180deg. A rotated icon
+	   cannot lean left on hover: 	ranslate and otate are separate
+	   properties and translate is applied to the geometry FIRST, so the offset
+	   points right whatever the rotation. The prev button nudged the wrong way
+	   and that is why. */
+	--icon-chevron-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
 	--icon-chevron-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
 	/* \e00a digital downloads */
 	--icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5v11M7.5 10l4.5 4.5L16.5 10M4.5 19.5h15'/%3E%3C/svg%3E");
@@ -430,10 +436,22 @@
 	   in a 20px icon - blurs into a plain disc, and a disc rotating is a disc.
 	   It now has ONE slit from centre to rim: a single asymmetry is all the eye
 	   needs to see rotation, and it survives being four pixels across. */
-	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 0a12 12 0 1 0 12 12A12 12 0 0 0 12 0zm0 4.2A7.8 7.8 0 1 1 4.2 12 7.8 7.8 0 0 1 12 4.2z'/%3E%3Cpath fill='%23000' d='M10.2 1.2h3.6v11.4h-3.6z'/%3E%3C/svg%3E");
+	/* *** BOTH WHEELS ARE THE SAME OBJECT NOW. *** The spinning one was a thick
+	   RING with a spoke and the front one was a stroked circle that reads as
+	   solid at 4px, so one looked hollow and one looked filled - which is what
+	   the owner saw. Both are a filled disc with the slit SUBTRACTED, using
+	   fill-rule evenodd: the rect is inside the circle, so evenodd cuts it out
+	   rather than painting over it. A cut slit shows the wheel turning; a
+	   painted one only shows at certain angles against certain backgrounds. */
+	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24zM10.9 1.9h2.2v10.6h-2.2z'/%3E%3C/svg%3E");
 	/* The bow. Small, symmetric, and the same shape as the big brand bow so the
 	   two read as one mark at two sizes. */
-	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E");
+	/* *** THE BRAND BOW, NOT A BOW. *** This is the exact path the site already
+	   draws in templates/front-page.html, parts/footer.html and the empty
+	   states - two triangular loops and a round knot, 24 by 12, no tails. The
+	   one I drew before was a plausible bow and the wrong one, which is worse
+	   than no bow: the mark people recognise is this shape. */
+	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Cpath fill='%23000' d='M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z'/%3E%3Ccircle fill='%23000' cx='12' cy='6' r='2.4'/%3E%3C/svg%3E");
 	/* The lens on its own, so the search mark can hold something inside it. */
 	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
 	--icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E");
@@ -445,7 +463,7 @@
 	   This frame is the cart with the BACK wheel removed, so there is nothing
 	   underneath the one that turns, and the pseudo is resized to 4.8 units to
 	   match the front one that is still drawn here. One wheel, one size. */
-	--icon-cart-frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E");}
+	--icon-cart-frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M17.5 17.6a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8zM17.28 17.98h0.44v2.12h-0.44z'/%3E%3C/svg%3E");}
 }
 
 /* ==== tokens/motion.css ==== */
@@ -786,6 +804,7 @@ hr{
 .d-icon--info{ --icon:var(--icon-info) }
 .d-icon--warning{ --icon:var(--icon-warning) }
 .d-icon--chevron-down{ --icon:var(--icon-chevron-down) }
+.d-icon--chevron-left{ --icon:var(--icon-chevron-left) }
 .d-icon--chevron-right{ --icon:var(--icon-chevron-right) }
 .d-icon--download{ --icon:var(--icon-download) }
 .d-icon--mail{ --icon:var(--icon-mail) }
@@ -1167,7 +1186,10 @@ a:hover > .d-icon--close,
 button:hover > .d-icon--close{ rotate:90deg }
 .d-icon--close{ transition:rotate 220ms var(--ease-float) }
 
+.d-icon--chevron-left,
 .d-icon--chevron-right{ transition:translate 180ms var(--ease-float) }
+a:hover > .d-icon--chevron-left,
+button:hover > .d-icon--chevron-left{ translate:-3px 0 }
 a:hover > .d-icon--chevron-right,
 button:hover > .d-icon--chevron-right{ translate:3px 0 }
 .d-icon--chevron-down{ transition:translate 180ms var(--ease-float) }
@@ -2024,7 +2046,10 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	gap:var(--space-m);
 	align-items:center;
 	min-height:min(66vh, 30rem);
-	padding:var(--space-m) 0;
+	/* The grey hero had no inline padding at all - it relied on whatever wrapper
+	   it happened to be in, so on the home page it ran to the edge. The claret
+	   variant overrides this with its own larger padding below. */
+	padding:var(--space-m) var(--gutter);
 	max-width:var(--page-max);
 	margin-inline:auto;
 }
@@ -2202,6 +2227,8 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 /* Cream on claret, and the ink is cherry-deep rather than cherry: this pill sits
    ON the brand colour, so the label has to be darker than the field behind it. */
 .d-season__cta{
+	position:relative;
+	isolation:isolate;
 	flex:none;
 	padding:.75rem 1.6rem;
 	border-radius:var(--radius-pill);
@@ -2217,24 +2244,10 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 	outline:2px solid var(--c-white);
 	outline-offset:3px;
 }
-/* The corner star. Was content:"\2726" - a dingbat missing from Inter. */
-.d-season::after{
-	content:"";
-	position:absolute;
-	top:14px;
-	inset-inline-end:20px;
-	width:1rem;
-	height:1rem;
-	background:var(--g-hi);
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	animation:d-twinkle 3s var(--ease-float) infinite .6s;
-	pointer-events:none;
-}
+/* The lone corner star is gone, on the owner's note. A single star pinned to
+   a corner is a sticker; the stars now belong to the BUTTON, where they are a
+   response to something rather than decoration sitting there. See
+   patterns/burst.css. */
 html.d-a11y .d-season__title{ color:var(--c-white) !important }
 
 /* =============================================================================
@@ -2294,7 +2307,10 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	display:block;
 	overflow:hidden;
 	border-radius:var(--radius-m);
-	background:var(--placeholder-category);
+	/* The same ramp the product card uses for a missing image. The category ramp
+	   was a flat warm grey; sharing the product one means an empty tile and an
+	   empty card look like the same absence rather than two different ones. */
+	background:var(--placeholder-product);
 	color:var(--ink-on-dark);
 	text-decoration:none;
 	aspect-ratio:1 / 1;
@@ -2330,6 +2346,100 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	font-size:var(--fs-fine);
 	font-weight:var(--fw-regular);
 	opacity:.85;
+}
+}
+
+/* ==== patterns/burst.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / BURST
+   Stars that live behind a button and come out when it is hovered.
+
+   *** IT IS ITS OWN COMPONENT BECAUSE TWO PSEUDO-ELEMENTS IS TWO STARS. ***
+   The season panel wanted several, settling in different places at different
+   sizes, each spinning at its own rate. That is more than a button's ::before
+   and ::after can carry, and it is wanted in more than one place - so it is a
+   small piece of markup rather than a private trick inside one component:
+
+     <a class="d-season__cta">
+       Text
+       <span class="d-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+     </a>
+
+   aria-hidden, because five empty spans are decoration and a screen reader
+   reading the button should hear the label and stop.
+
+   *** THEY START AT THE CENTRE, NOT AT THEIR DESTINATIONS. ***
+   All five sit at the button's middle at scale 0, so they are literally behind
+   it - and they arrive by travelling outward rather than fading in where they
+   will end up. On the way out they go back the same way, faster, which is the
+   difference between "hiding behind the button again" and "switching off".
+
+   Slow out, quick back: the hover rule owns the long transition and the resting
+   rule owns the short one, the same asymmetry the search lens uses.
+   ========================================================================== */
+
+.d-burst{
+	position:absolute;
+	inset:0;
+	pointer-events:none;
+	/* Behind the button's own background, so a star that has not left yet is
+	   genuinely hidden rather than sitting on top of the label. */
+	z-index:-1;
+}
+.d-burst i{
+	position:absolute;
+	top:50%;
+	left:50%;
+	width:var(--bs, .6rem);
+	height:var(--bs, .6rem);
+	translate:-50% -50%;
+	scale:0;
+	opacity:0;
+	background:var(--burst-colour, var(--g-hi));
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	/* out: quick */
+	transition:translate 170ms var(--ease-float),
+	           scale     170ms var(--ease-float),
+	           opacity   120ms linear;
+}
+/* Five destinations, five sizes, five spin rates. Deliberately not on a circle:
+   evenly spaced points read as a diagram, and these should read as a handful. */
+.d-burst i:nth-child(1){ --bx:-58%; --by:-118%; --bs:.62rem }
+.d-burst i:nth-child(2){ --bx: 46%; --by:-132%; --bs:.46rem }
+.d-burst i:nth-child(3){ --bx: 74%; --by:  16%; --bs:.7rem  }
+.d-burst i:nth-child(4){ --bx:-78%; --by:  42%; --bs:.5rem  }
+.d-burst i:nth-child(5){ --bx: 10%; --by: 140%; --bs:.56rem }
+.d-burst i:nth-child(2),
+.d-burst i:nth-child(5){ background:var(--burst-alt, var(--c-cream)) }
+
+:hover > .d-burst i,
+:focus-visible > .d-burst i{
+	translate:calc(-50% + var(--bx)) calc(-50% + var(--by));
+	scale:1;
+	opacity:1;
+	/* in: slower, and staggered so they leave one after another */
+	transition:translate 420ms var(--ease-float),
+	           scale     420ms var(--ease-float),
+	           opacity   200ms linear;
+	animation:d-burst-spin var(--bspin, 4s) linear infinite;
+}
+:hover > .d-burst i:nth-child(2), :focus-visible > .d-burst i:nth-child(2){ transition-delay:60ms;  --bspin:5.4s }
+:hover > .d-burst i:nth-child(3), :focus-visible > .d-burst i:nth-child(3){ transition-delay:120ms; --bspin:3.1s }
+:hover > .d-burst i:nth-child(4), :focus-visible > .d-burst i:nth-child(4){ transition-delay:180ms; --bspin:6.2s }
+:hover > .d-burst i:nth-child(5), :focus-visible > .d-burst i:nth-child(5){ transition-delay:240ms; --bspin:4.7s }
+/* Spinning about its own centre while sitting at an offset means the rotation
+   cannot live in `translate` - which is exactly why these are separate
+   properties and not one `transform`. */
+@keyframes d-burst-spin{ to{ rotate:360deg } }
+
+@media (prefers-reduced-motion: reduce){
+	.d-burst{ display:none }
 }
 }
 
@@ -2559,15 +2669,20 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 	overflow-x:auto;
 	scroll-snap-type:x mandatory;
 	scroll-behavior:smooth;
-	padding-bottom:var(--space-xs);
-	scrollbar-width:thin;
-	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+	padding-bottom:var(--space-3xs);
+	/* No visible bar: the two buttons ARE the control, and a scrollbar under a
+	   row of tiles reads as a second one. The row is still a real scroller, so
+	   swipe, flick, trackpad and keyboard all still work - only the paint is
+	   gone. */
+	scrollbar-width:none;
 	overscroll-behavior-x:contain;
 }
 .d-carousel__row > *{
 	flex:0 0 clamp(160px, 17vw, 210px);
 	scroll-snap-align:start;
 }
+
+.d-carousel__row::-webkit-scrollbar{ display:none }
 
 .d-carousel__btn{
 	position:absolute;

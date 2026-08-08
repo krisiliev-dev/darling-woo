@@ -52,6 +52,7 @@
 @import url("patterns/drawer.css") layer(patterns);
 @import url("patterns/band.css")    layer(patterns);
 @import url("patterns/hero.css")    layer(patterns);
+@import url("patterns/burst.css")   layer(patterns);
 @import url("patterns/catalogue.css") layer(patterns);
 @import url("generated/category-banners.css") layer(patterns);
 @import url("patterns/progress.css") layer(patterns);

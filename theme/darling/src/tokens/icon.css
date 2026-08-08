@@ -41,6 +41,12 @@
 	--icon-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2L22 20H2z'/%3E%3Cpath d='M12 9.5v5'/%3E%3Ccircle cx='12' cy='17.4' r='1.1' fill='%23000' stroke='none'/%3E%3C/svg%3E");
 	/* \e019 shipping-calculator toggle */
 	--icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E");
+	/* Its own mark rather than the right one rotated 180deg. A rotated icon
+	   cannot lean left on hover: 	ranslate and otate are separate
+	   properties and translate is applied to the geometry FIRST, so the offset
+	   points right whatever the rotation. The prev button nudged the wrong way
+	   and that is why. */
+	--icon-chevron-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
 	--icon-chevron-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
 	/* \e00a digital downloads */
 	--icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5v11M7.5 10l4.5 4.5L16.5 10M4.5 19.5h15'/%3E%3C/svg%3E");
@@ -82,10 +88,22 @@
 	   in a 20px icon - blurs into a plain disc, and a disc rotating is a disc.
 	   It now has ONE slit from centre to rim: a single asymmetry is all the eye
 	   needs to see rotation, and it survives being four pixels across. */
-	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 0a12 12 0 1 0 12 12A12 12 0 0 0 12 0zm0 4.2A7.8 7.8 0 1 1 4.2 12 7.8 7.8 0 0 1 12 4.2z'/%3E%3Cpath fill='%23000' d='M10.2 1.2h3.6v11.4h-3.6z'/%3E%3C/svg%3E");
+	/* *** BOTH WHEELS ARE THE SAME OBJECT NOW. *** The spinning one was a thick
+	   RING with a spoke and the front one was a stroked circle that reads as
+	   solid at 4px, so one looked hollow and one looked filled - which is what
+	   the owner saw. Both are a filled disc with the slit SUBTRACTED, using
+	   fill-rule evenodd: the rect is inside the circle, so evenodd cuts it out
+	   rather than painting over it. A cut slit shows the wheel turning; a
+	   painted one only shows at certain angles against certain backgrounds. */
+	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24zM10.9 1.9h2.2v10.6h-2.2z'/%3E%3C/svg%3E");
 	/* The bow. Small, symmetric, and the same shape as the big brand bow so the
 	   two read as one mark at two sizes. */
-	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E");
+	/* *** THE BRAND BOW, NOT A BOW. *** This is the exact path the site already
+	   draws in templates/front-page.html, parts/footer.html and the empty
+	   states - two triangular loops and a round knot, 24 by 12, no tails. The
+	   one I drew before was a plausible bow and the wrong one, which is worse
+	   than no bow: the mark people recognise is this shape. */
+	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Cpath fill='%23000' d='M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z'/%3E%3Ccircle fill='%23000' cx='12' cy='6' r='2.4'/%3E%3C/svg%3E");
 	/* The lens on its own, so the search mark can hold something inside it. */
 	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
 	--icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E");
@@ -97,4 +115,4 @@
 	   This frame is the cart with the BACK wheel removed, so there is nothing
 	   underneath the one that turns, and the pseudo is resized to 4.8 units to
 	   match the front one that is still drawn here. One wheel, one size. */
-	--icon-cart-frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E");}
+	--icon-cart-frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M17.5 17.6a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8zM17.28 17.98h0.44v2.12h-0.44z'/%3E%3C/svg%3E");}

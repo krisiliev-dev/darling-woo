@@ -34,7 +34,10 @@
 	gap:var(--space-m);
 	align-items:center;
 	min-height:min(66vh, 30rem);
-	padding:var(--space-m) 0;
+	/* The grey hero had no inline padding at all - it relied on whatever wrapper
+	   it happened to be in, so on the home page it ran to the edge. The claret
+	   variant overrides this with its own larger padding below. */
+	padding:var(--space-m) var(--gutter);
 	max-width:var(--page-max);
 	margin-inline:auto;
 }
@@ -212,6 +215,8 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 /* Cream on claret, and the ink is cherry-deep rather than cherry: this pill sits
    ON the brand colour, so the label has to be darker than the field behind it. */
 .d-season__cta{
+	position:relative;
+	isolation:isolate;
 	flex:none;
 	padding:.75rem 1.6rem;
 	border-radius:var(--radius-pill);
@@ -227,24 +232,10 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 	outline:2px solid var(--c-white);
 	outline-offset:3px;
 }
-/* The corner star. Was content:"\2726" - a dingbat missing from Inter. */
-.d-season::after{
-	content:"";
-	position:absolute;
-	top:14px;
-	inset-inline-end:20px;
-	width:1rem;
-	height:1rem;
-	background:var(--g-hi);
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	animation:d-twinkle 3s var(--ease-float) infinite .6s;
-	pointer-events:none;
-}
+/* The lone corner star is gone, on the owner's note. A single star pinned to
+   a corner is a sticker; the stars now belong to the BUTTON, where they are a
+   response to something rather than decoration sitting there. See
+   patterns/burst.css. */
 html.d-a11y .d-season__title{ color:var(--c-white) !important }
 
 /* =============================================================================
@@ -304,7 +295,10 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	display:block;
 	overflow:hidden;
 	border-radius:var(--radius-m);
-	background:var(--placeholder-category);
+	/* The same ramp the product card uses for a missing image. The category ramp
+	   was a flat warm grey; sharing the product one means an empty tile and an
+	   empty card look like the same absence rather than two different ones. */
+	background:var(--placeholder-product);
 	color:var(--ink-on-dark);
 	text-decoration:none;
 	aspect-ratio:1 / 1;
