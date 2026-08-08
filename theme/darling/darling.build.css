@@ -175,7 +175,11 @@
 	   the panel and disappears. The owner's rule - gold trail everywhere,
 	   cherry trail on the gold variant. */
 	--trail-gold:   var(--g-light);
-	--trail-cherry: var(--c-cherry);}
+	/* A LIGHTER cherry than the paint, on the owner's note: --c-cherry against a
+	   gold panel is the same weight as the panel's own edge and reads as a
+	   drawn line rather than as light. Mixed toward white, it reads as a spark.
+	   Not a new primitive - cherry is still cherry, this is cherry LIT. */
+	--trail-cherry: color-mix(in oklab, var(--c-cherry) 62%, var(--c-white));}
 }
 
 /* ==== tokens/type.css ==== */
@@ -1921,7 +1925,7 @@ hr{
 	font-size:var(--fs-meta);
 	color:var(--pg-ink);
 	transition:--pg-a 360ms var(--ease-float),
-	           --pg-b 620ms var(--ease-float);
+	           --pg-b var(--dur-wake) var(--ease-wake);
 }
 .d-pagination--cherry{
 	--pg-quiet:    var(--tint-cherry-quiet);
@@ -2054,6 +2058,16 @@ hr{
    Spans from the ghost to the marker. Zero width at rest, widest mid-move, and
    it points backwards on its own because the ghost is simply late.
 
+   The ghost now runs on --dur-wake / --ease-wake, the same clock the panel's
+   trail uses: 900ms with a curve that barely moves for the first third and then
+   has a very long tail. That is what makes the streak outlive the marker's
+   arrival instead of vanishing with it.
+
+   Sparks are radial gradients in the background rather than elements, because
+   there is no third pseudo-element to spend and because positioning them in
+   PERCENT means they spread as the streak stretches - they fly apart on a long
+   jump and gather on a short one, for free.
+
    min() and abs() are both CSS Values 4. min() is everywhere; abs() is Chrome
    133+, so every declaration that needs it is written twice - safe value
    first - and an old browser gets no trail rather than a broken one. */
@@ -2065,30 +2079,33 @@ hr{
 	height:calc(var(--cell) - .34em);
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	filter:blur(3px);
-	background:linear-gradient(90deg,
-		transparent 0%,
-		color-mix(in oklab, var(--pg-trail) 14%, transparent) 20%,
-		color-mix(in oklab, var(--pg-trail) 62%, transparent) 42%,
-		var(--pg-trail) 50%,
-		color-mix(in oklab, var(--pg-trail) 62%, transparent) 58%,
-		color-mix(in oklab, var(--pg-trail) 14%, transparent) 80%,
-		transparent 100%);
-	/* --- the pairs. First of each is the fallback without abs(). --- */
+	background:
+		radial-gradient(circle at 14% 62%, var(--pg-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 27% 34%, color-mix(in oklab, var(--pg-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 41% 70%, color-mix(in oklab, var(--pg-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 58% 28%, var(--pg-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 72% 66%, color-mix(in oklab, var(--pg-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 87% 40%, color-mix(in oklab, var(--pg-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--pg-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--pg-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--pg-trail) 92%, transparent) 40%,
+			var(--pg-trail) 45%,
+			var(--pg-trail) 55%,
+			color-mix(in oklab, var(--pg-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--pg-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--pg-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	mask-image:linear-gradient(180deg, transparent 0%, #000 24%, #000 76%, transparent 100%);
 	width:0;
 	width:calc(abs(var(--mark-x) - var(--ghost-x)) + var(--cell) - .34em);
 	opacity:0;
-	/* MEASURED AND CORRECTED: keying this to abs(a - b) in PAGE units lit the
-	   wake up during a middle-of-the-run move, where the strip slides and the
-	   marker does not move at all - a glow sitting still behind a still circle.
-	   The wake belongs to the MARKER, so it is keyed to the marker's own travel
-	   in pixels. Zero in the middle, blooms at the ends. Dividing a length by a
-	   length in calc() gives a number, which is what makes this legal. */
 	opacity:clamp(0, calc(abs(var(--mark-x) - var(--ghost-x)) / var(--cell) * 1.9), .95);
 	transform:translate(min(var(--mark-x), var(--ghost-x)), -50%);
 	margin:0 .17em;
 }
-
 /* -- prev / next ------------------------------------------------------------
    Drawn chevrons rather than glyphs, for the same reason the stars are drawn:
    an arrow character is missing from more fonts than people expect and falls
@@ -2195,7 +2212,7 @@ body.woocommerce-order-received .d-pagination__wake{ opacity:0 }
 	position:relative;
 	display:block;
 	height:var(--thumb);
-	transition:--sl-a 260ms var(--ease-float);
+	transition:--sl-a var(--dur-wake) var(--ease-wake);
 }
 .d-slider--cherry{
 	--sl-track: var(--tint-cherry-quiet);
@@ -2282,8 +2299,22 @@ body.woocommerce-order-received .d-pagination__wake{ opacity:0 }
 }
 
 /* -- the wake ---------------------------------------------------------------
-   Spans from the ghost to the thumb, so it is zero at rest and as long as the
-   gesture was fast. Behind the input, which is why the input carries z-index 2.
+   *** THE FIRST VERSION PUT THIS IN THE WRONG PLACE AND THE REASON IS WORTH
+   WRITING DOWN. *** It positioned the streak with
+       transform: translate(calc(min(--x-a, --x-b) - thumb/2), -50%)
+   and --x-a contains a percentage. In a TRANSFORM, percentages resolve against
+   the element's OWN border box - not against the containing block. The wake's
+   own width is the length of the gap, so the streak's position depended on how
+   far the thumb had just moved: it sat near the left on a slow drag and crept
+   right on a fast one, which is exactly what the owner described. It was never
+   a tuning problem.
+
+   Percentages in `left` DO resolve against the containing block, so the streak
+   is placed with left and only the vertical centring is left to transform.
+
+   Sparks are radial gradients rather than elements, positioned in percent so
+   they spread as the streak stretches - they fly apart on a fast drag and
+   gather on a slow one, which is the behaviour we want and costs nothing.
 
    abs() is Chrome 133+; the pair pattern means an older browser gets no trail
    rather than a stuck bar. */
@@ -2293,26 +2324,38 @@ body.woocommerce-order-received .d-pagination__wake{ opacity:0 }
 	position:absolute;
 	z-index:1;
 	top:50%;
-	left:0;
 	height:var(--thumb);
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	filter:blur(3px);
-	background:linear-gradient(90deg,
-		transparent 0%,
-		color-mix(in oklab, var(--sl-trail) 14%, transparent) 20%,
-		color-mix(in oklab, var(--sl-trail) 62%, transparent) 42%,
-		var(--sl-trail) 50%,
-		color-mix(in oklab, var(--sl-trail) 62%, transparent) 58%,
-		color-mix(in oklab, var(--sl-trail) 14%, transparent) 80%,
-		transparent 100%);
+	transform:translateY(-50%);
+	background:
+		radial-gradient(circle at 14% 62%, var(--sl-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 27% 34%, color-mix(in oklab, var(--sl-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 41% 70%, color-mix(in oklab, var(--sl-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 58% 28%, var(--sl-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 72% 66%, color-mix(in oklab, var(--sl-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 87% 40%, color-mix(in oklab, var(--sl-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--sl-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--sl-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--sl-trail) 92%, transparent) 40%,
+			var(--sl-trail) 45%,
+			var(--sl-trail) 55%,
+			color-mix(in oklab, var(--sl-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--sl-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--sl-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	mask-image:linear-gradient(180deg, transparent 0%, #000 24%, #000 76%, transparent 100%);
+	/* --- the pairs. First of each is the fallback without abs(). --- */
+	left:0;
+	left:calc(min(var(--x-a), var(--x-b)) - var(--thumb) / 2);
 	width:0;
 	width:calc(abs(var(--x-a) - var(--x-b)) + var(--thumb));
 	opacity:0;
 	opacity:clamp(0, calc(abs(var(--x-a) - var(--x-b)) / var(--thumb) * 1.5), .95);
-	transform:translate(calc(min(var(--x-a), var(--x-b)) - var(--thumb) / 2), -50%);
 }
-
 /* -- the pair, for a min/max range -------------------------------------------
    Two inputs stacked on one rail is the only accessible way to do a two-handle
    range: each handle stays a real focusable control with its own value. A
@@ -2408,102 +2451,165 @@ body.woocommerce-order-received .d-slider__wake{ opacity:0 }
 .d-scroll::-webkit-scrollbar-corner{ background:var(--sc-track) }
 
 /* -- level two: our own bar --------------------------------------------------
-   The scroller names a timeline; the thumb, which is a SIBLING and therefore
-   outside the scrolling box, reads it. timeline-scope on the frame is what lets
-   a name cross from the scroller to its sibling - without it the name is only
-   visible to the scroller's own descendants, and a thumb inside the scroller
-   would scroll away with the content.
+   *** WHAT OUR OWN SCROLLBAR COSTS, PLAINLY, BECAUSE IT IS A REAL TRADE. ***
+   It knows EXACTLY where you are - a scroll timeline is continuous and exact,
+   and the thumb tracks the scroll position to the pixel with no script at all.
+   What it does not get for free is everything a native scrollbar gets from the
+   operating system:
 
-   --sc-ratio is the thumb's share of the rail. It should be viewport/content,
-   which CSS cannot compute, so it is a variable with a sane default that the
-   shim overwrites when it is present. Wrong by a bit is a thumb of slightly the
-   wrong length; it still tracks the scroll exactly. */
+     - DRAGGING. A native thumb is draggable because the OS makes it so. Ours is
+       a div; CSS has no way to turn a scroll position into a pointer target, so
+       dragging is script. Nine lines, and they are in assets/darling-ui.js.
+     - ITS OWN LENGTH. The thumb should be viewport/content long. CSS cannot see
+       scrollHeight, so --sc-ratio is a variable the shim sets; without the shim
+       it is a sane default and the thumb is the wrong length while still
+       tracking the position exactly.
+     - A CLOCK. This is the part that was explained badly. A scroll timeline is
+       a POSITION, not a clock: it says "you are 42% down", and it says it
+       perfectly. It has no memory, so there is no "where was I 200ms ago" and
+       therefore no velocity and therefore no trail from CSS alone. Nothing is
+       lost about knowing where we are; what is missing is knowing where we WERE.
+       The shim adds the clock, and then the trail works exactly like the panel's.
+     - OS INTEGRATION. Assistive tech, high-contrast modes, the "always show
+       scrollbars" setting, trackpad overlay behaviour, and the automatic
+       re-measure when content changes. All of that is free on the native bar and
+       is ours to maintain on this one.
+
+   So: use .d-scroll (the native bar, branded) unless the surface actually wants
+   a trail or a scrollbar that matches the panel it sits in. This is the second
+   option, not the default.
+
+   *** THE FRAME OWNS THE BORDER AND THE RADIUS. ***
+   It used to sit on the inner scroller, so the rail ran the full height of the
+   frame and poked past the rounded corners at top and bottom - the owner's
+   "slightly outside of the outer box on the edges". Now the frame draws the box
+   and clips, the scroller inside is borderless, and the rail is inset from the
+   frame's padding box, so the two share one outline by construction. */
 .d-scrollframe{
 	--sc-thumb: var(--c-grey-400);
 	--sc-track: var(--tint-grey-quiet);
 	--sc-trail: var(--trail-gold);
 	--sc-ratio: .34;
 	--sc-w: 8px;
+	--sc-pad: var(--space-3xs);
 	position:relative;
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-m);
+	background:var(--tint-grey);
+	overflow:hidden;
 	timeline-scope:--d-scroll;
 }
 .d-scrollframe--cherry{
 	--sc-thumb: var(--tint-cherry-edge);
-	--sc-track: var(--tint-cherry);
+	--sc-track: var(--tint-cherry-quiet);
 	--sc-trail: var(--trail-gold);
+	border-color:var(--tint-cherry-edge);
+	background:var(--tint-cherry);
 }
 .d-scrollframe--gold{
 	--sc-thumb: var(--tint-gold-edge);
-	--sc-track: var(--tint-gold);
+	--sc-track: var(--tint-gold-quiet);
 	--sc-trail: var(--trail-cherry);
+	border-color:var(--tint-gold-edge);
+	background:var(--tint-gold);
 }
 .d-scrollframe > .d-scroll{
 	scroll-timeline:--d-scroll block;
 	scrollbar-width:none;
-	padding-inline-end:calc(var(--sc-w) + var(--space-2xs));
+	border:0;
+	border-radius:0;
+	background:none;
+	padding-inline-end:calc(var(--sc-w) + var(--sc-pad) * 2 + var(--space-2xs));
 }
 .d-scrollframe > .d-scroll::-webkit-scrollbar{ display:none }
 
+/* Inset from the frame's padding box on all four sides, and pill-rounded, so
+   its ends land inside the frame's corner radius instead of crossing it. */
 .d-scrollframe__rail{
 	position:absolute;
-	top:0;
-	bottom:0;
-	inset-inline-end:2px;
+	z-index:2;
+	top:var(--sc-pad);
+	bottom:var(--sc-pad);
+	inset-inline-end:var(--sc-pad);
 	width:var(--sc-w);
 	border-radius:var(--radius-pill);
 	background:var(--sc-track);
-	pointer-events:none;
 }
+/* The thumb and the wake live INSIDE the rail, so their percentages are of the
+   rail and not of the frame. That is what keeps them from overhanging. */
 .d-scrollframe__thumb{
 	position:absolute;
-	inset-inline-end:2px;
-	width:var(--sc-w);
+	inset-inline:0;
 	height:calc(var(--sc-ratio) * 100%);
 	border-radius:var(--radius-pill);
 	background:var(--sc-thumb);
-	pointer-events:none;
+	cursor:grab;
+	touch-action:none;
 	animation:d-scroll-thumb linear both;
 	animation-timeline:--d-scroll;
+}
+.d-scrollframe__thumb:hover{
+	background:color-mix(in oklab, var(--sc-thumb) 72%, var(--c-cocoa));
+}
+/* Set by the shim while a drag is in progress. The scroll timeline still drives
+   the position - we are moving the scroller, not the thumb - so there is nothing
+   to fight over. */
+.d-scrollframe[data-dragging] .d-scrollframe__thumb{
+	cursor:grabbing;
+	background:color-mix(in oklab, var(--sc-thumb) 60%, var(--c-cocoa));
+}
+.d-scrollframe__thumb:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
 }
 @keyframes d-scroll-thumb{
 	from{ top:0% }
 	to  { top:calc(100% - var(--sc-ratio) * 100%) }
 }
 
-/* The wake. Same two-clock shape as the slider, and it needs the same shim: a
-   scroll timeline gives a position, never a velocity, so the lagging half has
-   to come from somewhere that has a clock. With no shim --sc-lag equals the
-   thumb's own position, the difference is zero, and the wake is invisible -
-   which is exactly the right nothing. */
+/* The wake. --sc-pos is the exact position, set by the shim; --sc-lag is the
+   same number transitioned, which is the clock the scroll timeline cannot give
+   us. Zero difference, zero wake - so with no shim this is invisible rather
+   than wrong. */
 @property --sc-lag{ syntax:"<number>"; inherits:true; initial-value:0 }
-.d-scrollframe{ --sc-pos: 0; --sc-lag: var(--sc-pos);
-	transition:--sc-lag 300ms var(--ease-float);
+.d-scrollframe{
+	--sc-pos: 0;
+	--sc-lag: var(--sc-pos);
+	transition:--sc-lag var(--dur-wake) var(--ease-wake);
 }
 .d-scrollframe__wake{
 	--y-a: calc(var(--sc-pos) * (100% - var(--sc-ratio) * 100%));
 	--y-b: calc(var(--sc-lag) * (100% - var(--sc-ratio) * 100%));
 	position:absolute;
-	inset-inline-end:2px;
-	width:var(--sc-w);
+	inset-inline:0;
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	filter:blur(3px);
-	background:linear-gradient(180deg,
-		transparent 0%,
-		color-mix(in oklab, var(--sc-trail) 16%, transparent) 22%,
-		color-mix(in oklab, var(--sc-trail) 62%, transparent) 42%,
-		var(--sc-trail) 50%,
-		color-mix(in oklab, var(--sc-trail) 62%, transparent) 58%,
-		color-mix(in oklab, var(--sc-trail) 16%, transparent) 78%,
-		transparent 100%);
+	background:
+		radial-gradient(circle at 62% 14%, var(--sc-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 34% 27%, color-mix(in oklab, var(--sc-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 70% 41%, color-mix(in oklab, var(--sc-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 28% 58%, var(--sc-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 66% 72%, color-mix(in oklab, var(--sc-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 40% 87%, color-mix(in oklab, var(--sc-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(180deg,
+			transparent 0%,
+			color-mix(in oklab, var(--sc-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--sc-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--sc-trail) 92%, transparent) 40%,
+			var(--sc-trail) 45%,
+			var(--sc-trail) 55%,
+			color-mix(in oklab, var(--sc-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--sc-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--sc-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	top:0;
+	top:min(var(--y-a), var(--y-b));
 	height:0;
 	height:calc(abs(var(--y-a) - var(--y-b)) + var(--sc-ratio) * 100%);
 	opacity:0;
-	opacity:clamp(0, calc(abs(var(--y-a) - var(--y-b)) / 12px * .5), .9);
-	top:0;
-	top:min(var(--y-a), var(--y-b));
+	opacity:clamp(0, calc(abs(var(--y-a) - var(--y-b)) / 10px * .55), .95);
 }
-
 /* -- the money path ----------------------------------------------------------
    Nothing on cart or checkout scrolls today, so this is belt and braces. */
 body.woocommerce-cart .d-scrollframe__wake,
@@ -2576,6 +2682,13 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	border-radius:var(--radius-m);
 	background:var(--panel-surface);
 	color:var(--ink);
+	/* *** THE PANEL SHARES THE SUMMARY'S FONT SIZE, AND THAT IS A GEOMETRY
+	   DECISION, NOT A TYPE ONE. *** The arrow is a pseudo of the SUMMARY, so its
+	   em is 14px. The trail is a pseudo of the PANEL, so its em was the body's
+	   ~17px. Every offset written in em therefore meant two different lengths and
+	   the streak sat about 2px to one side of the arrow - which is exactly what
+	   the owner saw. One font size, one em, one lane. */
+	font-size:var(--fs-meta);
 	overflow:hidden;
 	interpolate-size: allow-keywords;
 	transition:--swim   var(--dur-panel) var(--ease-float),
@@ -2588,7 +2701,10 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	--panel-surface: var(--tint-cherry);
 	--panel-quiet:   var(--tint-cherry-quiet);
 	--panel-edge:    var(--tint-cherry-edge);
-	--panel-mark:    var(--tint-cherry-mark);
+	/* Gold, not cherry-deep. The gold panel's arrow is cherry, so the cherry
+	   panel's arrow is gold - the pair reads as one idea rather than as two
+	   panels that each happened to pick their own colour. */
+	--panel-mark:    var(--tint-gold-mark);
 	--panel-trail:   var(--trail-gold);
 }
 /* The owner's rule, and it is the right one: a gold trail on a gold panel is
@@ -2597,7 +2713,12 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	--panel-surface: var(--tint-gold);
 	--panel-quiet:   var(--tint-gold-quiet);
 	--panel-edge:    var(--tint-gold-edge);
-	--panel-mark:    var(--tint-gold-mark);
+	/* The owner's note was "make the arrow on the cherry panel gold, since the
+	   arrow on the gold panel is cherry" - and the second half was not true yet:
+	   the gold panel's TRAIL was cherry, its arrow was gold. The intent is a
+	   clean cross, so this makes it one. Gold panel: cherry arrow, cherry trail.
+	   Cherry panel: gold arrow, gold trail. */
+	--panel-mark:    var(--tint-cherry-mark);
 	--panel-trail:   var(--trail-cherry);
 }
 .d-panel--quiet{
@@ -2663,7 +2784,7 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	content:"";
 	position:absolute;
 	z-index:2;
-	inset-inline-end:calc(var(--space-xs) + .1em);
+	inset-inline-end:calc(var(--space-xs) + .1em);   /* lane - .25em */
 	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
 	width:.5em;
 	height:.5em;
@@ -2690,35 +2811,64 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 }
 
 /* -- the wake ---------------------------------------------------------------
-   *** TWO CLOCKS, NOT A SYMMETRIC BLUR. *** The first version keyed the trail
-   to 1 - 2*abs(swim - .5), which peaks halfway and is gone the instant the
-   arrow lands - so it never lingered, and the owner said so. Now the position
-   is transitioned TWICE: --swim at 420ms is the arrow, --swim-b at 900ms is a
-   ghost of it. The wake spans between them, so it is a real trail behind the
-   swimmer AND it survives the arrival, fading over the half-second it takes the
-   ghost to catch up.
+   *** TWO CLOCKS. *** --swim at 420ms is the arrow, --swim-b at 900ms is a
+   ghost of it, and the wake spans between them. That is what makes it a trail
+   behind the swimmer rather than a symmetric blur, and what makes it outlive
+   the arrival instead of dying on it.
 
-   It is on .d-panel rather than the summary so it stays out of hit testing;
-   only the arrow and its pad are meant to be pressable. */
+   *** CENTRED ON THE ARROW BY ARITHMETIC, NOT BY EYE. ***
+   The arrow's box is .5em wide at (space-xs + .1em) from the end, so its centre
+   line is (space-xs + .35em). The wake is 1.3em wide, so its end offset must be
+   that minus .65em. Written as one --lane so the two can never drift apart -
+   the previous values were tuned separately and were 2px out.
+
+   *** THE SPECKLES ARE PART OF THE BACKGROUND, NOT EXTRA ELEMENTS. ***
+   Both of .d-panel's pseudo-elements are spoken for and both of the summary's
+   are the arrow and its hit pad, so there is nothing left to make a spark out
+   of. Radial gradients cost nothing, and because they are positioned in PERCENT
+   they spread along the streak as it stretches - the sparks fly apart when the
+   swimmer is moving fast and gather when it settles, which is free and is the
+   right behaviour.
+
+   The blur came off the element and moved into the gradients. A filter blurs
+   the speckles into the streak and there is nothing left to see; soft-edged
+   radial stops keep them as specks.
+   ========================================================================== */
 .d-panel::before{
+	--lane: calc(var(--space-xs) + .35em);
 	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
 	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
 	content:"";
 	position:absolute;
 	z-index:1;
-	inset-inline-end:calc(var(--space-xs) - .16em);
+	inset-inline-end:calc(var(--lane) - .65em);
 	width:1.3em;
 	border-radius:var(--radius-pill);
-	background:linear-gradient(180deg,
-		transparent 0%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 18%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 38%,
-		var(--panel-trail) 50%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 62%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 82%,
-		transparent 100%);
-	filter:blur(3.4px);
 	pointer-events:none;
+	background:
+		/* the sparks - six, deliberately not on a grid */
+		radial-gradient(circle at 62% 14%, var(--panel-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 34% 27%, color-mix(in oklab, var(--panel-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 70% 41%, color-mix(in oklab, var(--panel-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 28% 58%, var(--panel-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 66% 72%, color-mix(in oklab, var(--panel-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 40% 87%, color-mix(in oklab, var(--panel-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		/* the streak. Solid across the middle fifth - the owner asked for a more
+		   opaque centre and the old ramp only touched full colour at one stop. */
+		linear-gradient(180deg,
+			transparent 0%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 40%,
+			var(--panel-trail) 45%,
+			var(--panel-trail) 55%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	/* Softens the streak's sides without touching the sparks. */
+	mask-image:linear-gradient(90deg, transparent 0%, #000 26%, #000 74%, transparent 100%);
 	/* --- the pairs. First of each is the fallback without abs(). --- */
 	top:0;
 	top:calc(min(var(--pos-a), var(--pos-b)) - 1.1em);
@@ -4543,6 +4693,10 @@ li.product .wp-block-button__link{
 	border-radius:var(--radius-m);
 	background:var(--panel-surface);
 	color:var(--ink);
+	/* Same em, same lane - see patterns/panel.css. The arrow is a pseudo of the
+	   BUTTON and the wake is a pseudo of the PANEL, so if their font sizes differ
+	   every offset written in em means two different lengths. */
+	font-size:var(--fs-meta);
 	transition:--swim   var(--dur-panel) var(--ease-float),
 	           --swim-b var(--dur-wake)  var(--ease-wake);
 }
@@ -4624,24 +4778,41 @@ li.product .wp-block-button__link{
 	position:static;
 }
 .wc-block-components-panel.wc-block-components-panel::before{
+	--lane: calc(var(--space-xs) + .35em);
 	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
 	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
 	content:"";
 	position:absolute;
 	z-index:1;
-	inset-inline-end:calc(var(--space-xs) - .16em);
+	inset-inline-end:calc(var(--lane) - .65em);
 	width:1.3em;
 	border-radius:var(--radius-pill);
-	background:linear-gradient(180deg,
-		transparent 0%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 18%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 38%,
-		var(--panel-trail) 50%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 62%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 82%,
-		transparent 100%);
-	filter:blur(3.4px);
 	pointer-events:none;
+	background:
+		/* the sparks - six, deliberately not on a grid */
+		radial-gradient(circle at 62% 14%, var(--panel-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 34% 27%, color-mix(in oklab, var(--panel-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 70% 41%, color-mix(in oklab, var(--panel-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 28% 58%, var(--panel-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 66% 72%, color-mix(in oklab, var(--panel-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 40% 87%, color-mix(in oklab, var(--panel-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		/* the streak. Solid across the middle fifth - the owner asked for a more
+		   opaque centre and the old ramp only touched full colour at one stop. */
+		linear-gradient(180deg,
+			transparent 0%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 40%,
+			var(--panel-trail) 45%,
+			var(--panel-trail) 55%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	/* Softens the streak's sides without touching the sparks. */
+	mask-image:linear-gradient(90deg, transparent 0%, #000 26%, #000 74%, transparent 100%);
+	/* --- the pairs. First of each is the fallback without abs(). --- */
 	top:0;
 	top:calc(min(var(--pos-a), var(--pos-b)) - 1.1em);
 	height:0;

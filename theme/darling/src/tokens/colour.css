@@ -169,4 +169,8 @@
 	   the panel and disappears. The owner's rule - gold trail everywhere,
 	   cherry trail on the gold variant. */
 	--trail-gold:   var(--g-light);
-	--trail-cherry: var(--c-cherry);}
+	/* A LIGHTER cherry than the paint, on the owner's note: --c-cherry against a
+	   gold panel is the same weight as the panel's own edge and reads as a
+	   drawn line rather than as light. Mixed toward white, it reads as a spark.
+	   Not a new primitive - cherry is still cherry, this is cherry LIT. */
+	--trail-cherry: color-mix(in oklab, var(--c-cherry) 62%, var(--c-white));}

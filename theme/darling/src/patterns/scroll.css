@@ -66,102 +66,165 @@
 .d-scroll::-webkit-scrollbar-corner{ background:var(--sc-track) }
 
 /* -- level two: our own bar --------------------------------------------------
-   The scroller names a timeline; the thumb, which is a SIBLING and therefore
-   outside the scrolling box, reads it. timeline-scope on the frame is what lets
-   a name cross from the scroller to its sibling - without it the name is only
-   visible to the scroller's own descendants, and a thumb inside the scroller
-   would scroll away with the content.
+   *** WHAT OUR OWN SCROLLBAR COSTS, PLAINLY, BECAUSE IT IS A REAL TRADE. ***
+   It knows EXACTLY where you are - a scroll timeline is continuous and exact,
+   and the thumb tracks the scroll position to the pixel with no script at all.
+   What it does not get for free is everything a native scrollbar gets from the
+   operating system:
 
-   --sc-ratio is the thumb's share of the rail. It should be viewport/content,
-   which CSS cannot compute, so it is a variable with a sane default that the
-   shim overwrites when it is present. Wrong by a bit is a thumb of slightly the
-   wrong length; it still tracks the scroll exactly. */
+     - DRAGGING. A native thumb is draggable because the OS makes it so. Ours is
+       a div; CSS has no way to turn a scroll position into a pointer target, so
+       dragging is script. Nine lines, and they are in assets/darling-ui.js.
+     - ITS OWN LENGTH. The thumb should be viewport/content long. CSS cannot see
+       scrollHeight, so --sc-ratio is a variable the shim sets; without the shim
+       it is a sane default and the thumb is the wrong length while still
+       tracking the position exactly.
+     - A CLOCK. This is the part that was explained badly. A scroll timeline is
+       a POSITION, not a clock: it says "you are 42% down", and it says it
+       perfectly. It has no memory, so there is no "where was I 200ms ago" and
+       therefore no velocity and therefore no trail from CSS alone. Nothing is
+       lost about knowing where we are; what is missing is knowing where we WERE.
+       The shim adds the clock, and then the trail works exactly like the panel's.
+     - OS INTEGRATION. Assistive tech, high-contrast modes, the "always show
+       scrollbars" setting, trackpad overlay behaviour, and the automatic
+       re-measure when content changes. All of that is free on the native bar and
+       is ours to maintain on this one.
+
+   So: use .d-scroll (the native bar, branded) unless the surface actually wants
+   a trail or a scrollbar that matches the panel it sits in. This is the second
+   option, not the default.
+
+   *** THE FRAME OWNS THE BORDER AND THE RADIUS. ***
+   It used to sit on the inner scroller, so the rail ran the full height of the
+   frame and poked past the rounded corners at top and bottom - the owner's
+   "slightly outside of the outer box on the edges". Now the frame draws the box
+   and clips, the scroller inside is borderless, and the rail is inset from the
+   frame's padding box, so the two share one outline by construction. */
 .d-scrollframe{
 	--sc-thumb: var(--c-grey-400);
 	--sc-track: var(--tint-grey-quiet);
 	--sc-trail: var(--trail-gold);
 	--sc-ratio: .34;
 	--sc-w: 8px;
+	--sc-pad: var(--space-3xs);
 	position:relative;
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-m);
+	background:var(--tint-grey);
+	overflow:hidden;
 	timeline-scope:--d-scroll;
 }
 .d-scrollframe--cherry{
 	--sc-thumb: var(--tint-cherry-edge);
-	--sc-track: var(--tint-cherry);
+	--sc-track: var(--tint-cherry-quiet);
 	--sc-trail: var(--trail-gold);
+	border-color:var(--tint-cherry-edge);
+	background:var(--tint-cherry);
 }
 .d-scrollframe--gold{
 	--sc-thumb: var(--tint-gold-edge);
-	--sc-track: var(--tint-gold);
+	--sc-track: var(--tint-gold-quiet);
 	--sc-trail: var(--trail-cherry);
+	border-color:var(--tint-gold-edge);
+	background:var(--tint-gold);
 }
 .d-scrollframe > .d-scroll{
 	scroll-timeline:--d-scroll block;
 	scrollbar-width:none;
-	padding-inline-end:calc(var(--sc-w) + var(--space-2xs));
+	border:0;
+	border-radius:0;
+	background:none;
+	padding-inline-end:calc(var(--sc-w) + var(--sc-pad) * 2 + var(--space-2xs));
 }
 .d-scrollframe > .d-scroll::-webkit-scrollbar{ display:none }
 
+/* Inset from the frame's padding box on all four sides, and pill-rounded, so
+   its ends land inside the frame's corner radius instead of crossing it. */
 .d-scrollframe__rail{
 	position:absolute;
-	top:0;
-	bottom:0;
-	inset-inline-end:2px;
+	z-index:2;
+	top:var(--sc-pad);
+	bottom:var(--sc-pad);
+	inset-inline-end:var(--sc-pad);
 	width:var(--sc-w);
 	border-radius:var(--radius-pill);
 	background:var(--sc-track);
-	pointer-events:none;
 }
+/* The thumb and the wake live INSIDE the rail, so their percentages are of the
+   rail and not of the frame. That is what keeps them from overhanging. */
 .d-scrollframe__thumb{
 	position:absolute;
-	inset-inline-end:2px;
-	width:var(--sc-w);
+	inset-inline:0;
 	height:calc(var(--sc-ratio) * 100%);
 	border-radius:var(--radius-pill);
 	background:var(--sc-thumb);
-	pointer-events:none;
+	cursor:grab;
+	touch-action:none;
 	animation:d-scroll-thumb linear both;
 	animation-timeline:--d-scroll;
+}
+.d-scrollframe__thumb:hover{
+	background:color-mix(in oklab, var(--sc-thumb) 72%, var(--c-cocoa));
+}
+/* Set by the shim while a drag is in progress. The scroll timeline still drives
+   the position - we are moving the scroller, not the thumb - so there is nothing
+   to fight over. */
+.d-scrollframe[data-dragging] .d-scrollframe__thumb{
+	cursor:grabbing;
+	background:color-mix(in oklab, var(--sc-thumb) 60%, var(--c-cocoa));
+}
+.d-scrollframe__thumb:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
 }
 @keyframes d-scroll-thumb{
 	from{ top:0% }
 	to  { top:calc(100% - var(--sc-ratio) * 100%) }
 }
 
-/* The wake. Same two-clock shape as the slider, and it needs the same shim: a
-   scroll timeline gives a position, never a velocity, so the lagging half has
-   to come from somewhere that has a clock. With no shim --sc-lag equals the
-   thumb's own position, the difference is zero, and the wake is invisible -
-   which is exactly the right nothing. */
+/* The wake. --sc-pos is the exact position, set by the shim; --sc-lag is the
+   same number transitioned, which is the clock the scroll timeline cannot give
+   us. Zero difference, zero wake - so with no shim this is invisible rather
+   than wrong. */
 @property --sc-lag{ syntax:"<number>"; inherits:true; initial-value:0 }
-.d-scrollframe{ --sc-pos: 0; --sc-lag: var(--sc-pos);
-	transition:--sc-lag 300ms var(--ease-float);
+.d-scrollframe{
+	--sc-pos: 0;
+	--sc-lag: var(--sc-pos);
+	transition:--sc-lag var(--dur-wake) var(--ease-wake);
 }
 .d-scrollframe__wake{
 	--y-a: calc(var(--sc-pos) * (100% - var(--sc-ratio) * 100%));
 	--y-b: calc(var(--sc-lag) * (100% - var(--sc-ratio) * 100%));
 	position:absolute;
-	inset-inline-end:2px;
-	width:var(--sc-w);
+	inset-inline:0;
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	filter:blur(3px);
-	background:linear-gradient(180deg,
-		transparent 0%,
-		color-mix(in oklab, var(--sc-trail) 16%, transparent) 22%,
-		color-mix(in oklab, var(--sc-trail) 62%, transparent) 42%,
-		var(--sc-trail) 50%,
-		color-mix(in oklab, var(--sc-trail) 62%, transparent) 58%,
-		color-mix(in oklab, var(--sc-trail) 16%, transparent) 78%,
-		transparent 100%);
+	background:
+		radial-gradient(circle at 62% 14%, var(--sc-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 34% 27%, color-mix(in oklab, var(--sc-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 70% 41%, color-mix(in oklab, var(--sc-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 28% 58%, var(--sc-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 66% 72%, color-mix(in oklab, var(--sc-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 40% 87%, color-mix(in oklab, var(--sc-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(180deg,
+			transparent 0%,
+			color-mix(in oklab, var(--sc-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--sc-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--sc-trail) 92%, transparent) 40%,
+			var(--sc-trail) 45%,
+			var(--sc-trail) 55%,
+			color-mix(in oklab, var(--sc-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--sc-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--sc-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	top:0;
+	top:min(var(--y-a), var(--y-b));
 	height:0;
 	height:calc(abs(var(--y-a) - var(--y-b)) + var(--sc-ratio) * 100%);
 	opacity:0;
-	opacity:clamp(0, calc(abs(var(--y-a) - var(--y-b)) / 12px * .5), .9);
-	top:0;
-	top:min(var(--y-a), var(--y-b));
+	opacity:clamp(0, calc(abs(var(--y-a) - var(--y-b)) / 10px * .55), .95);
 }
-
 /* -- the money path ----------------------------------------------------------
    Nothing on cart or checkout scrolls today, so this is belt and braces. */
 body.woocommerce-cart .d-scrollframe__wake,

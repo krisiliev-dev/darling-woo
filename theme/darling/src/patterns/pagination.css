@@ -77,7 +77,7 @@
 	font-size:var(--fs-meta);
 	color:var(--pg-ink);
 	transition:--pg-a 360ms var(--ease-float),
-	           --pg-b 620ms var(--ease-float);
+	           --pg-b var(--dur-wake) var(--ease-wake);
 }
 .d-pagination--cherry{
 	--pg-quiet:    var(--tint-cherry-quiet);
@@ -210,6 +210,16 @@
    Spans from the ghost to the marker. Zero width at rest, widest mid-move, and
    it points backwards on its own because the ghost is simply late.
 
+   The ghost now runs on --dur-wake / --ease-wake, the same clock the panel's
+   trail uses: 900ms with a curve that barely moves for the first third and then
+   has a very long tail. That is what makes the streak outlive the marker's
+   arrival instead of vanishing with it.
+
+   Sparks are radial gradients in the background rather than elements, because
+   there is no third pseudo-element to spend and because positioning them in
+   PERCENT means they spread as the streak stretches - they fly apart on a long
+   jump and gather on a short one, for free.
+
    min() and abs() are both CSS Values 4. min() is everywhere; abs() is Chrome
    133+, so every declaration that needs it is written twice - safe value
    first - and an old browser gets no trail rather than a broken one. */
@@ -221,30 +231,33 @@
 	height:calc(var(--cell) - .34em);
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	filter:blur(3px);
-	background:linear-gradient(90deg,
-		transparent 0%,
-		color-mix(in oklab, var(--pg-trail) 14%, transparent) 20%,
-		color-mix(in oklab, var(--pg-trail) 62%, transparent) 42%,
-		var(--pg-trail) 50%,
-		color-mix(in oklab, var(--pg-trail) 62%, transparent) 58%,
-		color-mix(in oklab, var(--pg-trail) 14%, transparent) 80%,
-		transparent 100%);
-	/* --- the pairs. First of each is the fallback without abs(). --- */
+	background:
+		radial-gradient(circle at 14% 62%, var(--pg-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 27% 34%, color-mix(in oklab, var(--pg-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 41% 70%, color-mix(in oklab, var(--pg-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 58% 28%, var(--pg-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 72% 66%, color-mix(in oklab, var(--pg-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 87% 40%, color-mix(in oklab, var(--pg-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--pg-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--pg-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--pg-trail) 92%, transparent) 40%,
+			var(--pg-trail) 45%,
+			var(--pg-trail) 55%,
+			color-mix(in oklab, var(--pg-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--pg-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--pg-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	mask-image:linear-gradient(180deg, transparent 0%, #000 24%, #000 76%, transparent 100%);
 	width:0;
 	width:calc(abs(var(--mark-x) - var(--ghost-x)) + var(--cell) - .34em);
 	opacity:0;
-	/* MEASURED AND CORRECTED: keying this to abs(a - b) in PAGE units lit the
-	   wake up during a middle-of-the-run move, where the strip slides and the
-	   marker does not move at all - a glow sitting still behind a still circle.
-	   The wake belongs to the MARKER, so it is keyed to the marker's own travel
-	   in pixels. Zero in the middle, blooms at the ends. Dividing a length by a
-	   length in calc() gives a number, which is what makes this legal. */
 	opacity:clamp(0, calc(abs(var(--mark-x) - var(--ghost-x)) / var(--cell) * 1.9), .95);
 	transform:translate(min(var(--mark-x), var(--ghost-x)), -50%);
 	margin:0 .17em;
 }
-
 /* -- prev / next ------------------------------------------------------------
    Drawn chevrons rather than glyphs, for the same reason the stars are drawn:
    an arrow character is missing from more fonts than people expect and falls

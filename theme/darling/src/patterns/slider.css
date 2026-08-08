@@ -48,7 +48,7 @@
 	position:relative;
 	display:block;
 	height:var(--thumb);
-	transition:--sl-a 260ms var(--ease-float);
+	transition:--sl-a var(--dur-wake) var(--ease-wake);
 }
 .d-slider--cherry{
 	--sl-track: var(--tint-cherry-quiet);
@@ -135,8 +135,22 @@
 }
 
 /* -- the wake ---------------------------------------------------------------
-   Spans from the ghost to the thumb, so it is zero at rest and as long as the
-   gesture was fast. Behind the input, which is why the input carries z-index 2.
+   *** THE FIRST VERSION PUT THIS IN THE WRONG PLACE AND THE REASON IS WORTH
+   WRITING DOWN. *** It positioned the streak with
+       transform: translate(calc(min(--x-a, --x-b) - thumb/2), -50%)
+   and --x-a contains a percentage. In a TRANSFORM, percentages resolve against
+   the element's OWN border box - not against the containing block. The wake's
+   own width is the length of the gap, so the streak's position depended on how
+   far the thumb had just moved: it sat near the left on a slow drag and crept
+   right on a fast one, which is exactly what the owner described. It was never
+   a tuning problem.
+
+   Percentages in `left` DO resolve against the containing block, so the streak
+   is placed with left and only the vertical centring is left to transform.
+
+   Sparks are radial gradients rather than elements, positioned in percent so
+   they spread as the streak stretches - they fly apart on a fast drag and
+   gather on a slow one, which is the behaviour we want and costs nothing.
 
    abs() is Chrome 133+; the pair pattern means an older browser gets no trail
    rather than a stuck bar. */
@@ -146,26 +160,38 @@
 	position:absolute;
 	z-index:1;
 	top:50%;
-	left:0;
 	height:var(--thumb);
 	border-radius:var(--radius-pill);
 	pointer-events:none;
-	filter:blur(3px);
-	background:linear-gradient(90deg,
-		transparent 0%,
-		color-mix(in oklab, var(--sl-trail) 14%, transparent) 20%,
-		color-mix(in oklab, var(--sl-trail) 62%, transparent) 42%,
-		var(--sl-trail) 50%,
-		color-mix(in oklab, var(--sl-trail) 62%, transparent) 58%,
-		color-mix(in oklab, var(--sl-trail) 14%, transparent) 80%,
-		transparent 100%);
+	transform:translateY(-50%);
+	background:
+		radial-gradient(circle at 14% 62%, var(--sl-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 27% 34%, color-mix(in oklab, var(--sl-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 41% 70%, color-mix(in oklab, var(--sl-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 58% 28%, var(--sl-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 72% 66%, color-mix(in oklab, var(--sl-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 87% 40%, color-mix(in oklab, var(--sl-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--sl-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--sl-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--sl-trail) 92%, transparent) 40%,
+			var(--sl-trail) 45%,
+			var(--sl-trail) 55%,
+			color-mix(in oklab, var(--sl-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--sl-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--sl-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	mask-image:linear-gradient(180deg, transparent 0%, #000 24%, #000 76%, transparent 100%);
+	/* --- the pairs. First of each is the fallback without abs(). --- */
+	left:0;
+	left:calc(min(var(--x-a), var(--x-b)) - var(--thumb) / 2);
 	width:0;
 	width:calc(abs(var(--x-a) - var(--x-b)) + var(--thumb));
 	opacity:0;
 	opacity:clamp(0, calc(abs(var(--x-a) - var(--x-b)) / var(--thumb) * 1.5), .95);
-	transform:translate(calc(min(var(--x-a), var(--x-b)) - var(--thumb) / 2), -50%);
 }
-
 /* -- the pair, for a min/max range -------------------------------------------
    Two inputs stacked on one rail is the only accessible way to do a two-handle
    range: each handle stays a real focusable control with its own value. A

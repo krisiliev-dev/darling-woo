@@ -45,6 +45,10 @@
 	border-radius:var(--radius-m);
 	background:var(--panel-surface);
 	color:var(--ink);
+	/* Same em, same lane - see patterns/panel.css. The arrow is a pseudo of the
+	   BUTTON and the wake is a pseudo of the PANEL, so if their font sizes differ
+	   every offset written in em means two different lengths. */
+	font-size:var(--fs-meta);
 	transition:--swim   var(--dur-panel) var(--ease-float),
 	           --swim-b var(--dur-wake)  var(--ease-wake);
 }
@@ -126,24 +130,41 @@
 	position:static;
 }
 .wc-block-components-panel.wc-block-components-panel::before{
+	--lane: calc(var(--space-xs) + .35em);
 	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
 	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
 	content:"";
 	position:absolute;
 	z-index:1;
-	inset-inline-end:calc(var(--space-xs) - .16em);
+	inset-inline-end:calc(var(--lane) - .65em);
 	width:1.3em;
 	border-radius:var(--radius-pill);
-	background:linear-gradient(180deg,
-		transparent 0%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 18%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 38%,
-		var(--panel-trail) 50%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 62%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 82%,
-		transparent 100%);
-	filter:blur(3.4px);
 	pointer-events:none;
+	background:
+		/* the sparks - six, deliberately not on a grid */
+		radial-gradient(circle at 62% 14%, var(--panel-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 34% 27%, color-mix(in oklab, var(--panel-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 70% 41%, color-mix(in oklab, var(--panel-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 28% 58%, var(--panel-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 66% 72%, color-mix(in oklab, var(--panel-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 40% 87%, color-mix(in oklab, var(--panel-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		/* the streak. Solid across the middle fifth - the owner asked for a more
+		   opaque centre and the old ramp only touched full colour at one stop. */
+		linear-gradient(180deg,
+			transparent 0%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 40%,
+			var(--panel-trail) 45%,
+			var(--panel-trail) 55%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	/* Softens the streak's sides without touching the sparks. */
+	mask-image:linear-gradient(90deg, transparent 0%, #000 26%, #000 74%, transparent 100%);
+	/* --- the pairs. First of each is the fallback without abs(). --- */
 	top:0;
 	top:calc(min(var(--pos-a), var(--pos-b)) - 1.1em);
 	height:0;

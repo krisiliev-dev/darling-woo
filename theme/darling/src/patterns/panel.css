@@ -57,6 +57,13 @@
 	border-radius:var(--radius-m);
 	background:var(--panel-surface);
 	color:var(--ink);
+	/* *** THE PANEL SHARES THE SUMMARY'S FONT SIZE, AND THAT IS A GEOMETRY
+	   DECISION, NOT A TYPE ONE. *** The arrow is a pseudo of the SUMMARY, so its
+	   em is 14px. The trail is a pseudo of the PANEL, so its em was the body's
+	   ~17px. Every offset written in em therefore meant two different lengths and
+	   the streak sat about 2px to one side of the arrow - which is exactly what
+	   the owner saw. One font size, one em, one lane. */
+	font-size:var(--fs-meta);
 	overflow:hidden;
 	interpolate-size: allow-keywords;
 	transition:--swim   var(--dur-panel) var(--ease-float),
@@ -69,7 +76,10 @@
 	--panel-surface: var(--tint-cherry);
 	--panel-quiet:   var(--tint-cherry-quiet);
 	--panel-edge:    var(--tint-cherry-edge);
-	--panel-mark:    var(--tint-cherry-mark);
+	/* Gold, not cherry-deep. The gold panel's arrow is cherry, so the cherry
+	   panel's arrow is gold - the pair reads as one idea rather than as two
+	   panels that each happened to pick their own colour. */
+	--panel-mark:    var(--tint-gold-mark);
 	--panel-trail:   var(--trail-gold);
 }
 /* The owner's rule, and it is the right one: a gold trail on a gold panel is
@@ -78,7 +88,12 @@
 	--panel-surface: var(--tint-gold);
 	--panel-quiet:   var(--tint-gold-quiet);
 	--panel-edge:    var(--tint-gold-edge);
-	--panel-mark:    var(--tint-gold-mark);
+	/* The owner's note was "make the arrow on the cherry panel gold, since the
+	   arrow on the gold panel is cherry" - and the second half was not true yet:
+	   the gold panel's TRAIL was cherry, its arrow was gold. The intent is a
+	   clean cross, so this makes it one. Gold panel: cherry arrow, cherry trail.
+	   Cherry panel: gold arrow, gold trail. */
+	--panel-mark:    var(--tint-cherry-mark);
 	--panel-trail:   var(--trail-cherry);
 }
 .d-panel--quiet{
@@ -144,7 +159,7 @@
 	content:"";
 	position:absolute;
 	z-index:2;
-	inset-inline-end:calc(var(--space-xs) + .1em);
+	inset-inline-end:calc(var(--space-xs) + .1em);   /* lane - .25em */
 	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
 	width:.5em;
 	height:.5em;
@@ -171,35 +186,64 @@
 }
 
 /* -- the wake ---------------------------------------------------------------
-   *** TWO CLOCKS, NOT A SYMMETRIC BLUR. *** The first version keyed the trail
-   to 1 - 2*abs(swim - .5), which peaks halfway and is gone the instant the
-   arrow lands - so it never lingered, and the owner said so. Now the position
-   is transitioned TWICE: --swim at 420ms is the arrow, --swim-b at 900ms is a
-   ghost of it. The wake spans between them, so it is a real trail behind the
-   swimmer AND it survives the arrival, fading over the half-second it takes the
-   ghost to catch up.
+   *** TWO CLOCKS. *** --swim at 420ms is the arrow, --swim-b at 900ms is a
+   ghost of it, and the wake spans between them. That is what makes it a trail
+   behind the swimmer rather than a symmetric blur, and what makes it outlive
+   the arrival instead of dying on it.
 
-   It is on .d-panel rather than the summary so it stays out of hit testing;
-   only the arrow and its pad are meant to be pressable. */
+   *** CENTRED ON THE ARROW BY ARITHMETIC, NOT BY EYE. ***
+   The arrow's box is .5em wide at (space-xs + .1em) from the end, so its centre
+   line is (space-xs + .35em). The wake is 1.3em wide, so its end offset must be
+   that minus .65em. Written as one --lane so the two can never drift apart -
+   the previous values were tuned separately and were 2px out.
+
+   *** THE SPECKLES ARE PART OF THE BACKGROUND, NOT EXTRA ELEMENTS. ***
+   Both of .d-panel's pseudo-elements are spoken for and both of the summary's
+   are the arrow and its hit pad, so there is nothing left to make a spark out
+   of. Radial gradients cost nothing, and because they are positioned in PERCENT
+   they spread along the streak as it stretches - the sparks fly apart when the
+   swimmer is moving fast and gather when it settles, which is free and is the
+   right behaviour.
+
+   The blur came off the element and moved into the gradients. A filter blurs
+   the speckles into the streak and there is nothing left to see; soft-edged
+   radial stops keep them as specks.
+   ========================================================================== */
 .d-panel::before{
+	--lane: calc(var(--space-xs) + .35em);
 	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
 	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
 	content:"";
 	position:absolute;
 	z-index:1;
-	inset-inline-end:calc(var(--space-xs) - .16em);
+	inset-inline-end:calc(var(--lane) - .65em);
 	width:1.3em;
 	border-radius:var(--radius-pill);
-	background:linear-gradient(180deg,
-		transparent 0%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 18%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 38%,
-		var(--panel-trail) 50%,
-		color-mix(in oklab, var(--panel-trail) 70%, transparent) 62%,
-		color-mix(in oklab, var(--panel-trail) 22%, transparent) 82%,
-		transparent 100%);
-	filter:blur(3.4px);
 	pointer-events:none;
+	background:
+		/* the sparks - six, deliberately not on a grid */
+		radial-gradient(circle at 62% 14%, var(--panel-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 34% 27%, color-mix(in oklab, var(--panel-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 70% 41%, color-mix(in oklab, var(--panel-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 28% 58%, var(--panel-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 66% 72%, color-mix(in oklab, var(--panel-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 40% 87%, color-mix(in oklab, var(--panel-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		/* the streak. Solid across the middle fifth - the owner asked for a more
+		   opaque centre and the old ramp only touched full colour at one stop. */
+		linear-gradient(180deg,
+			transparent 0%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 40%,
+			var(--panel-trail) 45%,
+			var(--panel-trail) 55%,
+			color-mix(in oklab, var(--panel-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--panel-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--panel-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	/* Softens the streak's sides without touching the sparks. */
+	mask-image:linear-gradient(90deg, transparent 0%, #000 26%, #000 74%, transparent 100%);
 	/* --- the pairs. First of each is the fallback without abs(). --- */
 	top:0;
 	top:calc(min(var(--pos-a), var(--pos-b)) - 1.1em);
