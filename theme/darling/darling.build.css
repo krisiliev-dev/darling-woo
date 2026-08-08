@@ -437,7 +437,15 @@
 	/* The lens on its own, so the search mark can hold something inside it. */
 	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
 	--icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E");
-	--icon-heart-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 20.8l-7.6-7.3A4.85 4.85 0 1 1 12 6.9a4.85 4.85 0 1 1 7.6 6.6z'/%3E%3C/svg%3E");}
+	--icon-heart-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 20.8l-7.6-7.3A4.85 4.85 0 1 1 12 6.9a4.85 4.85 0 1 1 7.6 6.6z'/%3E%3C/svg%3E");	/* *** THE TWO WHEELS HAVE TO BE THE SAME WHEEL. ***
+	   --icon-cart draws both wheels as stroked circles about 4.8 units across
+	   in a 24 grid; the spinning one was a filled disc sized at 25% of the icon,
+	   which is 6 units. A quarter bigger, sitting right next to its twin - and
+	   that is exactly what the owner saw.
+	   This frame is the cart with the BACK wheel removed, so there is nothing
+	   underneath the one that turns, and the pseudo is resized to 4.8 units to
+	   match the front one that is still drawn here. One wheel, one size. */
+	--icon-cart-frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E");}
 }
 
 /* ==== tokens/motion.css ==== */
@@ -941,25 +949,28 @@ hr{
 	position:absolute;
 	inset:0;
 	background:currentColor;
-	mask-image:var(--icon-cart);
+	mask-image:var(--icon-cart-frame);
 	mask-size:contain;
 	mask-repeat:no-repeat;
 	mask-position:center;
-	-webkit-mask-image:var(--icon-cart);
+	-webkit-mask-image:var(--icon-cart-frame);
 	-webkit-mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	-webkit-mask-position:center;
 	/* the axle of the back wheel, so the tip pivots on the thing touching the
 	   ground rather than on the middle of the picture */
-	transform-origin:38% 86%;
+	transform-origin:39.5% 83%;   /* the back axle, in the frame's own grid */
 }
 .d-icon--cart::after{
 	content:"";
 	position:absolute;
-	left:27%;
-	bottom:0%;
-	width:25%;
-	height:25%;
+	/* 4.8 units of 24 = 20%, the same as the front wheel drawn in the frame.
+	   Centred on x 9.5 / y 20 in that grid, which is where the back wheel used
+	   to be, so the cart still sits on its own axle. */
+	left:29.5%;
+	bottom:6.5%;
+	width:20%;
+	height:20%;
 	background:currentColor;
 	mask-image:var(--icon-wheel);
 	mask-size:contain;

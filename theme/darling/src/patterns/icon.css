@@ -266,25 +266,28 @@
 	position:absolute;
 	inset:0;
 	background:currentColor;
-	mask-image:var(--icon-cart);
+	mask-image:var(--icon-cart-frame);
 	mask-size:contain;
 	mask-repeat:no-repeat;
 	mask-position:center;
-	-webkit-mask-image:var(--icon-cart);
+	-webkit-mask-image:var(--icon-cart-frame);
 	-webkit-mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	-webkit-mask-position:center;
 	/* the axle of the back wheel, so the tip pivots on the thing touching the
 	   ground rather than on the middle of the picture */
-	transform-origin:38% 86%;
+	transform-origin:39.5% 83%;   /* the back axle, in the frame's own grid */
 }
 .d-icon--cart::after{
 	content:"";
 	position:absolute;
-	left:27%;
-	bottom:0%;
-	width:25%;
-	height:25%;
+	/* 4.8 units of 24 = 20%, the same as the front wheel drawn in the frame.
+	   Centred on x 9.5 / y 20 in that grid, which is where the back wheel used
+	   to be, so the cart still sits on its own axle. */
+	left:29.5%;
+	bottom:6.5%;
+	width:20%;
+	height:20%;
 	background:currentColor;
 	mask-image:var(--icon-wheel);
 	mask-size:contain;
