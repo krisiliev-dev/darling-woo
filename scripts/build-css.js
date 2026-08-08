@@ -52,3 +52,8 @@ console.log('built ' + path.basename(OUT) + '  ' + kb + ' KB  from ' + imports.l
 // file for why this is not optional.
 require('./check-tokens.js');
 
+
+// theme.json is generated from the same tokens, so the editor's palette and the
+// stylesheet can never drift apart.
+require('./gen-theme-json.js');
+
