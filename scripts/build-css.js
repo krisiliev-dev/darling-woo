@@ -13,6 +13,11 @@
  * there stays the single place the file order is declared. A file that is not
  * imported is not built - which is the point.
  */
+/* The banner rules are generated from the images on disk and then CONCATENATED
+   like any other src file, so this has to run before anything is read - not at
+   the end with the other generators. Run it there and the build ships the
+   PREVIOUS run's banners, which on a fresh clone is none at all. */
+require('./gen-category-banners.js');
 const fs = require('fs');
 const path = require('path');
 
