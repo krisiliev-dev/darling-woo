@@ -1319,8 +1319,26 @@ li.product .wp-block-button__link{
 		hsl(48 100% 97% / .95) 50%,
 		hsl(46 100% 92% / .75) 66%,
 		transparent 92%);
-	transform:translateX(-130%);
+	transform:translateX(-115%);
 	opacity:0;
+
+	/* *** THE WAVE RUNS FROM PAGE LOAD, NOT FROM HOVER. ***
+	   A CSS animation starts when it is APPLIED. Starting the sweep on hover
+	   meant each star began its own timer the moment it became hovered, so
+	   hovering the first and then the second half a second later put them on
+	   unrelated clocks and the light never travelled - the owner spotted it
+	   immediately. There is no way to phase-lock animations that start at
+	   different times without script.
+	   So all five run continuously from load, permanently 300ms apart, and
+	   HOVER ONLY REVEALS THEM. The band is transparent at rest and its travel
+	   is clipped to the star anyway, so an invisible wave costs one composited
+	   transform per star and nothing else. Five animations on a page - the
+	   read-only ratings on cards have no sweep at all. */
+	animation-name: d-star-sweep;
+	animation-duration: 2.2s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	transition: opacity 120ms var(--ease-float);
 }
 
 /* checked fills up to N */
@@ -1346,34 +1364,43 @@ li.product .wp-block-button__link{
 	filter:drop-shadow(0 .12em .22em hsl(from var(--g-deep) h s l / .45));
 }
 /* *** THE SWEEP LOOPS WHILE HOVERED, AND TRAVELS. ***
-   Each star is offset by a fifth of the lead-in, so the light crosses star one,
-   then two, then three - a wave running along the row rather than five stars
-   blinking together. The cycle is 1.9s but the band only travels through the
-   first 58% of it; the rest is deliberate rest. Without that gap it is a strobe,
-   and a strobe on a control someone is aiming at is worse than no shine.
+   *** THE STAGGER MUST BE AS LONG AS THE CROSSING, OR IT IS NOT A WAVE. ***
+   v1 had the band take 1.1s to cross a star while the next star started only
+   130ms in, so all five were lit at once and it read as one simultaneous flash
+   that repeated. The crossing is now 300ms - 14% of the 2.2s cycle - and the
+   stagger is also 300ms, so star one finishes exactly as star two begins. Five
+   crossings take 1.5s and the remaining 700ms is rest before the wave runs
+   again. Without that rest it is a strobe, and a strobe on a control somebody
+   is aiming at is worse than no shine at all.
 
-   The five delays are what make it a wave rather than five stars blinking
-   together: each star starts a fifth of a beat after the one to its left. */
+   LINEAR, not --ease-float: the easing would apply across the whole 2.2s
+   including the rest, which squashes the 300ms crossing into an unreadable
+   blur at one end. The keyframe does the shaping instead. */
 .d-rating-input:has(label:nth-child(1):hover) label:nth-child(-n+1) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star::after{
-	animation:d-star-sweep 1.9s var(--ease-float) infinite;
+	/* Reveal only. Note this must NOT use the `animation` shorthand: it would
+	   reset animation-delay to 0 and, being more specific than the per-star
+	   delay rules, silently wipe the stagger. The same trap is documented in
+	   finish.css; it caught me here anyway. */
+	opacity:1;
 }
 /* Hover leaves mid-pass and the animation simply stops, which would freeze a
    bright band on the star - the resting ::after above is opacity:0, so it
    snaps back rather than sticking. */
-.d-rating-input label:nth-child(2) .d-rating-input__star::after{ animation-delay:130ms }
-.d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:260ms }
-.d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:390ms }
-.d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:520ms }
+.d-rating-input label:nth-child(2) .d-rating-input__star::after{ animation-delay:300ms }
+.d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:600ms }
+.d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:900ms }
+.d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:1200ms }
+/* Transform only - opacity is the hover switch, not part of the loop. The band
+   crosses in the first 14% (300ms of 2.2s) and waits out the rest off-frame,
+   where the star's clip-path hides it. */
 @keyframes d-star-sweep{
-	0%   { transform:translateX(-115%); opacity:0 }
-	9%   { opacity:1 }
-	46%  { opacity:1 }
-	58%  { transform:translateX(115%);  opacity:0 }
-	100% { transform:translateX(115%);  opacity:0 }   /* the rest between passes */
+	0%    { transform:translateX(-115%) }
+	14%   { transform:translateX(115%) }
+	100%  { transform:translateX(115%) }
 }
 /* Anything past the hovered star drops back to empty, so moving left from a
    checked five reads as taking stars away rather than as nothing happening. */
