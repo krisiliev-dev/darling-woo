@@ -1,0 +1,90 @@
+/* =============================================================================
+   TOKENS / COLOUR
+   The only file in the system where a colour literal may appear.
+   Source: claude/DESIGN.md sections 5 (Colour) and 6 (The metal).
+
+   TWO TIERS, and the rule that makes them worth having:
+     PRIMITIVES  name the value.  --c-*
+     SEMANTICS   name the role.   --surface-* --ink-* --edge-* --action-*
+   *** COMPONENTS CONSUME SEMANTICS ONLY. A component that reaches for a
+   primitive has hard-coded a decision it does not own. ***
+   ========================================================================== */
+
+:root{
+	/* -- primitives: neutrals -------------------------------------------------
+	   Four cool greys. They are a TONAL RAMP - at most 1.31:1 apart - so no
+	   control edge can ever be drawn from them. Edges come from the ink. */
+	--c-grey-100:#E6E6EC;
+	--c-grey-200:#DEDEE6;
+	--c-grey-300:#D4D4DD;
+	--c-grey-400:#C2C2CD;
+	--c-white:#FFFFFF;
+
+	/* -- primitives: red ---------------------------------------------------- */
+	--c-claret:#9E1B32;
+	--c-cherry:#D42A3C;
+	--c-cherry-deep:#B01F30;
+
+	/* -- primitives: ink ---------------------------------------------------- */
+	--c-cocoa:#3A1D20;
+	--c-cream:#FFF6E9;
+	--c-mauve:#7A5B60;
+	--c-mauve-light:#8A7076;
+
+	/* -- primitives: the warm greys of an absent image ---------------------- */
+	--c-ash-100:#EEE9E4;
+	--c-ash-200:#D8CEC6;
+	--c-ash-300:#CFC7C0;
+	--c-ash-400:#A89A92;
+
+	/* -- primitives: the metal, which is THREE NUMBERS ----------------------
+	   Change the metal by changing these three. Never edit a derived stop.
+	   The hue ROTATES across the ramp, +9 at the highlight to -17 at the
+	   deepest: real gold's shadows go amber and copper, they do not merely
+	   go dark. Three or four degrees is invisible, which is why it is large. */
+	--gh:36;
+	--gs:88;
+	--gl:-2;
+
+	--g-vanilla: hsl(calc(var(--gh) +  9)  calc((var(--gs) +  8) * 1%)  calc(93% + var(--gl) * 1%));
+	--g-hi:      hsl(calc(var(--gh) +  6)  calc((var(--gs) +  6) * 1%)  calc(82% + var(--gl) * 1%));
+	--g-light:   hsl(calc(var(--gh) +  2)  calc( var(--gs)        * 1%)  calc(68% + var(--gl) * 1%));
+	--g-core:    hsl(     var(--gh)        calc( var(--gs)        * 1%)  calc(52% + var(--gl) * 1%));
+	--g-shadow:  hsl(calc(var(--gh) -  9)  calc((var(--gs) +  6) * 1%)  calc(38% + var(--gl) * 1%));
+	--g-deep:    hsl(calc(var(--gh) - 17)  calc((var(--gs) + 10) * 1%)  calc(27% + var(--gl) * 1%));
+
+	/* == SEMANTICS ========================================================== */
+
+	/* -- surfaces: grey is the ground, white is what is raised -------------- */
+	--surface-page:   var(--c-grey-100);   /* page, header and footer alike */
+	--surface-quiet:  var(--c-grey-200);   /* a lift that is not a card */
+	--surface-raised: var(--c-white);      /* cards, fields */
+	--surface-band:   var(--c-claret);     /* LARGE red fields only */
+
+	/* -- lines -------------------------------------------------------------- */
+	--hairline:  var(--c-grey-300);        /* under a header, over a footer */
+	--edge-field:var(--c-grey-400);        /* the visible border of a field */
+
+	/* -- ink ---------------------------------------------------------------- */
+	--ink:             var(--c-cocoa);
+	--ink-quiet:       var(--c-mauve);       /* was-price, footer heading, legal */
+	--ink-placeholder: var(--c-mauve-light);
+	--ink-on-dark:     var(--c-cream);       /* ON DARK ONLY. Never a surface. */
+
+	/* -- the scrim: the ONE non-text use of cocoa, and it is not a surface ---
+	   It exists so a label can be read over a photograph, which makes it a
+	   service to ink rather than a colour of its own. The hand-mixed #261618
+	   found behind the eight category-tile labels collapses into this.
+	   Anything OPAQUE that a person could point at and call "the colour of
+	   that thing" is a surface, and may not be cocoa. */
+	--scrim: rgb(58 29 32 / .72);
+
+	/* -- action: claret is a surface, cherry is a decision ------------------ */
+	--action:     var(--c-cherry);
+	--action-ink: var(--c-cream);
+	--price:      var(--c-cherry-deep);
+
+	/* -- an absent image is still designed: a ramp, never a flat fill ------- */
+	--placeholder-product:  linear-gradient(150deg, var(--c-ash-100), var(--c-ash-200));
+	--placeholder-category: linear-gradient(160deg, var(--c-ash-300), var(--c-ash-400));
+}

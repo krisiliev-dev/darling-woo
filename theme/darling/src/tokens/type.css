@@ -1,0 +1,80 @@
+/* =============================================================================
+   TOKENS / TYPE
+   Source: claude/DESIGN.md section 7 (Type).
+
+   *** THE @font-face RULES ARE NOT HERE, AND THAT IS CORRECT. ***
+   This is a WordPress block theme. Fonts are registered in theme.json, and
+   WordPress emits seven @font-face blocks from that registration - Inter
+   400-700 and Playfair Display 400-900, each subset latin / cyrillic /
+   cyrillic-ext with a unicode-range, font-display:swap. Measured on the live
+   page. Hand-writing them here would create a SECOND font source and take the
+   fonts away from the block editor, which is the exact failure this system
+   exists to prevent. theme.json is the registration; this file is the scale.
+   ========================================================================== */
+
+:root{
+	/* -- families ----------------------------------------------------------- */
+	--font-display:"Playfair Display", Georgia, serif;
+	--font-ui:Inter, -apple-system, "Segoe UI", sans-serif;
+
+	/* -- weights ------------------------------------------------------------ */
+	--fw-regular:400;
+	--fw-medium:600;
+	--fw-bold:700;
+
+	/* -- size scale ---------------------------------------------------------
+	   The hero is fluid; everything else is fixed, because a scale that moves
+	   under you cannot be reasoned about. */
+	--fs-hero:clamp(34px, 4vw, 54px);
+	--fs-band:30px;    /* heading of a full-bleed band */
+	--fs-section:27px; /* heading of a section on the page */
+	--fs-wordmark:30px;
+	--fs-lede:18px;
+	--fs-body:16px;
+	--fs-ui:15px;
+	--fs-meta:14px;
+	--fs-fine:13px;
+	--fs-badge:11.5px;
+
+	/* -- line heights -------------------------------------------------------- */
+	--lh-hero:1.08;
+	--lh-heading:1.2;
+	--lh-title:1.35;
+	--lh-body:1.6;
+	--lh-flush:1;
+
+	/* -- measure: the reason prose is readable ------------------------------- */
+	--measure-hero:660px;
+	--measure-lede:44ch;
+
+	/* -- roles --------------------------------------------------------------- */
+	--type-hero:    var(--fw-bold) var(--fs-hero)/var(--lh-hero) var(--font-display);
+	--type-band:    var(--fw-bold) var(--fs-band)/var(--lh-heading) var(--font-display);
+	--type-section: var(--fw-bold) var(--fs-section)/var(--lh-heading) var(--font-display);
+	--type-wordmark:var(--fw-bold) var(--fs-wordmark)/var(--lh-flush) var(--font-display);
+	--type-body:    var(--fw-regular) var(--fs-body)/var(--lh-body) var(--font-ui);
+	--type-lede:    var(--fw-regular) var(--fs-lede)/var(--lh-body) var(--font-ui);
+	--type-ui:      var(--fw-medium) var(--fs-ui)/var(--lh-flush) var(--font-ui);
+}
+
+/* -- the two type rules from the playbook that are rules, not values --------
+   A PRICE IS A NUMBER, NOT AN ORNAMENT: tabular figures so columns of prices
+   line up and a changing price does not reflow its own row. */
+.u-price{
+	font-family:var(--font-ui);
+	font-weight:var(--fw-bold);
+	font-variant-numeric:tabular-nums;
+	color:var(--price);
+}
+.u-price-was{
+	font-size:.72em;
+	font-weight:var(--fw-regular);
+	color:var(--ink-quiet);
+}
+
+/* ONE ACCENTED ITALIC WORD PER HEADING - never two. The italic carries the
+   warmth; the rest of the line stays plain. */
+.u-accent{
+	font-style:italic;
+	font-weight:inherit;
+}

@@ -1,0 +1,87 @@
+/* =============================================================================
+   TOKENS / MOTION
+   Source: claude/DESIGN.md section 4, plus the owner's choices of 2026-08-08
+   made against rendered previews rather than from a table.
+
+   *** var() DOES NOT WORK FOR animation-timing-function INSIDE @keyframes. ***
+   Measured, not assumed: sampled 10% into a 4s cycle, a var() segment sat at
+   52.38px - identical to LINEAR (52.38) - while the same curve written as a
+   literal gave 53.55. The declaration is dropped silently and the segment falls
+   back to the animation's own timing function. There is no warning.
+
+   Consequence for this system: a PER-SEGMENT easing cannot be a token. The
+   float below is therefore the ONE place the curve appears as a literal, and
+   everything else references the animation by name. --ease-float is still a
+   token because it is valid on the `animation` shorthand, where var() works.
+   ========================================================================== */
+
+:root{
+	/* -- the brand curve ----------------------------------------------------
+	   Chosen by the owner in a live editor. y1=0 gives the flat, gentle start
+	   of ease-in-out; x1=.4 holds it there a moment; x2/y2 sit up and to the
+	   LEFT of the first control point, which is what produces the steep middle
+	   and the long settling tail. Non-monotonic control points are legal and
+	   are the reason the S is asymmetric. */
+	--ease-float: cubic-bezier(.4, 0, .15, 1);
+
+	/* -- the float ----------------------------------------------------------
+	   *** A CYCLE, NOT A LEG. *** The two differ by 2x and the word "4s" was
+	   ambiguous for three rounds of review. This is the COMPLETE up-and-down. */
+	--float-cycle: 11s;   /* 4.6s rising, 6.4s falling */
+	--float-up: 42%;      /* the cycle rises for 42% and falls for 58% */
+	--float-travel: 96px; /* amplitude, one direction from centre */
+
+	/* -- stars --------------------------------------------------------------
+	   A RANGE, not a value. Most linger; the occasional one is a quick twinkle,
+	   which is what keeps the sky from reading as uniform blinking. Weighted
+	   long: roughly three in four should sit above 6s. */
+	--star-life-min: 1.6s;
+	--star-life-max: 11s;
+	--ease-star: cubic-bezier(.2, .9, .3, 1);
+
+	/* -- interface ----------------------------------------------------------
+	   MEASURED FROM THE LIVE SITE, NOT YET CHOSEN. .18s appears 13 times and
+	   `ease` 22 times, so this is the de-facto standard rather than a decision.
+	   Flagged so nobody mistakes it for one. */
+	--dur-ui: .18s;
+	--ease-ui: ease;
+}
+
+/* -- the float, and the glow locked to it ------------------------------------
+   ONE object, ONE event: the bow rises toward the light, so it brightens. Light
+   and movement are phase-locked when one causes the other. They are NOT locked
+   across different objects - the metal's bloom and its specular drift keep
+   deliberately incommensurable periods so nothing pulses in unison. */
+@keyframes d-float{
+	0%   { transform:translateY(96px);  animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	42%  { transform:translateY(-96px); animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	100% { transform:translateY(96px) }
+}
+@keyframes d-float-glow{
+	0%   { opacity:.40; animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	42%  { opacity:1;   animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	100% { opacity:.40 }
+}
+
+/* -- a star's life: arrive, linger, leave ----------------------------------- */
+@keyframes d-star{
+	0%   { opacity:0; transform:translateY(7px) scale(.7) }
+	18%  { opacity:var(--peak,.95); transform:translateY(0) scale(1) }
+	60%  { opacity:var(--peak,.95) }
+	100% { opacity:0; transform:translateY(-11px) scale(.85) }
+}
+
+/* -- the two kill switches, both non-negotiable, both pure CSS --------------
+   Reduced motion means ZERO, not less. The money path is still: a page whose
+   job is a transaction does not spend frames on atmosphere. */
+@media (prefers-reduced-motion: reduce){
+	*, *::before, *::after{ animation:none !important; transition:none !important }
+}
+body.woocommerce-cart, body.woocommerce-checkout, body.woocommerce-order-received{
+	--money-path:1;
+}
+body.woocommerce-cart *, body.woocommerce-cart *::before,
+body.woocommerce-checkout *, body.woocommerce-checkout *::before,
+body.woocommerce-order-received *, body.woocommerce-order-received *::before{
+	animation:none !important;
+}

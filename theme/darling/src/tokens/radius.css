@@ -1,0 +1,23 @@
+/* =============================================================================
+   TOKENS / RADIUS
+   Chosen by the owner 2026-08-08 from five rendered variants: option B, which
+   is the scale in the winning file palette28_1.html.
+
+   FIVE STEPS AND NO MORE. Before this there were eighteen distinct radii across
+   the two stylesheets, mixing rem and px for the same job - 8/9/10/12/14/16/18/
+   20px and .5/.6/.65/.7/.8/1rem. That is not a scale, it is whatever each
+   person typed. A component picks a step; it never picks a number.
+   ========================================================================== */
+
+:root{
+	--radius-xs: 3px;     /* badge, chip, the scrim behind a tile label        */
+	--radius-s: 10px;     /* an image placeholder inside a card               */
+	--radius-m: 14px;     /* a category tile, the bow plate                   */
+	--radius-l: 16px;     /* a card, a band                                   */
+	--radius-pill: 999px; /* button, field, badge-on-image                    */
+	--radius-circle: 50%; /* a tick, an icon button                           */
+
+	/* The divider is the one exception and it is geometric, not stylistic: a
+	   4px rule takes 3px so the ends read as rounded rather than as capsules. */
+	--radius-rule: 3px;
+}

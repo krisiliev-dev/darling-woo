@@ -1,0 +1,39 @@
+/* =============================================================================
+   DARLING - the design system entry point.
+
+   *** THIS IS THE ONLY FILE THE THEME ENQUEUES. *** Everything else is
+   authored under src/ and concatenated into it in the order below.
+
+   NOT YET ENQUEUED. style.css and assets/darling.css are still the live
+   stylesheets. Nothing here reaches a customer until the cutover commit.
+
+   -- LAYER ORDER, and why it is the first line in the file ------------------
+   The page loads NINE stylesheets. Seven are WooCommerce and Stripe and can
+   never be deleted - only beaten. A later layer beats an earlier one NO
+   MATTER HOW SPECIFIC the earlier selector is, so declaring the order once
+   here replaces every future specificity fight and every !important.
+
+   Third-party CSS is unlayered, and unlayered CSS beats layered CSS - so
+   WooCommerce is pulled INTO the `wc` layer at enqueue time. That is the one
+   piece of PHP this system needs.
+
+   -- FILE ORDER within our own layers ---------------------------------------
+   tokens    the only place a literal value lives
+   base      bare elements: html, body, headings, links
+   metal     the ramp, the surface, the rim, .acc
+   motion    keyframes and BOTH kill switches
+   patterns  band, card, field, button, badge, placeholder
+   utilities last, and allowed to be specific
+   ========================================================================== */
+
+@layer wc, tokens, base, metal, motion, patterns, utilities;
+
+/* -- tokens ---------------------------------------------------------------- */
+@import url("tokens/colour.css") layer(tokens);
+@import url("tokens/type.css")   layer(tokens);
+@import url("tokens/space.css")  layer(tokens);
+@import url("tokens/radius.css") layer(tokens);
+@import url("tokens/motion.css") layer(motion);
+@import url("finish.css")        layer(finish);
+
+/* base, metal, motion, patterns, utilities: not written yet. */

@@ -1,0 +1,41 @@
+/* =============================================================================
+   TOKENS / SPACE
+   Source: measured from the live site, 2026-08-08, and approved as-is.
+
+   A NINE-STEP FLUID SCALE. Every step is a clamp() that grows with the
+   viewport, so the rhythm of the page is one curve rather than a set of
+   breakpoints. Ratio between steps is about 1.33.
+
+   *** THE WINNING FILE CANNOT CONTRADICT THIS AND DOES NOT TRY. *** It is a
+   static mock at one width, so its fixed 44px gutter and 64px hero padding are
+   a single sample of this curve, not a competing system. At 1440 the scale
+   puts --space-xl at 60px and --space-l at 40px, which is the mock's spacing.
+
+   RULE: no raw length in any component. If a value is not on this scale, either
+   the scale is wrong or the component is.
+   ========================================================================== */
+
+:root{
+	/*                        min                      fluid                  max      @360  @1600 */
+	--space-3xs: clamp(0.25rem,  0.2184rem + 0.1176vw, 0.3125rem);  /*   4 ->   5 px */
+	--space-2xs: clamp(0.5rem,   0.4368rem + 0.2353vw, 0.625rem);   /*   8 ->  10 px */
+	--space-xs:  clamp(0.75rem,  0.6551rem + 0.3529vw, 0.9375rem);  /*  12 ->  15 px */
+	--space-s:   clamp(1rem,     0.8735rem + 0.4706vw, 1.25rem);    /*  16 ->  20 px */
+	--space-m:   clamp(1.5rem,   1.3103rem + 0.7059vw, 1.875rem);   /*  24 ->  30 px */
+	--space-l:   clamp(2rem,     1.7471rem + 0.9412vw, 2.5rem);     /*  32 ->  40 px */
+	--space-xl:  clamp(3rem,     2.6206rem + 1.4118vw, 3.75rem);    /*  48 ->  60 px */
+	--space-2xl: clamp(4rem,     3.4941rem + 1.8824vw, 5rem);       /*  64 ->  80 px */
+	--space-3xl: clamp(6rem,     5.2412rem + 2.8235vw, 7.5rem);     /*  96 -> 120 px */
+
+	/* -- roles ---------------------------------------------------------------
+	   Named so a component asks for a JOB, not a size. Change the mapping here
+	   and the whole page re-spaces; change a step above and every role moves
+	   with it. */
+	--gutter:        var(--space-xl);   /* the inset inside a full-bleed band  */
+	--band-y:        var(--space-2xl);  /* vertical air in a hero or newsletter*/
+	--section-y:     var(--space-xl);   /* vertical air around a page section  */
+	--stack:         var(--space-m);    /* between blocks in a column          */
+	--stack-tight:   var(--space-2xs);  /* label to the thing it labels        */
+	--grid-gap:      var(--space-s);    /* between cards in a grid             */
+	--inline:        var(--space-2xs);  /* between things on one line          */
+}
