@@ -415,7 +415,24 @@
 	--icon-truck: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 6.5h12v9h-12z'/%3E%3Cpath d='M13.8 9.5h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='1.7'/%3E%3Ccircle cx='17' cy='18' r='1.7'/%3E%3C/svg%3E");
 	--icon-return: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5h11a5.5 5.5 0 1 1 0 11H8'/%3E%3Cpath d='M7 4.5l-3.5 4L7 12.5'/%3E%3C/svg%3E");
 	--icon-shield: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.6l8 3v6c0 5-3.4 8.7-8 9.8-4.6-1.1-8-4.8-8-9.8v-6z'/%3E%3Cpath d='M8.5 12l2.5 2.5 4.5-5'/%3E%3C/svg%3E");
-}
+
+	/* -- parts, for the marks that move ---------------------------------------
+	   *** A MASK IS ONE SILHOUETTE. *** It cannot have a spinning wheel in it,
+	   because there is no way to transform part of an image. So the marks that
+	   animate are split: the still part is the element's own mask and each
+	   moving part is a pseudo-element with a mask of its own and its own
+	   transform-origin. Two pseudo-elements is the budget, which is exactly two
+	   wheels, or one bow, or one lens flare - and that limit is the reason the
+	   trail on an added-to-cart lives on the BUTTON rather than on the icon. */
+	--icon-cart-body: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 2.6h2.6l2.4 10.8a1.9 1.9 0 0 0 1.9 1.5h8.1a1.9 1.9 0 0 0 1.85-1.45L20.4 6H6'/%3E%3C/svg%3E");
+	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 4.5v15M4.9 8.2l14.2 7.6M4.9 15.8l14.2-7.6'/%3E%3C/svg%3E");
+	/* The bow. Small, symmetric, and the same shape as the big brand bow so the
+	   two read as one mark at two sizes. */
+	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E");
+	/* The lens on its own, so the search mark can hold something inside it. */
+	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
+	--icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E");
+	--icon-heart-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 20.8l-7.6-7.3A4.85 4.85 0 1 1 12 6.9a4.85 4.85 0 1 1 7.6 6.6z'/%3E%3C/svg%3E");}
 }
 
 /* ==== tokens/motion.css ==== */
@@ -759,6 +776,342 @@ hr{
 	.d-icon-btn:hover .d-icon,
 	.d-icon-btn:focus-visible .d-icon{ background:Highlight }
 }
+/* =============================================================================
+   ICON MOTION
+   *** THE RULE, AND IT IS THE OWNER'S: A MARK MOVES ONLY WHEN SOMETHING
+   HAPPENS. *** Nothing here idles. An interface where six small things are all
+   moving at once is not lively, it is noisy, and the one mark that IS reporting
+   something gets lost in the other five. So every animation below is bound to
+   an event - a hover, a check, an add to cart, a load - and the marks that only
+   ever label something (mail, phone, info, warning, error, and the stars inside
+   a rating) are deliberately, permanently still.
+
+   WHAT MOVES, AND WHY THAT ONE:
+     spinner   always      it IS the event; a still spinner is a bug
+     cart      on add      the only moment the basket changes
+     user      on hover    a bow, because the account is the personal corner
+     search    on hover    invites the click; the lens is otherwise dead weight
+     heart     on check    a state change the person just made
+     check     on appear   confirmation should arrive, not be already there
+     truck     on threshold  free shipping is earned, so it should feel earned
+     shield    on hover    trust marks are hovered when someone is deciding
+     chevron   on hover    says which way it goes before it is pressed
+     close     on hover    the only motion a close button should ever have
+     download  on hover    the arrow dips, once
+     return    on hover    the loop goes round, once
+   NOT MOVING, ON PURPOSE: mail, phone, info, warning, error, star-in-a-rating,
+   plus, minus. The notices those sit on already animate - falling stars, an
+   orbiting star, the excited ones - and two animations on one object compete.
+   ========================================================================== */
+
+/* -- spinner: a trail, not a ring --------------------------------------------
+   The mark is no longer an SVG arc. A conic-gradient of currentColor fading to
+   nothing IS the trail - dense at the head, gone at the tail - and a radial
+   mask cuts it to a ring. Same idea as the panel's wake and the paginator's,
+   built out of the one thing a rotating element can carry for free. */
+.d-icon--spinner{
+	--icon:none;
+	border-radius:var(--radius-circle);
+	background:conic-gradient(from 0turn,
+		transparent 0turn,
+		color-mix(in oklab, currentColor 12%, transparent) .30turn,
+		color-mix(in oklab, currentColor 45%, transparent) .58turn,
+		color-mix(in oklab, currentColor 82%, transparent) .78turn,
+		currentColor .90turn,
+		transparent .94turn);
+	mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
+	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
+	animation:d-icon-spin 820ms linear infinite;
+}
+/* The head of the comet: a dot brighter than the trail it drags. */
+.d-icon--spinner::after{
+	content:"";
+	position:absolute;
+	top:0;
+	left:50%;
+	width:2.5px;
+	height:2.5px;
+	margin-left:-1.25px;
+	border-radius:var(--radius-circle);
+	background:currentColor;
+}
+.d-icon--spinner{ position:relative }
+
+/* -- cart: wheels that turn, and a streak behind the button -----------------
+   The body is the element's mask; each wheel is a pseudo with its own
+   transform-origin, because a single mask holding both wheels would ORBIT them
+   round the icon's centre rather than spin them on their own axles.
+
+   Triggered by [data-added] on the button, which darling-ui.js sets for 900ms
+   when WooCommerce says something went in. */
+.d-icon--cart{
+	--icon:var(--icon-cart-body);
+	position:relative;
+}
+.d-icon--cart::before,
+.d-icon--cart::after{
+	content:"";
+	position:absolute;
+	bottom:0;
+	width:26%;
+	height:26%;
+	background:currentColor;
+	mask-image:var(--icon-wheel);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-wheel);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+}
+.d-icon--cart::before{ left:26% }
+.d-icon--cart::after{ left:62% }
+[data-added] .d-icon--cart::before,
+[data-added] .d-icon--cart::after{
+	animation:d-icon-roll 760ms var(--ease-float);
+}
+[data-added] .d-icon--cart{ animation:d-icon-bump 760ms var(--ease-float) }
+@keyframes d-icon-roll{ to{ transform:rotate(540deg) } }
+@keyframes d-icon-bump{
+	0%   { transform:translateX(0) }
+	28%  { transform:translateX(-2.5px) }
+	64%  { transform:translateX(2px) }
+	100% { transform:translateX(0) }
+}
+/* The streak. It is on the BUTTON and not on the icon because the icon's two
+   pseudo-elements are the wheels and there is no third. Same gradient shape as
+   every other trail in the system, brightest through the middle. */
+.d-icon-btn[data-added]::before{
+	content:"";
+	position:absolute;
+	top:50%;
+	inset-inline-end:1.55rem;
+	width:1.6rem;
+	height:.62rem;
+	transform:translateY(-50%);
+	border-radius:var(--radius-pill);
+	pointer-events:none;
+	background:linear-gradient(90deg,
+		transparent 0%,
+		color-mix(in oklab, var(--trail-gold) 20%, transparent) 22%,
+		color-mix(in oklab, var(--trail-gold) 70%, transparent) 42%,
+		var(--trail-gold) 52%,
+		transparent 100%);
+	animation:d-icon-streak 760ms var(--ease-float);
+}
+@keyframes d-icon-streak{
+	0%   { opacity:0; scale:.2 1 }
+	35%  { opacity:1; scale:1 1 }
+	100% { opacity:0; scale:1.2 1; translate:-6px 0 }
+}
+
+/* -- user: a bow that lights up on hover ------------------------------------- */
+.d-icon--user{
+	--icon:var(--icon-person);
+	position:relative;
+}
+.d-icon--user::after{
+	content:"";
+	position:absolute;
+	top:-6%;
+	left:50%;
+	width:52%;
+	height:52%;
+	translate:-50% 0;
+	scale:.6;
+	opacity:0;
+	background:var(--c-cherry);
+	mask-image:var(--icon-bow);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-bow);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	transition:opacity 260ms var(--ease-float),
+	           scale   260ms var(--ease-float),
+	           filter  260ms var(--ease-float);
+}
+.d-icon-btn:hover .d-icon--user::after,
+.d-icon-btn:focus-visible .d-icon--user::after,
+a:hover > .d-icon--user::after{
+	opacity:1;
+	scale:1;
+	filter:drop-shadow(0 0 4px color-mix(in oklab, var(--g-hi) 90%, transparent))
+	       drop-shadow(0 0 9px color-mix(in oklab, var(--c-cherry) 55%, transparent));
+}
+
+/* -- search: a bow that grows inside the lens -------------------------------
+   Slow in, quick out, and the asymmetry is deliberate - the owner asked for it
+   in those words. It falls out of using TWO transitions: the hovered rule owns
+   the slow one, the resting rule owns the fast one, and a transition is always
+   read off the state being moved TO. */
+.d-icon--search{
+	--icon:var(--icon-lens);
+	position:relative;
+}
+.d-icon--search::after{
+	content:"";
+	position:absolute;
+	top:19%;
+	left:11%;
+	width:37%;
+	height:37%;
+	scale:0;
+	opacity:0;
+	background:var(--c-cherry);
+	mask-image:var(--icon-bow);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-bow);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	transition:scale 150ms var(--ease-float), opacity 120ms linear;   /* out: fast */
+}
+.d-icon-btn:hover .d-icon--search::after,
+.d-icon-btn:focus-visible .d-icon--search::after,
+.d-search:focus-within .d-icon--search::after,
+.d-search:hover .d-icon--search::after{
+	scale:1;
+	opacity:1;
+	transition:scale 340ms var(--ease-float), opacity 200ms linear;   /* in: slow */
+}
+
+/* -- heart: a real checkbox, so the state costs no script -------------------
+   A wishlist toggle IS a checkbox, and using one means :checked does the work,
+   the control is reachable by keyboard, and a screen reader says "checked"
+   without an aria attribute anyone has to remember. */
+.d-heart{
+	position:relative;
+	display:grid;
+	place-items:center;
+	width:2.75rem;
+	height:2.75rem;
+	padding:0;
+	margin:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	appearance:none;
+	-webkit-appearance:none;
+	color:var(--ink);
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-heart:hover{ background:var(--tint-gold) }
+.d-heart:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+.d-heart::before{
+	content:"";
+	width:1.25rem;
+	height:1.25rem;
+	background:currentColor;
+	mask-image:var(--icon-heart);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon-heart);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	transition:scale 200ms var(--ease-float);
+}
+.d-heart:checked{ color:var(--c-cherry) }
+.d-heart:checked::before{
+	mask-image:var(--icon-heart-fill);
+	-webkit-mask-image:var(--icon-heart-fill);
+	animation:d-icon-pop 460ms var(--ease-float);
+}
+@keyframes d-icon-pop{
+	0%   { scale:.7 }
+	42%  { scale:1.28 }
+	68%  { scale:.94 }
+	100% { scale:1 }
+}
+/* The burst: a ring that expands and fades once, on the tick only. */
+.d-heart:checked::after{
+	content:"";
+	position:absolute;
+	inset:22%;
+	border-radius:var(--radius-circle);
+	border:2px solid var(--c-cherry);
+	animation:d-icon-burst 520ms var(--ease-float) forwards;
+	pointer-events:none;
+}
+@keyframes d-icon-burst{
+	0%   { opacity:.85; scale:.4 }
+	100% { opacity:0;   scale:1.9 }
+}
+
+/* -- the quiet hovers --------------------------------------------------------
+   Two to six pixels each. A control should say which way it goes before it is
+   pressed; it should not perform. */
+.d-icon-btn:hover .d-icon--close,
+a:hover > .d-icon--close,
+button:hover > .d-icon--close{ rotate:90deg }
+.d-icon--close{ transition:rotate 220ms var(--ease-float) }
+
+.d-icon--chevron-right{ transition:translate 180ms var(--ease-float) }
+a:hover > .d-icon--chevron-right,
+button:hover > .d-icon--chevron-right{ translate:3px 0 }
+.d-icon--chevron-down{ transition:translate 180ms var(--ease-float) }
+a:hover > .d-icon--chevron-down,
+button:hover > .d-icon--chevron-down{ translate:0 3px }
+
+a:hover > .d-icon--download,
+button:hover > .d-icon--download{ animation:d-icon-dip 520ms var(--ease-float) }
+@keyframes d-icon-dip{
+	0%,100% { translate:0 0 }
+	45%     { translate:0 3px }
+}
+a:hover > .d-icon--return,
+button:hover > .d-icon--return{ animation:d-icon-loop 640ms var(--ease-float) }
+@keyframes d-icon-loop{ to{ rotate:-360deg } }
+
+/* Shield: a sheen crosses it once. Trust marks get hovered while somebody is
+   deciding, which is the only moment they matter. */
+.d-icon--shield{ position:relative; overflow:hidden }
+a:hover > .d-icon--shield::after,
+.d-trust:hover .d-icon--shield::after,
+.d-icon--shield:hover::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:linear-gradient(105deg, transparent 35%,
+		color-mix(in oklab, var(--g-vanilla) 85%, transparent) 50%, transparent 65%);
+	animation:d-icon-sheen 620ms var(--ease-float);
+}
+@keyframes d-icon-sheen{
+	from{ translate:-120% 0 }
+	to  { translate:120% 0 }
+}
+
+/* Check: confirmation should ARRIVE, not already be there. */
+.d-icon--check[data-enter]{ animation:d-icon-pop 420ms var(--ease-float) }
+
+/* Truck: free shipping is earned, so it should look earned. Set by the progress
+   bar's own script the moment the threshold is crossed. */
+[data-reached] .d-icon--truck{ animation:d-icon-drive 900ms var(--ease-float) }
+@keyframes d-icon-drive{
+	0%   { translate:-140% 0; opacity:0 }
+	40%  { translate:6% 0;    opacity:1 }
+	62%  { translate:-3% 0 }
+	100% { translate:0 0 }
+}
+
+/* -- and the kill switch ----------------------------------------------------
+   motion.css already stops animations under reduced motion and on the money
+   path. TRANSITIONS survive the money-path switch, and two of these are
+   transitions - so the bow on the account icon and the bow in the lens are
+   explicitly stopped there too. A checkout is not the place for a flourish. */
+body.woocommerce-cart .d-icon::after,
+body.woocommerce-checkout .d-icon::after,
+body.woocommerce-order-received .d-icon::after{ transition:none }
+@media (prefers-reduced-motion: reduce){
+	.d-icon--spinner{
+		background:none;
+		mask-image:var(--icon-spinner);
+		-webkit-mask-image:var(--icon-spinner);
+	}
+	.d-icon--user::after, .d-icon--search::after{ transition:none }
+}
 }
 
 /* ==== patterns/header.css ==== */
@@ -792,12 +1145,32 @@ hr{
    read, toggled and closed with Escape.
    ========================================================================== */
 
+/* *** THE HEADER IS NOT THE PAGE COLOUR, AND THAT WAS A REAL FAULT. ***
+   It was --surface-page, the same grey as the body, so the bar had no edge of
+   its own - the owner could not tell where it began. A hairline alone does not
+   fix that: a 1px line between two identical greys reads as a divider inside
+   one surface, not as the bottom of a thing that floats over another.
+   So the header is the RAISED grey, one step up from the page, which is the
+   same relationship a card has to the page and needs no new colour to say it.
+
+   *** AND IT EARNS A SHADOW BY SCROLLING. ***
+   At the top of the page the header is part of the page and a shadow would be a
+   lie. Once the page has moved under it, it is floating, and the shadow says so.
+   animation-timeline:scroll() does this with no script - the shadow is driven by
+   the document's own scroll position over the first 80px. */
 .d-header{
 	position:sticky;
 	top:0;
 	z-index:50;
-	background:var(--surface-page);
+	background:var(--surface-raised);
 	border-bottom:1px solid var(--hairline);
+	animation:d-header-lift linear both;
+	animation-timeline:scroll(root block);
+	animation-range:0 80px;
+}
+@keyframes d-header-lift{
+	from{ box-shadow:0 1px 0 rgb(0 0 0 / 0) }
+	to  { box-shadow:0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -12px rgb(0 0 0 / .16) }
 }
 .d-header__inner{
 	display:flex;
@@ -970,15 +1343,25 @@ hr{
 	gap:var(--space-2xs);
 	min-width:0;
 	padding:var(--space-2xs) var(--space-s);
+	/* *** IT IS THE FIELD, NOT A SECOND KIND OF INPUT. ***
+	   The owner is right: this was a bespoke pill with its own background and
+	   its own shadow, sitting next to a field pattern that already answers every
+	   one of those questions. It now takes the field's surface, the field's
+	   edge, the field's focus ring and the field's ink, and differs from a text
+	   input in exactly one way - it is pill-round, because it is in a bar rather
+	   than in a form. */
+	border:1px solid var(--edge-field);
 	border-radius:var(--radius-pill);
 	background:var(--surface-raised);
-	box-shadow:var(--shadow-card);
 	color:var(--ink-placeholder);
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
 }
+.d-search:hover{ border-color:var(--c-grey-300) }
 .d-search:focus-within{
-	outline:2px solid var(--focus-ring);
-	outline-offset:2px;
-	box-shadow:0 0 0 3px var(--focus-halo), var(--shadow-card);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
+	outline:none;
 }
 .d-search .d-icon{ width:1.1rem; height:1.1rem; flex:none }
 .d-search input[type="search"]{
@@ -1019,14 +1402,24 @@ hr{
    900px, matching the old breakpoint exactly so nothing shifts at the cutover.
    The full nav and the search pill go; the burger and the small search button
    arrive. */
+/* *** ORDER, AND IT IS WHY THE BURGER NEVER APPEARED. ***
+   The hide rule was written AFTER the media query, and both are (0,1,0). At
+   equal specificity the later rule wins regardless of the media query, so
+   display:none beat display:grid at every width and the narrow-screen header
+   had no menu button at all - which is exactly what the owner saw. The hide
+   comes first now, and the query that reveals them comes last.
+
+   They are .d-icon-btn as well, so they already have the 44px target, the
+   hover tint and the focus ring; this file only decides WHEN they show. */
+.d-header__burger,
+.d-header__search-sm{ display:none }
+
 @media (max-width: 900px){
 	.d-nav{ display:none }
 	.d-search{ display:none }
 	.d-header__burger,
 	.d-header__search-sm{ display:grid }
 }
-.d-header__burger,
-.d-header__search-sm{ display:none }
 }
 
 /* ==== patterns/drawer.css ==== */
@@ -1248,6 +1641,139 @@ hr{
 		.d-drawer[open], .d-drawer--end[open]{ translate:none }
 	}
 }
+/* =============================================================================
+   DRAWER / THE DARLING TREATMENT
+   ========================================================================== */
+
+/* -- nav rows: stars fly in, orbit, and leave ---------------------------------
+   *** THE THREE PHASES ARE ONE ANIMATION, NOT THREE. ***
+   The brief was: fly in, circle the text easing while they do it, then fly out
+   fast. Three separate animations chained by delay would desync the moment two
+   rows are hovered in quick succession - the same failure the rating stars had
+   before the wave was moved onto page load. One keyframe track with the phases
+   at 0-18% / 18-72% / 72-100% cannot drift, because there is only one clock.
+
+   *** THE ORBIT IS A TWO-TRANSFORM TRICK. ***
+   rotate() spins a star about the row's centre; a counter-rotate on the star
+   itself keeps it upright while it travels. Without the second one the star
+   tumbles as it circles, which reads as debris rather than as a firefly.
+
+   Two pseudo-elements is two stars, and they run half a cycle apart so the row
+   always has one arriving and one leaving.
+   ========================================================================== */
+.d-drawer__nav li{ position:relative }
+.d-drawer__nav li::before,
+.d-drawer__nav li::after{
+	content:"";
+	position:absolute;
+	top:50%;
+	left:50%;
+	width:.5rem;
+	height:.5rem;
+	margin:-.25rem 0 0 -.25rem;
+	background:var(--g-hi);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	opacity:0;
+	pointer-events:none;
+}
+.d-drawer__nav li:hover::before,
+.d-drawer__nav li:focus-within::before{ animation:d-orbit 2.4s var(--ease-float) infinite }
+.d-drawer__nav li:hover::after,
+.d-drawer__nav li:focus-within::after{
+	animation:d-orbit 2.4s var(--ease-float) infinite 1.2s;
+	background:var(--c-cherry);
+}
+/* --orbit-r is in the keyframe rather than a token because it is the row's own
+   half-width plus a margin, and a row is as wide as the drawer. */
+@keyframes d-orbit{
+	0%   { opacity:0; rotate:0deg;   translate:0 0;      scale:.4 }
+	18%  { opacity:1; rotate:65deg;  translate:5.5rem 0; scale:1 }
+	72%  { opacity:1; rotate:295deg; translate:5.5rem 0; scale:1 }
+	88%  { opacity:0; rotate:340deg; translate:7.5rem 0; scale:.5 }
+	100% { opacity:0; rotate:360deg; translate:0 0;      scale:.4 }
+}
+@media (prefers-reduced-motion: reduce){
+	.d-drawer__nav li::before, .d-drawer__nav li::after{ display:none }
+}
+
+/* -- the cart list ------------------------------------------------------------
+   Rows were flush against each other and read as one block. They now have air,
+   a hairline between them, and a star for a bullet - a list of things somebody
+   chose should look chosen. */
+.d-drawer__list{
+	margin:0;
+	padding:var(--space-2xs) var(--space-s);
+	list-style:none;
+	display:grid;
+	gap:var(--space-2xs);
+}
+.d-drawer__line{
+	position:relative;
+	display:grid;
+	/* FOUR columns, not three: ::before is a grid ITEM, so the bullet occupies
+	   the first track and the remove button was wrapping onto a second row -
+	   which is exactly how it rendered. bullet | name | price | remove. */
+	grid-template-columns:auto 1fr auto auto;
+	align-items:start;
+	gap:var(--space-2xs);
+	padding:var(--space-2xs) 0;
+	font-size:var(--fs-meta);
+}
+.d-drawer__line + .d-drawer__line{ border-top:1px solid var(--hairline) }
+/* The bullet. A mark, not a disc and not a dingbat. */
+.d-drawer__line::before{
+	content:"";
+	width:.62rem;
+	height:.62rem;
+	margin-top:.34em;
+	background:var(--g-core);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	flex:none;
+}
+.d-drawer__line:hover::before{ animation:d-twinkle 1.6s var(--ease-float) infinite }
+.d-drawer__line__name{ color:var(--ink); line-height:var(--lh-title) }
+.d-drawer__line__meta{
+	display:block;
+	margin-top:.15em;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-drawer__line__price{
+	color:var(--price);
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.d-drawer__line__rm{
+	justify-self:end;
+	margin-top:.2em;
+	width:1.9rem;
+	height:1.9rem;
+	display:grid;
+	place-items:center;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--ink-quiet);
+	cursor:pointer;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-drawer__line__rm:hover{ color:var(--c-claret); background:var(--tint-gold) }
+.d-drawer__line__rm .d-icon{ width:.85rem; height:.85rem }
+
+/* The free-shipping bar sits between the list and the totals, where it answers
+   the question the totals are about to raise. */
+.d-drawer__foot .d-progress{ margin-bottom:var(--space-3xs) }
 }
 
 /* ==== patterns/band.css ==== */
@@ -1644,6 +2170,164 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	font-size:var(--fs-fine);
 	font-weight:var(--fw-regular);
 	opacity:.85;
+}
+}
+
+/* ==== patterns/progress.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / PROGRESS
+   How far you are, and how far is left.
+
+   Written because the cart drawer needs "???????? ?????? 12,60 ????. ???? ??????????????????
+   ????????????????, darling" and there was nothing to build it out of - the old
+   .darling-shipbar was one bespoke bar with its own colours, its own track and
+   its own animation, usable nowhere else.
+
+   *** IT IS A <progress> WHERE IT CAN BE, AND ROLE=progressbar WHERE IT CANNOT.
+   A bar that is only a div with a width is invisible to a screen reader: the
+   person told "free shipping over 77" has no way to hear how close they are.
+   Both markups are styled here, and both carry the number.
+
+   *** THE SHEEN STOPS WHERE THE FILL STOPS. ***
+   It is clipped to the filled part, not run across the whole track. A shine
+   travelling over the empty portion says the empty portion is doing something,
+   which is the opposite of what the bar is for. When the bar completes, the
+   sheen goes gold and slows down - it stops being progress and becomes a small
+   reward, and then it stops entirely after three passes rather than shining
+   forever at somebody trying to check out.
+   ========================================================================== */
+
+.d-progress{
+	--pr-track: var(--tint-grey-quiet);
+	--pr-fill:  var(--c-cocoa);
+	--pr-sheen: var(--g-hi);
+	--pr-h: .55rem;
+	--pr: 0;                    /* 0..1, set inline or by the shim */
+
+	display:grid;
+	gap:var(--space-3xs);
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.d-progress--cherry{
+	--pr-track: var(--tint-cherry-quiet);
+	--pr-fill:  var(--c-cherry-deep);
+	--pr-sheen: var(--g-hi);
+}
+.d-progress--gold{
+	--pr-track: var(--tint-gold-quiet);
+	--pr-fill:  var(--tint-gold-mark);
+	--pr-sheen: var(--c-cream);
+}
+
+/* *** NOT A FLEX ROW. *** As flex, every word-level element in the sentence
+   became a flex ITEM - so the amount in <b> was a box of its own and the line
+   broke into three: "???????? ??????" / "12,70 ????." / "???? ?????????????????? ????????????????". A
+   sentence is text, and the icon rides in it as text. */
+.d-progress__label{
+	display:block;
+	margin:0;
+	font-size:var(--fs-meta);
+	line-height:var(--lh-title);
+	text-wrap:pretty;
+}
+.d-progress__label b{
+	color:var(--price);
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.d-progress__label .d-icon{
+	color:var(--ink-quiet);
+	margin-inline-end:.4em;
+	vertical-align:-.15em;
+}
+
+.d-progress__track{
+	position:relative;
+	overflow:hidden;
+	height:var(--pr-h);
+	border-radius:var(--radius-pill);
+	background:var(--pr-track);
+}
+.d-progress__bar{
+	position:absolute;
+	inset-block:0;
+	inset-inline-start:0;
+	width:calc(var(--pr) * 100%);
+	border-radius:var(--radius-pill);
+	background:var(--pr-fill);
+	transition:width 520ms var(--ease-float);
+}
+/* The sheen. Inside the bar, so it is clipped to the fill by construction and
+   cannot travel over the empty part. */
+.d-progress__bar::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	border-radius:inherit;
+	background:linear-gradient(100deg,
+		transparent 30%,
+		color-mix(in oklab, var(--pr-sheen) 55%, transparent) 46%,
+		color-mix(in oklab, var(--pr-sheen) 90%, transparent) 50%,
+		color-mix(in oklab, var(--pr-sheen) 55%, transparent) 54%,
+		transparent 70%);
+	animation:d-progress-sheen 3.6s var(--ease-float) infinite;
+}
+@keyframes d-progress-sheen{
+	0%      { translate:-110% 0 }
+	55%,100%{ translate:110% 0 }
+}
+
+/* -- reached ----------------------------------------------------------------
+   Gold, and the shine runs three times and then stops. A bar that keeps
+   celebrating at somebody who is trying to pay is a distraction, not a reward. */
+.d-progress[data-reached] .d-progress__bar{ background:var(--g-core) }
+.d-progress[data-reached] .d-progress__bar::after{
+	--pr-sheen: var(--c-cream);
+	animation:d-progress-sheen 1.9s var(--ease-float) 3;
+}
+.d-progress[data-reached] .d-progress__label{ color:var(--ink) }
+.d-progress[data-reached] .d-progress__label .d-icon{ color:var(--g-shadow) }
+
+/* -- the native element, styled to match -------------------------------------
+   <progress> is the accessible default and it has its own two-pseudo model per
+   engine. It gets the track and the fill; it does NOT get the sheen, because
+   ::-webkit-progress-value cannot own a pseudo-element of its own. That is a
+   real limitation and the reason the div version exists at all. */
+.d-progress__native{
+	appearance:none;
+	-webkit-appearance:none;
+	display:block;
+	width:100%;
+	height:var(--pr-h);
+	border:0;
+	border-radius:var(--radius-pill);
+	background:var(--pr-track);
+	overflow:hidden;
+}
+.d-progress__native::-webkit-progress-bar{
+	background:var(--pr-track);
+	border-radius:var(--radius-pill);
+}
+.d-progress__native::-webkit-progress-value{
+	background:var(--pr-fill);
+	border-radius:var(--radius-pill);
+	transition:inline-size 520ms var(--ease-float);
+}
+.d-progress__native::-moz-progress-bar{
+	background:var(--pr-fill);
+	border-radius:var(--radius-pill);
+}
+
+/* -- the money path and reduced motion ---------------------------------------
+   motion.css already kills animations on cart, checkout and order-received -
+   and the free-shipping bar lives on exactly those pages, so the sheen is off
+   where the bar is most used. That is the correct trade: the BAR still works,
+   the shine is what goes. */
+@media (prefers-reduced-motion: reduce){
+	.d-progress__bar{ transition:none }
+	.d-progress__bar::after{ display:none }
 }
 }
 

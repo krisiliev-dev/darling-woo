@@ -1,0 +1,876 @@
+{
+ "--action": {
+  "raw": "#D42A3C",
+  "type": "colour",
+  "computed": "rgb(212, 42, 60)",
+  "hex": "#d42a3c"
+ },
+ "--action-cart": {
+  "raw": "#D42A3C",
+  "type": "colour",
+  "computed": "rgb(212, 42, 60)",
+  "hex": "#d42a3c"
+ },
+ "--action-cart-ink": {
+  "raw": "#FFFFFF",
+  "type": "colour",
+  "computed": "rgb(255, 255, 255)",
+  "hex": "#ffffff"
+ },
+ "--action-ink": {
+  "raw": "#FFF6E9",
+  "type": "colour",
+  "computed": "rgb(255, 246, 233)",
+  "hex": "#fff6e9"
+ },
+ "--band-y": {
+  "raw": "clamp(4rem,     3.4941rem + 1.8824vw, 5rem)",
+  "type": "length",
+  "computed": "80px"
+ },
+ "--c-ash-100": {
+  "raw": "#EEE9E4",
+  "type": "colour",
+  "computed": "rgb(238, 233, 228)",
+  "hex": "#eee9e4"
+ },
+ "--c-ash-200": {
+  "raw": "#D8CEC6",
+  "type": "colour",
+  "computed": "rgb(216, 206, 198)",
+  "hex": "#d8cec6"
+ },
+ "--c-ash-300": {
+  "raw": "#CFC7C0",
+  "type": "colour",
+  "computed": "rgb(207, 199, 192)",
+  "hex": "#cfc7c0"
+ },
+ "--c-ash-400": {
+  "raw": "#A89A92",
+  "type": "colour",
+  "computed": "rgb(168, 154, 146)",
+  "hex": "#a89a92"
+ },
+ "--c-cherry": {
+  "raw": "#D42A3C",
+  "type": "colour",
+  "computed": "rgb(212, 42, 60)",
+  "hex": "#d42a3c"
+ },
+ "--c-cherry-deep": {
+  "raw": "#B01F30",
+  "type": "colour",
+  "computed": "rgb(176, 31, 48)",
+  "hex": "#b01f30"
+ },
+ "--c-claret": {
+  "raw": "#9E1B32",
+  "type": "colour",
+  "computed": "rgb(158, 27, 50)",
+  "hex": "#9e1b32"
+ },
+ "--c-cocoa": {
+  "raw": "#3A1D20",
+  "type": "colour",
+  "computed": "rgb(58, 29, 32)",
+  "hex": "#3a1d20"
+ },
+ "--c-cream": {
+  "raw": "#FFF6E9",
+  "type": "colour",
+  "computed": "rgb(255, 246, 233)",
+  "hex": "#fff6e9"
+ },
+ "--c-grey-050": {
+  "raw": "#F1F1F6",
+  "type": "colour",
+  "computed": "rgb(241, 241, 246)",
+  "hex": "#f1f1f6"
+ },
+ "--c-grey-100": {
+  "raw": "#E6E6EC",
+  "type": "colour",
+  "computed": "rgb(230, 230, 236)",
+  "hex": "#e6e6ec"
+ },
+ "--c-grey-200": {
+  "raw": "#DEDEE6",
+  "type": "colour",
+  "computed": "rgb(222, 222, 230)",
+  "hex": "#dedee6"
+ },
+ "--c-grey-300": {
+  "raw": "#D4D4DD",
+  "type": "colour",
+  "computed": "rgb(212, 212, 221)",
+  "hex": "#d4d4dd"
+ },
+ "--c-grey-400": {
+  "raw": "#C2C2CD",
+  "type": "colour",
+  "computed": "rgb(194, 194, 205)",
+  "hex": "#c2c2cd"
+ },
+ "--c-mauve": {
+  "raw": "#7A5B60",
+  "type": "colour",
+  "computed": "rgb(122, 91, 96)",
+  "hex": "#7a5b60"
+ },
+ "--c-mauve-light": {
+  "raw": "#8A7076",
+  "type": "colour",
+  "computed": "rgb(138, 112, 118)",
+  "hex": "#8a7076"
+ },
+ "--c-white": {
+  "raw": "#FFFFFF",
+  "type": "colour",
+  "computed": "rgb(255, 255, 255)",
+  "hex": "#ffffff"
+ },
+ "--delay-turn": {
+  "raw": "260ms",
+  "type": "other",
+  "computed": "260ms"
+ },
+ "--dur-panel": {
+  "raw": "420ms",
+  "type": "other",
+  "computed": "420ms"
+ },
+ "--dur-turn": {
+  "raw": "240ms",
+  "type": "other",
+  "computed": "240ms"
+ },
+ "--dur-ui": {
+  "raw": ".18s",
+  "type": "other",
+  "computed": ".18s"
+ },
+ "--dur-wake": {
+  "raw": "900ms",
+  "type": "other",
+  "computed": "900ms"
+ },
+ "--ease-float": {
+  "raw": "cubic-bezier(.4, 0, .15, 1)",
+  "type": "other",
+  "computed": "cubic-bezier(.4, 0, .15, 1)"
+ },
+ "--ease-star": {
+  "raw": "cubic-bezier(.2, .9, .3, 1)",
+  "type": "other",
+  "computed": "cubic-bezier(.2, .9, .3, 1)"
+ },
+ "--ease-ui": {
+  "raw": "ease",
+  "type": "other",
+  "computed": "ease"
+ },
+ "--ease-wake": {
+  "raw": "cubic-bezier(.33, 0, .07, 1)",
+  "type": "other",
+  "computed": "cubic-bezier(.33, 0, .07, 1)"
+ },
+ "--edge-field": {
+  "raw": "#C2C2CD",
+  "type": "colour",
+  "computed": "rgb(194, 194, 205)",
+  "hex": "#c2c2cd"
+ },
+ "--float-cycle": {
+  "raw": "11s",
+  "type": "other",
+  "computed": "11s"
+ },
+ "--float-travel": {
+  "raw": "96px",
+  "type": "length",
+  "computed": "96px"
+ },
+ "--float-up": {
+  "raw": "42%",
+  "type": "length",
+  "computed": "42%"
+ },
+ "--focus-halo": {
+  "raw": "color-mix(in oklab, #3A1D20 22%, transparent)",
+  "type": "colour",
+  "computed": "oklab(0.271644 0.0441914 0.0109681 / 0.22)",
+  "hex": "#3b1b2038"
+ },
+ "--focus-ring": {
+  "raw": "#3A1D20",
+  "type": "colour",
+  "computed": "rgb(58, 29, 32)",
+  "hex": "#3a1d20"
+ },
+ "--font-display": {
+  "raw": "\"Playfair Display\", Georgia, serif",
+  "type": "other",
+  "computed": "\"Playfair Display\", Georgia, serif"
+ },
+ "--font-ui": {
+  "raw": "Inter, -apple-system, \"Segoe UI\", sans-serif",
+  "type": "other",
+  "computed": "Inter, -apple-system, \"Segoe UI\", sans-serif"
+ },
+ "--fs-badge": {
+  "raw": "11.5px",
+  "type": "length",
+  "computed": "11.5px"
+ },
+ "--fs-band": {
+  "raw": "30px",
+  "type": "length",
+  "computed": "30px"
+ },
+ "--fs-body": {
+  "raw": "16px",
+  "type": "length",
+  "computed": "16px"
+ },
+ "--fs-fine": {
+  "raw": "13px",
+  "type": "length",
+  "computed": "13px"
+ },
+ "--fs-hero": {
+  "raw": "clamp(34px, 4vw, 54px)",
+  "type": "length",
+  "computed": "51.2px"
+ },
+ "--fs-lede": {
+  "raw": "18px",
+  "type": "length",
+  "computed": "18px"
+ },
+ "--fs-meta": {
+  "raw": "14px",
+  "type": "length",
+  "computed": "14px"
+ },
+ "--fs-section": {
+  "raw": "27px",
+  "type": "length",
+  "computed": "27px"
+ },
+ "--fs-ui": {
+  "raw": "15px",
+  "type": "length",
+  "computed": "15px"
+ },
+ "--fs-wordmark": {
+  "raw": "30px",
+  "type": "length",
+  "computed": "30px"
+ },
+ "--fw-bold": {
+  "raw": "700",
+  "type": "other",
+  "computed": "700"
+ },
+ "--fw-medium": {
+  "raw": "600",
+  "type": "other",
+  "computed": "600"
+ },
+ "--fw-regular": {
+  "raw": "400",
+  "type": "other",
+  "computed": "400"
+ },
+ "--g-core": {
+  "raw": "hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(240, 150, 15)",
+  "hex": "#f0960f"
+ },
+ "--g-deep": {
+  "raw": "hsl(calc(36 - 17)  calc((88 + 10) * 1%)  calc(27% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(126, 41, 1)",
+  "hex": "#7e2901"
+ },
+ "--g-hi": {
+  "raw": "hsl(calc(36 +  6)  calc((88 +  6) * 1%)  calc(82% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(252, 223, 156)",
+  "hex": "#fcdf9c"
+ },
+ "--g-light": {
+  "raw": "hsl(calc(36 +  2)  calc( 88        * 1%)  calc(68% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(245, 189, 92)",
+  "hex": "#f5bd5c"
+ },
+ "--g-shadow": {
+  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(38% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(178, 83, 6)",
+  "hex": "#b25306"
+ },
+ "--g-vanilla": {
+  "raw": "hsl(calc(36 +  9)  calc((88 +  8) * 1%)  calc(93% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(254, 243, 210)",
+  "hex": "#fef3d2"
+ },
+ "--gh": {
+  "raw": "36",
+  "type": "other",
+  "computed": "36"
+ },
+ "--gl": {
+  "raw": "-2",
+  "type": "other",
+  "computed": "-2"
+ },
+ "--grid-gap": {
+  "raw": "clamp(1rem,     0.8735rem + 0.4706vw, 1.25rem)",
+  "type": "length",
+  "computed": "19.9997px"
+ },
+ "--gs": {
+  "raw": "88",
+  "type": "other",
+  "computed": "88"
+ },
+ "--gutter": {
+  "raw": "clamp(3rem,     2.6206rem + 1.4118vw, 3.75rem)",
+  "type": "length",
+  "computed": "60px"
+ },
+ "--hairline": {
+  "raw": "#D4D4DD",
+  "type": "colour",
+  "computed": "rgb(212, 212, 221)",
+  "hex": "#d4d4dd"
+ },
+ "--icon-bow": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E\")"
+ },
+ "--icon-cart": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='9.5' cy='20' r='1.4'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 3.5h2.4l2.3 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.55L20.5 7H6'/%3E%3Ccircle cx='9.5' cy='20' r='1.4'/%3E%3Ccircle cx='17.5' cy='20' r='1.4'/%3E%3C/svg%3E\")"
+ },
+ "--icon-cart-body": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 2.6h2.6l2.4 10.8a1.9 1.9 0 0 0 1.9 1.5h8.1a1.9 1.9 0 0 0 1.85-1.45L20.4 6H6'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 2.6h2.6l2.4 10.8a1.9 1.9 0 0 0 1.9 1.5h8.1a1.9 1.9 0 0 0 1.85-1.45L20.4 6H6'/%3E%3C/svg%3E\")"
+ },
+ "--icon-check": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.5l5 5 10-11'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.5l5 5 10-11'/%3E%3C/svg%3E\")"
+ },
+ "--icon-chevron-down": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E\")"
+ },
+ "--icon-chevron-right": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E\")"
+ },
+ "--icon-close": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E\")"
+ },
+ "--icon-download": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5v11M7.5 10l4.5 4.5L16.5 10M4.5 19.5h15'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5v11M7.5 10l4.5 4.5L16.5 10M4.5 19.5h15'/%3E%3C/svg%3E\")"
+ },
+ "--icon-error": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8.5 8.5l7 7M15.5 8.5l-7 7'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8.5 8.5l7 7M15.5 8.5l-7 7'/%3E%3C/svg%3E\")"
+ },
+ "--icon-heart": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 20.3l-7.3-7A4.6 4.6 0 1 1 12 7.1a4.6 4.6 0 1 1 7.3 6.2z'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 20.3l-7.3-7A4.6 4.6 0 1 1 12 7.1a4.6 4.6 0 1 1 7.3 6.2z'/%3E%3C/svg%3E\")"
+ },
+ "--icon-heart-fill": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 20.8l-7.6-7.3A4.85 4.85 0 1 1 12 6.9a4.85 4.85 0 1 1 7.6 6.6z'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 20.8l-7.6-7.3A4.85 4.85 0 1 1 12 6.9a4.85 4.85 0 1 1 7.6 6.6z'/%3E%3C/svg%3E\")"
+ },
+ "--icon-info": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6'/%3E%3Ccircle cx='12' cy='7.4' r='1.15' fill='%23000' stroke='none'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v6'/%3E%3Ccircle cx='12' cy='7.4' r='1.15' fill='%23000' stroke='none'/%3E%3C/svg%3E\")"
+ },
+ "--icon-lens": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E\")"
+ },
+ "--icon-mail": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='5' width='19' height='14' rx='2.5'/%3E%3Cpath d='M3.5 7l8.5 6 8.5-6'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='5' width='19' height='14' rx='2.5'/%3E%3Cpath d='M3.5 7l8.5 6 8.5-6'/%3E%3C/svg%3E\")"
+ },
+ "--icon-menu": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E\")"
+ },
+ "--icon-minus": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E\")"
+ },
+ "--icon-person": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E\")"
+ },
+ "--icon-phone": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 3.5h-2A2.5 2.5 0 0 0 3 6.2C3 14 10 21 17.8 21a2.5 2.5 0 0 0 2.7-2.5v-2l-4.5-1.6-2 2.3a15 15 0 0 1-5.2-5.2l2.3-2z'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 3.5h-2A2.5 2.5 0 0 0 3 6.2C3 14 10 21 17.8 21a2.5 2.5 0 0 0 2.7-2.5v-2l-4.5-1.6-2 2.3a15 15 0 0 1-5.2-5.2l2.3-2z'/%3E%3C/svg%3E\")"
+ },
+ "--icon-plus": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E\")"
+ },
+ "--icon-return": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5h11a5.5 5.5 0 1 1 0 11H8'/%3E%3Cpath d='M7 4.5l-3.5 4L7 12.5'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5h11a5.5 5.5 0 1 1 0 11H8'/%3E%3Cpath d='M7 4.5l-3.5 4L7 12.5'/%3E%3C/svg%3E\")"
+ },
+ "--icon-search": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E\")"
+ },
+ "--icon-shield": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.6l8 3v6c0 5-3.4 8.7-8 9.8-4.6-1.1-8-4.8-8-9.8v-6z'/%3E%3Cpath d='M8.5 12l2.5 2.5 4.5-5'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.6l8 3v6c0 5-3.4 8.7-8 9.8-4.6-1.1-8-4.8-8-9.8v-6z'/%3E%3Cpath d='M8.5 12l2.5 2.5 4.5-5'/%3E%3C/svg%3E\")"
+ },
+ "--icon-spinner": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 3a9 9 0 1 1-6.4 2.65'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 3a9 9 0 1 1-6.4 2.65'/%3E%3C/svg%3E\")"
+ },
+ "--icon-star": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.6l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.9l7.1-.7z'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.6l2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.9l7.1-.7z'/%3E%3C/svg%3E\")"
+ },
+ "--icon-star-4": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.5c.7 5.3 4.7 9.3 10 10-5.3.7-9.3 4.7-10 10-.7-5.3-4.7-9.3-10-10 5.3-.7 9.3-4.7 10-10z'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 1.5c.7 5.3 4.7 9.3 10 10-5.3.7-9.3 4.7-10 10-.7-5.3-4.7-9.3-10-10 5.3-.7 9.3-4.7 10-10z'/%3E%3C/svg%3E\")"
+ },
+ "--icon-truck": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 6.5h12v9h-12z'/%3E%3Cpath d='M13.8 9.5h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='1.7'/%3E%3Ccircle cx='17' cy='18' r='1.7'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 6.5h12v9h-12z'/%3E%3Cpath d='M13.8 9.5h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='1.7'/%3E%3Ccircle cx='17' cy='18' r='1.7'/%3E%3C/svg%3E\")"
+ },
+ "--icon-user": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4.5 20.5a7.5 7.5 0 0 1 15 0'/%3E%3C/svg%3E\")"
+ },
+ "--icon-warning": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2L22 20H2z'/%3E%3Cpath d='M12 9.5v5'/%3E%3Ccircle cx='12' cy='17.4' r='1.1' fill='%23000' stroke='none'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2L22 20H2z'/%3E%3Cpath d='M12 9.5v5'/%3E%3Ccircle cx='12' cy='17.4' r='1.1' fill='%23000' stroke='none'/%3E%3C/svg%3E\")"
+ },
+ "--icon-wheel": {
+  "raw": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 4.5v15M4.9 8.2l14.2 7.6M4.9 15.8l14.2-7.6'/%3E%3C/svg%3E\")",
+  "type": "other",
+  "computed": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 4.5v15M4.9 8.2l14.2 7.6M4.9 15.8l14.2-7.6'/%3E%3C/svg%3E\")"
+ },
+ "--ink": {
+  "raw": "#3A1D20",
+  "type": "colour",
+  "computed": "rgb(58, 29, 32)",
+  "hex": "#3a1d20"
+ },
+ "--ink-on-dark": {
+  "raw": "#FFF6E9",
+  "type": "colour",
+  "computed": "rgb(255, 246, 233)",
+  "hex": "#fff6e9"
+ },
+ "--ink-placeholder": {
+  "raw": "#8A7076",
+  "type": "colour",
+  "computed": "rgb(138, 112, 118)",
+  "hex": "#8a7076"
+ },
+ "--ink-quiet": {
+  "raw": "#7A5B60",
+  "type": "colour",
+  "computed": "rgb(122, 91, 96)",
+  "hex": "#7a5b60"
+ },
+ "--inline": {
+  "raw": "clamp(0.5rem,   0.4368rem + 0.2353vw, 0.625rem)",
+  "type": "length",
+  "computed": "10px"
+ },
+ "--lh-body": {
+  "raw": "1.6",
+  "type": "other",
+  "computed": "1.6"
+ },
+ "--lh-flush": {
+  "raw": "1",
+  "type": "other",
+  "computed": "1"
+ },
+ "--lh-heading": {
+  "raw": "1.2",
+  "type": "other",
+  "computed": "1.2"
+ },
+ "--lh-hero": {
+  "raw": "1.08",
+  "type": "other",
+  "computed": "1.08"
+ },
+ "--lh-title": {
+  "raw": "1.35",
+  "type": "other",
+  "computed": "1.35"
+ },
+ "--measure-hero": {
+  "raw": "660px",
+  "type": "length",
+  "computed": "660px"
+ },
+ "--measure-lede": {
+  "raw": "44ch",
+  "type": "length",
+  "computed": "379.5px"
+ },
+ "--money-path": {
+  "raw": "",
+  "type": "other",
+  "computed": ""
+ },
+ "--notice-error-edge": {
+  "raw": "#9E1B32",
+  "type": "colour",
+  "computed": "rgb(158, 27, 50)",
+  "hex": "#9e1b32"
+ },
+ "--notice-info-edge": {
+  "raw": "#7A5B60",
+  "type": "colour",
+  "computed": "rgb(122, 91, 96)",
+  "hex": "#7a5b60"
+ },
+ "--notice-success-edge": {
+  "raw": "hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(240, 150, 15)",
+  "hex": "#f0960f"
+ },
+ "--notice-warning-edge": {
+  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(38% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(178, 83, 6)",
+  "hex": "#b25306"
+ },
+ "--page-max": {
+  "raw": "1120px",
+  "type": "length",
+  "computed": "1120px"
+ },
+ "--placeholder-category": {
+  "raw": "linear-gradient(160deg, #CFC7C0, #A89A92)",
+  "type": "other",
+  "computed": "linear-gradient(160deg, #CFC7C0, #A89A92)"
+ },
+ "--placeholder-product": {
+  "raw": "radial-gradient(64% 54% at 50% 12%,\n\t\t\tcolor-mix(in oklab, hsl(calc(36 +  9)  calc((88 +  8) * 1%)  calc(93% + -2 * 1%)) 34%, #FFF) 0%, transparent 68%),\n\t\tlinear-gradient(180deg,\n\t\t\tcolor-mix(in oklab, hsl(calc(36 +  2)  calc( 88        * 1%)  calc(68% + -2 * 1%)) 20%, #F1F1F6) 0%,\n\t\t\tcolor-mix(in oklab, hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%)) 30%, #D4D4DD) 100%)",
+  "type": "other",
+  "computed": "radial-gradient(64% 54% at 50% 12%,\n\t\t\tcolor-mix(in oklab, hsl(calc(36 +  9)  calc((88 +  8) * 1%)  calc(93% + -2 * 1%)) 34%, #FFF) 0%, transparent 68%),\n\t\tlinear-gradient(180deg,\n\t\t\tcolor-mix(in oklab, hsl(calc(36 +  2)  calc( 88        * 1%)  calc(68% + -2 * 1%)) 20%, #F1F1F6) 0%,\n\t\t\tcolor-mix(in oklab, hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%)) 30%, #D4D4DD) 100%)"
+ },
+ "--price": {
+  "raw": "#B01F30",
+  "type": "colour",
+  "computed": "rgb(176, 31, 48)",
+  "hex": "#b01f30"
+ },
+ "--radius-circle": {
+  "raw": "50%",
+  "type": "length",
+  "computed": "50%"
+ },
+ "--radius-l": {
+  "raw": "16px",
+  "type": "length",
+  "computed": "16px"
+ },
+ "--radius-m": {
+  "raw": "14px",
+  "type": "length",
+  "computed": "14px"
+ },
+ "--radius-pill": {
+  "raw": "999px",
+  "type": "length",
+  "computed": "999px"
+ },
+ "--radius-rule": {
+  "raw": "3px",
+  "type": "length",
+  "computed": "3px"
+ },
+ "--radius-s": {
+  "raw": "10px",
+  "type": "length",
+  "computed": "10px"
+ },
+ "--radius-xs": {
+  "raw": "3px",
+  "type": "length",
+  "computed": "3px"
+ },
+ "--scrim": {
+  "raw": "rgb(58 29 32 / .72)",
+  "type": "colour",
+  "computed": "rgba(58, 29, 32, 0.72)",
+  "hex": "#3a1d20b8"
+ },
+ "--section-y": {
+  "raw": "clamp(3rem,     2.6206rem + 1.4118vw, 3.75rem)",
+  "type": "length",
+  "computed": "60px"
+ },
+ "--shadow-card": {
+  "raw": "0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -8px rgb(0 0 0 / .13)",
+  "type": "other",
+  "computed": "0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -8px rgb(0 0 0 / .13)"
+ },
+ "--shadow-card-hover": {
+  "raw": "0 2px 4px rgb(0 0 0 / .06), 0 18px 38px -10px rgb(0 0 0 / .20)",
+  "type": "other",
+  "computed": "0 2px 4px rgb(0 0 0 / .06), 0 18px 38px -10px rgb(0 0 0 / .20)"
+ },
+ "--space-2xl": {
+  "raw": "clamp(4rem,     3.4941rem + 1.8824vw, 5rem)",
+  "type": "length",
+  "computed": "80px"
+ },
+ "--space-2xs": {
+  "raw": "clamp(0.5rem,   0.4368rem + 0.2353vw, 0.625rem)",
+  "type": "length",
+  "computed": "10px"
+ },
+ "--space-3xl": {
+  "raw": "clamp(6rem,     5.2412rem + 2.8235vw, 7.5rem)",
+  "type": "length",
+  "computed": "120px"
+ },
+ "--space-3xs": {
+  "raw": "clamp(0.25rem,  0.2184rem + 0.1176vw, 0.3125rem)",
+  "type": "length",
+  "computed": "4.99968px"
+ },
+ "--space-l": {
+  "raw": "clamp(2rem,     1.7471rem + 0.9412vw, 2.5rem)",
+  "type": "length",
+  "computed": "40px"
+ },
+ "--space-m": {
+  "raw": "clamp(1.5rem,   1.3103rem + 0.7059vw, 1.875rem)",
+  "type": "length",
+  "computed": "30px"
+ },
+ "--space-s": {
+  "raw": "clamp(1rem,     0.8735rem + 0.4706vw, 1.25rem)",
+  "type": "length",
+  "computed": "19.9997px"
+ },
+ "--space-xl": {
+  "raw": "clamp(3rem,     2.6206rem + 1.4118vw, 3.75rem)",
+  "type": "length",
+  "computed": "60px"
+ },
+ "--space-xs": {
+  "raw": "clamp(0.75rem,  0.6551rem + 0.3529vw, 0.9375rem)",
+  "type": "length",
+  "computed": "14.9987px"
+ },
+ "--stack": {
+  "raw": "clamp(1.5rem,   1.3103rem + 0.7059vw, 1.875rem)",
+  "type": "length",
+  "computed": "30px"
+ },
+ "--stack-tight": {
+  "raw": "clamp(0.5rem,   0.4368rem + 0.2353vw, 0.625rem)",
+  "type": "length",
+  "computed": "10px"
+ },
+ "--star-life-max": {
+  "raw": "11s",
+  "type": "other",
+  "computed": "11s"
+ },
+ "--star-life-min": {
+  "raw": "1.6s",
+  "type": "other",
+  "computed": "1.6s"
+ },
+ "--surface-band": {
+  "raw": "#9E1B32",
+  "type": "colour",
+  "computed": "rgb(158, 27, 50)",
+  "hex": "#9e1b32"
+ },
+ "--surface-page": {
+  "raw": "#E6E6EC",
+  "type": "colour",
+  "computed": "rgb(230, 230, 236)",
+  "hex": "#e6e6ec"
+ },
+ "--surface-quiet": {
+  "raw": "#DEDEE6",
+  "type": "colour",
+  "computed": "rgb(222, 222, 230)",
+  "hex": "#dedee6"
+ },
+ "--surface-raised": {
+  "raw": "#F1F1F6",
+  "type": "colour",
+  "computed": "rgb(241, 241, 246)",
+  "hex": "#f1f1f6"
+ },
+ "--tint-cherry": {
+  "raw": "color-mix(in oklab, #D42A3C 15%, #F1F1F6)",
+  "type": "colour",
+  "computed": "oklab(0.900798 0.0299555 0.00592834)",
+  "hex": "#f2d6d9"
+ },
+ "--tint-cherry-edge": {
+  "raw": "color-mix(in oklab, #D42A3C 52%, #F1F1F6)",
+  "type": "colour",
+  "computed": "oklab(0.755845 0.0991395 0.0362563)",
+  "hex": "#eb9494"
+ },
+ "--tint-cherry-mark": {
+  "raw": "#B01F30",
+  "type": "colour",
+  "computed": "rgb(176, 31, 48)",
+  "hex": "#b01f30"
+ },
+ "--tint-cherry-quiet": {
+  "raw": "color-mix(in oklab, #D42A3C 27%, #F1F1F6)",
+  "type": "colour",
+  "computed": "oklab(0.853786 0.0523935 0.0157645)",
+  "hex": "#f1c1c2"
+ },
+ "--tint-gold": {
+  "raw": "color-mix(in oklab, hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%)) 24%, #F1F1F6)",
+  "type": "colour",
+  "computed": "oklab(0.908802 0.0164492 0.0310772)",
+  "hex": "#f3dcca"
+ },
+ "--tint-gold-edge": {
+  "raw": "color-mix(in oklab, hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%)) 66%, #F1F1F6)",
+  "type": "colour",
+  "computed": "oklab(0.81997 0.0418965 0.0966041)",
+  "hex": "#f3b778"
+ },
+ "--tint-gold-mark": {
+  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(38% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(178, 83, 6)",
+  "hex": "#b25306"
+ },
+ "--tint-gold-quiet": {
+  "raw": "color-mix(in oklab, hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%)) 40%, #F1F1F6)",
+  "type": "colour",
+  "computed": "oklab(0.874961 0.0261434 0.0560398)",
+  "hex": "#f3ceac"
+ },
+ "--tint-grey": {
+  "raw": "#F1F1F6",
+  "type": "colour",
+  "computed": "rgb(241, 241, 246)",
+  "hex": "#f1f1f6"
+ },
+ "--tint-grey-edge": {
+  "raw": "#C2C2CD",
+  "type": "colour",
+  "computed": "rgb(194, 194, 205)",
+  "hex": "#c2c2cd"
+ },
+ "--tint-grey-mark": {
+  "raw": "#7A5B60",
+  "type": "colour",
+  "computed": "rgb(122, 91, 96)",
+  "hex": "#7a5b60"
+ },
+ "--tint-grey-quiet": {
+  "raw": "#DEDEE6",
+  "type": "colour",
+  "computed": "rgb(222, 222, 230)",
+  "hex": "#dedee6"
+ },
+ "--trail-cherry": {
+  "raw": "color-mix(in oklab, #D42A3C 62%, #FFFFFF)",
+  "type": "colour",
+  "computed": "oklab(0.732032 0.11713 0.0468801)",
+  "hex": "#ed8684"
+ },
+ "--trail-gold": {
+  "raw": "hsl(calc(36 +  2)  calc( 88        * 1%)  calc(68% + -2 * 1%))",
+  "type": "colour",
+  "computed": "rgb(245, 189, 92)",
+  "hex": "#f5bd5c"
+ },
+ "--type-band": {
+  "raw": "700 30px/1.2 \"Playfair Display\", Georgia, serif",
+  "type": "other",
+  "computed": "700 30px/1.2 \"Playfair Display\", Georgia, serif"
+ },
+ "--type-body": {
+  "raw": "400 16px/1.6 Inter, -apple-system, \"Segoe UI\", sans-serif",
+  "type": "other",
+  "computed": "400 16px/1.6 Inter, -apple-system, \"Segoe UI\", sans-serif"
+ },
+ "--type-hero": {
+  "raw": "700 clamp(34px, 4vw, 54px)/1.08 \"Playfair Display\", Georgia, serif",
+  "type": "other",
+  "computed": "700 clamp(34px, 4vw, 54px)/1.08 \"Playfair Display\", Georgia, serif"
+ },
+ "--type-lede": {
+  "raw": "400 18px/1.6 Inter, -apple-system, \"Segoe UI\", sans-serif",
+  "type": "other",
+  "computed": "400 18px/1.6 Inter, -apple-system, \"Segoe UI\", sans-serif"
+ },
+ "--type-section": {
+  "raw": "700 27px/1.2 \"Playfair Display\", Georgia, serif",
+  "type": "other",
+  "computed": "700 27px/1.2 \"Playfair Display\", Georgia, serif"
+ },
+ "--type-ui": {
+  "raw": "600 15px/1 Inter, -apple-system, \"Segoe UI\", sans-serif",
+  "type": "other",
+  "computed": "600 15px/1 Inter, -apple-system, \"Segoe UI\", sans-serif"
+ },
+ "--type-wordmark": {
+  "raw": "700 30px/1 \"Playfair Display\", Georgia, serif",
+  "type": "other",
+  "computed": "700 30px/1 \"Playfair Display\", Georgia, serif"
+ }
+}

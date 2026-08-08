@@ -109,6 +109,55 @@
 		});
 	}
 
+	/* 4. THE EVENT MARKS. The icons only move when something happens, so
+	      something has to tell them. WooCommerce already announces both of
+	      these; we translate the announcement into an attribute the stylesheet
+	      can see, and take it away again so the animation can re-fire.
+
+	      This is the whole reason .d-icon--cart's wheels are event-driven
+	      rather than idle: an interface where six small things move at once is
+	      not lively, it is noisy. */
+	function bump(el, attr, ms) {
+		if (!el) return;
+		el.removeAttribute(attr);
+		void el.offsetWidth;          /* forces a reflow so the animation restarts */
+		el.setAttribute(attr, '');
+		setTimeout(function () { el.removeAttribute(attr); }, ms);
+	}
+
+	function cartEvents() {
+		var fire = function () {
+			document.querySelectorAll('.d-icon-btn:has(.d-icon--cart), [data-cart-button]')
+				.forEach(function (b) { bump(b, 'data-added', 900); });
+		};
+		/* classic AJAX add-to-cart */
+		document.body.addEventListener('added_to_cart', fire);
+		/* the block store */
+		document.body.addEventListener('wc-blocks_added_to_cart', fire);
+		/* and our own, for anything that is neither */
+		document.body.addEventListener('darling:added', fire);
+		if (window.jQuery) window.jQuery(document.body).on('added_to_cart', fire);
+	}
+
+	/* 5. THE FREE-SHIPPING BAR. --pr is a number 0..1 and data-reached is the
+	      threshold being crossed - which is also what starts the truck. Reads
+	      the numbers off data attributes so the same component works in the
+	      drawer, on the cart page and in a banner. */
+	function progress(el) {
+		var goal = parseFloat(el.dataset.goal);
+		var now = parseFloat(el.dataset.value);
+		if (isNaN(goal) || isNaN(now) || goal <= 0) return;
+		var t = Math.max(0, Math.min(1, now / goal));
+		el.style.setProperty('--pr', t);
+		var was = el.hasAttribute('data-reached');
+		if (t >= 1) {
+			if (!was) bump(el, 'data-reached', 4000);
+			el.setAttribute('data-reached', '');
+		} else {
+			el.removeAttribute('data-reached');
+		}
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -116,7 +165,10 @@
 		(root || document).querySelectorAll('.d-scrollframe').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; scroller(el); }
 		});
+		(root || document).querySelectorAll('.d-progress[data-goal]').forEach(progress);
 	}
+
+	cartEvents();
 
 	if (document.readyState === 'loading')
 		document.addEventListener('DOMContentLoaded', function () { init(); });

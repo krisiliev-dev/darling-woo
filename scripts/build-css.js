@@ -57,3 +57,28 @@ require('./check-tokens.js');
 // stylesheet can never drift apart.
 require('./gen-theme-json.js');
 
+/* *** EVERY NON-CSS CONSUMER IS GENERATED FROM THE SAME src/, OR IT DRIFTS. ***
+   theme.json was the first. The Stripe appearance object is the second, and it
+   is the one that matters most: the card fields are in a cross-origin iframe,
+   so they are the only surface on the checkout that cannot read a token. Hand
+   written, they go stale silently - every field moves when --edge-field changes
+   except the three that take the money.
+
+   resolve-tokens needs a real browser (color-mix in oklab is not something to
+   reimplement in node), so it is async and the generator runs after it. If
+   playwright is not installed the build still succeeds and says what it skipped
+   rather than failing a CSS build over a downstream artefact. */
+(async () => {
+  try {
+    require.resolve('playwright');
+  } catch (e) {
+    console.log('  (playwright absent - skipped resolve-tokens + gen-stripe-appearance)');
+    return;
+  }
+  const { execFileSync } = require('child_process');
+  const path = require('path');
+  for (const s of ['resolve-tokens.js', 'gen-stripe-appearance.js']) {
+    execFileSync(process.execPath, [path.join(__dirname, s)], { stdio: 'inherit' });
+  }
+})();
+

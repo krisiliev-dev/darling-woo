@@ -1,0 +1,154 @@
+/* =============================================================================
+   PATTERN / PROGRESS
+   How far you are, and how far is left.
+
+   Written because the cart drawer needs "???????? ?????? 12,60 ????. ???? ??????????????????
+   ????????????????, darling" and there was nothing to build it out of - the old
+   .darling-shipbar was one bespoke bar with its own colours, its own track and
+   its own animation, usable nowhere else.
+
+   *** IT IS A <progress> WHERE IT CAN BE, AND ROLE=progressbar WHERE IT CANNOT.
+   A bar that is only a div with a width is invisible to a screen reader: the
+   person told "free shipping over 77" has no way to hear how close they are.
+   Both markups are styled here, and both carry the number.
+
+   *** THE SHEEN STOPS WHERE THE FILL STOPS. ***
+   It is clipped to the filled part, not run across the whole track. A shine
+   travelling over the empty portion says the empty portion is doing something,
+   which is the opposite of what the bar is for. When the bar completes, the
+   sheen goes gold and slows down - it stops being progress and becomes a small
+   reward, and then it stops entirely after three passes rather than shining
+   forever at somebody trying to check out.
+   ========================================================================== */
+
+.d-progress{
+	--pr-track: var(--tint-grey-quiet);
+	--pr-fill:  var(--c-cocoa);
+	--pr-sheen: var(--g-hi);
+	--pr-h: .55rem;
+	--pr: 0;                    /* 0..1, set inline or by the shim */
+
+	display:grid;
+	gap:var(--space-3xs);
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.d-progress--cherry{
+	--pr-track: var(--tint-cherry-quiet);
+	--pr-fill:  var(--c-cherry-deep);
+	--pr-sheen: var(--g-hi);
+}
+.d-progress--gold{
+	--pr-track: var(--tint-gold-quiet);
+	--pr-fill:  var(--tint-gold-mark);
+	--pr-sheen: var(--c-cream);
+}
+
+/* *** NOT A FLEX ROW. *** As flex, every word-level element in the sentence
+   became a flex ITEM - so the amount in <b> was a box of its own and the line
+   broke into three: "???????? ??????" / "12,70 ????." / "???? ?????????????????? ????????????????". A
+   sentence is text, and the icon rides in it as text. */
+.d-progress__label{
+	display:block;
+	margin:0;
+	font-size:var(--fs-meta);
+	line-height:var(--lh-title);
+	text-wrap:pretty;
+}
+.d-progress__label b{
+	color:var(--price);
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.d-progress__label .d-icon{
+	color:var(--ink-quiet);
+	margin-inline-end:.4em;
+	vertical-align:-.15em;
+}
+
+.d-progress__track{
+	position:relative;
+	overflow:hidden;
+	height:var(--pr-h);
+	border-radius:var(--radius-pill);
+	background:var(--pr-track);
+}
+.d-progress__bar{
+	position:absolute;
+	inset-block:0;
+	inset-inline-start:0;
+	width:calc(var(--pr) * 100%);
+	border-radius:var(--radius-pill);
+	background:var(--pr-fill);
+	transition:width 520ms var(--ease-float);
+}
+/* The sheen. Inside the bar, so it is clipped to the fill by construction and
+   cannot travel over the empty part. */
+.d-progress__bar::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	border-radius:inherit;
+	background:linear-gradient(100deg,
+		transparent 30%,
+		color-mix(in oklab, var(--pr-sheen) 55%, transparent) 46%,
+		color-mix(in oklab, var(--pr-sheen) 90%, transparent) 50%,
+		color-mix(in oklab, var(--pr-sheen) 55%, transparent) 54%,
+		transparent 70%);
+	animation:d-progress-sheen 3.6s var(--ease-float) infinite;
+}
+@keyframes d-progress-sheen{
+	0%      { translate:-110% 0 }
+	55%,100%{ translate:110% 0 }
+}
+
+/* -- reached ----------------------------------------------------------------
+   Gold, and the shine runs three times and then stops. A bar that keeps
+   celebrating at somebody who is trying to pay is a distraction, not a reward. */
+.d-progress[data-reached] .d-progress__bar{ background:var(--g-core) }
+.d-progress[data-reached] .d-progress__bar::after{
+	--pr-sheen: var(--c-cream);
+	animation:d-progress-sheen 1.9s var(--ease-float) 3;
+}
+.d-progress[data-reached] .d-progress__label{ color:var(--ink) }
+.d-progress[data-reached] .d-progress__label .d-icon{ color:var(--g-shadow) }
+
+/* -- the native element, styled to match -------------------------------------
+   <progress> is the accessible default and it has its own two-pseudo model per
+   engine. It gets the track and the fill; it does NOT get the sheen, because
+   ::-webkit-progress-value cannot own a pseudo-element of its own. That is a
+   real limitation and the reason the div version exists at all. */
+.d-progress__native{
+	appearance:none;
+	-webkit-appearance:none;
+	display:block;
+	width:100%;
+	height:var(--pr-h);
+	border:0;
+	border-radius:var(--radius-pill);
+	background:var(--pr-track);
+	overflow:hidden;
+}
+.d-progress__native::-webkit-progress-bar{
+	background:var(--pr-track);
+	border-radius:var(--radius-pill);
+}
+.d-progress__native::-webkit-progress-value{
+	background:var(--pr-fill);
+	border-radius:var(--radius-pill);
+	transition:inline-size 520ms var(--ease-float);
+}
+.d-progress__native::-moz-progress-bar{
+	background:var(--pr-fill);
+	border-radius:var(--radius-pill);
+}
+
+/* -- the money path and reduced motion ---------------------------------------
+   motion.css already kills animations on cart, checkout and order-received -
+   and the free-shipping bar lives on exactly those pages, so the sheen is off
+   where the bar is most used. That is the correct trade: the BAR still works,
+   the shine is what goes. */
+@media (prefers-reduced-motion: reduce){
+	.d-progress__bar{ transition:none }
+	.d-progress__bar::after{ display:none }
+}

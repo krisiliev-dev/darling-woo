@@ -67,4 +67,21 @@
 	--icon-truck: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 6.5h12v9h-12z'/%3E%3Cpath d='M13.8 9.5h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='1.7'/%3E%3Ccircle cx='17' cy='18' r='1.7'/%3E%3C/svg%3E");
 	--icon-return: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5h11a5.5 5.5 0 1 1 0 11H8'/%3E%3Cpath d='M7 4.5l-3.5 4L7 12.5'/%3E%3C/svg%3E");
 	--icon-shield: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.6l8 3v6c0 5-3.4 8.7-8 9.8-4.6-1.1-8-4.8-8-9.8v-6z'/%3E%3Cpath d='M8.5 12l2.5 2.5 4.5-5'/%3E%3C/svg%3E");
-}
+
+	/* -- parts, for the marks that move ---------------------------------------
+	   *** A MASK IS ONE SILHOUETTE. *** It cannot have a spinning wheel in it,
+	   because there is no way to transform part of an image. So the marks that
+	   animate are split: the still part is the element's own mask and each
+	   moving part is a pseudo-element with a mask of its own and its own
+	   transform-origin. Two pseudo-elements is the budget, which is exactly two
+	   wheels, or one bow, or one lens flare - and that limit is the reason the
+	   trail on an added-to-cart lives on the BUTTON rather than on the icon. */
+	--icon-cart-body: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.8 2.6h2.6l2.4 10.8a1.9 1.9 0 0 0 1.9 1.5h8.1a1.9 1.9 0 0 0 1.85-1.45L20.4 6H6'/%3E%3C/svg%3E");
+	--icon-wheel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 4.5v15M4.9 8.2l14.2 7.6M4.9 15.8l14.2-7.6'/%3E%3C/svg%3E");
+	/* The bow. Small, symmetric, and the same shape as the big brand bow so the
+	   two read as one mark at two sizes. */
+	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M11 12c-1.7-2.9-4.6-5-7.5-5-1.9 0-3.4 1.5-3.4 3.4S1.6 13.8 3.5 13.8c2.9 0 5.8-1.6 7.5-1.8z' transform='translate(0.6 0)'/%3E%3Cpath fill='%23000' d='M13 12c1.7-2.9 4.6-5 7.5-5 1.9 0 3.4 1.5 3.4 3.4s-1.5 3.4-3.4 3.4c-2.9 0-5.8-1.6-7.5-1.8z' transform='translate(-0.6 0)'/%3E%3Ccircle fill='%23000' cx='12' cy='11.4' r='2.1'/%3E%3Cpath fill='%23000' d='M10.4 14.2L8.6 21l3.4-2.3 3.4 2.3-1.8-6.8z' opacity='.9'/%3E%3C/svg%3E");
+	/* The lens on its own, so the search mark can hold something inside it. */
+	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
+	--icon-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='7.6' r='3.8'/%3E%3Cpath d='M4.8 20.6a7.2 7.2 0 0 1 14.4 0'/%3E%3C/svg%3E");
+	--icon-heart-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 20.8l-7.6-7.3A4.85 4.85 0 1 1 12 6.9a4.85 4.85 0 1 1 7.6 6.6z'/%3E%3C/svg%3E");}

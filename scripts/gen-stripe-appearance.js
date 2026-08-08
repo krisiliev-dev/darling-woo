@@ -1,0 +1,151 @@
+/* =============================================================================
+   gen-stripe-appearance.js
+   src/ -> the Stripe Elements `appearance` object.
+
+   *** WHY THIS IS A GENERATOR AND NOT A STYLESHEET. ***
+   The card number, expiry and CVC live in a CROSS-ORIGIN IFRAME. No stylesheet
+   we write reaches inside it - not adopted/, not !important, nothing. Stripe's
+   only styling surface is a JSON object handed to elements() in JavaScript, and
+   it accepts a small fixed set of `variables` plus per-selector `rules` written
+   in a CSS SUBSET: no custom properties, no color-mix, no oklab, no logical
+   properties, no pseudo-elements beyond ::placeholder.
+
+   So the payment fields are the one place in the system that cannot consume a
+   token. Hand-writing hex there means the day --edge-field changes, every field
+   on the checkout moves except the three that take the money - and nobody
+   notices until a customer says the form "looks broken".
+
+   This closes that: tokens.resolved.json in, appearance object out, one command.
+
+   Reads:  theme/darling/tokens.resolved.json   (resolve-tokens.js)
+   Writes: theme/darling/assets/stripe-appearance.js
+   ========================================================================== */
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const IN = path.join(ROOT, 'theme', 'darling', 'tokens.resolved.json');
+const OUT = path.join(ROOT, 'theme', 'darling', 'assets', 'stripe-appearance.js');
+
+if (!fs.existsSync(IN)) {
+  console.error('gen-stripe-appearance: run scripts/resolve-tokens.js first');
+  process.exit(1);
+}
+const T = JSON.parse(fs.readFileSync(IN, 'utf8'));
+
+const missing = [];
+function hex(name) {
+  const t = T[name];
+  if (!t || t.type !== 'colour' || !t.hex) { missing.push(name); return '#000000'; }
+  return t.hex;
+}
+function len(name, fallback) {
+  const t = T[name];
+  if (!t || t.type !== 'length') { if (fallback === undefined) missing.push(name); return fallback; }
+  return t.computed;
+}
+
+const appearance = {
+  theme: 'stripe',
+  /* Stripe's variables are a FIXED list - these are the ones it reads. Anything
+     not in this list has to be expressed as a rule below. */
+  variables: {
+    fontFamily: 'Inter, -apple-system, "Segoe UI", sans-serif',
+    fontSizeBase: len('--fs-meta', '14px'),
+    colorPrimary: hex('--focus-ring'),
+    colorBackground: hex('--surface-raised'),
+    colorText: hex('--ink'),
+    colorTextSecondary: hex('--ink-quiet'),
+    colorTextPlaceholder: hex('--ink-placeholder'),
+    colorDanger: hex('--c-claret'),
+    colorIcon: hex('--ink-quiet'),
+    borderRadius: len('--radius-s', '10px'),
+    spacingUnit: '4px',
+    spacingGridRow: len('--space-2xs', '10px'),
+  },
+  rules: {
+    '.Input': {
+      backgroundColor: hex('--surface-raised'),
+      border: '1px solid ' + hex('--edge-field'),
+      borderRadius: len('--radius-s', '10px'),
+      color: hex('--ink'),
+      padding: '14px 16px',
+      boxShadow: 'none',
+      transition: 'border-color .18s ease, box-shadow .18s ease',
+    },
+    /* *** FOCUS IS COCOA, NOT --action. *** Same finding as the rest of the
+       system: --action resolves to cherry, and a red ring on an untouched card
+       number reads as a declined card. */
+    '.Input:focus': {
+      border: '1px solid ' + hex('--focus-ring'),
+      boxShadow: '0 0 0 3px ' + hex('--focus-halo'),
+      outline: 'none',
+    },
+    '.Input--invalid': {
+      border: '1px solid ' + hex('--c-claret'),
+      color: hex('--ink'),
+      boxShadow: 'none',
+    },
+    '.Input--invalid:focus': {
+      border: '1px solid ' + hex('--c-claret'),
+      boxShadow: '0 0 0 3px ' + hex('--notice-error-edge') + '33',
+    },
+    '.Input::placeholder': { color: hex('--ink-placeholder') },
+    '.Label': {
+      color: hex('--ink'),
+      fontWeight: '600',
+      fontSize: len('--fs-meta', '14px'),
+      marginBottom: '6px',
+    },
+    '.Error': { color: hex('--c-claret'), fontSize: len('--fs-fine', '12px') },
+    '.Tab': {
+      backgroundColor: hex('--surface-raised'),
+      border: '1px solid ' + hex('--edge-field'),
+      borderRadius: len('--radius-m', '14px'),
+      color: hex('--ink'),
+    },
+    '.Tab:hover': { backgroundColor: hex('--tint-grey-quiet'), color: hex('--ink') },
+    '.Tab--selected': {
+      backgroundColor: hex('--tint-cherry'),
+      border: '1px solid ' + hex('--tint-cherry-edge'),
+      color: hex('--ink'),
+    },
+    '.TabIcon': { fill: hex('--ink-quiet') },
+    '.TabIcon--selected': { fill: hex('--c-cherry-deep') },
+    '.CheckboxInput': {
+      backgroundColor: hex('--surface-raised'),
+      borderColor: hex('--edge-field'),
+    },
+    '.CheckboxInput--checked': {
+      backgroundColor: hex('--c-cherry-deep'),
+      borderColor: hex('--c-cherry-deep'),
+    },
+  },
+};
+
+if (missing.length) {
+  console.error('gen-stripe-appearance: MISSING OR WRONG-TYPED TOKENS: ' + [...new Set(missing)].join(', '));
+  process.exit(1);
+}
+
+const banner = [
+  '/* GENERATED by scripts/gen-stripe-appearance.js - DO NOT EDIT.',
+  '   Source of truth is theme/darling/src/. Regenerate with:',
+  '     node scripts/resolve-tokens.js && node scripts/gen-stripe-appearance.js',
+  '',
+  '   The card fields are in a cross-origin iframe, so CSS cannot reach them;',
+  '   this object is the only styling surface Stripe exposes. Edit a token, not',
+  '   this file, or the payment fields will drift away from the checkout around',
+  '   them and nobody will notice until a customer says the form looks broken.',
+  '*/',
+  'window.darlingStripeAppearance = ' + JSON.stringify(appearance, null, 2) + ';',
+  '',
+].join('\n');
+
+fs.writeFileSync(OUT, banner);
+const nColours = new Set(Object.values(appearance.variables).filter(v => /^#/.test(v))).size;
+console.log('gen-stripe-appearance: %d variables, %d rule blocks, %d distinct colours',
+  Object.keys(appearance.variables).length, Object.keys(appearance.rules).length, nColours);
+console.log('  focus ring %s (cocoa, not --action)  field edge %s  surface %s',
+  appearance.variables.colorPrimary, hex('--edge-field'), appearance.variables.colorBackground);
+console.log('  written to ' + path.relative(ROOT, OUT));

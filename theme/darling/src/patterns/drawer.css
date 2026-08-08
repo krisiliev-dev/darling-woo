@@ -215,3 +215,136 @@
 		.d-drawer[open], .d-drawer--end[open]{ translate:none }
 	}
 }
+/* =============================================================================
+   DRAWER / THE DARLING TREATMENT
+   ========================================================================== */
+
+/* -- nav rows: stars fly in, orbit, and leave ---------------------------------
+   *** THE THREE PHASES ARE ONE ANIMATION, NOT THREE. ***
+   The brief was: fly in, circle the text easing while they do it, then fly out
+   fast. Three separate animations chained by delay would desync the moment two
+   rows are hovered in quick succession - the same failure the rating stars had
+   before the wave was moved onto page load. One keyframe track with the phases
+   at 0-18% / 18-72% / 72-100% cannot drift, because there is only one clock.
+
+   *** THE ORBIT IS A TWO-TRANSFORM TRICK. ***
+   rotate() spins a star about the row's centre; a counter-rotate on the star
+   itself keeps it upright while it travels. Without the second one the star
+   tumbles as it circles, which reads as debris rather than as a firefly.
+
+   Two pseudo-elements is two stars, and they run half a cycle apart so the row
+   always has one arriving and one leaving.
+   ========================================================================== */
+.d-drawer__nav li{ position:relative }
+.d-drawer__nav li::before,
+.d-drawer__nav li::after{
+	content:"";
+	position:absolute;
+	top:50%;
+	left:50%;
+	width:.5rem;
+	height:.5rem;
+	margin:-.25rem 0 0 -.25rem;
+	background:var(--g-hi);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	opacity:0;
+	pointer-events:none;
+}
+.d-drawer__nav li:hover::before,
+.d-drawer__nav li:focus-within::before{ animation:d-orbit 2.4s var(--ease-float) infinite }
+.d-drawer__nav li:hover::after,
+.d-drawer__nav li:focus-within::after{
+	animation:d-orbit 2.4s var(--ease-float) infinite 1.2s;
+	background:var(--c-cherry);
+}
+/* --orbit-r is in the keyframe rather than a token because it is the row's own
+   half-width plus a margin, and a row is as wide as the drawer. */
+@keyframes d-orbit{
+	0%   { opacity:0; rotate:0deg;   translate:0 0;      scale:.4 }
+	18%  { opacity:1; rotate:65deg;  translate:5.5rem 0; scale:1 }
+	72%  { opacity:1; rotate:295deg; translate:5.5rem 0; scale:1 }
+	88%  { opacity:0; rotate:340deg; translate:7.5rem 0; scale:.5 }
+	100% { opacity:0; rotate:360deg; translate:0 0;      scale:.4 }
+}
+@media (prefers-reduced-motion: reduce){
+	.d-drawer__nav li::before, .d-drawer__nav li::after{ display:none }
+}
+
+/* -- the cart list ------------------------------------------------------------
+   Rows were flush against each other and read as one block. They now have air,
+   a hairline between them, and a star for a bullet - a list of things somebody
+   chose should look chosen. */
+.d-drawer__list{
+	margin:0;
+	padding:var(--space-2xs) var(--space-s);
+	list-style:none;
+	display:grid;
+	gap:var(--space-2xs);
+}
+.d-drawer__line{
+	position:relative;
+	display:grid;
+	/* FOUR columns, not three: ::before is a grid ITEM, so the bullet occupies
+	   the first track and the remove button was wrapping onto a second row -
+	   which is exactly how it rendered. bullet | name | price | remove. */
+	grid-template-columns:auto 1fr auto auto;
+	align-items:start;
+	gap:var(--space-2xs);
+	padding:var(--space-2xs) 0;
+	font-size:var(--fs-meta);
+}
+.d-drawer__line + .d-drawer__line{ border-top:1px solid var(--hairline) }
+/* The bullet. A mark, not a disc and not a dingbat. */
+.d-drawer__line::before{
+	content:"";
+	width:.62rem;
+	height:.62rem;
+	margin-top:.34em;
+	background:var(--g-core);
+	mask-image:var(--icon-star-4);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-star-4);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	flex:none;
+}
+.d-drawer__line:hover::before{ animation:d-twinkle 1.6s var(--ease-float) infinite }
+.d-drawer__line__name{ color:var(--ink); line-height:var(--lh-title) }
+.d-drawer__line__meta{
+	display:block;
+	margin-top:.15em;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-drawer__line__price{
+	color:var(--price);
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.d-drawer__line__rm{
+	justify-self:end;
+	margin-top:.2em;
+	width:1.9rem;
+	height:1.9rem;
+	display:grid;
+	place-items:center;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--ink-quiet);
+	cursor:pointer;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.d-drawer__line__rm:hover{ color:var(--c-claret); background:var(--tint-gold) }
+.d-drawer__line__rm .d-icon{ width:.85rem; height:.85rem }
+
+/* The free-shipping bar sits between the list and the totals, where it answers
+   the question the totals are about to raise. */
+.d-drawer__foot .d-progress{ margin-bottom:var(--space-3xs) }

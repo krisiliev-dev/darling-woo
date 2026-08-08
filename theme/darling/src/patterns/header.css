@@ -27,12 +27,32 @@
    read, toggled and closed with Escape.
    ========================================================================== */
 
+/* *** THE HEADER IS NOT THE PAGE COLOUR, AND THAT WAS A REAL FAULT. ***
+   It was --surface-page, the same grey as the body, so the bar had no edge of
+   its own - the owner could not tell where it began. A hairline alone does not
+   fix that: a 1px line between two identical greys reads as a divider inside
+   one surface, not as the bottom of a thing that floats over another.
+   So the header is the RAISED grey, one step up from the page, which is the
+   same relationship a card has to the page and needs no new colour to say it.
+
+   *** AND IT EARNS A SHADOW BY SCROLLING. ***
+   At the top of the page the header is part of the page and a shadow would be a
+   lie. Once the page has moved under it, it is floating, and the shadow says so.
+   animation-timeline:scroll() does this with no script - the shadow is driven by
+   the document's own scroll position over the first 80px. */
 .d-header{
 	position:sticky;
 	top:0;
 	z-index:50;
-	background:var(--surface-page);
+	background:var(--surface-raised);
 	border-bottom:1px solid var(--hairline);
+	animation:d-header-lift linear both;
+	animation-timeline:scroll(root block);
+	animation-range:0 80px;
+}
+@keyframes d-header-lift{
+	from{ box-shadow:0 1px 0 rgb(0 0 0 / 0) }
+	to  { box-shadow:0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -12px rgb(0 0 0 / .16) }
 }
 .d-header__inner{
 	display:flex;
@@ -205,15 +225,25 @@
 	gap:var(--space-2xs);
 	min-width:0;
 	padding:var(--space-2xs) var(--space-s);
+	/* *** IT IS THE FIELD, NOT A SECOND KIND OF INPUT. ***
+	   The owner is right: this was a bespoke pill with its own background and
+	   its own shadow, sitting next to a field pattern that already answers every
+	   one of those questions. It now takes the field's surface, the field's
+	   edge, the field's focus ring and the field's ink, and differs from a text
+	   input in exactly one way - it is pill-round, because it is in a bar rather
+	   than in a form. */
+	border:1px solid var(--edge-field);
 	border-radius:var(--radius-pill);
 	background:var(--surface-raised);
-	box-shadow:var(--shadow-card);
 	color:var(--ink-placeholder);
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
 }
+.d-search:hover{ border-color:var(--c-grey-300) }
 .d-search:focus-within{
-	outline:2px solid var(--focus-ring);
-	outline-offset:2px;
-	box-shadow:0 0 0 3px var(--focus-halo), var(--shadow-card);
+	border-color:var(--focus-ring);
+	box-shadow:0 0 0 3px var(--focus-halo);
+	outline:none;
 }
 .d-search .d-icon{ width:1.1rem; height:1.1rem; flex:none }
 .d-search input[type="search"]{
@@ -254,11 +284,21 @@
    900px, matching the old breakpoint exactly so nothing shifts at the cutover.
    The full nav and the search pill go; the burger and the small search button
    arrive. */
+/* *** ORDER, AND IT IS WHY THE BURGER NEVER APPEARED. ***
+   The hide rule was written AFTER the media query, and both are (0,1,0). At
+   equal specificity the later rule wins regardless of the media query, so
+   display:none beat display:grid at every width and the narrow-screen header
+   had no menu button at all - which is exactly what the owner saw. The hide
+   comes first now, and the query that reveals them comes last.
+
+   They are .d-icon-btn as well, so they already have the 44px target, the
+   hover tint and the focus ring; this file only decides WHEN they show. */
+.d-header__burger,
+.d-header__search-sm{ display:none }
+
 @media (max-width: 900px){
 	.d-nav{ display:none }
 	.d-search{ display:none }
 	.d-header__burger,
 	.d-header__search-sm{ display:grid }
 }
-.d-header__burger,
-.d-header__search-sm{ display:none }

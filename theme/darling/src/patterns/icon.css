@@ -135,3 +135,339 @@
 	.d-icon-btn:hover .d-icon,
 	.d-icon-btn:focus-visible .d-icon{ background:Highlight }
 }
+/* =============================================================================
+   ICON MOTION
+   *** THE RULE, AND IT IS THE OWNER'S: A MARK MOVES ONLY WHEN SOMETHING
+   HAPPENS. *** Nothing here idles. An interface where six small things are all
+   moving at once is not lively, it is noisy, and the one mark that IS reporting
+   something gets lost in the other five. So every animation below is bound to
+   an event - a hover, a check, an add to cart, a load - and the marks that only
+   ever label something (mail, phone, info, warning, error, and the stars inside
+   a rating) are deliberately, permanently still.
+
+   WHAT MOVES, AND WHY THAT ONE:
+     spinner   always      it IS the event; a still spinner is a bug
+     cart      on add      the only moment the basket changes
+     user      on hover    a bow, because the account is the personal corner
+     search    on hover    invites the click; the lens is otherwise dead weight
+     heart     on check    a state change the person just made
+     check     on appear   confirmation should arrive, not be already there
+     truck     on threshold  free shipping is earned, so it should feel earned
+     shield    on hover    trust marks are hovered when someone is deciding
+     chevron   on hover    says which way it goes before it is pressed
+     close     on hover    the only motion a close button should ever have
+     download  on hover    the arrow dips, once
+     return    on hover    the loop goes round, once
+   NOT MOVING, ON PURPOSE: mail, phone, info, warning, error, star-in-a-rating,
+   plus, minus. The notices those sit on already animate - falling stars, an
+   orbiting star, the excited ones - and two animations on one object compete.
+   ========================================================================== */
+
+/* -- spinner: a trail, not a ring --------------------------------------------
+   The mark is no longer an SVG arc. A conic-gradient of currentColor fading to
+   nothing IS the trail - dense at the head, gone at the tail - and a radial
+   mask cuts it to a ring. Same idea as the panel's wake and the paginator's,
+   built out of the one thing a rotating element can carry for free. */
+.d-icon--spinner{
+	--icon:none;
+	border-radius:var(--radius-circle);
+	background:conic-gradient(from 0turn,
+		transparent 0turn,
+		color-mix(in oklab, currentColor 12%, transparent) .30turn,
+		color-mix(in oklab, currentColor 45%, transparent) .58turn,
+		color-mix(in oklab, currentColor 82%, transparent) .78turn,
+		currentColor .90turn,
+		transparent .94turn);
+	mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
+	-webkit-mask-image:radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
+	animation:d-icon-spin 820ms linear infinite;
+}
+/* The head of the comet: a dot brighter than the trail it drags. */
+.d-icon--spinner::after{
+	content:"";
+	position:absolute;
+	top:0;
+	left:50%;
+	width:2.5px;
+	height:2.5px;
+	margin-left:-1.25px;
+	border-radius:var(--radius-circle);
+	background:currentColor;
+}
+.d-icon--spinner{ position:relative }
+
+/* -- cart: wheels that turn, and a streak behind the button -----------------
+   The body is the element's mask; each wheel is a pseudo with its own
+   transform-origin, because a single mask holding both wheels would ORBIT them
+   round the icon's centre rather than spin them on their own axles.
+
+   Triggered by [data-added] on the button, which darling-ui.js sets for 900ms
+   when WooCommerce says something went in. */
+.d-icon--cart{
+	--icon:var(--icon-cart-body);
+	position:relative;
+}
+.d-icon--cart::before,
+.d-icon--cart::after{
+	content:"";
+	position:absolute;
+	bottom:0;
+	width:26%;
+	height:26%;
+	background:currentColor;
+	mask-image:var(--icon-wheel);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-wheel);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+}
+.d-icon--cart::before{ left:26% }
+.d-icon--cart::after{ left:62% }
+[data-added] .d-icon--cart::before,
+[data-added] .d-icon--cart::after{
+	animation:d-icon-roll 760ms var(--ease-float);
+}
+[data-added] .d-icon--cart{ animation:d-icon-bump 760ms var(--ease-float) }
+@keyframes d-icon-roll{ to{ transform:rotate(540deg) } }
+@keyframes d-icon-bump{
+	0%   { transform:translateX(0) }
+	28%  { transform:translateX(-2.5px) }
+	64%  { transform:translateX(2px) }
+	100% { transform:translateX(0) }
+}
+/* The streak. It is on the BUTTON and not on the icon because the icon's two
+   pseudo-elements are the wheels and there is no third. Same gradient shape as
+   every other trail in the system, brightest through the middle. */
+.d-icon-btn[data-added]::before{
+	content:"";
+	position:absolute;
+	top:50%;
+	inset-inline-end:1.55rem;
+	width:1.6rem;
+	height:.62rem;
+	transform:translateY(-50%);
+	border-radius:var(--radius-pill);
+	pointer-events:none;
+	background:linear-gradient(90deg,
+		transparent 0%,
+		color-mix(in oklab, var(--trail-gold) 20%, transparent) 22%,
+		color-mix(in oklab, var(--trail-gold) 70%, transparent) 42%,
+		var(--trail-gold) 52%,
+		transparent 100%);
+	animation:d-icon-streak 760ms var(--ease-float);
+}
+@keyframes d-icon-streak{
+	0%   { opacity:0; scale:.2 1 }
+	35%  { opacity:1; scale:1 1 }
+	100% { opacity:0; scale:1.2 1; translate:-6px 0 }
+}
+
+/* -- user: a bow that lights up on hover ------------------------------------- */
+.d-icon--user{
+	--icon:var(--icon-person);
+	position:relative;
+}
+.d-icon--user::after{
+	content:"";
+	position:absolute;
+	top:-6%;
+	left:50%;
+	width:52%;
+	height:52%;
+	translate:-50% 0;
+	scale:.6;
+	opacity:0;
+	background:var(--c-cherry);
+	mask-image:var(--icon-bow);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-bow);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	transition:opacity 260ms var(--ease-float),
+	           scale   260ms var(--ease-float),
+	           filter  260ms var(--ease-float);
+}
+.d-icon-btn:hover .d-icon--user::after,
+.d-icon-btn:focus-visible .d-icon--user::after,
+a:hover > .d-icon--user::after{
+	opacity:1;
+	scale:1;
+	filter:drop-shadow(0 0 4px color-mix(in oklab, var(--g-hi) 90%, transparent))
+	       drop-shadow(0 0 9px color-mix(in oklab, var(--c-cherry) 55%, transparent));
+}
+
+/* -- search: a bow that grows inside the lens -------------------------------
+   Slow in, quick out, and the asymmetry is deliberate - the owner asked for it
+   in those words. It falls out of using TWO transitions: the hovered rule owns
+   the slow one, the resting rule owns the fast one, and a transition is always
+   read off the state being moved TO. */
+.d-icon--search{
+	--icon:var(--icon-lens);
+	position:relative;
+}
+.d-icon--search::after{
+	content:"";
+	position:absolute;
+	top:19%;
+	left:11%;
+	width:37%;
+	height:37%;
+	scale:0;
+	opacity:0;
+	background:var(--c-cherry);
+	mask-image:var(--icon-bow);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	-webkit-mask-image:var(--icon-bow);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	transition:scale 150ms var(--ease-float), opacity 120ms linear;   /* out: fast */
+}
+.d-icon-btn:hover .d-icon--search::after,
+.d-icon-btn:focus-visible .d-icon--search::after,
+.d-search:focus-within .d-icon--search::after,
+.d-search:hover .d-icon--search::after{
+	scale:1;
+	opacity:1;
+	transition:scale 340ms var(--ease-float), opacity 200ms linear;   /* in: slow */
+}
+
+/* -- heart: a real checkbox, so the state costs no script -------------------
+   A wishlist toggle IS a checkbox, and using one means :checked does the work,
+   the control is reachable by keyboard, and a screen reader says "checked"
+   without an aria attribute anyone has to remember. */
+.d-heart{
+	position:relative;
+	display:grid;
+	place-items:center;
+	width:2.75rem;
+	height:2.75rem;
+	padding:0;
+	margin:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	appearance:none;
+	-webkit-appearance:none;
+	color:var(--ink);
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-heart:hover{ background:var(--tint-gold) }
+.d-heart:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+.d-heart::before{
+	content:"";
+	width:1.25rem;
+	height:1.25rem;
+	background:currentColor;
+	mask-image:var(--icon-heart);
+	mask-size:contain;
+	mask-repeat:no-repeat;
+	mask-position:center;
+	-webkit-mask-image:var(--icon-heart);
+	-webkit-mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	transition:scale 200ms var(--ease-float);
+}
+.d-heart:checked{ color:var(--c-cherry) }
+.d-heart:checked::before{
+	mask-image:var(--icon-heart-fill);
+	-webkit-mask-image:var(--icon-heart-fill);
+	animation:d-icon-pop 460ms var(--ease-float);
+}
+@keyframes d-icon-pop{
+	0%   { scale:.7 }
+	42%  { scale:1.28 }
+	68%  { scale:.94 }
+	100% { scale:1 }
+}
+/* The burst: a ring that expands and fades once, on the tick only. */
+.d-heart:checked::after{
+	content:"";
+	position:absolute;
+	inset:22%;
+	border-radius:var(--radius-circle);
+	border:2px solid var(--c-cherry);
+	animation:d-icon-burst 520ms var(--ease-float) forwards;
+	pointer-events:none;
+}
+@keyframes d-icon-burst{
+	0%   { opacity:.85; scale:.4 }
+	100% { opacity:0;   scale:1.9 }
+}
+
+/* -- the quiet hovers --------------------------------------------------------
+   Two to six pixels each. A control should say which way it goes before it is
+   pressed; it should not perform. */
+.d-icon-btn:hover .d-icon--close,
+a:hover > .d-icon--close,
+button:hover > .d-icon--close{ rotate:90deg }
+.d-icon--close{ transition:rotate 220ms var(--ease-float) }
+
+.d-icon--chevron-right{ transition:translate 180ms var(--ease-float) }
+a:hover > .d-icon--chevron-right,
+button:hover > .d-icon--chevron-right{ translate:3px 0 }
+.d-icon--chevron-down{ transition:translate 180ms var(--ease-float) }
+a:hover > .d-icon--chevron-down,
+button:hover > .d-icon--chevron-down{ translate:0 3px }
+
+a:hover > .d-icon--download,
+button:hover > .d-icon--download{ animation:d-icon-dip 520ms var(--ease-float) }
+@keyframes d-icon-dip{
+	0%,100% { translate:0 0 }
+	45%     { translate:0 3px }
+}
+a:hover > .d-icon--return,
+button:hover > .d-icon--return{ animation:d-icon-loop 640ms var(--ease-float) }
+@keyframes d-icon-loop{ to{ rotate:-360deg } }
+
+/* Shield: a sheen crosses it once. Trust marks get hovered while somebody is
+   deciding, which is the only moment they matter. */
+.d-icon--shield{ position:relative; overflow:hidden }
+a:hover > .d-icon--shield::after,
+.d-trust:hover .d-icon--shield::after,
+.d-icon--shield:hover::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:linear-gradient(105deg, transparent 35%,
+		color-mix(in oklab, var(--g-vanilla) 85%, transparent) 50%, transparent 65%);
+	animation:d-icon-sheen 620ms var(--ease-float);
+}
+@keyframes d-icon-sheen{
+	from{ translate:-120% 0 }
+	to  { translate:120% 0 }
+}
+
+/* Check: confirmation should ARRIVE, not already be there. */
+.d-icon--check[data-enter]{ animation:d-icon-pop 420ms var(--ease-float) }
+
+/* Truck: free shipping is earned, so it should look earned. Set by the progress
+   bar's own script the moment the threshold is crossed. */
+[data-reached] .d-icon--truck{ animation:d-icon-drive 900ms var(--ease-float) }
+@keyframes d-icon-drive{
+	0%   { translate:-140% 0; opacity:0 }
+	40%  { translate:6% 0;    opacity:1 }
+	62%  { translate:-3% 0 }
+	100% { translate:0 0 }
+}
+
+/* -- and the kill switch ----------------------------------------------------
+   motion.css already stops animations under reduced motion and on the money
+   path. TRANSITIONS survive the money-path switch, and two of these are
+   transitions - so the bow on the account icon and the bow in the lens are
+   explicitly stopped there too. A checkout is not the place for a flourish. */
+body.woocommerce-cart .d-icon::after,
+body.woocommerce-checkout .d-icon::after,
+body.woocommerce-order-received .d-icon::after{ transition:none }
+@media (prefers-reduced-motion: reduce){
+	.d-icon--spinner{
+		background:none;
+		mask-image:var(--icon-spinner);
+		-webkit-mask-image:var(--icon-spinner);
+	}
+	.d-icon--user::after, .d-icon--search::after{ transition:none }
+}
