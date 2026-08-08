@@ -166,24 +166,35 @@ RATING = '''/* =================================================================
 	transform:translateY(-.16em) scale(1.08);
 	filter:drop-shadow(0 .12em .22em hsl(from var(--g-deep) h s l / .45));
 }
-/* The sweep runs once per hover. Staggered per star so the light travels along
-   the row rather than flashing all of them at the same instant. */
+/* *** THE SWEEP LOOPS WHILE HOVERED, AND TRAVELS. ***
+   Each star is offset by a fifth of the lead-in, so the light crosses star one,
+   then two, then three - a wave running along the row rather than five stars
+   blinking together. The cycle is 1.9s but the band only travels through the
+   first 58% of it; the rest is deliberate rest. Without that gap it is a strobe,
+   and a strobe on a control someone is aiming at is worse than no shine.
+
+   The five delays are what make it a wave rather than five stars blinking
+   together: each star starts a fifth of a beat after the one to its left. */
 .d-rating-input:has(label:nth-child(1):hover) label:nth-child(-n+1) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star::after{
-	animation:d-star-sweep 1.1s var(--ease-float) 1;
+	animation:d-star-sweep 1.9s var(--ease-float) infinite;
 }
-.d-rating-input label:nth-child(2) .d-rating-input__star::after{ animation-delay:90ms }
-.d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:180ms }
-.d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:270ms }
-.d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:360ms }
+/* Hover leaves mid-pass and the animation simply stops, which would freeze a
+   bright band on the star - the resting ::after above is opacity:0, so it
+   snaps back rather than sticking. */
+.d-rating-input label:nth-child(2) .d-rating-input__star::after{ animation-delay:130ms }
+.d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:260ms }
+.d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:390ms }
+.d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:520ms }
 @keyframes d-star-sweep{
 	0%   { transform:translateX(-115%); opacity:0 }
-	16%  { opacity:1 }
-	80%  { opacity:1 }
-	100% { transform:translateX(115%);  opacity:0 }
+	9%   { opacity:1 }
+	46%  { opacity:1 }
+	58%  { transform:translateX(115%);  opacity:0 }
+	100% { transform:translateX(115%);  opacity:0 }   /* the rest between passes */
 }
 /* Anything past the hovered star drops back to empty, so moving left from a
    checked five reads as taking stars away rather than as nothing happening. */
