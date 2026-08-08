@@ -73,7 +73,7 @@ FIELD = '''/* ==================================================================
 	min-height:2.9em;
 	padding:.72em .9em;
 	font:var(--type-body);
-	color:var(--ink);
+	color:var(--c-cocoa);
 	background:var(--surface-raised);
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-s);
@@ -93,19 +93,25 @@ FIELD = '''/* ==================================================================
 .d-field textarea:hover{ border-color:var(--c-mauve-light) }
 
 /* Focus is a RING plus a colour, never a colour alone - and never the browser
-   default outline removed with nothing put back. */
+   default outline removed with nothing put back.
+
+   *** FOCUS IS COCOA, NOT THE ACTION COLOUR. *** It used to take --action, and
+   on a form that reads as a warning: a red-ish edge appearing the moment you
+   click into a field says "this is wrong" before you have typed anything. Red
+   belongs to the invalid state and nowhere else on a form. Cocoa is the calmest
+   thing in the palette that still clearly is not the resting edge. */
 .d-field__control:focus,
 .d-field input:focus,
 .d-field select:focus,
 .d-field textarea:focus{
 	outline:none;
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 
 .d-field__label{
 	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
-	color:var(--ink);
+	color:var(--c-cocoa);
 }
 .d-field__hint{ font-size:var(--fs-fine); color:var(--ink-quiet) }
 
@@ -161,6 +167,61 @@ FIELD = '''/* ==================================================================
 	background-position:right 1.1em top 55%, right .78em top 55%;
 	background-repeat:no-repeat;
 	cursor:pointer;
+}
+
+/* -- THE DROPDOWN MENU ITSELF -----------------------------------------------
+   *** THIS IS NEW AND IT IS WHY IT IS POSSIBLE AT ALL. ***
+   The list a native <select> opens is drawn by the operating system, not by the
+   page, and for twenty years it could not be styled - which is why every design
+   system on the web either lived with the OS menu or rebuilt the whole control
+   in JavaScript with a div, a listbox role and a keyboard implementation nobody
+   maintains. `appearance: base-select` hands the menu back to CSS. Verified
+   supported in this Chrome before writing it.
+
+   Wrapped in @supports on purpose: where it is missing the browser keeps its own
+   menu, which is correct behaviour and not a fallback we have to build. The
+   control itself is styled either way - only the open list changes. */
+@supports (appearance: base-select){
+	.d-field select,
+	.d-select,
+	.d-field select::picker(select),
+	.d-select::picker(select){
+		appearance:base-select;
+	}
+	.d-field select::picker(select),
+	.d-select::picker(select){
+		margin-top:.35em;
+		padding:var(--space-3xs);
+		border:1px solid var(--edge-field);
+		border-radius:var(--radius-m);
+		background:var(--surface-raised);
+		box-shadow:var(--shadow-card);
+	}
+	.d-field option,
+	.d-select option{
+		padding:.52em .7em;
+		border-radius:var(--radius-xs);
+		color:var(--c-cocoa);
+		background:transparent;
+		font:var(--type-body);
+	}
+	/* The highlight is a LIGHT cherry, not the cherry itself: a solid cherry row
+	   under a cocoa word is 3.1:1 and fails, and the row you are hovering is the
+	   one you most need to be able to read. */
+	.d-field option:hover,
+	.d-select option:hover{
+		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
+	}
+	.d-field option:checked,
+	.d-select option:checked{
+		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
+		font-weight:var(--fw-medium);
+	}
+	/* base-select draws its own arrow; ours is the background gradient above. */
+	.d-field select::picker-icon,
+	.d-select::picker-icon{ display:none }
+	.d-field select::checkmark,
+	.d-select::checkmark{ display:none }
 }
 
 /* -- checkbox and radio -----------------------------------------------------
@@ -251,7 +312,7 @@ FIELD = '''/* ==================================================================
 	min-height:3.2em;
 	padding:1.35em .9em .5em;   /* room for the floated label above the value */
 	font:var(--type-body);
-	color:var(--ink);
+	color:var(--c-cocoa);
 	background:var(--surface-raised);
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-s);
@@ -262,8 +323,8 @@ FIELD = '''/* ==================================================================
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus{
 	outline:none;
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input label{
 	position:absolute;
@@ -331,8 +392,8 @@ FIELD = '''/* ==================================================================
 }
 .wc-blocks-components-select__container:hover{ border-color:var(--c-mauve-light) }
 .wc-blocks-components-select__container:focus-within{
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 .wc-block-components-form .wc-blocks-components-select__select,
 .wc-block-components-form .wc-block-components-country-input.wc-block-components-country-input select,
@@ -342,11 +403,41 @@ FIELD = '''/* ==================================================================
 	padding:1.35em 2.4em .5em .9em;
 	font:var(--type-body);
 	color:var(--ink);
+	color:var(--c-cocoa);
 	background:transparent;
 	border:0;
 	outline:none;
 	appearance:none;
 	cursor:pointer;
+}
+
+/* Woo's country and state pickers get the styled menu too. */
+@supports (appearance: base-select){
+	.wc-block-components-form select,
+	.wc-block-components-form select::picker(select){ appearance:base-select }
+	.wc-block-components-form select::picker(select){
+		margin-top:.35em;
+		padding:var(--space-3xs);
+		border:1px solid var(--edge-field);
+		border-radius:var(--radius-m);
+		background:var(--surface-raised);
+		box-shadow:var(--shadow-card);
+	}
+	.wc-block-components-form option{
+		padding:.52em .7em;
+		border-radius:var(--radius-xs);
+		color:var(--c-cocoa);
+		background:transparent;
+	}
+	.wc-block-components-form option:hover{
+		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
+	}
+	.wc-block-components-form option:checked{
+		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
+		font-weight:var(--fw-medium);
+	}
+	.wc-block-components-form select::picker-icon,
+	.wc-block-components-form select::checkmark{ display:none }
 }
 .wc-blocks-components-select__label,
 .wc-block-components-country-input label,
@@ -493,7 +584,7 @@ FIELD = '''/* ==================================================================
 	min-height:2.9em;
 	padding:.72em .9em;
 	font:var(--type-body);
-	color:var(--ink);
+	color:var(--c-cocoa);
 	background:var(--surface-raised);
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-s);
@@ -503,14 +594,14 @@ FIELD = '''/* ==================================================================
 .woocommerce form .form-row textarea:focus,
 .woocommerce form .form-row select:focus{
 	outline:none;
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 .woocommerce form .form-row label{
 	display:block;
 	margin-bottom:var(--stack-tight);
 	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
-	color:var(--ink);
+	color:var(--c-cocoa);
 }
 .woocommerce form .form-row.woocommerce-invalid input.input-text{
 	border-width:2px;

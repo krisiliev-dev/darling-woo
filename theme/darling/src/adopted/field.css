@@ -58,7 +58,7 @@
 	min-height:3.2em;
 	padding:1.35em .9em .5em;   /* room for the floated label above the value */
 	font:var(--type-body);
-	color:var(--ink);
+	color:var(--c-cocoa);
 	background:var(--surface-raised);
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-s);
@@ -69,8 +69,8 @@
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus{
 	outline:none;
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 .wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input label{
 	position:absolute;
@@ -138,8 +138,8 @@
 }
 .wc-blocks-components-select__container:hover{ border-color:var(--c-mauve-light) }
 .wc-blocks-components-select__container:focus-within{
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 .wc-block-components-form .wc-blocks-components-select__select,
 .wc-block-components-form .wc-block-components-country-input.wc-block-components-country-input select,
@@ -149,11 +149,41 @@
 	padding:1.35em 2.4em .5em .9em;
 	font:var(--type-body);
 	color:var(--ink);
+	color:var(--c-cocoa);
 	background:transparent;
 	border:0;
 	outline:none;
 	appearance:none;
 	cursor:pointer;
+}
+
+/* Woo's country and state pickers get the styled menu too. */
+@supports (appearance: base-select){
+	.wc-block-components-form select,
+	.wc-block-components-form select::picker(select){ appearance:base-select }
+	.wc-block-components-form select::picker(select){
+		margin-top:.35em;
+		padding:var(--space-3xs);
+		border:1px solid var(--edge-field);
+		border-radius:var(--radius-m);
+		background:var(--surface-raised);
+		box-shadow:var(--shadow-card);
+	}
+	.wc-block-components-form option{
+		padding:.52em .7em;
+		border-radius:var(--radius-xs);
+		color:var(--c-cocoa);
+		background:transparent;
+	}
+	.wc-block-components-form option:hover{
+		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
+	}
+	.wc-block-components-form option:checked{
+		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
+		font-weight:var(--fw-medium);
+	}
+	.wc-block-components-form select::picker-icon,
+	.wc-block-components-form select::checkmark{ display:none }
 }
 .wc-blocks-components-select__label,
 .wc-block-components-country-input label,
@@ -300,7 +330,7 @@
 	min-height:2.9em;
 	padding:.72em .9em;
 	font:var(--type-body);
-	color:var(--ink);
+	color:var(--c-cocoa);
 	background:var(--surface-raised);
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-s);
@@ -310,14 +340,14 @@
 .woocommerce form .form-row textarea:focus,
 .woocommerce form .form-row select:focus{
 	outline:none;
-	border-color:var(--action);
-	box-shadow:0 0 0 3px color-mix(in oklab, var(--action) 28%, transparent);
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
 }
 .woocommerce form .form-row label{
 	display:block;
 	margin-bottom:var(--stack-tight);
 	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
-	color:var(--ink);
+	color:var(--c-cocoa);
 }
 .woocommerce form .form-row.woocommerce-invalid input.input-text{
 	border-width:2px;
