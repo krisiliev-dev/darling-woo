@@ -52,6 +52,7 @@
 @import url("patterns/notice.css")  layer(patterns);
 @import url("patterns/rating.css")  layer(patterns);
 @import url("patterns/field.css")   layer(patterns);
+@import url("patterns/table.css")   layer(patterns);
 @import url("finish.css")        layer(finish);
 
 /* card, field, badge, placeholder, utilities: not written yet. */
@@ -62,3 +63,4 @@
 @import url("adopted/field.css");
 @import url("adopted/notice.css");
 @import url("adopted/rating.css");
+@import url("adopted/table.css");

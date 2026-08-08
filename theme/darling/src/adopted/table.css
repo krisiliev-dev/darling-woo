@@ -1,0 +1,225 @@
+/* =============================================================================
+   ADOPTED / table
+   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+
+   It styles markup WooCommerce and Stripe emit, which we cannot add classes to.
+   Their stylesheets are unlayered, and unlayered CSS beats layered CSS however
+   specific the layered selector is - so a rule that has to overrule them cannot
+   live in @layer patterns. Measured on the live checkout: identical rules moved
+   here went from losing on border-radius, background and border colour to
+   winning all three.
+
+   The trade is real and worth stating. Nothing in this file participates in the
+   layer order, so it also outranks OUR patterns - which means anything here that
+   is not actually contested by a third party is a rule quietly beating our own
+   system for no reason. collide.js measures the contested set; keep this file
+   inside it.
+
+   Moved out of patterns/table.css, not copied. There is one definition.
+   ========================================================================== */
+
+/* =============================================================================
+   ADOPTED: WooCommerce's tables
+   ========================================================================== */
+
+/* -- the block cart --------------------------------------------------------
+   Three columns: image, product, total. The caption is real and screen-reader
+   only, which is correct and stays. Selectors are doubled because Woo styles
+   these completely and the field pattern already proved that unlayered alone
+   does not win - its rules carry an extra ancestor. */
+.wc-block-cart-items.wc-block-cart-items{
+	width:100%;
+	border-collapse:collapse;
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.wc-block-cart-items.wc-block-cart-items th{
+	text-align:left;
+	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
+	color:var(--ink-quiet);
+	padding:0 var(--space-2xs) var(--space-3xs);
+	border-bottom:1px solid var(--hairline);
+}
+.wc-block-cart-items.wc-block-cart-items td{
+	padding:var(--space-xs) var(--space-2xs);
+	border-top:0;
+	border-bottom:1px solid var(--hairline);
+	vertical-align:top;
+}
+.wc-block-cart-items.wc-block-cart-items tbody tr:last-child td{ border-bottom:0 }
+.wc-block-cart-item__image.wc-block-cart-item__image{
+	width:5.5em;
+	padding-left:0;
+}
+.wc-block-cart-item__image img{
+	width:100%;
+	border-radius:var(--radius-s);
+	background:var(--placeholder-product);
+}
+.wc-block-cart-items__header-total,
+.wc-block-cart-item__total.wc-block-cart-item__total{
+	text-align:right;
+	padding-right:0;
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.wc-block-components-product-name{
+	font:var(--fw-medium) var(--fs-ui)/var(--lh-title) var(--font-ui);
+	color:var(--ink);
+	text-decoration:none;
+}
+.wc-block-cart-item__product .wc-block-components-product-metadata{
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+
+/* *** THE BLOCK CART HAS NO data-title, SO IT COLLAPSES WITH GRID. ***
+   Captured and checked: its cells carry no attribute we could label a stacked
+   row with. So the row becomes a two-column grid - image on the left spanning
+   both lines, product and total stacked on the right - which needs no help from
+   the markup at all. */
+@media (max-width: 600px){
+	.wc-block-cart-items.wc-block-cart-items thead{
+		position:absolute;
+		width:1px; height:1px;
+		overflow:hidden;
+		clip-path:inset(50%);
+	}
+	.wc-block-cart-items.wc-block-cart-items tr{
+		display:grid;
+		grid-template-columns:4.5em 1fr;
+		grid-template-areas:"img prod" "img total";
+		gap:.2em var(--space-2xs);
+		padding:var(--space-2xs) 0;
+		border-bottom:1px solid var(--hairline);
+	}
+	.wc-block-cart-items.wc-block-cart-items td{
+		padding:0;
+		border:0;
+	}
+	.wc-block-cart-item__image.wc-block-cart-item__image{ grid-area:img; width:auto }
+	.wc-block-cart-item__product.wc-block-cart-item__product{ grid-area:prod }
+	.wc-block-cart-item__total.wc-block-cart-item__total{ grid-area:total; text-align:left }
+}
+
+/* -- the classic tables: cart, orders, order details, addresses -------------
+   These DO carry data-title on every cell, which is what makes a labelled
+   stacked layout possible. */
+.woocommerce table.shop_table,
+.woocommerce-orders-table,
+.woocommerce-table--order-details,
+.woocommerce-table--customer-details{
+	width:100%;
+	border:0;
+	border-collapse:collapse;
+	border-radius:0;
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.woocommerce table.shop_table th,
+.woocommerce-orders-table th,
+.woocommerce-table--order-details th{
+	text-align:left;
+	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
+	color:var(--ink-quiet);
+	padding:0 var(--space-2xs) var(--space-3xs);
+	border:0;
+	border-bottom:1px solid var(--hairline);
+}
+.woocommerce table.shop_table td,
+.woocommerce-orders-table td,
+.woocommerce-table--order-details td{
+	padding:var(--space-2xs);
+	border:0;
+	border-bottom:1px solid var(--hairline);
+	vertical-align:top;
+}
+.woocommerce table.shop_table tfoot td,
+.woocommerce table.shop_table tfoot th{
+	font-weight:var(--fw-bold);
+	border-bottom:0;
+	border-top:2px solid var(--hairline);
+}
+.woocommerce table.shop_table .amount,
+.woocommerce-orders-table .amount,
+.woocommerce-table--order-details .amount{
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.woocommerce td.product-remove a.remove{
+	display:grid;
+	place-items:center;
+	width:1.6em;
+	height:1.6em;
+	border-radius:var(--radius-circle);
+	color:var(--c-cocoa);
+	font-size:1.1em;
+	text-decoration:none;
+	transition:color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.woocommerce td.product-remove a.remove:hover{
+	color:var(--c-claret);
+	background:color-mix(in oklab, var(--c-claret) 10%, transparent);
+}
+
+/* -- product attributes: a description list wearing a table ---------------- */
+.woocommerce table.shop_attributes{
+	width:100%;
+	border:0;
+	border-collapse:collapse;
+	font-size:var(--fs-meta);
+}
+.woocommerce table.shop_attributes th{
+	width:34%;
+	text-align:left;
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-body) var(--font-ui);
+	color:var(--ink-quiet);
+	padding:var(--space-2xs) var(--space-2xs) var(--space-2xs) 0;
+	border:0;
+	border-bottom:1px solid var(--hairline);
+}
+.woocommerce table.shop_attributes td{
+	padding:var(--space-2xs) 0;
+	border:0;
+	border-bottom:1px solid var(--hairline);
+	font-style:normal;   /* Woo italicises these, which reads as an aside */
+	color:var(--ink);
+}
+.woocommerce table.shop_attributes tr:last-child th,
+.woocommerce table.shop_attributes tr:last-child td{ border-bottom:0 }
+
+@media (max-width: 600px){
+	.woocommerce table.shop_table_responsive thead,
+	.woocommerce-orders-table thead{
+		position:absolute;
+		width:1px; height:1px;
+		overflow:hidden;
+		clip-path:inset(50%);
+	}
+	.woocommerce table.shop_table_responsive tr,
+	.woocommerce-orders-table tr{
+		display:block;
+		padding:var(--space-2xs) 0;
+		border-bottom:1px solid var(--hairline);
+	}
+	.woocommerce table.shop_table_responsive td,
+	.woocommerce-orders-table td{
+		display:grid;
+		grid-template-columns:1fr auto;
+		gap:var(--inline);
+		padding:.2em 0;
+		border:0;
+		text-align:right;
+	}
+	/* The label each cell already knows about itself. */
+	.woocommerce table.shop_table_responsive td::before,
+	.woocommerce-orders-table td::before{
+		content:attr(data-title);
+		font-size:var(--fs-fine);
+		font-weight:var(--fw-regular);
+		color:var(--ink-quiet);
+		text-align:left;
+	}
+	.woocommerce table.shop_attributes th{ width:auto }
+}

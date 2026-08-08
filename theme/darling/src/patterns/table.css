@@ -1,0 +1,108 @@
+/* =============================================================================
+   PATTERN / TABLE
+   Cart, orders, addresses, product attributes.
+
+   *** A TABLE IS ROWS, NOT A GRID OF BOXES. ***
+   Horizontal hairlines only, no vertical rules. Vertical rules turn a price
+   list into a spreadsheet, and the eye tracks a row perfectly well without
+   them.
+
+   *** NUMBERS ARE TABULAR AND RIGHT-ALIGNED, ALWAYS. ***
+   A column of prices where the decimal points do not line up is unreadable at a
+   glance, and the glance is the entire purpose of a totals column.
+
+   *** ON A PHONE A TABLE STOPS BEING A TABLE. ***
+   Horizontal scrolling inside a cart is how an order gets abandoned. Below the
+   breakpoint every table collapses to stacked rows - see the two mechanisms in
+   the adopted section, which are forced on us by the markup rather than chosen.
+   ========================================================================== */
+
+.d-table{
+	width:100%;
+	border-collapse:collapse;
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.d-table caption{
+	text-align:left;
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
+	color:var(--ink-quiet);
+	padding-bottom:var(--space-2xs);
+}
+.d-table th{
+	text-align:left;
+	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
+	color:var(--ink-quiet);
+	letter-spacing:.04em;
+	padding:0 var(--space-2xs) var(--space-3xs);
+	border-bottom:1px solid var(--hairline);
+	white-space:nowrap;
+}
+.d-table td{
+	padding:var(--space-2xs);
+	border-bottom:1px solid var(--hairline);
+	vertical-align:top;
+}
+.d-table tbody tr:last-child td{ border-bottom:0 }
+.d-table th:first-child,
+.d-table td:first-child{ padding-left:0 }
+.d-table th:last-child,
+.d-table td:last-child{ padding-right:0 }
+
+/* Numbers. The class goes on the cell, not the column, because a table has no
+   column element to hang it on. */
+.d-table__num,
+.d-table td.d-table__num{
+	text-align:right;
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+.d-table__total td{
+	font-weight:var(--fw-bold);
+	border-top:2px solid var(--hairline);
+	border-bottom:0;
+}
+.d-table__muted{ color:var(--ink-quiet) }
+
+/* Only where a row is a link or a control. A hover tint on a static price list
+   promises an interaction that is not there. */
+.d-table--rows tbody tr:hover{ background:var(--surface-quiet) }
+
+/* -- stacked, for our own markup -------------------------------------------
+   Each cell carries data-title and becomes a labelled line. */
+@media (max-width: 600px){
+	.d-table--stack thead{
+		position:absolute;
+		width:1px; height:1px;
+		overflow:hidden;
+		clip-path:inset(50%);
+	}
+	.d-table--stack tr{
+		display:block;
+		padding:var(--space-2xs) 0;
+		border-bottom:1px solid var(--hairline);
+	}
+	.d-table--stack td{
+		display:grid;
+		grid-template-columns:1fr auto;
+		gap:var(--inline);
+		padding:.2em 0;
+		border:0;
+	}
+	.d-table--stack td::before{
+		content:attr(data-title);
+		font-size:var(--fs-fine);
+		color:var(--ink-quiet);
+		/* The cell is right-aligned so the VALUE sits under the value above it.
+		   The label must opt out of that or it drifts into the middle of the
+		   row and stops reading as a label at all. */
+		text-align:left;
+	}
+	.d-table--stack td.d-table__num{ text-align:right }
+	/* The total is one line, not two: it is a single fact and splitting it
+	   across rows makes the most important number on the page look like an
+	   orphan. */
+	.d-table--stack tfoot tr{ display:grid; grid-template-columns:1fr auto }
+	.d-table--stack tfoot td{ display:block; padding:0 }
+	.d-table--stack tfoot td::before{ content:none }
+}
