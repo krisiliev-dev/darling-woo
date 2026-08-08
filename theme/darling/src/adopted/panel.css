@@ -1,77 +1,127 @@
 /* =============================================================================
-   ADOPTED / panel
-   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+   ADOPTED / PANEL   -   .wc-block-components-panel
+   UNLAYERED ON PURPOSE. See index.css: unlayered CSS beats layered CSS whatever
+   the specificity, and Woo's own sheet is unlayered too, so this file must also
+   out-SPECIFY it. Woo writes .wc-block-components-panel__button at (0,1,0) and
+   .wc-block-components-totals-coupon .wc-block-components-panel__button at
+   (0,2,0); repeating the class here clears both without !important.
 
-   It styles markup WooCommerce and Stripe emit, which we cannot add classes to.
-   Their stylesheets are unlayered, and unlayered CSS beats layered CSS however
-   specific the layered selector is - so a rule that has to overrule them cannot
-   live in @layer patterns. Measured on the live checkout: identical rules moved
-   here went from losing on border-radius, background and border colour to
-   winning all three.
+   MEASURED 2026-08-08 on the live site with a seeded cart: /cart/ renders one
+   .wc-block-components-panel and /checkout/ renders one, and both are the
+   coupon. So this file styles exactly two surfaces on the money path, and it
+   is worth getting right rather than guessing.
 
-   The trade is real and worth stating. Nothing in this file participates in the
-   layer order, so it also outranks OUR patterns - which means anything here that
-   is not actually contested by a third party is a rule quietly beating our own
-   system for no reason. collide.js measures the contested set; keep this file
-   inside it.
+   *** WHAT THIS CANNOT DO, STATED PLAINLY. ***
+   Woo's panel is a <div> plus a <button aria-expanded>, and React MOUNTS and
+   UNMOUNTS the content. There is no height to interpolate and no
+   ::details-content to hook, so the content appears at once and the arrow
+   swims down through it. The turn works. The trail works. The "rides the
+   opening edge" part does not, and pretending otherwise would be a lie that
+   only shows up on the checkout.
 
-   Moved out of patterns/panel.css, not copied. There is one definition.
+   The open state is read off aria-expanded with :has(), which is the truth the
+   component already publishes - no extra class and no script.
    ========================================================================== */
 
-/* -- ADOPTED: the coupon panel and the order summary ------------------------ */
 .wc-block-components-panel.wc-block-components-panel{
-	border:1px solid var(--edge-field);
+	--panel-surface: var(--tint-grey);
+	--panel-quiet:   var(--tint-grey-quiet);
+	--panel-edge:    var(--tint-grey-edge);
+	--panel-mark:    var(--tint-grey-mark);
+	--panel-trail:   var(--trail-gold);
+	--panel-head: 1.6em;
+	--swim: 0;
+	position:relative;
+	border:1px solid var(--panel-edge);
 	border-radius:var(--radius-m);
-	background:var(--surface-raised);
-	padding:0;
-	overflow:hidden;
+	background:var(--panel-surface);
+	color:var(--ink);
+	transition:--swim var(--dur-panel) var(--ease-float);
 }
-.wc-block-components-panel__button.wc-block-components-panel__button{
-	display:grid;
-	grid-template-columns:1fr auto;
+.wc-block-components-panel.wc-block-components-panel:has(> .wc-block-components-panel__button[aria-expanded="true"]){
+	--swim: 1;
+}
+
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button{
+	display:flex;
 	align-items:center;
 	gap:var(--inline);
 	width:100%;
-	padding:var(--space-2xs) var(--space-xs);
 	margin:0;
+	padding:var(--space-2xs) calc(var(--space-xs) + 1.4em) var(--space-2xs) var(--space-xs);
 	border:0;
 	background:none;
-	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
-	color:var(--c-cocoa);
-	text-align:left;
+	text-align:start;
 	cursor:pointer;
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
+	color:var(--ink);
+	transition:background var(--dur-ui) var(--ease-float);
 }
-.wc-block-components-panel__button:hover{ background:var(--surface-quiet) }
-.wc-block-components-panel__button-icon{
-	fill:var(--ink-quiet);
-	transition:transform 220ms var(--ease-float);
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button:hover{
+	background:var(--panel-quiet);
 }
-.wc-block-components-panel__content{
-	padding:0 var(--space-xs) var(--space-2xs);
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+/* Woo ships an inline <svg> chevron inside the button. We draw our own on the
+   panel so it can leave the button on its way down; the svg has to go or there
+   are two markers on one control. */
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button > svg{
+	display:none;
+}
+.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__content{
+	padding:0 calc(var(--space-xs) + 1.4em) var(--space-xs) var(--space-xs);
 	font-size:var(--fs-meta);
-}
-.wc-block-components-totals-wrapper{
-	padding:var(--space-2xs) 0;
-	border-top:1px solid var(--hairline);
-}
-.wc-block-components-totals-wrapper:first-child{ border-top:0 }
-.wc-block-components-totals-item.wc-block-components-totals-item{
-	display:grid;
-	grid-template-columns:1fr auto;
-	align-items:baseline;
-	gap:var(--inline);
-	padding:.18em 0;
-	font-size:var(--fs-meta);
-}
-.wc-block-components-totals-item__label{ color:var(--ink-quiet) }
-.wc-block-components-totals-item__value{
-	font-variant-numeric:tabular-nums;
-	white-space:nowrap;
 	color:var(--ink);
 }
-.wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
-.wc-block-components-totals-footer-item .wc-block-components-totals-item__value{
-	font-weight:var(--fw-bold);
-	font-size:var(--fs-lede);
-	color:var(--ink);
+
+.wc-block-components-panel.wc-block-components-panel::after{
+	content:"";
+	position:absolute;
+	inset-inline-end:calc(var(--space-xs) + .1em);
+	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
+	width:.5em;
+	height:.5em;
+	border-right:2px solid var(--panel-mark);
+	border-bottom:2px solid var(--panel-mark);
+	transform:translateY(-50%) rotate(45deg);
+	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
+	pointer-events:none;
 }
+.wc-block-components-panel.wc-block-components-panel:has(> .wc-block-components-panel__button[aria-expanded="true"])::after{
+	transform:translateY(-50%) rotate(225deg);
+}
+.wc-block-components-panel.wc-block-components-panel::before{
+	content:"";
+	position:absolute;
+	inset-inline-end:calc(var(--space-xs) - .04em);
+	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
+	width:.9em;
+	/* Proportional to the swim, not a fixed length: a streak that is 3.9em on a
+	   40px-of-travel panel is nearly the whole pool and reads as a painted bar
+	   rather than as motion. This one is always about half the distance the
+	   swimmer covers. */
+	height:calc(1.5em + .52 * (100% - 2 * var(--panel-head)));
+	border-radius:var(--radius-pill);
+	background:linear-gradient(180deg,
+		transparent 0%,
+		color-mix(in oklab, var(--panel-trail) 14%, transparent) 22%,
+		color-mix(in oklab, var(--panel-trail) 60%, transparent) 41%,
+		var(--panel-trail) 50%,
+		color-mix(in oklab, var(--panel-trail) 60%, transparent) 59%,
+		color-mix(in oklab, var(--panel-trail) 14%, transparent) 78%,
+		transparent 100%);
+	filter:blur(3px);
+	pointer-events:none;
+	opacity:0;
+	opacity:calc(1 * (1 - 2 * abs(var(--swim) - .5)));
+	transform:translateY(-50%) scaleY(.4);
+	transform:translateY(-50%) scaleY(calc(.42 + 1.1 * (1 - 2 * abs(var(--swim) - .5))));
+}
+/* Atmosphere off on the money path - and since the only two panels Woo renders
+   ARE on the money path, this rule decides that the adopted trail never shows.
+   Kept anyway: the day a panel appears on a product page it will be right. */
+body.woocommerce-cart .wc-block-components-panel::before,
+body.woocommerce-checkout .wc-block-components-panel::before,
+body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }

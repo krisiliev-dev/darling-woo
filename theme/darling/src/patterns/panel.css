@@ -1,61 +1,185 @@
 /* =============================================================================
    PATTERN / PANEL
-   A heading you can press, and content that opens under it.
+   A heading you can press, content that opens under it, and an arrow that
+   swims down the panel as it opens.
 
    *** IT IS A BUTTON, NOT A DIV WITH A CLICK HANDLER. ***
-   The coupon panel on the checkout is the clearest case: someone arriving with
-   a discount code and unable to reach the field by keyboard simply does not
-   complete the order. Where we own the markup this is <details>/<summary>,
-   which is a real disclosure widget with no script at all.
+   The coupon panel on the checkout is the clearest case, and it is real: the
+   live checkout renders exactly one .wc-block-components-panel and it is the
+   coupon. Someone arriving with a discount code who cannot reach the field by
+   keyboard simply does not complete the order. Where we own the markup this is
+   <details>/<summary>, a real disclosure widget with no script at all.
 
-   The marker rotates rather than swapping glyph, so the state change is
-   continuous and the same element stays under the cursor.
+   *** THE SWIM IS A TRANSITION, NOT AN ANIMATION, AND THAT IS THE WHOLE TRICK.
+   An animation keyed to [open] plays once and cannot play backwards when the
+   attribute is removed, so a closing panel would snap. ONE registered custom
+   property - --swim, 0 to 1 - transitions in both directions for free, and
+   everything visible is arithmetic on it. No script, no flash on page load.
+
+     arrow top  = head + swim * (100% - 2*head)
+     trail heat = 1 - 2*abs(swim - .5)      <- peaks mid-stroke, zero at rest
+     the turn   = its own transform transition, DELAYED past the swim
+
+   The 100% in the arrow's top is the panel's OWN ANIMATING HEIGHT. That is
+   what makes the arrow ride the opening edge instead of teleporting to where
+   it will end up.
+
+   *** abs() IS WRITTEN TWICE ON PURPOSE. *** It is CSS Values 4, Chrome 133+.
+   Every declaration that needs it has a safe value first; if abs() cannot be
+   parsed the second is dropped and the trail is simply absent. The panel still
+   opens, the arrow still swims and turns. Decoration must fail to nothing.
    ========================================================================== */
 
+@property --swim{ syntax:"<number>"; inherits:true; initial-value:0 }
+
 .d-panel{
-	border:1px solid var(--edge-field);
+	/* The three families. A variant sets these five and nothing else. */
+	--panel-surface: var(--tint-grey);
+	--panel-quiet:   var(--tint-grey-quiet);
+	--panel-edge:    var(--tint-grey-edge);
+	--panel-mark:    var(--tint-grey-mark);
+	--panel-trail:   var(--trail-gold);
+	/* Where the arrow rests: the vertical centre of the summary row. In em so
+	   it tracks the summary's own font size rather than a guessed pixel. */
+	--panel-head: 1.6em;
+
+	--swim: 0;
+	position:relative;
+	border:1px solid var(--panel-edge);
 	border-radius:var(--radius-m);
-	background:var(--surface-raised);
+	background:var(--panel-surface);
+	color:var(--ink);
 	overflow:hidden;
+	interpolate-size: allow-keywords;
+	transition:--swim var(--dur-panel) var(--ease-float);
 }
+.d-panel[open]{ --swim:1 }
 .d-panel + .d-panel{ margin-top:var(--space-2xs) }
 
+.d-panel--cherry{
+	--panel-surface: var(--tint-cherry);
+	--panel-quiet:   var(--tint-cherry-quiet);
+	--panel-edge:    var(--tint-cherry-edge);
+	--panel-mark:    var(--tint-cherry-mark);
+	--panel-trail:   var(--trail-gold);
+}
+/* The owner's rule, and it is the right one: a gold trail on a gold panel is
+   invisible, so the gold variant trails cherry. */
+.d-panel--gold{
+	--panel-surface: var(--tint-gold);
+	--panel-quiet:   var(--tint-gold-quiet);
+	--panel-edge:    var(--tint-gold-edge);
+	--panel-mark:    var(--tint-gold-mark);
+	--panel-trail:   var(--trail-cherry);
+}
+.d-panel--quiet{
+	--panel-surface: var(--tint-grey-quiet);
+	--panel-quiet:   var(--c-grey-300);
+}
+
+/* -- the summary ------------------------------------------------------------
+   The right-hand padding keeps a lane free for the arrow, which is positioned
+   against the PANEL and not the summary: it has to leave the summary entirely
+   on its way down. */
 .d-panel__summary{
 	display:grid;
-	grid-template-columns:1fr auto;
+	grid-template-columns:1fr;
 	align-items:center;
-	gap:var(--inline);
-	padding:var(--space-2xs) var(--space-xs);
+	padding:var(--space-2xs) calc(var(--space-xs) + 1.4em) var(--space-2xs) var(--space-xs);
 	cursor:pointer;
 	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
-	color:var(--c-cocoa);
+	color:var(--ink);
 	list-style:none;
 	transition:background var(--dur-ui) var(--ease-float);
 }
 .d-panel__summary::-webkit-details-marker{ display:none }
-.d-panel__summary:hover{ background:var(--surface-quiet) }
+.d-panel__summary::marker{ content:"" }
+.d-panel__summary:hover{ background:var(--panel-quiet) }
 .d-panel__summary:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:-2px;
 }
-/* The marker: a chevron drawn from two borders, so it needs no font and no SVG
-   and rotates cleanly about its own centre. */
-.d-panel__summary::after{
-	content:"";
-	width:.5em;
-	height:.5em;
-	margin-top:-.18em;
-	border-right:2px solid var(--ink-quiet);
-	border-bottom:2px solid var(--ink-quiet);
-	transform:rotate(45deg);
-	transition:transform 220ms var(--ease-float);
-}
-.d-panel[open] > .d-panel__summary::after{
-	transform:rotate(-135deg);
-	margin-top:.1em;
-}
 .d-panel__content{
-	padding:0 var(--space-xs) var(--space-2xs);
+	padding:0 calc(var(--space-xs) + 1.4em) var(--space-xs) var(--space-xs);
 	font-size:var(--fs-meta);
 	color:var(--ink);
 }
+
+/* -- the pool ---------------------------------------------------------------
+   ::details-content is Chrome 131+ / Safari 18.4+. Behind the @supports the
+   panel opens instantly and the arrow swims down through content that is
+   already there. Still correct, just less pretty. */
+@supports selector(::details-content){
+	.d-panel::details-content{
+		block-size:0;
+		overflow:hidden;
+		transition:block-size var(--dur-panel) var(--ease-float),
+		           content-visibility var(--dur-panel) allow-discrete;
+	}
+	.d-panel[open]::details-content{ block-size:auto }
+}
+
+/* -- the swimmer ------------------------------------------------------------
+   A chevron drawn from two borders: no font, no SVG, and it rotates cleanly
+   about its own centre. 45deg is a v; 225deg is the same v having turned a
+   full half-circle, which is a tumble turn rather than a mirror flip. */
+.d-panel::after{
+	content:"";
+	position:absolute;
+	inset-inline-end:calc(var(--space-xs) + .1em);
+	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
+	width:.5em;
+	height:.5em;
+	border-right:2px solid var(--panel-mark);
+	border-bottom:2px solid var(--panel-mark);
+	transform:translateY(-50%) rotate(45deg);
+	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
+	pointer-events:none;
+}
+.d-panel[open]::after{ transform:translateY(-50%) rotate(225deg) }
+
+/* -- the wake ---------------------------------------------------------------
+   Locked to the arrow and taller than it, the gradient concentrated at its
+   middle and gone at both ends - a motion blur, which is what was asked for.
+   It is centred ON the swimmer rather than drawn behind, because a trail drawn
+   behind is behind on the way down and AHEAD on the way back up.
+
+   Opacity and stretch both peak at swim = .5 and are zero at rest, so the
+   streak blooms as the arrow crosses the panel and dies as it arrives. */
+.d-panel::before{
+	content:"";
+	position:absolute;
+	inset-inline-end:calc(var(--space-xs) - .04em);
+	top:calc(var(--panel-head) + var(--swim) * (100% - 2 * var(--panel-head)));
+	width:.9em;
+	/* Proportional to the swim, not a fixed length: a streak that is 3.9em on a
+	   40px-of-travel panel is nearly the whole pool and reads as a painted bar
+	   rather than as motion. This one is always about half the distance the
+	   swimmer covers. */
+	height:calc(1.5em + .52 * (100% - 2 * var(--panel-head)));
+	border-radius:var(--radius-pill);
+	background:linear-gradient(180deg,
+		transparent 0%,
+		color-mix(in oklab, var(--panel-trail) 14%, transparent) 22%,
+		color-mix(in oklab, var(--panel-trail) 60%, transparent) 41%,
+		var(--panel-trail) 50%,
+		color-mix(in oklab, var(--panel-trail) 60%, transparent) 59%,
+		color-mix(in oklab, var(--panel-trail) 14%, transparent) 78%,
+		transparent 100%);
+	filter:blur(3px);
+	pointer-events:none;
+	/* --- the pairs. First line is the fallback if abs() is unsupported. --- */
+	opacity:0;
+	opacity:calc(1 * (1 - 2 * abs(var(--swim) - .5)));
+	transform:translateY(-50%) scaleY(.4);
+	transform:translateY(-50%) scaleY(calc(.42 + 1.1 * (1 - 2 * abs(var(--swim) - .5))));
+}
+
+/* -- the money path ---------------------------------------------------------
+   motion.css kills ANIMATIONS on cart, checkout and order-received. The swim
+   is a transition, so it survives that switch - and it should: a disclosure
+   opening is feedback, not atmosphere, and the coupon panel is the one panel
+   on the checkout. The TRAIL is atmosphere, and it goes. */
+body.woocommerce-cart .d-panel::before,
+body.woocommerce-checkout .d-panel::before,
+body.woocommerce-order-received .d-panel::before{ opacity:0 }

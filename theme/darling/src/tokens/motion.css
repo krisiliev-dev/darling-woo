@@ -45,6 +45,13 @@
 	   Flagged so nobody mistakes it for one. */
 	--dur-ui: .18s;
 	--ease-ui: ease;
+	/* -- disclosure ----------------------------------------------------------
+	   The swim and the turn are separate because they must not overlap: the
+	   swimmer reaches the wall and THEN turns. --delay-turn is exactly what
+	   holds the turn back until the swim is over. */
+	--dur-panel: 420ms;
+	--dur-turn:  240ms;
+	--delay-turn: 260ms;
 }
 
 /* -- the float, and the glow locked to it ------------------------------------

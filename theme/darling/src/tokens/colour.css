@@ -137,4 +137,36 @@
 	   palette that is still unmistakably not the resting edge. */
 	--focus-ring: var(--c-cocoa);
 	--focus-halo: color-mix(in oklab, var(--c-cocoa) 22%, transparent);
-}
+
+	/* -- the three families ---------------------------------------------------
+	   Grey, cherry and gold, as a SURFACE / QUIET / EDGE / MARK set each. The
+	   owner asked for these three on the panel, the pagination AND the sliders
+	   in one message, so they are tokens rather than three private mixes that
+	   would have drifted apart by the third component.
+
+	   Every tint is mixed into --c-grey-050 and not into white. The page is
+	   grey; a tint mixed into white is a lighter surface AND a warmer one, and
+	   the two changes together read as a different material rather than as the
+	   same card in another colour. */
+	--tint-grey:        var(--c-grey-050);
+	--tint-grey-quiet:  var(--c-grey-200);
+	--tint-grey-edge:   var(--c-grey-400);
+	--tint-grey-mark:   var(--c-mauve);
+
+	--tint-cherry:       color-mix(in oklab, var(--c-cherry) 15%, var(--c-grey-050));
+	--tint-cherry-quiet: color-mix(in oklab, var(--c-cherry) 27%, var(--c-grey-050));
+	--tint-cherry-edge:  color-mix(in oklab, var(--c-cherry) 52%, var(--c-grey-050));
+	--tint-cherry-mark:  var(--c-cherry-deep);
+
+	--tint-gold:        color-mix(in oklab, var(--g-core) 24%, var(--c-grey-050));
+	--tint-gold-quiet:  color-mix(in oklab, var(--g-core) 40%, var(--c-grey-050));
+	--tint-gold-edge:   color-mix(in oklab, var(--g-core) 66%, var(--c-grey-050));
+	--tint-gold-mark:   var(--g-shadow);
+
+	/* -- trails ---------------------------------------------------------------
+	   A trail is LIGHT, not paint, so it comes off the top of the metal ramp
+	   rather than its core: --g-core against a gold panel is the same value as
+	   the panel and disappears. The owner's rule - gold trail everywhere,
+	   cherry trail on the gold variant. */
+	--trail-gold:   var(--g-light);
+	--trail-cherry: var(--c-cherry);}
