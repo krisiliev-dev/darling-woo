@@ -1830,81 +1830,303 @@ hr{
 @layer patterns{
 /* =============================================================================
    PATTERN / PAGINATION
+   A window onto the pages, a marker that shows where you are, and a wake behind
+   the marker when it moves.
 
-   *** THE CURRENT PAGE IS A STATE, NOT AN ACTION. ***
-   So it is cocoa, not amber. Amber means "do this"; filling the page you are
-   already on with the same colour as the buy button teaches people that amber
-   sometimes means nothing.
+   *** THE WHOLE BEHAVIOUR IS ONE clamp(), AND IT IS NOT SPECIAL-CASED. ***
+   The owner described two behaviours: in the middle of a long catalogue the
+   NUMBERS shift and the circle stays put; at either end the numbers cannot
+   shift any further, so the CIRCLE moves instead. That is not two rules with an
+   if between them - it falls out of one expression:
 
-   *** EVERY TARGET IS 44px. ***
-   These sit at the bottom of a long scroll, are used most on a phone, and are
-   the last thing between someone and the rest of the catalogue.
+     offset = clamp(0, page - 1 - half, pages - window)   how far the strip slid
+     marker = (page - 1 - offset) * cell                  where the circle sits
 
-   The ellipsis is not a link and never looks like one. It has no border, no
-   hover and no cursor, because a target that does nothing when pressed is worse
-   than no target.
+   In the middle, offset tracks page one-for-one, so marker is constant and the
+   strip does the moving. At the ends offset is pinned by the clamp, so the
+   strip is still and marker does the moving. One line, both behaviours, and
+   they can never disagree with each other.
+
+   *** THE WAKE IS TWO CLOCKS, NOT A KEYFRAME. ***
+   A trail needs to know which way the thing came from, and CSS has no memory of
+   the previous value. So the position is transitioned TWICE at different
+   speeds: --pg-a is the marker, --pg-b is a slower ghost of it. The wake spans
+   between them. At rest a == b and the wake has zero width; during a move b
+   lags behind a, and the gap between them IS the trail - pointing backwards
+   automatically in whichever direction the marker went.
+
+   *** WHAT THIS CANNOT DO ON THE LIVE SITE, AND IT IS THE IMPORTANT PART. ***
+   WooCommerce pagination is a set of LINKS. Clicking one is a document
+   navigation, and a CSS transition cannot cross a page load - the old document
+   is gone before the new one paints. Making this animate on the real shop needs
+   cross-document view transitions:
+
+       @view-transition{ navigation: auto }
+
+   which is Chrome 126+, and which changes the feel of EVERY navigation on the
+   site, not just the paginator. That is a decision for the owner, so it is
+   written down here and not switched on. Everything below works today inside a
+   single document, which is what the gallery demonstrates.
    ========================================================================== */
 
+@property --pg-a{ syntax:"<number>"; inherits:true; initial-value:1 }
+@property --pg-b{ syntax:"<number>"; inherits:true; initial-value:1 }
+
 .d-pagination{
+	/* the three families */
+	--pg-ink:    var(--ink);
+	--pg-quiet:  var(--tint-grey-quiet);
+	--pg-mark:   var(--c-cocoa);
+	--pg-mark-ink: var(--ink-on-dark);
+	--pg-trail:  var(--trail-gold);
+
+	/* geometry. 2.75em is about 44px: these sit at the bottom of a long scroll,
+	   are used most on a phone, and are the last thing between somebody and the
+	   rest of the catalogue. */
+	--cell: 2.75em;
+	--pages: 12;
+	--window: 5;
+	--page: 1;
+
+	/* the two clocks */
+	--pg-a: var(--page);
+	--pg-b: var(--page);
+
+	--half: calc((var(--window) - 1) / 2);
+	--offset: clamp(0, var(--pg-a) - 1 - var(--half), var(--pages) - var(--window));
+	--mark-x: calc((var(--pg-a) - 1 - var(--offset)) * var(--cell));
+	/* the ghost's own offset, so the wake is measured in the same frame as the
+	   marker rather than against a strip that has already moved on */
+	--offset-b: clamp(0, var(--pg-b) - 1 - var(--half), var(--pages) - var(--window));
+	--ghost-x: calc((var(--pg-b) - 1 - var(--offset-b)) * var(--cell));
+
 	display:flex;
-	flex-wrap:wrap;
 	align-items:center;
 	gap:var(--space-3xs);
 	margin:var(--section-y) 0;
 	font-size:var(--fs-meta);
+	color:var(--pg-ink);
+	transition:--pg-a 360ms var(--ease-float),
+	           --pg-b 620ms var(--ease-float);
 }
+.d-pagination--cherry{
+	--pg-quiet:    var(--tint-cherry-quiet);
+	--pg-mark:     var(--c-cherry-deep);
+	--pg-mark-ink: var(--c-white);
+	--pg-trail:    var(--trail-gold);
+}
+.d-pagination--gold{
+	--pg-quiet:    var(--tint-gold-quiet);
+	--pg-mark:     var(--tint-gold-mark);
+	--pg-mark-ink: var(--c-white);
+	--pg-trail:    var(--trail-cherry);
+}
+
+/* -- the window -------------------------------------------------------------
+   Exactly --window cells wide and clipped, so the strip inside can be as long
+   as the catalogue without the control growing. */
+.d-pagination__track{
+	position:relative;
+	overflow:hidden;
+	width:calc(var(--window) * var(--cell));
+	height:var(--cell);
+	flex:none;
+}
+/* *** THE TRANSFORM MAKES THIS A STACKING CONTEXT, WHICH IS WHY IT NEEDS A
+   z-index OF ITS OWN. *** Without it the strip paints as z-index auto and the
+   marker - z-index 1, a sibling - covers the number it is supposed to sit
+   behind. The current page rendered as a bare circle with no digit in it, and
+   the numbers on the items were doing nothing, because a z-index inside a
+   stacking context cannot lift anything out of it. */
+.d-pagination__strip{
+	position:relative;
+	z-index:2;
+	display:flex;
+	margin:0;
+	padding:0;
+	list-style:none;
+	transform:translateX(calc(var(--offset) * var(--cell) * -1));
+}
+/* positioned so the visually-hidden radio stays inside ITS OWN cell. Without
+   this they all stack at the track's origin, which puts every keyboard focus
+   ring in the same place and made the first test harness click the wrong page. */
+.d-pagination__strip > li{ position:relative; flex:none; width:var(--cell) }
+
 .d-pagination__item{
+	position:relative;
+	z-index:2;
 	display:grid;
 	place-items:center;
-	min-width:2.75em;
-	min-height:2.75em;
-	padding:0 .55em;
-	border-radius:var(--radius-pill);
-	color:var(--c-cocoa);
+	width:var(--cell);
+	height:var(--cell);
+	border-radius:var(--radius-circle);
+	color:var(--pg-ink);
 	text-decoration:none;
+	cursor:pointer;
 	font-variant-numeric:tabular-nums;
-	transition:background var(--dur-ui) var(--ease-float),
-	           color var(--dur-ui) var(--ease-float);
+	transition:color var(--dur-ui) var(--ease-float);
+
 }
-.d-pagination__item:hover{ background:var(--surface-quiet) }
+.d-pagination__item:hover{ color:var(--pg-mark) }
 .d-pagination__item:focus-visible{
 	outline:2px solid var(--focus-ring);
-	outline-offset:2px;
+	outline-offset:-3px;
 }
-.d-pagination__item--current{
-	background:var(--c-cocoa);
-	color:var(--ink-on-dark);
+/* *** THE INK IS A SECOND COPY OF THE STRIP, CLIPPED TO THE MARKER. ***
+   Switching a digit's colour when its radio is checked cannot work while the
+   marker is travelling: the circle straddles two cells for most of the move, so
+   for a third of a second one number is pale with nothing under it and the
+   other is dark with the circle over it. Delaying the flip only moves the seam.
+
+   So the numbers are drawn TWICE. The lower strip is normal ink. The upper one
+   is marker ink and is clipped to a circle that sits exactly where the marker
+   sits - so a digit is light precisely to the extent that the circle covers it,
+   including halfway through, per pixel, for free.
+
+   The clip is expressed in the strip's OWN coordinates, which is why it needs
+   no --offset: clip-path is applied before the transform, so the centre is just
+   (page - .5) * cell along the whole strip.
+
+   aria-hidden and pointer-events:none, because it is the same numbers again and
+   a screen reader must not read the paginator twice. */
+.d-pagination__strip--ink{
+	position:absolute;
+	inset:0;
+	z-index:3;
+	pointer-events:none;
+	color:var(--pg-mark-ink);
+	clip-path:circle(calc((var(--cell) - .34em) / 2)
+	          at calc((var(--pg-a) - .5) * var(--cell)) 50%);
+}
+.d-pagination__strip--ink .d-pagination__item{
+	color:var(--pg-mark-ink);
 	font-weight:var(--fw-medium);
-	cursor:default;
+	transition:none;
 }
-.d-pagination__item--current:hover{ background:var(--c-cocoa) }
-/* Not a link. No border, no hover, no cursor. */
-.d-pagination__dots{
+/* The static case: server-rendered markup with no ink layer still has to show
+   which page it is on. */
+.d-pagination__item[aria-current="page"]{
+	color:var(--pg-mark-ink);
+	font-weight:var(--fw-medium);
+}
+/* The radios exist so the gallery is clickable with no script. On the real
+   shop these are links and the whole strip is server-rendered. */
+.d-pagination__radio{
+	position:absolute;
+	width:1px; height:1px;
+	opacity:0;
+	pointer-events:none;
+}
+
+/* -- the marker -------------------------------------------------------------
+   One circle for the whole control rather than a background on the current
+   number: a background cannot travel between two elements, and travelling is
+   the entire point. */
+.d-pagination__marker{
+	position:absolute;
+	z-index:1;
+	top:50%;
+	left:0;
+	width:calc(var(--cell) - .34em);
+	height:calc(var(--cell) - .34em);
+	margin:0 .17em;
+	border-radius:var(--radius-circle);
+	background:var(--pg-mark);
+	transform:translate(var(--mark-x), -50%);
+	pointer-events:none;
+}
+
+/* -- the wake ---------------------------------------------------------------
+   Spans from the ghost to the marker. Zero width at rest, widest mid-move, and
+   it points backwards on its own because the ghost is simply late.
+
+   min() and abs() are both CSS Values 4. min() is everywhere; abs() is Chrome
+   133+, so every declaration that needs it is written twice - safe value
+   first - and an old browser gets no trail rather than a broken one. */
+.d-pagination__wake{
+	position:absolute;
+	z-index:0;
+	top:50%;
+	left:0;
+	height:calc(var(--cell) - .34em);
+	border-radius:var(--radius-pill);
+	pointer-events:none;
+	filter:blur(3px);
+	background:linear-gradient(90deg,
+		transparent 0%,
+		color-mix(in oklab, var(--pg-trail) 14%, transparent) 20%,
+		color-mix(in oklab, var(--pg-trail) 62%, transparent) 42%,
+		var(--pg-trail) 50%,
+		color-mix(in oklab, var(--pg-trail) 62%, transparent) 58%,
+		color-mix(in oklab, var(--pg-trail) 14%, transparent) 80%,
+		transparent 100%);
+	/* --- the pairs. First of each is the fallback without abs(). --- */
+	width:0;
+	width:calc(abs(var(--mark-x) - var(--ghost-x)) + var(--cell) - .34em);
+	opacity:0;
+	/* MEASURED AND CORRECTED: keying this to abs(a - b) in PAGE units lit the
+	   wake up during a middle-of-the-run move, where the strip slides and the
+	   marker does not move at all - a glow sitting still behind a still circle.
+	   The wake belongs to the MARKER, so it is keyed to the marker's own travel
+	   in pixels. Zero in the middle, blooms at the ends. Dividing a length by a
+	   length in calc() gives a number, which is what makes this legal. */
+	opacity:clamp(0, calc(abs(var(--mark-x) - var(--ghost-x)) / var(--cell) * 1.9), .95);
+	transform:translate(min(var(--mark-x), var(--ghost-x)), -50%);
+	margin:0 .17em;
+}
+
+/* -- prev / next ------------------------------------------------------------
+   Drawn chevrons rather than glyphs, for the same reason the stars are drawn:
+   an arrow character is missing from more fonts than people expect and falls
+   back to a box. */
+.d-pagination__step{
 	display:grid;
 	place-items:center;
-	min-width:1.6em;
-	min-height:2.75em;
-	color:var(--ink-quiet);
-	user-select:none;
+	width:var(--cell);
+	height:var(--cell);
+	border-radius:var(--radius-circle);
+	color:var(--pg-ink);
+	text-decoration:none;
+	flex:none;
+	transition:background var(--dur-ui) var(--ease-float);
 }
-/* Prev and next carry a drawn chevron rather than a glyph, for the same reason
-   the stars are drawn: an arrow character is missing from more fonts than
-   people expect and falls back to a box. */
-.d-pagination__item--prev::before,
-.d-pagination__item--next::before{
+.d-pagination__step:hover{ background:var(--pg-quiet) }
+.d-pagination__step:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-3px;
+}
+.d-pagination__step::before{
 	content:"";
 	width:.46em;
 	height:.46em;
 	border-right:2px solid currentColor;
 	border-bottom:2px solid currentColor;
 }
-.d-pagination__item--prev::before{ transform:rotate(135deg); margin-left:.2em }
-.d-pagination__item--next::before{ transform:rotate(-45deg); margin-right:.2em }
-.d-pagination__item[aria-disabled="true"]{
+.d-pagination__step--prev::before{ transform:rotate(135deg); margin-left:.2em }
+.d-pagination__step--next::before{ transform:rotate(-45deg); margin-right:.2em }
+.d-pagination__step[aria-disabled="true"]{
 	color:var(--ink-placeholder);
 	pointer-events:none;
 }
 
+/* Not a link. No border, no hover, no cursor - a target that does nothing when
+   pressed is worse than no target. */
+.d-pagination__dots{
+	display:grid;
+	place-items:center;
+	min-width:1.6em;
+	height:var(--cell);
+	color:var(--ink-quiet);
+	user-select:none;
+}
+
+/* -- the money path ---------------------------------------------------------
+   There is no paginator on cart or checkout, so this is belt and braces rather
+   than a live rule. The wake is atmosphere; if a paginator ever lands there it
+   goes quiet. */
+body.woocommerce-cart .d-pagination__wake,
+body.woocommerce-checkout .d-pagination__wake,
+body.woocommerce-order-received .d-pagination__wake{ opacity:0 }
 }
 
 /* ==== patterns/panel.css ==== */
