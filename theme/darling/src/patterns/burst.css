@@ -46,8 +46,17 @@
 }
 .d-burst i{
 	position:absolute;
-	top:50%;
-	left:50%;
+	/* *** THE ORIGIN IS A VARIABLE, DEFAULTING TO THE MIDDLE. ***
+	   The owner asked for the stars to come from where he clicked. They already
+	   came from a single point - that is what makes them read as emerging from
+	   behind the pill rather than fading in where they land - so this only
+	   changes which point. darling-ui.js writes the click position in; with no
+	   script, or on a keyboard activation that has no coordinates, it stays
+	   50% 50% and the component behaves exactly as before.
+	   The --bx/--by destinations are relative to this, so the whole spray moves
+	   with the origin. */
+	top:var(--burst-y, 50%);
+	left:var(--burst-x, 50%);
 	/* *** SIZE IS A BASE TIMES A MULTIPLIER, NOT A SECOND SET OF NUMBERS. ***
 	   The owner wants the click burst four times bigger. Writing four-times
 	   values into the pop would mean nine more lengths that have to be kept in

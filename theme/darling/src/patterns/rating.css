@@ -94,7 +94,17 @@
    and this sits on grey-100. So the shine is a specular sweep ACROSS the star
    instead - a light band that travels corner to corner. The parent's clip-path
    clips its descendants, so the band is star-shaped for free. */
-.d-rating-input__star::after{
+/* *** THE SAME SWEEP DRAWS WOOCOMMERCE'S PICKER TOO. ***
+   Woo's review-form rating is five <a> elements inside <p class="stars">, and
+   the first attempt at it wrote a SECOND sweep in adopted/rating.css - flat
+   white instead of this three-stop warm band, 2.4s instead of 2.2, no
+   drop-shadow. The owner spotted it immediately: "you seem to have made an
+   entirely new Rating component which we should not have."
+   One block, two selector lists. Safe to keep it layered because Woo sets
+   nothing at all on ::after - only the FILL is contested, and that stays in
+   adopted/rating.css where the resting fill already lives. */
+.d-rating-input__star::after,
+.woocommerce p.stars a::after{
 	content:"";
 	position:absolute;
 	inset:0;
@@ -148,7 +158,14 @@
 .d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star,
 .d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star,
 .d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star,
-.d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star{
+.d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star,
+/* Woo's picker, same lift. Five plain siblings rather than radios in labels, so
+   "at or before the hovered star" is two selectors instead of five: am I
+   hovered, or does a hovered star come after me. The FILL is missing from this
+   block on purpose - it is set unlayered in adopted/rating.css and a layered
+   background here would lose to it. */
+.woocommerce p.stars a:hover,
+.woocommerce p.stars a:has(~ a:hover){
 	background:var(--g-light);
 	transform:translateY(-.16em) scale(1.08);
 	filter:drop-shadow(0 .12em .22em hsl(from var(--g-deep) h s l / .45));
@@ -170,6 +187,8 @@
 .d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star::after,
+.woocommerce p.stars a:hover::after,
+.woocommerce p.stars a:has(~ a:hover)::after,
 .d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star::after{
 	/* Reveal only. Note this must NOT use the `animation` shorthand: it would
 	   reset animation-delay to 0 and, being more specific than the per-star
@@ -184,6 +203,15 @@
 .d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:600ms }
 .d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:900ms }
 .d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:1200ms }
+/* The same 300ms stagger for Woo's five, so the light travels through the row
+   rather than five stars blinking together. This is the part the owner missed
+   most - "the before sheen was much better because it travelled through the
+   stars" - and it is the whole reason the animation runs from page load instead
+   of from hover. */
+.woocommerce p.stars a:nth-child(2)::after{ animation-delay:300ms }
+.woocommerce p.stars a:nth-child(3)::after{ animation-delay:600ms }
+.woocommerce p.stars a:nth-child(4)::after{ animation-delay:900ms }
+.woocommerce p.stars a:nth-child(5)::after{ animation-delay:1200ms }
 /* Transform only - opacity is the hover switch, not part of the loop. The band
    crosses in the first 14% (300ms of 2.2s) and waits out the rest off-frame,
    where the star's clip-path hides it. */

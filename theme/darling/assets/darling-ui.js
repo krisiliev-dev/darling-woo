@@ -294,7 +294,23 @@
 		   takes the attribute off after its timeout - so 900 cut the animation
 		   in half, mid-flight, with the stars still visible. The timeout has to
 		   outlast the longest star. */
-		el.addEventListener('click', function () { bump(burst, 'data-pop', 1700); });
+		el.addEventListener('click', function (e) {
+			/* Where the finger landed, in the host's own coordinates.
+			   *** A KEYBOARD ACTIVATION HAS NO COORDINATES. *** Enter on a
+			   focused button fires a click with clientX/clientY of 0 and
+			   detail 0. Taking those at face value would throw every keyboard
+			   user's stars from the top-left corner of the viewport, so when
+			   there is no pointer the origin stays at the centre. */
+			if (e.detail > 0) {
+				var r = el.getBoundingClientRect();
+				burst.style.setProperty('--burst-x', (e.clientX - r.left) + 'px');
+				burst.style.setProperty('--burst-y', (e.clientY - r.top) + 'px');
+			} else {
+				burst.style.removeProperty('--burst-x');
+				burst.style.removeProperty('--burst-y');
+			}
+			bump(burst, 'data-pop', 1700);
+		});
 	}
 
 	function init(root) {

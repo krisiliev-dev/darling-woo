@@ -82,69 +82,31 @@
 .woocommerce p.stars a.active ~ a{ background:var(--g-core) }
 .woocommerce p.stars a:hover ~ a{ background:var(--c-ash-300) }
 
-/* -- THE LIFT AND THE SWEEP -------------------------------------------------
-   Owner: "shouldn't the review stars be there? The ones that raise up and
-   sheen?" They should. .d-rating-input has both and this had neither - it only
-   ever got the shape and the fill.
+/* -- what stays here, and only what stays here ------------------------------
+   The SPAN is the flex line, not the p: Woo emits <p class="stars"><span>, and
+   missing that is why the picker rendered as five bare links reading
+   "1 2 3 4 5". And the anchors need `position:relative` for the sweep to have
+   something to be absolute against - Woo already sets it, this states it so a
+   Woo update cannot quietly take it away.
 
-   *** TWO SELECTORS, NOT FIFTEEN. *** patterns/rating.css enumerates every
-   combination because its stars are radios wrapped in labels and it needs
-   :has() on the CONTAINER to read forwards. Woo's are five plain siblings, so
-   the same question - "is this star at or before the hovered one" - is just
-   "am I hovered, or does a hovered star come after me": a:hover, and
-   a:has(~ a:hover).
+   *** THE LIFT AND THE SWEEP ARE NOT HERE. *** They are in patterns/rating.css,
+   in the same rule that draws them for .d-rating-input, because Woo sets
+   nothing on ::after, transform or filter - so they are uncontested and belong
+   in the system rather than in the override file. There is one sweep.
 
-   Woo emits <p class="stars"><span><a>...</a></span></p>, so the SPAN is the
-   flex line, not the p. Missing that is why the picker rendered as five bare
-   links reading "1 2 3 4 5" - which is the "button next to the label" the owner
-   saw. */
+   The FILL states below stay, and have to: the resting fill on these anchors is
+   set from this unlayered file, and unlayered beats layered. A hover fill
+   written in patterns/ would lose to the resting fill written here. Once one
+   state of a property is unlayered, all of them must be. */
 .woocommerce p.stars span{ display:inline-flex; gap:.12em; align-items:flex-end }
-.woocommerce p.stars a{
-	position:relative;
-	overflow:hidden;
-	transition:background 120ms var(--ease-float),
-	           translate 160ms var(--ease-float),
-	           scale 160ms var(--ease-float);
-}
-.woocommerce p.stars a:hover,
-.woocommerce p.stars a:has(~ a:hover){
-	translate:0 -.16em;
-	scale:1.08;
-}
-/* The sheen. A band of light swept across the star - and it is clipped to the
-   star's silhouette for free, because the mask on the <a> clips everything that
-   element paints, its own pseudo-element included. The same fact that made the
-   cart's wheels invisible is the one that makes this work.
-   The animation runs from page load rather than from hover, so five stars
-   hovered in sequence stay in step with each other instead of each starting its
-   own timer; hover only reveals it. */
-.woocommerce p.stars a::after{
-	content:"";
-	position:absolute;
-	inset:0;
-	opacity:0;
-	background:linear-gradient(105deg,
-		transparent 36%, color-mix(in oklab, var(--c-white) 85%, transparent) 50%,
-		transparent 64%);
-	translate:-115% 0;
-	animation:d-star-sweep 2.4s linear infinite;
-}
-.woocommerce p.stars a:hover::after,
-.woocommerce p.stars a:has(~ a:hover)::after{ opacity:1 }
-.woocommerce p.stars a:nth-child(2)::after{ animation-delay:300ms }
-.woocommerce p.stars a:nth-child(3)::after{ animation-delay:600ms }
-.woocommerce p.stars a:nth-child(4)::after{ animation-delay:900ms }
-.woocommerce p.stars a:nth-child(5)::after{ animation-delay:1200ms }
-@media (prefers-reduced-motion: reduce){
-	.woocommerce p.stars a::after{ display:none }
-	.woocommerce p.stars a:hover,
-	.woocommerce p.stars a:has(~ a:hover){ translate:none; scale:1 }
-}
-/* *** AND A NOTE ON WHAT THIS STILL IS NOT. ***
+.woocommerce p.stars a{ position:relative }
+
+/* *** AND WHAT THIS STILL IS NOT. ***
    These are anchors. Woo's picker needs JavaScript to record a choice, cannot
    be operated from the keyboard, and announces nothing useful to a screen
    reader. .d-rating-input is five real radios in a fieldset and has none of
-   those problems. Replacing the markup is a PHP change - the review form's
-   rating field is printed by woocommerce_comment_form_rating() and is
-   replaceable - and until somebody makes it, this is a good-looking control
-   that half the people using it cannot operate. Worth doing properly. */
+   those problems - which is the second reason this file should not be growing a
+   rating component of its own. Replacing the markup is a PHP change: the review
+   form's rating field is printed by woocommerce_comment_form_rating() and is
+   replaceable. Until somebody makes it, this is a good-looking control that
+   some people cannot operate. */

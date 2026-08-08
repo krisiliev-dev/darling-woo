@@ -2506,8 +2506,17 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 }
 .d-burst i{
 	position:absolute;
-	top:50%;
-	left:50%;
+	/* *** THE ORIGIN IS A VARIABLE, DEFAULTING TO THE MIDDLE. ***
+	   The owner asked for the stars to come from where he clicked. They already
+	   came from a single point - that is what makes them read as emerging from
+	   behind the pill rather than fading in where they land - so this only
+	   changes which point. darling-ui.js writes the click position in; with no
+	   script, or on a keyboard activation that has no coordinates, it stays
+	   50% 50% and the component behaves exactly as before.
+	   The --bx/--by destinations are relative to this, so the whole spray moves
+	   with the origin. */
+	top:var(--burst-y, 50%);
+	left:var(--burst-x, 50%);
 	/* *** SIZE IS A BASE TIMES A MULTIPLIER, NOT A SECOND SET OF NUMBERS. ***
 	   The owner wants the click burst four times bigger. Writing four-times
 	   values into the pop would mean nine more lengths that have to be kept in
@@ -4013,7 +4022,17 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
    and this sits on grey-100. So the shine is a specular sweep ACROSS the star
    instead - a light band that travels corner to corner. The parent's clip-path
    clips its descendants, so the band is star-shaped for free. */
-.d-rating-input__star::after{
+/* *** THE SAME SWEEP DRAWS WOOCOMMERCE'S PICKER TOO. ***
+   Woo's review-form rating is five <a> elements inside <p class="stars">, and
+   the first attempt at it wrote a SECOND sweep in adopted/rating.css - flat
+   white instead of this three-stop warm band, 2.4s instead of 2.2, no
+   drop-shadow. The owner spotted it immediately: "you seem to have made an
+   entirely new Rating component which we should not have."
+   One block, two selector lists. Safe to keep it layered because Woo sets
+   nothing at all on ::after - only the FILL is contested, and that stays in
+   adopted/rating.css where the resting fill already lives. */
+.d-rating-input__star::after,
+.woocommerce p.stars a::after{
 	content:"";
 	position:absolute;
 	inset:0;
@@ -4067,7 +4086,14 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star,
 .d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star,
 .d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star,
-.d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star{
+.d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star,
+/* Woo's picker, same lift. Five plain siblings rather than radios in labels, so
+   "at or before the hovered star" is two selectors instead of five: am I
+   hovered, or does a hovered star come after me. The FILL is missing from this
+   block on purpose - it is set unlayered in adopted/rating.css and a layered
+   background here would lose to it. */
+.woocommerce p.stars a:hover,
+.woocommerce p.stars a:has(~ a:hover){
 	background:var(--g-light);
 	transform:translateY(-.16em) scale(1.08);
 	filter:drop-shadow(0 .12em .22em hsl(from var(--g-deep) h s l / .45));
@@ -4089,6 +4115,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star::after,
 .d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star::after,
+.woocommerce p.stars a:hover::after,
+.woocommerce p.stars a:has(~ a:hover)::after,
 .d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star::after{
 	/* Reveal only. Note this must NOT use the `animation` shorthand: it would
 	   reset animation-delay to 0 and, being more specific than the per-star
@@ -4103,6 +4131,15 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-rating-input label:nth-child(3) .d-rating-input__star::after{ animation-delay:600ms }
 .d-rating-input label:nth-child(4) .d-rating-input__star::after{ animation-delay:900ms }
 .d-rating-input label:nth-child(5) .d-rating-input__star::after{ animation-delay:1200ms }
+/* The same 300ms stagger for Woo's five, so the light travels through the row
+   rather than five stars blinking together. This is the part the owner missed
+   most - "the before sheen was much better because it travelled through the
+   stars" - and it is the whole reason the animation runs from page load instead
+   of from hover. */
+.woocommerce p.stars a:nth-child(2)::after{ animation-delay:300ms }
+.woocommerce p.stars a:nth-child(3)::after{ animation-delay:600ms }
+.woocommerce p.stars a:nth-child(4)::after{ animation-delay:900ms }
+.woocommerce p.stars a:nth-child(5)::after{ animation-delay:1200ms }
 /* Transform only - opacity is the hover switch, not part of the loop. The band
    crosses in the first 14% (300ms of 2.2s) and waits out the rest off-frame,
    where the star's clip-path hides it. */
@@ -8178,73 +8215,34 @@ li.product .wp-block-button__link{
 .woocommerce p.stars a.active ~ a{ background:var(--g-core) }
 .woocommerce p.stars a:hover ~ a{ background:var(--c-ash-300) }
 
-/* -- THE LIFT AND THE SWEEP -------------------------------------------------
-   Owner: "shouldn't the review stars be there? The ones that raise up and
-   sheen?" They should. .d-rating-input has both and this had neither - it only
-   ever got the shape and the fill.
+/* -- what stays here, and only what stays here ------------------------------
+   The SPAN is the flex line, not the p: Woo emits <p class="stars"><span>, and
+   missing that is why the picker rendered as five bare links reading
+   "1 2 3 4 5". And the anchors need `position:relative` for the sweep to have
+   something to be absolute against - Woo already sets it, this states it so a
+   Woo update cannot quietly take it away.
 
-   *** TWO SELECTORS, NOT FIFTEEN. *** patterns/rating.css enumerates every
-   combination because its stars are radios wrapped in labels and it needs
-   :has() on the CONTAINER to read forwards. Woo's are five plain siblings, so
-   the same question - "is this star at or before the hovered one" - is just
-   "am I hovered, or does a hovered star come after me": a:hover, and
-   a:has(~ a:hover).
+   *** THE LIFT AND THE SWEEP ARE NOT HERE. *** They are in patterns/rating.css,
+   in the same rule that draws them for .d-rating-input, because Woo sets
+   nothing on ::after, transform or filter - so they are uncontested and belong
+   in the system rather than in the override file. There is one sweep.
 
-   Woo emits <p class="stars"><span><a>...</a></span></p>, so the SPAN is the
-   flex line, not the p. Missing that is why the picker rendered as five bare
-   links reading "1 2 3 4 5" - which is the "button next to the label" the owner
-   saw. */
+   The FILL states below stay, and have to: the resting fill on these anchors is
+   set from this unlayered file, and unlayered beats layered. A hover fill
+   written in patterns/ would lose to the resting fill written here. Once one
+   state of a property is unlayered, all of them must be. */
 .woocommerce p.stars span{ display:inline-flex; gap:.12em; align-items:flex-end }
-.woocommerce p.stars a{
-	position:relative;
-	overflow:hidden;
-	transition:background 120ms var(--ease-float),
-	           translate 160ms var(--ease-float),
-	           scale 160ms var(--ease-float);
-}
-.woocommerce p.stars a:hover,
-.woocommerce p.stars a:has(~ a:hover){
-	translate:0 -.16em;
-	scale:1.08;
-}
-/* The sheen. A band of light swept across the star - and it is clipped to the
-   star's silhouette for free, because the mask on the <a> clips everything that
-   element paints, its own pseudo-element included. The same fact that made the
-   cart's wheels invisible is the one that makes this work.
-   The animation runs from page load rather than from hover, so five stars
-   hovered in sequence stay in step with each other instead of each starting its
-   own timer; hover only reveals it. */
-.woocommerce p.stars a::after{
-	content:"";
-	position:absolute;
-	inset:0;
-	opacity:0;
-	background:linear-gradient(105deg,
-		transparent 36%, color-mix(in oklab, var(--c-white) 85%, transparent) 50%,
-		transparent 64%);
-	translate:-115% 0;
-	animation:d-star-sweep 2.4s linear infinite;
-}
-.woocommerce p.stars a:hover::after,
-.woocommerce p.stars a:has(~ a:hover)::after{ opacity:1 }
-.woocommerce p.stars a:nth-child(2)::after{ animation-delay:300ms }
-.woocommerce p.stars a:nth-child(3)::after{ animation-delay:600ms }
-.woocommerce p.stars a:nth-child(4)::after{ animation-delay:900ms }
-.woocommerce p.stars a:nth-child(5)::after{ animation-delay:1200ms }
-@media (prefers-reduced-motion: reduce){
-	.woocommerce p.stars a::after{ display:none }
-	.woocommerce p.stars a:hover,
-	.woocommerce p.stars a:has(~ a:hover){ translate:none; scale:1 }
-}
-/* *** AND A NOTE ON WHAT THIS STILL IS NOT. ***
+.woocommerce p.stars a{ position:relative }
+
+/* *** AND WHAT THIS STILL IS NOT. ***
    These are anchors. Woo's picker needs JavaScript to record a choice, cannot
    be operated from the keyboard, and announces nothing useful to a screen
    reader. .d-rating-input is five real radios in a fieldset and has none of
-   those problems. Replacing the markup is a PHP change - the review form's
-   rating field is printed by woocommerce_comment_form_rating() and is
-   replaceable - and until somebody makes it, this is a good-looking control
-   that half the people using it cannot operate. Worth doing properly. */
-
+   those problems - which is the second reason this file should not be growing a
+   rating component of its own. Replacing the markup is a PHP change: the review
+   form's rating field is printed by woocommerce_comment_form_rating() and is
+   replaceable. Until somebody makes it, this is a good-looking control that
+   some people cannot operate. */
 
 /* ==== adopted/table.css ==== */
 /* =============================================================================
@@ -10430,7 +10428,23 @@ that is the next component.</div>
 		   takes the attribute off after its timeout - so 900 cut the animation
 		   in half, mid-flight, with the stars still visible. The timeout has to
 		   outlast the longest star. */
-		el.addEventListener('click', function () { bump(burst, 'data-pop', 1700); });
+		el.addEventListener('click', function (e) {
+			/* Where the finger landed, in the host's own coordinates.
+			   *** A KEYBOARD ACTIVATION HAS NO COORDINATES. *** Enter on a
+			   focused button fires a click with clientX/clientY of 0 and
+			   detail 0. Taking those at face value would throw every keyboard
+			   user's stars from the top-left corner of the viewport, so when
+			   there is no pointer the origin stays at the centre. */
+			if (e.detail > 0) {
+				var r = el.getBoundingClientRect();
+				burst.style.setProperty('--burst-x', (e.clientX - r.left) + 'px');
+				burst.style.setProperty('--burst-y', (e.clientY - r.top) + 'px');
+			} else {
+				burst.style.removeProperty('--burst-x');
+				burst.style.removeProperty('--burst-y');
+			}
+			bump(burst, 'data-pop', 1700);
+		});
 	}
 
 	function init(root) {
