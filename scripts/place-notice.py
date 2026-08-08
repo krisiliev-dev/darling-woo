@@ -1,4 +1,4 @@
-"""notice.css rev3 - the stars leave the icon column and take the whole element.
+"""notice.css rev4 - eleven stars, aimed at the text, and a close that reads.
 
 Owner, 2026-08-08:
   - the text takes the full width; the stars roam the element, constrained to it
@@ -8,13 +8,24 @@ Owner, 2026-08-08:
   - info: the star points from above, below or the other side
   - the close button is a star, and a SINGLE SPIN - no growing, nothing flashy
 
-*** WHY THERE ARE EXACTLY FIVE STARS AND NOT MORE. ***
-No JavaScript on this, so every star is an element or a pseudo-element. The
-notice gives two (::before, ::after) and a single decorative <span> gives three
-more (itself plus its two). Five bodies, staggered on different delays and
-durations, is enough to read as "continuously" without a script, and it costs
-one empty span in markup we already control. WooCommerce's own notices get none
-of it - see the adopted block.
+Owner again, after rev3:
+  - the orbit and the pokes aim at the MIDDLE of the element, but the text is
+    left aligned - aim at the text
+  - the close star must be turned 45 degrees or it is a plus sign
+  - more expressive: more stars, and the excited ones faster and erratic
+    rather than easing in and out
+
+*** ELEVEN STARS, AND WHY NOT MORE. ***
+No JavaScript, so every star is an element or a pseudo-element. The notice gives
+two; each <span class="d-notice__stars"> gives three, and we emit three of them.
+Eleven is what "continuously" costs without a script. WooCommerce's own notices
+get none of it - its markup has no span for us to use.
+
+*** ERRATIC IS A TIMING PROBLEM, NOT A PATH PROBLEM. ***
+The excited stars use LINEAR timing and keyframe stops at uneven intervals -
+13, 24, 41, 55, 69, 88. An ease makes every leg accelerate and settle the same
+way, which reads as a route being followed however wild the path is; uneven
+stops on linear timing read as a mind being changed.
 
 *** THE STARS SIT BEHIND THE TEXT. ***
 A star crossing a word is a legibility bug dressed as whimsy. The stars layer at
@@ -45,11 +56,10 @@ NOTICE = '''/* =================================================================
    state is a star BEHAVING differently across the notice: rain on error, an
    orbit around the text on warning, darting on success, a poke on info.
 
-   FIVE STAR BODIES, NO SCRIPT. The notice gives two pseudo-elements and one
-   decorative <span class="d-notice__stars"> gives three more. Staggered delays
-   and durations make five read as continuous. They sit at z-index 0, behind the
-   body at z-index 1, because a star crossing a word is a legibility bug dressed
-   up as whimsy. overflow:hidden keeps them inside the box.
+   ELEVEN STAR BODIES, NO SCRIPT - the notice's two pseudo-elements plus three
+   spans of three. They sit at z-index 0, behind the body at z-index 1, because
+   a star crossing a word is a legibility bug dressed up as whimsy, and
+   overflow:hidden keeps them inside the box.
 
    *** EVERY ANIMATION HERE IS OFF ON THE MONEY PATH. ***
    motion.css kills animation on cart, checkout and order-received and under
@@ -85,8 +95,19 @@ NOTICE = '''/* =================================================================
 .d-notice__title{ display:block; font-weight:var(--fw-medium) }
 .d-notice a{ color:inherit }
 
-/* -- the five star bodies ---------------------------------------------------
-   One shape. Position, timing and behaviour are all a state's business. */
+/* -- the star bodies --------------------------------------------------------
+   ELEVEN of them, and every one is an element or a pseudo-element because there
+   is no script here. The notice gives two; each <span class="d-notice__stars">
+   gives three (itself plus its two), and we emit three spans. Eleven staggered
+   bodies is what "continuously" costs without JavaScript.
+
+   They sit at z-index 0, behind the body at z-index 1: a star crossing a word is
+   a legibility bug dressed up as whimsy. overflow:hidden keeps them in the box.
+
+   *** THE ORBITS AND THE POKES AIM AT THE TEXT, NOT THE BOX. ***
+   The text is left aligned, so anything centred on the element circles empty
+   space to the right of the message. Everything below is anchored near the left
+   third, in em, which tracks the type rather than the container width. */
 .d-notice::before,
 .d-notice::after,
 .d-notice__stars,
@@ -101,15 +122,11 @@ NOTICE = '''/* =================================================================
 	background:var(--notice-info-edge);
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
 }
-/* The span is a star AND the container for two more, so its children position
-   against the notice rather than against it - hence inset:0 and its own
-   absolute children placed in element percentages. */
-.d-notice__stars{ left:22%; top:34% }
 
-/* -- error: it rains stars, and they go out ---------------------------------
-   Five columns across the width, five different speeds. Each falls from above
-   the box, darkens to cocoa on the way down and is gone before it lands - the
-   dying feel the owner asked for. */
+/* -- error: it rains, it tumbles, it flickers out ---------------------------
+   Eleven columns across the width. Each star tumbles as it falls, FLICKERS
+   twice on the way down - the stutter is what makes it read as dying rather
+   than as merely leaving - darkens to cocoa and is gone before it lands. */
 .d-notice--error{
 	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-error-edge) 22%, transparent);
@@ -123,53 +140,69 @@ NOTICE = '''/* =================================================================
 	top:0;
 	animation:d-star-rain 4.2s linear infinite;
 }
-.d-notice--error::before                    { left:9%;  animation-duration:4.2s; animation-delay:0s }
-.d-notice--error::after                     { left:31%; animation-duration:5.6s; animation-delay:1.4s }
-.d-notice--error .d-notice__stars           { left:52%; animation-duration:3.7s; animation-delay:2.6s }
-.d-notice--error .d-notice__stars::before   { left:71%; animation-duration:6.1s; animation-delay:.7s }
-.d-notice--error .d-notice__stars::after    { left:88%; animation-duration:4.9s; animation-delay:3.3s }
+.d-notice--error::before { left:5%;  animation-duration:4.2s; animation-delay:0s }
+.d-notice--error::after  { left:14%; animation-duration:5.6s; animation-delay:1.4s }
+.d-notice--error .d-notice__stars:nth-of-type(1)         { left:24%; animation-duration:3.7s; animation-delay:2.6s }
+.d-notice--error .d-notice__stars:nth-of-type(1)::before { left:33%; animation-duration:6.1s; animation-delay:.7s }
+.d-notice--error .d-notice__stars:nth-of-type(1)::after  { left:42%; animation-duration:4.9s; animation-delay:3.3s }
+.d-notice--error .d-notice__stars:nth-of-type(2)         { left:52%; animation-duration:5.1s; animation-delay:1.9s }
+.d-notice--error .d-notice__stars:nth-of-type(2)::before { left:61%; animation-duration:3.9s; animation-delay:4.1s }
+.d-notice--error .d-notice__stars:nth-of-type(2)::after  { left:70%; animation-duration:6.4s; animation-delay:.3s }
+.d-notice--error .d-notice__stars:nth-of-type(3)         { left:79%; animation-duration:4.6s; animation-delay:2.2s }
+.d-notice--error .d-notice__stars:nth-of-type(3)::before { left:88%; animation-duration:5.3s; animation-delay:3.8s }
+.d-notice--error .d-notice__stars:nth-of-type(3)::after  { left:95%; animation-duration:4.0s; animation-delay:1.1s }
 @keyframes d-star-rain{
-	0%   { transform:translateY(-1.4em) scale(.9) rotate(0deg);
+	0%   { transform:translateY(-1.4em) scale(.95) rotate(0deg);
 	       background:var(--notice-error-edge); opacity:0 }
-	14%  { opacity:.85 }
-	64%  { background:var(--c-cocoa); opacity:.6 }
-	100% { transform:translateY(4.6em) scale(.35) rotate(150deg);
+	10%  { opacity:.9 }
+	38%  { opacity:.25 }                       /* the first guttering */
+	46%  { opacity:.8 }
+	62%  { background:var(--c-cocoa); opacity:.18 }   /* the second */
+	70%  { opacity:.5 }
+	100% { transform:translateY(4.8em) scale(.3) rotate(320deg);
 	       background:var(--c-cocoa); opacity:0 }
 }
 
-/* -- warning: one star circles the text -------------------------------------
-   An ellipse, walked in eight steps rather than rotated about an origin: a
-   rotation gives a circle, and a circle around a wide box either clips at the
-   top or barely moves at the sides. The eight stops trace the box's own
-   proportions. */
+/* -- warning: two stars circle THE TEXT, and brighten as they pass -----------
+   An ellipse walked in eight steps, anchored over the left third where the
+   message actually is. A rotation would give a circle, and a circle around a
+   wide box either clips at the top or barely moves at the sides. */
 .d-notice--warning{
 	background:color-mix(in oklab, var(--notice-warning-edge) 11%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-warning-edge) 24%, transparent);
 }
 .d-notice--warning::before,
-.d-notice--warning::after{
+.d-notice--warning::after,
+.d-notice--warning .d-notice__stars:nth-of-type(1){
 	background:var(--notice-warning-edge);
-	left:50%; top:50%;
+	left:8.5em; top:50%;
 	margin:-.4em 0 0 -.4em;
-	animation:d-star-circle 9s linear infinite;
+	animation:d-star-circle 7.5s linear infinite;
 }
-.d-notice--warning::after{ animation-delay:-4.5s; opacity:.45; width:.55em; height:.55em }
-.d-notice--warning .d-notice__stars,
+.d-notice--warning::after{ animation-delay:-2.5s; width:.6em; height:.6em }
+.d-notice--warning .d-notice__stars:nth-of-type(1){ animation-delay:-5s; width:.5em; height:.5em }
+.d-notice--warning .d-notice__stars:nth-of-type(2),
+.d-notice--warning .d-notice__stars:nth-of-type(3),
 .d-notice--warning .d-notice__stars::before,
 .d-notice--warning .d-notice__stars::after{ display:none }
 @keyframes d-star-circle{
-	0%   { transform:translate(-15em, -1.05em) }
-	12.5%{ transform:translate(-10.6em, -1.55em) }
-	25%  { transform:translate(0em, -1.75em) }
-	37.5%{ transform:translate(10.6em, -1.55em) }
-	50%  { transform:translate(15em, 0) }
-	62.5%{ transform:translate(10.6em, 1.55em) }
-	75%  { transform:translate(0em, 1.75em) }
-	87.5%{ transform:translate(-10.6em, 1.55em) }
-	100% { transform:translate(-15em, -1.05em) }
+	0%   { transform:translate(-8.4em, -.6em) scale(.7);  opacity:.4 }
+	12.5%{ transform:translate(-5.9em, -1.5em) scale(.85); opacity:.6 }
+	25%  { transform:translate(0em, -1.85em) scale(1.1);  opacity:1 }
+	37.5%{ transform:translate(5.9em, -1.5em) scale(.85); opacity:.6 }
+	50%  { transform:translate(8.4em, -.6em) scale(.7);   opacity:.4 }
+	62.5%{ transform:translate(5.9em, .4em) scale(.85);   opacity:.6 }
+	75%  { transform:translate(0em, .75em) scale(1.1);    opacity:1 }
+	87.5%{ transform:translate(-5.9em, .4em) scale(.85);  opacity:.6 }
+	100% { transform:translate(-8.4em, -.6em) scale(.7);  opacity:.4 }
 }
 
-/* -- success: the stars are pleased and will not settle ---------------------- */
+/* -- success: eleven stars, and none of them can sit still -------------------
+   The owner: "more and more excited and flying faster erratically rather than
+   easing in and out". So: short cycles, LINEAR timing rather than an ease, and
+   keyframe stops at uneven intervals - 13, 24, 41, 55, 69, 88 - because evenly
+   spaced stops read as a route being followed and uneven ones read as a mind
+   being changed. Each star also spins a different number of turns. */
 .d-notice--success{
 	background:color-mix(in oklab, var(--g-core) 13%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--g-core) 30%, transparent);
@@ -180,61 +213,70 @@ NOTICE = '''/* =================================================================
 .d-notice--success .d-notice__stars::before,
 .d-notice--success .d-notice__stars::after{
 	background:var(--g-core);
-	animation:d-star-zoom 6.5s var(--ease-float) infinite;
+	animation:d-star-dart 2.9s linear infinite;
 }
-.d-notice--success::before                  { left:6%;  top:20%; animation-delay:0s }
-.d-notice--success::after                   { left:37%; top:66%; animation-delay:1.3s }
-.d-notice--success .d-notice__stars         { left:62%; top:16%; animation-delay:2.6s }
-.d-notice--success .d-notice__stars::before { left:81%; top:58%; animation-delay:3.9s; width:.6em; height:.6em }
-.d-notice--success .d-notice__stars::after  { left:21%; top:72%; animation-delay:5.2s; width:.55em; height:.55em }
-@keyframes d-star-zoom{
-	0%   { transform:translate(0,0) scale(.55) rotate(0deg);          opacity:.35 }
-	18%  { transform:translate(1.6em,-.7em) scale(1.05) rotate(70deg); opacity:.95 }
-	38%  { transform:translate(3.4em,.5em) scale(.75) rotate(150deg);  opacity:.7 }
-	58%  { transform:translate(1.2em,1.1em) scale(1) rotate(240deg);   opacity:.9 }
-	80%  { transform:translate(-.9em,.2em) scale(.65) rotate(310deg);  opacity:.5 }
-	100% { transform:translate(0,0) scale(.55) rotate(360deg);         opacity:.35 }
+.d-notice--success::before { left:7%;  top:22%; animation-duration:2.4s; animation-delay:0s }
+.d-notice--success::after  { left:19%; top:64%; animation-duration:3.3s; animation-delay:-.7s }
+.d-notice--success .d-notice__stars:nth-of-type(1)         { left:31%; top:14%; animation-duration:2.7s; animation-delay:-1.4s }
+.d-notice--success .d-notice__stars:nth-of-type(1)::before { left:44%; top:70%; animation-duration:3.6s; animation-delay:-2.1s; width:.62em; height:.62em }
+.d-notice--success .d-notice__stars:nth-of-type(1)::after  { left:56%; top:30%; animation-duration:2.2s; animation-delay:-.4s; width:.55em; height:.55em }
+.d-notice--success .d-notice__stars:nth-of-type(2)         { left:66%; top:58%; animation-duration:3.1s; animation-delay:-1.8s }
+.d-notice--success .d-notice__stars:nth-of-type(2)::before { left:76%; top:20%; animation-duration:2.6s; animation-delay:-2.4s; width:.6em; height:.6em }
+.d-notice--success .d-notice__stars:nth-of-type(2)::after  { left:85%; top:72%; animation-duration:3.4s; animation-delay:-.9s; width:.5em; height:.5em }
+.d-notice--success .d-notice__stars:nth-of-type(3)         { left:92%; top:36%; animation-duration:2.5s; animation-delay:-1.1s; width:.58em; height:.58em }
+.d-notice--success .d-notice__stars:nth-of-type(3)::before { left:12%; top:44%; animation-duration:3.0s; animation-delay:-2.7s; width:.52em; height:.52em }
+.d-notice--success .d-notice__stars:nth-of-type(3)::after  { left:49%; top:52%; animation-duration:2.8s; animation-delay:-1.6s; width:.66em; height:.66em }
+@keyframes d-star-dart{
+	0%   { transform:translate(0,0) scale(.5) rotate(0deg);            opacity:.35 }
+	13%  { transform:translate(1.9em,-.9em) scale(1.2) rotate(140deg); opacity:1 }
+	24%  { transform:translate(.4em,-1.5em) scale(.7) rotate(190deg);  opacity:.6 }
+	41%  { transform:translate(2.7em,.6em) scale(1.1) rotate(430deg);  opacity:.95 }
+	55%  { transform:translate(-1.1em,1.2em) scale(.6) rotate(520deg); opacity:.5 }
+	69%  { transform:translate(1.4em,-.4em) scale(1.25) rotate(700deg);opacity:1 }
+	88%  { transform:translate(-.6em,-1.1em) scale(.75) rotate(810deg);opacity:.55 }
+	100% { transform:translate(0,0) scale(.5) rotate(900deg);          opacity:.35 }
 }
 
-/* -- info: the star points, from above and from the far side ----------------
-   The overshoot is the boing: it goes past the text, comes back through, and
-   settles. Two stars point from opposite sides so the message is addressed
-   rather than approached. */
+/* -- info: the stars point AT THE TEXT ---------------------------------------
+   One above the message and one to its left, both anchored in em over the left
+   third rather than centred on the box. The overshoot is the boing: past the
+   target, back through it, settle. They alternate, so the message is addressed
+   from two sides rather than nudged twice from one. */
 .d-notice--info::before{
-	left:14%; top:-.1em;
-	animation:d-star-poke-down 4.2s var(--ease-float) infinite;
+	left:2.2em; top:-.1em;
+	animation:d-star-poke-down 3.8s var(--ease-float) infinite;
 }
 .d-notice--info::after{
-	right:16%; left:auto; top:52%;
-	width:.62em; height:.62em; opacity:.6;
-	animation:d-star-poke-side 5.1s var(--ease-float) infinite;
-	animation-delay:1.6s;
+	left:.5em; top:48%;
+	width:.62em; height:.62em; opacity:.75;
+	animation:d-star-poke-side 3.8s var(--ease-float) infinite;
+	animation-delay:1.9s;
 }
 .d-notice--info .d-notice__stars,
 .d-notice--info .d-notice__stars::before,
 .d-notice--info .d-notice__stars::after{ display:none }
 @keyframes d-star-poke-down{
-	0%, 46%, 100% { transform:translateY(0) }
-	58%           { transform:translateY(.8em) rotate(18deg) }
-	68%           { transform:translateY(-.22em) }
-	78%           { transform:translateY(.3em) }
-	88%           { transform:translateY(-.08em) }
+	0%, 40%, 100% { transform:translateY(0) }
+	54%           { transform:translateY(1em) scale(1.15) rotate(22deg) }
+	64%           { transform:translateY(-.3em) }
+	74%           { transform:translateY(.42em) }
+	84%           { transform:translateY(-.12em) }
+	92%           { transform:translateY(.05em) }
 }
 @keyframes d-star-poke-side{
-	0%, 50%, 100% { transform:translateX(0) }
-	60%           { transform:translateX(-.9em) rotate(-20deg) }
-	70%           { transform:translateX(.25em) }
-	80%           { transform:translateX(-.32em) }
-	90%           { transform:translateX(.09em) }
+	0%, 40%, 100% { transform:translateX(0) }
+	54%           { transform:translateX(1.1em) scale(1.15) rotate(-24deg) }
+	64%           { transform:translateX(-.3em) }
+	74%           { transform:translateX(.44em) }
+	84%           { transform:translateX(-.12em) }
+	92%           { transform:translateX(.05em) }
 }
 
-/* -- the dismiss: a star, and one quiet turn --------------------------------
-   The owner: "a single spin will do, no making it bigger." So there is no
-   scale, no flare and no colour flash - one 180 degree turn and a shift from
-   cocoa to claret. Closing a notice is not an action anyone should be drawn to,
-   and a red X sitting on an error message reads as a second error. The button
-   carries no glyph: the star IS the control, which is why the accessible name
-   has to come from aria-label in the markup. */
+/* -- the dismiss: a star, rotated so it reads as a close --------------------
+   *** THE 45 DEGREES IS NOT DECORATION. *** A four-point star sitting square is
+   a plus sign, and a plus sign in the corner of a notice means "add", not
+   "close". Turned 45 degrees the same shape reads as an X. Hover adds one
+   quiet half-turn on top of that - no scale, no flare, per the owner. */
 .d-notice__dismiss{
 	grid-column:2;
 	position:relative;
@@ -249,12 +291,13 @@ NOTICE = '''/* =================================================================
 	font-size:inherit;
 	cursor:pointer;
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+	transform:rotate(45deg);
 	transition:background 240ms var(--ease-float), transform 420ms var(--ease-float);
 }
 .d-notice__dismiss:hover,
 .d-notice__dismiss:focus-visible{
 	background:var(--c-claret);
-	transform:rotate(180deg);
+	transform:rotate(225deg);
 }
 
 /* -- the store-wide bar -----------------------------------------------------
