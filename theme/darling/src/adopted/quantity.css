@@ -1,0 +1,88 @@
+/* =============================================================================
+   ADOPTED / quantity
+   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+
+   It styles markup WooCommerce and Stripe emit, which we cannot add classes to.
+   Their stylesheets are unlayered, and unlayered CSS beats layered CSS however
+   specific the layered selector is - so a rule that has to overrule them cannot
+   live in @layer patterns. Measured on the live checkout: identical rules moved
+   here went from losing on border-radius, background and border colour to
+   winning all three.
+
+   The trade is real and worth stating. Nothing in this file participates in the
+   layer order, so it also outranks OUR patterns - which means anything here that
+   is not actually contested by a third party is a rule quietly beating our own
+   system for no reason. collide.js measures the contested set; keep this file
+   inside it.
+
+   Moved out of patterns/quantity.css, not copied. There is one definition.
+   ========================================================================== */
+
+/* -- ADOPTED: WooCommerce -------------------------------------------------- */
+.wc-block-components-quantity-selector.wc-block-components-quantity-selector{
+	display:inline-grid;
+	grid-template-columns:auto 3.2em auto;
+	grid-template-areas:"minus input plus";
+	align-items:stretch;
+	width:auto;
+	min-width:0;
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-pill);
+	background:var(--surface-raised);
+	overflow:hidden;
+}
+.wc-block-components-quantity-selector.wc-block-components-quantity-selector::after{
+	content:none;   /* Woo draws a divider here; the pill needs no seam */
+}
+.wc-block-components-quantity-selector:focus-within{
+	border-color:var(--c-cocoa);
+	box-shadow:0 0 0 3px color-mix(in oklab, var(--c-cocoa) 22%, transparent);
+}
+/* *** THE BUTTONS COME AFTER THE INPUT IN THE SOURCE. ***
+   Captured, not assumed - the minus is not the first child, so grid areas do
+   the ordering rather than flex order, which keeps the tab sequence matching
+   the visual one. */
+.wc-block-components-quantity-selector__input.wc-block-components-quantity-selector__input{
+	grid-area:input;
+	border:0;
+	background:none;
+	text-align:center;
+	font:var(--type-body);
+	color:var(--c-cocoa);
+	font-variant-numeric:tabular-nums;
+	padding:0;
+	min-width:0;
+}
+.wc-block-components-quantity-selector__button.wc-block-components-quantity-selector__button{
+	border:0;
+	background:none;
+	min-width:2.6em;
+	min-height:2.6em;
+	padding:0;
+	font:var(--fw-medium) var(--fs-lede)/1 var(--font-ui);
+	color:var(--c-cocoa);
+	opacity:1;
+	cursor:pointer;
+}
+.wc-block-components-quantity-selector__button--minus{ grid-area:minus }
+.wc-block-components-quantity-selector__button--plus{ grid-area:plus }
+.wc-block-components-quantity-selector__button:hover{ background:var(--surface-quiet) }
+.wc-block-components-quantity-selector__button:disabled{
+	color:var(--ink-placeholder);
+	cursor:not-allowed;
+	background:none;
+}
+
+/* the classic quantity box, on the product page */
+.woocommerce .quantity input.qty{
+	width:4.4em;
+	min-height:2.9em;
+	padding:.5em;
+	text-align:center;
+	font:var(--type-body);
+	color:var(--c-cocoa);
+	font-variant-numeric:tabular-nums;
+	background:var(--surface-raised);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-pill);
+}

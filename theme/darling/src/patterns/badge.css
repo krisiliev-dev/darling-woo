@@ -1,0 +1,34 @@
+/* =============================================================================
+   PATTERN / BADGE
+   A short, loud label attached to something else.
+
+   *** A BADGE IS NOT A BUTTON. ***
+   It is never clickable and it never looks it: no shadow, no lift, no pointer.
+   The one on a product card sits over a photograph, so it carries the scrim -
+   the single non-text use of cocoa in the system - because a tint alone
+   disappears on a light image.
+
+   Three, and no more: neutral, sale, and the plywood chip. Anything that needs
+   a fourth is asking for a notice.
+   ========================================================================== */
+
+.d-badge{
+	display:inline-flex;
+	align-items:center;
+	gap:.35em;
+	padding:.34em .7em;
+	border-radius:var(--radius-pill);
+	font:var(--fw-bold) var(--fs-badge)/var(--lh-flush) var(--font-ui);
+	letter-spacing:.02em;
+	white-space:nowrap;
+	background:var(--surface-quiet);
+	color:var(--ink);
+}
+.d-badge--sale{ background:var(--c-cherry); color:var(--c-white) }
+.d-badge--quiet{ background:transparent; color:var(--ink-quiet);
+	box-shadow:inset 0 0 0 1px var(--edge-field) }
+/* Over a photograph. The scrim is the one non-text use of cocoa. */
+.d-badge--on-image{ background:var(--scrim); color:var(--ink-on-dark) }
+/* And the plywood one, which is .d-badge plus .d-finish - no extra colour
+   rules, because the finish owns its own surface. */
+.d-badge.d-finish{ --firefly-reach:.7em; color:var(--ink) }

@@ -53,6 +53,9 @@
 @import url("patterns/rating.css")  layer(patterns);
 @import url("patterns/field.css")   layer(patterns);
 @import url("patterns/table.css")   layer(patterns);
+@import url("patterns/panel.css")      layer(patterns);
+@import url("patterns/badge.css")      layer(patterns);
+@import url("patterns/quantity.css")   layer(patterns);
 @import url("finish.css")        layer(finish);
 
 /* card, field, badge, placeholder, utilities: not written yet. */
@@ -64,3 +67,6 @@
 @import url("adopted/notice.css");
 @import url("adopted/rating.css");
 @import url("adopted/table.css");
+@import url("adopted/badge.css");
+@import url("adopted/panel.css");
+@import url("adopted/quantity.css");

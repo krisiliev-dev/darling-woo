@@ -1,0 +1,61 @@
+/* =============================================================================
+   PATTERN / PANEL
+   A heading you can press, and content that opens under it.
+
+   *** IT IS A BUTTON, NOT A DIV WITH A CLICK HANDLER. ***
+   The coupon panel on the checkout is the clearest case: someone arriving with
+   a discount code and unable to reach the field by keyboard simply does not
+   complete the order. Where we own the markup this is <details>/<summary>,
+   which is a real disclosure widget with no script at all.
+
+   The marker rotates rather than swapping glyph, so the state change is
+   continuous and the same element stays under the cursor.
+   ========================================================================== */
+
+.d-panel{
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-m);
+	background:var(--surface-raised);
+	overflow:hidden;
+}
+.d-panel + .d-panel{ margin-top:var(--space-2xs) }
+
+.d-panel__summary{
+	display:grid;
+	grid-template-columns:1fr auto;
+	align-items:center;
+	gap:var(--inline);
+	padding:var(--space-2xs) var(--space-xs);
+	cursor:pointer;
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
+	color:var(--c-cocoa);
+	list-style:none;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-panel__summary::-webkit-details-marker{ display:none }
+.d-panel__summary:hover{ background:var(--surface-quiet) }
+.d-panel__summary:focus-visible{
+	outline:2px solid var(--c-cocoa);
+	outline-offset:-2px;
+}
+/* The marker: a chevron drawn from two borders, so it needs no font and no SVG
+   and rotates cleanly about its own centre. */
+.d-panel__summary::after{
+	content:"";
+	width:.5em;
+	height:.5em;
+	margin-top:-.18em;
+	border-right:2px solid var(--ink-quiet);
+	border-bottom:2px solid var(--ink-quiet);
+	transform:rotate(45deg);
+	transition:transform 220ms var(--ease-float);
+}
+.d-panel[open] > .d-panel__summary::after{
+	transform:rotate(-135deg);
+	margin-top:.1em;
+}
+.d-panel__content{
+	padding:0 var(--space-xs) var(--space-2xs);
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}

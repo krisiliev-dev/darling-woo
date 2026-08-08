@@ -1,0 +1,77 @@
+/* =============================================================================
+   ADOPTED / panel
+   *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
+
+   It styles markup WooCommerce and Stripe emit, which we cannot add classes to.
+   Their stylesheets are unlayered, and unlayered CSS beats layered CSS however
+   specific the layered selector is - so a rule that has to overrule them cannot
+   live in @layer patterns. Measured on the live checkout: identical rules moved
+   here went from losing on border-radius, background and border colour to
+   winning all three.
+
+   The trade is real and worth stating. Nothing in this file participates in the
+   layer order, so it also outranks OUR patterns - which means anything here that
+   is not actually contested by a third party is a rule quietly beating our own
+   system for no reason. collide.js measures the contested set; keep this file
+   inside it.
+
+   Moved out of patterns/panel.css, not copied. There is one definition.
+   ========================================================================== */
+
+/* -- ADOPTED: the coupon panel and the order summary ------------------------ */
+.wc-block-components-panel.wc-block-components-panel{
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-m);
+	background:var(--surface-raised);
+	padding:0;
+	overflow:hidden;
+}
+.wc-block-components-panel__button.wc-block-components-panel__button{
+	display:grid;
+	grid-template-columns:1fr auto;
+	align-items:center;
+	gap:var(--inline);
+	width:100%;
+	padding:var(--space-2xs) var(--space-xs);
+	margin:0;
+	border:0;
+	background:none;
+	font:var(--fw-medium) var(--fs-meta)/var(--lh-title) var(--font-ui);
+	color:var(--c-cocoa);
+	text-align:left;
+	cursor:pointer;
+}
+.wc-block-components-panel__button:hover{ background:var(--surface-quiet) }
+.wc-block-components-panel__button-icon{
+	fill:var(--ink-quiet);
+	transition:transform 220ms var(--ease-float);
+}
+.wc-block-components-panel__content{
+	padding:0 var(--space-xs) var(--space-2xs);
+	font-size:var(--fs-meta);
+}
+.wc-block-components-totals-wrapper{
+	padding:var(--space-2xs) 0;
+	border-top:1px solid var(--hairline);
+}
+.wc-block-components-totals-wrapper:first-child{ border-top:0 }
+.wc-block-components-totals-item.wc-block-components-totals-item{
+	display:grid;
+	grid-template-columns:1fr auto;
+	align-items:baseline;
+	gap:var(--inline);
+	padding:.18em 0;
+	font-size:var(--fs-meta);
+}
+.wc-block-components-totals-item__label{ color:var(--ink-quiet) }
+.wc-block-components-totals-item__value{
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+	color:var(--ink);
+}
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__value{
+	font-weight:var(--fw-bold);
+	font-size:var(--fs-lede);
+	color:var(--ink);
+}
