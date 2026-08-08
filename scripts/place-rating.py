@@ -75,62 +75,86 @@ RATING = '''/* =================================================================
 .d-rating-row__count{ font-size:var(--fs-fine); color:var(--ink-quiet) }
 
 /* -- interactive: the review form -------------------------------------------
-   A real radio group under the stars, because a rating is an INPUT and has to
-   be reachable by keyboard and announced by a screen reader. The stars are the
-   visible layer; the radios sit on top at zero opacity so a click and a tap land
-   on the control rather than on a decoration.
+   *** THIS ONE IS FIVE REAL ELEMENTS, AND THE READ-ONLY ONE IS NOT. ***
+   The read-only rating is a mask over a single gradient because it has to stop
+   part way through a star. An input never does - you cannot leave 3.4 stars -
+   and the owner wants each star to LIFT AND SHINE on hover, which a mask cannot
+   do: one element cannot transform part of itself. So the two versions are
+   built differently on purpose, and the shape is the one thing they share.
 
-   The fill follows :hover and :has(:checked) rather than a class, so it needs
-   no script at all. */
+   A real radio group, because a rating is an input: reachable by keyboard,
+   announced by a screen reader, and submitted by the form. The label wraps the
+   radio, so the whole star is the hit area without any positioning trickery.
+
+   Hovering the fourth star lifts the first four. That is :has() reading
+   forwards - "if the fourth is hovered, style every star up to the fourth" -
+   which is the thing that used to need reversed DOM order and a ~ combinator. */
 .d-rating-input{
-	position:relative;
-	display:inline-grid;
-	grid-template-columns:repeat(5, 1.12em);
-	width:5.6em;
-	height:1.12em;
+	display:inline-flex;
+	gap:.14em;
 	font-size:var(--fs-lede);
 }
-.d-rating-input::before{
-	content:"";
-	position:absolute;
-	inset:0;
-	background:linear-gradient(90deg,
-		var(--g-core) 0 var(--rating, 0%),
-		var(--c-ash-300) var(--rating, 0%) 100%);
-	-webkit-mask-image:%(star)s;
-	        mask-image:%(star)s;
-	/* 20% rather than 1.12em: a length has to divide the width EXACTLY or
-	   subpixel rounding paints a sixth, clipped star. The box is 5.6 x 1.12em,
-	   so 20% by 100% is both square and exactly five. */
-	-webkit-mask-size:20% 100%;
-	        mask-size:20% 100%;
-	-webkit-mask-repeat:repeat-x;
-	        mask-repeat:repeat-x;
-	transition:background 120ms var(--ease-float);
+.d-rating-input label{
+	display:grid;
+	place-items:center;
+	cursor:pointer;
+	line-height:0;
 }
 .d-rating-input input{
 	appearance:none;
+	position:absolute;
+	width:1px; height:1px;
 	margin:0;
-	height:100%;
 	opacity:0;
-	cursor:pointer;
 }
-/* Checked state, then hover on top of it. Later rules win, so hovering a lower
-   star previews DOWN from a higher checked one, which is what a person expects. */
-.d-rating-input:has(input:nth-child(1):checked){ --rating:20% }
-.d-rating-input:has(input:nth-child(2):checked){ --rating:40% }
-.d-rating-input:has(input:nth-child(3):checked){ --rating:60% }
-.d-rating-input:has(input:nth-child(4):checked){ --rating:80% }
-.d-rating-input:has(input:nth-child(5):checked){ --rating:100% }
-.d-rating-input:has(input:nth-child(1):hover){ --rating:20% }
-.d-rating-input:has(input:nth-child(2):hover){ --rating:40% }
-.d-rating-input:has(input:nth-child(3):hover){ --rating:60% }
-.d-rating-input:has(input:nth-child(4):hover){ --rating:80% }
-.d-rating-input:has(input:nth-child(5):hover){ --rating:100% }
-.d-rating-input:focus-within::before{
+.d-rating-input__star{
+	display:block;
+	width:1.25em;
+	height:1.25em;
+	background:var(--c-ash-300);
+	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+	transition:background 140ms var(--ease-float),
+	           transform 180ms var(--ease-float),
+	           filter 180ms var(--ease-float);
+}
+
+/* checked fills up to N */
+.d-rating-input:has(label:nth-child(1) input:checked) label:nth-child(-n+1) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(2) input:checked) label:nth-child(-n+2) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(3) input:checked) label:nth-child(-n+3) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(4) input:checked) label:nth-child(-n+4) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(5) input:checked) label:nth-child(-n+5) .d-rating-input__star{
+	background:var(--g-core);
+}
+
+/* hover fills up to N, and LIFTS AND SHINES them. Declared after the checked
+   rules so hovering a lower star previews down from a higher checked one, which
+   is what a person expects. The shine is a drop-shadow rather than a box-shadow
+   because the star is clipped: a box-shadow would draw the square. */
+.d-rating-input:has(label:nth-child(1):hover) label:nth-child(-n+1) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(2):hover) label:nth-child(-n+2) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(3):hover) label:nth-child(-n+3) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(4):hover) label:nth-child(-n+4) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(5):hover) label:nth-child(-n+5) .d-rating-input__star{
+	background:var(--g-light);
+	transform:translateY(-.16em) scale(1.08);
+	filter:drop-shadow(0 0 .3em hsl(from var(--g-core) h s l / .8));
+}
+/* Anything past the hovered star drops back to empty, so moving left from a
+   checked five reads as taking stars away rather than as nothing happening. */
+.d-rating-input:has(label:nth-child(1):hover) label:nth-child(n+2) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(2):hover) label:nth-child(n+3) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(3):hover) label:nth-child(n+4) .d-rating-input__star,
+.d-rating-input:has(label:nth-child(4):hover) label:nth-child(n+5) .d-rating-input__star{
+	background:var(--c-ash-300);
+	transform:none;
+	filter:none;
+}
+/* Keyboard gets the same lift, one star at a time, plus a visible ring. */
+.d-rating-input input:focus-visible + .d-rating-input__star{
 	outline:2px solid var(--action);
 	outline-offset:3px;
-	border-radius:var(--radius-xs);
+	transform:translateY(-.16em) scale(1.08);
 }
 
 /* -- ADOPTED: WooCommerce's ratings -----------------------------------------
