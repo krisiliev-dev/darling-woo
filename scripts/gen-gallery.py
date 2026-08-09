@@ -134,6 +134,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 /* the composition matrix. Cells are outlined so a child escaping one is visible
    rather than merely measurable. */
 .mx{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.mx--wide{grid-template-columns:1fr;gap:10px}
 .mx-cell{border:1px solid var(--hairline);border-radius:var(--radius-s);
   background:var(--surface-page);overflow:visible}
 .mx-lbl{margin:0;padding:5px 8px;border-bottom:1px solid var(--hairline);
@@ -2751,6 +2752,25 @@ for outer in MX_KINDS:
         # so the outer's own direction and gap have something to act on.
         pair = mx_wrap(inner, MX_LEAF) + mx_wrap(inner, MX_LEAF)
         A(u'<div class="mx-cell" data-mx="%s>%s"><p class="mx-lbl">%s &rsaquo; %s</p>%s</div>'
+          % (outer, inner, outer, inner, mx_wrap(outer, pair)))
+A(u'''</div>
+
+<p class="note"><b>Two of the five cannot show what they do in a cell that
+narrow, and that is a hole in the grid above rather than a fact about them.</b>
+A switcher goes to one column below <code>30rem</code> and a split below
+<code>62rem</code>, and every cell up there is about 230&nbsp;px wide &mdash; so
+in all twenty-five of them the switcher is stacked and the split is stacked, and
+neither has been tested doing the thing it exists for. The same twenty-five
+below, one per row at full width, where both of them are above their threshold.
+Compare a row here against its cell above: if a pair looks the same in both, one
+of the two primitives in it does not care about width, which is itself worth
+knowing.</p>
+<p class="lbl">THE SAME TWENTY-FIVE, IN A CONTAINER WIDE ENOUGH FOR ALL OF THEM</p>
+<div class="mx mx--wide">''')
+for outer in MX_KINDS:
+    for inner in MX_KINDS:
+        pair = mx_wrap(inner, MX_LEAF) + mx_wrap(inner, MX_LEAF)
+        A(u'<div class="mx-cell" data-mx="wide %s>%s"><p class="mx-lbl">%s &rsaquo; %s</p>%s</div>'
           % (outer, inner, outer, inner, mx_wrap(outer, pair)))
 A(u'''</div>
 

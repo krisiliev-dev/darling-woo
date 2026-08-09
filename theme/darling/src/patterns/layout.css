@@ -83,35 +83,49 @@
    Checkout, the cart and the account page are all one long column with a
    smaller one at its side, and all three had been written separately.
 
-   *** THE ASIDE IS A rem WIDTH, NOT A PERCENTAGE. *** A percentage aside keeps
-   shrinking as the window does, so the order summary reaches a width where its
-   own two-column rows wrap and it looks broken - at exactly the sizes nobody
-   opens on a desktop to check. A fixed column stops being a column instead:
-   below 62rem it is simply the next block down.
+   *** IT USED A MEDIA QUERY, AND THE VERIFIER CAUGHT WHAT THAT MEANT. ***
+   The first version was a grid that became two columns at
+   `@media (min-width: 62rem)`. A media query asks about the VIEWPORT, so at a
+   1440px window every split on the page was two columns - including one 151px
+   wide inside a matrix cell, where the aside sat beside a main column with no
+   room for either. Measured: aside beside main at 271, 241, 158 and 151px.
 
-   Source order is main-then-aside, which is the order a keyboard walks it. On a
-   phone the summary belongs above the form for a shop, and that is an --order
-   decision per surface, not a default. */
-/* *** THE BREAKPOINT IS A LITERAL AND CANNOT BE A TOKEN. *** A media query is
-   evaluated before custom properties exist, so `@media (min-width: var(--x))`
-   is not a rule that loses a fight - it is a rule that never parses. Writing
-   --split-at here and using it below would look like a system and behave like
-   a typo. 62rem, twice, said out loud. */
+   Worse, the file two rules down criticises media queries for exactly this
+   ("a media query only ever knows about the viewport, so it cannot tell that
+   this thing is inside a sidebar") while doing it itself.
+
+   *** SO IT IS FLEX ARITHMETIC INSTEAD, AND THERE IS NO BREAKPOINT AT ALL. ***
+   The aside asks for --aside and is allowed to grow. The main column asks for
+   nothing (basis 0) and grows enormously more, so it takes everything left
+   over - but it refuses to be narrower than --main-min, and a flex item that
+   cannot have its minimum wraps. That is the whole mechanism: the split
+   becomes one column exactly when the main column would be squeezed past what
+   it is worth, at whatever width that happens to be, inside a page or inside a
+   table cell.
+
+   No container query either, and not by preference: a container query styles a
+   container's DESCENDANTS and never the container itself, so .d-split cannot
+   ask about its own width without a wrapper element in the markup.
+
+   Source order is main-then-aside, which is the order a keyboard walks it. */
 .d-split{
 	--aside: 21rem;
-	display:grid;
-	grid-template-columns:1fr;
+	--main-min: 60%;
+	display:flex;
+	flex-wrap:wrap;
 	gap:var(--space-l);
-	align-items:start;
+	align-items:flex-start;
 }
-@media (min-width: 62rem){
-	.d-split{ grid-template-columns:minmax(0, 1fr) var(--aside) }
+.d-split__main{
+	flex-grow:999;      /* takes everything the aside does not ask for */
+	flex-basis:0;
+	min-width:var(--main-min);
 }
-.d-split__main{ min-width:0 }   /* grid children floor at min-content, not 0 */
-.d-split__aside{ min-width:0 }
-/* Sticky is opt-in. A sidebar taller than the viewport that is also sticky
-   cannot be scrolled to its own bottom, which is how an order summary hides its
-   total. Only ask for it on a short one. */
+.d-split__aside{
+	flex-grow:1;
+	flex-basis:var(--aside);
+	min-width:0;
+}
 .d-split__aside--sticky{
 	position:sticky;
 	top:var(--space-s);
@@ -127,14 +141,35 @@
 
    --stack is a token, and it is overridable per instance, so a tight group asks
    for less without a new class per size. */
-.d-stack{ --gap: var(--stack) }
-.d-stack > * + *{ margin-block-start:var(--gap) }
+.d-stack{
+	--gap: var(--stack);
+	display:grid;
+	gap:var(--gap);
+}
 .d-stack--tight{ --gap: var(--stack-tight) }
 .d-stack--loose{ --gap: var(--space-l) }
 /* A heading owns the block under it, so it sits closer to it than the gap
    between blocks - otherwise a section title floats equidistant between the
-   thing it names and the thing above. */
-.d-stack > :is(h2, h3, h4) + *{ margin-block-start:var(--stack-tight) }
+   thing it names and the thing above. A negative top margin against the row
+   gap, because a grid gap is uniform by definition and this is the one
+   exception the eye insists on. */
+.d-stack > :is(h2, h3, h4) + *{
+	margin-block-start:calc(var(--stack-tight) - var(--gap));
+}
+
+/* *** WHY THIS IS A GRID GAP AND NOT `> * + * { margin-block-start }`. ***
+   It WAS the owl, and the composition matrix caught what that costs. The
+   margin declaration lives in a rule that matches the CHILD, so `var(--gap)`
+   is resolved against the child's computed value - and .d-cluster and
+   .d-switcher each set a --gap of their own. Measured in the matrix: a cluster
+   inside a stack was spaced 10px instead of 30, and a switcher inside a stack
+   15px instead of 30, because each child was quietly answering the stack's
+   question with its own number.
+
+   A gap on the parent cannot be hijacked: it is resolved where it is written.
+   The cost is that children become grid items, which stretch - and that is
+   acceptable here only because .d-stack is new and nothing on the site uses it
+   yet. Doing this to a class already in templates would need a sweep. */
 
 /* -- a row of things that wraps -------------------------------------------------
    *** THIS EXISTED NINE TIMES BEFORE IT EXISTED ONCE. ***
