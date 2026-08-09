@@ -2899,6 +2899,9 @@ visible consequence rather than a note.</div>
 </section>''')
 
 # ------------------------------------------------------------------ rategrid ---
+# Owner, 2026-08-10: the other two are Pigeon Express and Sameday, not DHL and
+# Bulgarian Post. Mock data, but a mock with the wrong names teaches the wrong
+# thing to whoever reads it next.
 # Owner, 2026-08-10: five couriers with up to three methods each is fifteen
 # radio rows in a column - "a lot of the page", and hard to compare. A matrix
 # instead: couriers across, methods down, empty where a courier does not offer
@@ -2908,12 +2911,12 @@ RATES = [
     (u'\u0414\u043e \u0430\u0432\u0442\u043e\u043c\u0430\u0442',
      u'1,64', None, None, None, u'2,10'),
     (u'\u0414\u043e \u043e\u0444\u0438\u0441',
-     None, u'4,42', u'7,31', None, u'3,95'),
+     None, u'4,42', u'7,31', u'3,95', None),
     (u'\u0414\u043e \u0430\u0434\u0440\u0435\u0441',
-     None, u'7,17', u'8,55', u'12,40', u'6,20'),
+     None, u'7,17', u'8,55', u'6,20', u'5,80'),
 ]
 COURIERS = [u'BoxNow', u'\u0421\u043f\u0438\u0434\u0438', u'\u0415\u043a\u043e\u043d\u0442',
-            u'DHL', u'\u0411\u044a\u043b\u0433. \u043f\u043e\u0449\u0438']
+            u'Pigeon Express', u'Sameday']
 
 A(u'''<section class="sec" id="rategrid"><h2>Pattern</h2><h3>Choice table &mdash; the delivery matrix</h3>
 <p class="note">Five couriers with up to three methods each is <b>fifteen radio

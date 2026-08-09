@@ -455,6 +455,7 @@
 		/* NOT guarded by a dataset flag - see expressState, which guards on the
 		   row it is actually watching rather than on the region it was found in. */
 		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(expressState);
+		(root || document).querySelectorAll('.wc-block-components-shipping-rates-control__package').forEach(rateGrid);
 		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
@@ -533,6 +534,106 @@
 			settle();
 			if (++n > 24) { clearInterval(t); }
 		}, 250);
+	}
+
+
+	/* 9. THE DELIVERY MATRIX.
+	      Five couriers with up to three methods each is fifteen radio rows in a
+	      column. The owner asked for a table: couriers across, methods down,
+	      empty where a courier does not offer one, cheapest row on top.
+
+	      *** WOOCOMMERCE EMITS A FLAT LIST AND WE DO NOT REBUILD IT. ***
+	      Every rate is a <label> whose `for` is
+	      radio-control-1-darling_speedy:office - courier and method, both in
+	      the attribute. So the labels stay exactly where React put them, in the
+	      order React put them, and are placed into grid cells by coordinate.
+	      Nothing is moved, nothing is re-parented, and a re-render costs us the
+	      inline coordinates and nothing else - init runs again and puts them
+	      back within a frame.
+
+	      What DOES have to be added: the column heads, the row heads and a
+	      placeholder for each combination that does not exist, because an empty
+	      grid cell cannot be styled and a hole reads as a rendering fault. They
+	      are marked data-d-rate so a second pass removes its own work rather
+	      than accumulating it.
+
+	      *** IF THIS FUNCTION NEVER RUNS, THE LIST IS STILL A CORRECT LIST. ***
+	      That is the whole reason for placing rather than rebuilding. */
+	var RATE_METHOD = {
+		locker: 'До автомат',   /* До автомат */
+		office: 'До офис',                     /* До офис */
+		door:   'До адрес'                /* До адрес */
+	};
+
+	function rateGrid(pkg) {
+		var list = pkg.querySelector('.wc-block-components-radio-control');
+		if (!list) { return; }
+		var labels = list.querySelectorAll('.wc-block-components-radio-control__option');
+		if (labels.length < 2) { return; }
+
+		/* Read the grid out of the DOM rather than out of a settings page: the
+		   couriers that quoted for THIS cart are the couriers with a label. */
+		var cols = [], rows = {}, cells = [];
+		var i, j;
+		for (i = 0; i < labels.length; i++) {
+			var id = labels[i].getAttribute('for') || '';
+			var m = /darling_([a-z0-9_]+):([a-z]+)/.exec(id);
+			if (!m) { return; }          /* an id we do not understand - leave the list alone */
+			var courier = m[1], method = m[2];
+			if (cols.indexOf(courier) < 0) { cols.push(courier); }
+			var priceEl = labels[i].querySelector('.wc-block-components-radio-control__secondary-label');
+			var price = priceEl ? parseFloat((priceEl.textContent || '').replace(/[^0-9.,]/g, '').replace(',', '.')) : NaN;
+			if (!rows[method] || price < rows[method]) { rows[method] = isNaN(price) ? 1e9 : price; }
+			cells.push({ el: labels[i], courier: courier, method: method, price: price });
+		}
+		/* Cheapest method first - the owner's rule, and it needs the numbers, so
+		   it cannot be CSS. */
+		var order = Object.keys(rows).sort(function (a, b) { return rows[a] - rows[b]; });
+
+		/* A courier's own name is only in its label text, which also carries the
+		   method: "Спиди — до офис". Everything before the dash is the courier. */
+		var name = {};
+		for (i = 0; i < cells.length; i++) {
+			if (name[cells[i].courier]) { continue; }
+			var t = (cells[i].el.querySelector('.wc-block-components-radio-control__label') || {}).textContent || '';
+			name[cells[i].courier] = t.split('—')[0].trim() || cells[i].courier;
+		}
+
+		var prev = list.querySelectorAll('[data-d-rate]');
+		for (i = 0; i < prev.length; i++) { prev[i].remove(); }
+
+		list.setAttribute('data-d-rategrid', '');
+		list.style.setProperty('--rate-cols', cols.length);
+
+		var add = function (cls, text, col, row) {
+			var el = document.createElement('div');
+			el.setAttribute('data-d-rate', cls);
+			el.className = 'd-rate-' + cls;
+			if (text) { el.textContent = text; }
+			el.style.gridColumn = col;
+			el.style.gridRow = row;
+			list.appendChild(el);
+			return el;
+		};
+		add('corner', '', 1, 1);
+		for (i = 0; i < cols.length; i++) { add('col', name[cols[i]], i + 2, 1); }
+		for (j = 0; j < order.length; j++) {
+			add('row', RATE_METHOD[order[j]] || order[j], 1, j + 2);
+		}
+		for (i = 0; i < cols.length; i++) {
+			for (j = 0; j < order.length; j++) {
+				var found = false;
+				for (var k = 0; k < cells.length; k++) {
+					if (cells[k].courier === cols[i] && cells[k].method === order[j]) {
+						cells[k].el.style.gridColumn = i + 2;
+						cells[k].el.style.gridRow = j + 2;
+						found = true;
+					}
+				}
+				/* *** THE HOLE IS THE INFORMATION, SO IT IS DRAWN. *** */
+				if (!found) { add('gap', '', i + 2, j + 2); }
+			}
+		}
 	}
 
 	cartEvents();

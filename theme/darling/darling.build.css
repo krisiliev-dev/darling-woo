@@ -13434,6 +13434,109 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 .wc-block-components-notices__snackbar > *{ pointer-events:auto }
 .wc-block-components-notices__snackbar:has(> div:empty){ display:none }
 
+/* =============================================================================
+   THE DELIVERY MATRIX, ON WOOCOMMERCE'S OWN LABELS
+   The gallery's .d-table--choice is the same thing in markup we control; this
+   is it drawn on the flat list Woo emits, with the labels left exactly where
+   React put them and placed by coordinate. darling-ui.js writes the
+   coordinates and adds the heads and the gaps; everything below is only how
+   they look.
+
+   *** IT DEGRADES TO THE LIST. *** Without the script there is no
+   data-d-rategrid, none of this applies, and what is on screen is the correct
+   radio list it always was.
+   ========================================================================== */
+
+.wc-block-components-radio-control[data-d-rategrid]{
+	display:grid;
+	grid-template-columns:minmax(6rem, auto) repeat(var(--rate-cols, 3), minmax(0, 1fr));
+	gap:var(--space-3xs);
+	align-items:stretch;
+}
+/* The option stops being a row and becomes a cell: no radio dot, no columns of
+   its own, the price centred and large enough to compare down a column. */
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option{
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	min-height:2.75rem;      /* 44px, the smallest thing a thumb reliably hits */
+	padding:var(--space-2xs) var(--space-3xs);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-s);
+	background:var(--surface-raised);
+	cursor:pointer;
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float);
+}
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option:hover{
+	border-color:var(--c-mauve-light);
+}
+/* *** THE INPUT IS HIDDEN, NOT REMOVED, AND NOT display:none. *** It is still
+   what is focused, what arrow keys move between and what the form submits; a
+   display:none radio is none of those things. */
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input{
+	position:absolute;
+	width:1px;
+	height:1px;
+	margin:-1px;
+	overflow:hidden;
+	clip-path:inset(50%);
+}
+/* The courier name is now the column head, so the cell keeps only the price. */
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__label{
+	display:none;
+}
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option-layout{
+	display:contents;
+}
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__label-group{
+	display:flex;
+	justify-content:center;
+	gap:0;
+}
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__secondary-label{
+	margin:0;
+	font:var(--fw-medium) var(--fs-meta)/1.1 var(--font-ui);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink);
+}
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option:has(input:checked){
+	border-color:var(--tint-cherry-edge);
+	background:var(--tint-cherry);
+	box-shadow:inset 0 0 0 1px var(--tint-cherry-edge);
+}
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option:has(input:checked)
+	.wc-block-components-radio-control__secondary-label{
+	color:var(--tint-cherry-mark);
+}
+/* The ring goes on the cell: on a one-pixel input it is a ring nobody sees. */
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option:has(input:focus-visible){
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+
+/* -- the parts the script adds ------------------------------------------------ */
+.d-rate-col{
+	align-self:end;
+	padding:0 var(--space-3xs) var(--space-3xs);
+	text-align:center;
+	font:var(--fw-medium) var(--fs-fine)/1.2 var(--font-ui);
+	color:var(--ink-quiet);
+}
+.d-rate-row{
+	display:flex;
+	align-items:center;
+	padding-inline-end:var(--space-xs);
+	font:var(--fw-medium) var(--fs-meta)/1.25 var(--font-ui);
+	color:var(--ink);
+}
+/* An empty combination is a fact about the courier, not a hole in the page. */
+.d-rate-gap{
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-s);
+	min-height:2.75rem;
+}
+
 
 /* ==== adopted/media-fail.css ==== */
 /* =============================================================================
