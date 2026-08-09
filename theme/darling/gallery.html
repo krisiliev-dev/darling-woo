@@ -12592,6 +12592,34 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 		max-height:none;
 		overflow:visible;
 	}
+	/* *** AND ON A PHONE THE SUMMARY GOES FIRST. ***
+	   Source order is form-then-summary, which is right on a desktop where they
+	   sit side by side. Stacked, it puts the total AFTER the order button -
+	   measured: the summary started at y=2002 on a 2391px page, below Поръчай.
+	   WooCommerce's own sheet does exactly this and we dequeued it:
+	     .wc-block-checkout__main   { order:1 }
+	     .wc-block-checkout__sidebar{ order:0; margin-bottom:24px }
+	   Ported rather than invented, and the gap comes from the grid. */
+	.wc-block-components-sidebar-layout .wc-block-components-sidebar,
+	.wc-block-components-sidebar-layout .wc-block-checkout__sidebar{ order:0 }
+	.wc-block-components-sidebar-layout .wc-block-components-main,
+	.wc-block-components-sidebar-layout .wc-block-checkout__main{ order:1 }
+}
+
+/* *** THE SECOND SUMMARY IS WooCommerce'S, AND SO IS THE RULE THAT HIDES IT. ***
+   The owner asked how a floating duplicate "Обобщение на поръчката" happened.
+   It is not a duplicate we made: the checkout renders the summary block TWICE,
+   once as the sidebar and once as a "fill wrapper" for its own slot-fill
+   plumbing, and blocks/checkout.css hides the second one unconditionally:
+
+     .wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper
+       { display:none; overflow:hidden }
+
+   Read out of their stylesheet, not guessed. We dequeued the sheet and never
+   ported this line, so the plumbing showed. One rule, and it is theirs. */
+.wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper{
+	display:none;
+	overflow:hidden;
 }
 
 /* -- a step -------------------------------------------------------------------
@@ -12819,6 +12847,17 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    The price beside the heading and the price in the Общо row are the same
    number, and the row is the one with a label on it. */
 .wc-block-components-checkout-order-summary__title-price{ display:none }
+/* *** A CHEVRON THAT OPENS NOTHING IS WORSE THAN NO CHEVRON. ***
+   On a phone WooCommerce's summary is a disclosure and this is its arrow. Ours
+   is always open - the summary is at the top of the page now, where a customer
+   wants to see what they are paying for - so the arrow points at a state that
+   cannot change. Woo hides it too, inside the summary block, and for its own
+   reasons; this is the same line.
+
+   A collapsible summary on a phone is a fair alternative and would save a
+   screen of scrolling. That is a behaviour decision, not a styling one, and it
+   is not made here. */
+.wc-block-components-checkout-order-summary__title-icon{ display:none }
 
 /* -- the express region, when there is nothing express about it -----------
    The owner reported a "Бързо плащане" heading with nothing under it, and the
