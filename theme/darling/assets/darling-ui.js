@@ -327,6 +327,43 @@
 		});
 	}
 
+	/* 5. LIGHT DISMISS FOR WooCommerce'S FILTER OVERLAY.
+	      Our drawers close when you click beside them; this one did not, and the
+	      owner asked for the two to behave the same. It is not a <dialog>, so
+	      there is no ::backdrop and no light-dismiss to switch on - the scrim is
+	      the overlay element itself and the panel is a child of it.
+
+	      *** IT CLICKS THEIR OWN CLOSE BUTTON RATHER THAN TOUCHING THEIR STATE. ***
+	      The open flag belongs to WooCommerce's Interactivity runtime. Setting or
+	      removing `.is-overlay-opened` ourselves would make us a second source of
+	      truth for whether a dialog is open, and the first thing that breaks is
+	      focus: their close handler restores it to the trigger and ours would
+	      not. Activating their control means everything they do on close - now
+	      and after the next plugin update - still happens. */
+	function filterDismiss(block) {
+		var overlay = block.querySelector('.wc-block-product-filters__overlay');
+		var dialog = block.querySelector('.wc-block-product-filters__overlay-dialog');
+		var close = block.querySelector('.wc-block-product-filters__close-overlay');
+		if (!overlay || !dialog || !close) { return; }
+		overlay.addEventListener('click', function (e) {
+			if (!block.classList.contains('is-overlay-opened')) { return; }
+			/* *** BOTH HALVES, AND THE FIRST ONE IS THE ONE THAT MATTERS. ***
+			   A click fires on the nearest common ancestor of press and release,
+			   so pressing a price handle INSIDE the panel and releasing on the
+			   scrim arrives here with e.target === the overlay - outside the
+			   dialog by every test this handler can make on the event alone. The
+			   pointerdown below is what remembers where the gesture began.
+			   Without it you drag a slider, overshoot, and the panel you were
+			   adjusting shuts. */
+			if (dialog.contains(e.target)) { return; }
+			if (overlay.dataset.dOutside !== '1') { return; }
+			close.click();
+		});
+		overlay.addEventListener('pointerdown', function (e) {
+			overlay.dataset.dOutside = dialog.contains(e.target) ? '' : '1';
+		});
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -337,6 +374,9 @@
 		(root || document).querySelectorAll('.d-progress[data-goal]').forEach(progress);
 		(root || document).querySelectorAll('dialog.d-drawer').forEach(function (el) {
 			if (!el.dataset.dDismiss) { el.dataset.dDismiss = '1'; lightDismiss(el); }
+		});
+		(root || document).querySelectorAll('.wc-block-product-filters').forEach(function (el) {
+			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }

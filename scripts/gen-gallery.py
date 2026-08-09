@@ -2206,7 +2206,89 @@ above it &mdash; the archive already has a sticky 250px column and the filters
 belong in it. Same breakpoint as the header&rsquo;s, so the page changes shape
 once rather than twice. Both are below.</p>
 
-<p class="note"><b>The dialog cannot be shown in a box, and that is not a gallery problem.</b> The overlay is <code>position: fixed</code>, so it escapes every ancestor by definition &mdash; and the mode is chosen by a <em>viewport</em> media query, which a container cannot fake. At this window width the component is correctly inline, so a &ldquo;phone&rdquo; frame here would be showing the sidebar version pretending. It is reviewed at 430px instead, in the screenshot alongside this file. The alternative was a force-open hook in the shipped stylesheet whose only reader is a review document, and this system has a name for that.</p>
+<p class="note"><b>The sheet, at the width it is actually used at.</b> Two things are true and I overstated them last time: a <code>position: fixed</code> element cannot be <em>contained</em> by a box, and a <em>viewport</em> media query cannot be <em>faked</em> by one. Neither stops this page from overriding those two things for itself. Inside the frame below, <code>fixed</code> is turned into <code>absolute</code> and the desktop mode is switched back off. <b>That is the entire fake.</b> The surface, the corner, the shadow, the header, the scrolling body, the hairline footer and the apply button are the shipped stylesheet, unmodified. The overriding rules live in this document&rsquo;s own <code>&lt;style&gt;</code>, not in the theme &mdash; a rule whose only reader is a review document is a second component wearing a disguise.</p>
+<p class="note"><b>And it is not a centred modal.</b> It is a sheet from the <em>left edge</em>, full height, the same shape and the same arrival as our cart drawer &mdash; which is deliberate: it is the same gesture, so it should be the same object. The greyed-out ground is the scrim, and it now closes on a click, like the drawers.</p>
+<style>
+/* GALLERY-LOCAL. Not shipped. Two overrides and nothing else. */
+.d-ovdemo{ position:relative; height:34rem; overflow:hidden;
+  border-radius:var(--radius-l); box-shadow:inset 0 0 0 1px var(--hairline);
+  background:var(--surface) }
+.d-ovdemo__page{ padding:20px }
+/* one: the fixed sheet is contained by the frame */
+.d-ovdemo .wc-block-product-filters__overlay{ position:absolute }
+/* two: this window is wider than 900px, so the shipped sheet has already
+   turned the block inline. Put the phone mode back, inside the frame. */
+@media (min-width:901px){
+  .d-ovdemo .wc-block-product-filters__open-overlay,
+  .d-ovdemo .wc-block-product-filters__close-overlay{ display:inline-flex }
+  .d-ovdemo .wc-block-product-filters__overlay-header{ display:flex }
+  .d-ovdemo .wc-block-product-filters__overlay-footer{ display:block }
+  .d-ovdemo .wc-block-product-filters__overlay,
+  .d-ovdemo .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay{
+    position:absolute; inset:0; z-index:1;
+    background:var(--scrim); pointer-events:auto }
+  .d-ovdemo .wc-block-product-filters__overlay-wrapper{ width:100%; height:100% }
+  .d-ovdemo .wc-block-product-filters__overlay-dialog,
+  .d-ovdemo .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog{
+    position:absolute; inset-block:0; inset-inline-start:0;
+    width:min(var(--filters-w), 88%);
+    background:var(--surface-raised);
+    border-start-end-radius:var(--radius-l);
+    border-end-end-radius:var(--radius-l);
+    box-shadow:var(--shadow-card-hover);
+    translate:0 0 }
+  .d-ovdemo .wc-block-product-filters__overlay-content{
+    overflow-y:auto; padding:var(--space-s); gap:var(--space-s) }
+</style>
+<p class="lbl">The overlay, open &mdash; placement faked, everything else shipped</p>
+<div class="d-ovdemo"><div class="d-ovdemo__page">
+<div class="wc-block-product-filters is-overlay-opened">
+  <button class="wc-block-product-filters__open-overlay" data-wp-on--click="actions.openOverlay">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 17.5H14V16H10V17.5ZM6 6V7.5H18V6H6ZM8 12.5H16V11H8V12.5Z" fill="currentColor"/></svg><span>Филтриране на продукти</span></button>
+  <div class="wc-block-product-filters__overlay">
+    <div class="wc-block-product-filters__overlay-wrapper">
+      <div class="wc-block-product-filters__overlay-dialog" role="dialog" aria-label="Филтри">
+        <header class="wc-block-product-filters__overlay-header">
+          <button class="wc-block-product-filters__close-overlay" data-wp-on--click="actions.closeOverlay">
+            <span>Затваряне</span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 13.06 15.71 16.77 16.77 15.71 13.06 12 16.77 8.29 15.71 7.23 12 10.94 8.29 7.23 7.23 8.29 10.94 12 7.23 15.71 8.29 16.77 12 13.06Z" fill="currentColor"/></svg></button>
+        </header>
+        <div class="wc-block-product-filters__overlay-content">
+            <div class="wp-block-woocommerce-product-filter">
+              <h3 class="wp-block-heading">Цена</h3>
+              <div class="wc-block-product-filter-price-content" style="display:flex;gap:.5rem;align-items:center">
+                <input type="text" value="12" aria-label="От"> <span>&ndash;</span>
+                <input type="text" value="240" aria-label="До">
+              </div>
+            </div>
+            <div class="wp-block-woocommerce-product-filter">
+              <h3 class="wp-block-heading">Материал</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+                <button class="wc-block-product-filter-chips__item" aria-checked="true">Керамика</button>
+                <button class="wc-block-product-filter-chips__item" aria-checked="false">Стъкло</button>
+                <button class="wc-block-product-filter-chips__item" aria-checked="false">Дърво</button>
+                <button class="wc-block-product-filter-chips__item" aria-checked="false">Меламин</button>
+              </div>
+              <button class="wc-block-product-filter__show-more">Още 6</button>
+            </div>
+            <div class="wp-block-woocommerce-product-filter">
+              <h3 class="wp-block-heading">Наличност</h3>
+              <label class="d-check"><input type="checkbox" checked><span>В наличност</span></label>
+              <label class="d-check"><input type="checkbox"><span>По заявка</span></label>
+            </div>
+        </div>
+        <footer class="wc-block-product-filters__overlay-footer">
+          <button class="wc-block-product-filters__apply wp-element-button"><span>Прилагане</span></button>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="d-grid" style="grid-template-columns:repeat(2,1fr);margin-top:16px">
+<div class="d-skeleton d-skeleton--media"></div>
+<div class="d-skeleton d-skeleton--media"></div>
+</div>
+</div></div>
+
 <p class="lbl">Inline in the sidebar, which is what this width gets</p>
 <div class="d-archive__body" style="display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px">
   <div class="d-archive__side" style="position:static;max-height:none">

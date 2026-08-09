@@ -314,6 +314,15 @@
 }
 
 /* The chips a chosen filter leaves behind, and the "clear all" beside them. */
+/* *** GOLD IS CHOSEN, GREY IS NOT. ***
+   These had it backwards - cherry for selected against a gold tint for the
+   rest - so both states were loud and neither said "picked". Gold is what this
+   system already means by chosen: the selected map pin, the current paginator
+   page, the chosen office row. Grey is its resting surface. Owner's call.
+
+   And a MARK as well as the colour. Colour alone is the one cue a colour-blind
+   visitor does not get, and a filter chip is exactly the control where being
+   wrong about what is on costs you the results you were looking for. */
 .wc-block-product-filter-chips__item{
 	display:inline-flex;
 	align-items:center;
@@ -321,16 +330,39 @@
 	padding:.34em .7em;
 	border:0;
 	border-radius:var(--radius-pill);
+	background:var(--tint-grey);
+	box-shadow:inset 0 0 0 1px var(--tint-grey-edge);
+	color:var(--ink-quiet);
+	font:var(--fw-medium) var(--fs-badge)/var(--lh-flush) var(--font-ui);
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.wc-block-product-filter-chips__item:hover{
+	background:var(--tint-grey-quiet);
+	color:var(--ink);
+}
+.wc-block-product-filter-chips__item[aria-checked="true"]{
 	background:var(--tint-gold);
 	box-shadow:inset 0 0 0 1px var(--tint-gold-edge);
 	color:var(--ink);
-	font:var(--fw-medium) var(--fs-badge)/var(--lh-flush) var(--font-ui);
-	cursor:pointer;
 }
-.wc-block-product-filter-chips__item[aria-checked="true"]{
-	background:var(--action);
-	box-shadow:none;
-	color:var(--action-ink);
+.wc-block-product-filter-chips__item[aria-checked="true"]::before{
+	content:"";
+	width:.85em;
+	height:.85em;
+	flex:none;
+	background:var(--g-core);
+	-webkit-mask-image:var(--icon-check);
+	        mask-image:var(--icon-check);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+.wc-block-product-filter-chips__item:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
 }
 .wc-block-product-filter-removable-chips__remove{
 	display:inline-flex;
