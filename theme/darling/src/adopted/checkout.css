@@ -100,35 +100,57 @@
 		max-height:none;
 		overflow:visible;
 	}
-	/* *** THE SPLIT WORKS AND IS SWITCHED OFF, AND THE REASON IS THE BUTTON. ***
-	   Owner: itemisation at the top, promo code and totals beside the button.
-	   The mechanism is here and it works - darling-ui.js walks the real tree and
-	   marks every wrapper between the layout and the summary blocks, this
-	   dissolves them, and `order` reaches the two halves. Measured: the money
-	   card landed exactly where he asked, after the form and before the terms.
+	/* *** ON A PHONE THE WHOLE SUMMARY SITS JUST ABOVE THE ORDER BUTTON. ***
+	   The owner's placement, and I had it wrong twice - first below the button,
+	   then at the top of the page. Below the button is where source order puts
+	   it and is plainly wrong; the top is where I moved it and is not what he
+	   asked for. What he asked for is the last thing you read before you pay.
 
-	   *** AND IT PUT Поръчай AT THE TOP OF THE PAGE. *** Measured on the phone
-	   capture: the order button rendered above the summary title. The rule that
-	   should have held it - `.wc-block-checkout__form > .wc-block-checkout__actions`
-	   - did not match, so the actions is not the child of the form I assumed it
-	   was, and I do not yet know what it is a child of.
+	   *** THIS NEEDS ONLY TWO WRAPPERS DISSOLVED, AND BOTH HAVE CLASSES. ***
+	   The order button is a child of the <form>, which is a child of __main, so
+	   the summary cannot land between the form and the button while the form is
+	   one box. Dissolving those two makes the terms and the actions siblings of
+	   the sidebar, and `order` reaches all three.
 
-	   Everything else on this page can be wrong for a screenshot. The button
-	   that takes the money cannot, so the marking call is commented out in
-	   darling-ui.js and this block is inert until the actions element has been
-	   measured rather than assumed. That measurement is one probe; it is not
-	   one to do at the end of a long night.
+	   That is the whole difference from the SPLIT, which is a different job and
+	   is switched off below: splitting the summary means dissolving the chain
+	   on the SIDEBAR side too, and that chain contains an unclassed <div> React
+	   inserts, so it needs the script to walk it. Nothing here needs a script.
 
-	   *** AND DEQUEUING WOULD NOT HAVE HELPED. *** The owner asked. Dequeuing
-	   removes WooCommerce's stylesheet; what is in the way here is their DOM. */
-
-	/* *** AND ON A PHONE THE TWO COLUMNS ARE ONE, SUMMARY FIRST. ***
-	   Stacked in source order the total lands AFTER the order button - measured
-	   at y=2002 on a 2391px page, below Поръчай. */
-	.wc-block-components-sidebar-layout .wc-block-components-sidebar,
-	.wc-block-components-sidebar-layout .wc-block-checkout__sidebar{ order:0 }
+	   No node is moved either way. Without this rule the summary is one card
+	   below the button, which is where WooCommerce puts it. */
 	.wc-block-components-sidebar-layout .wc-block-components-main,
-	.wc-block-components-sidebar-layout .wc-block-checkout__main{ order:1 }
+	.wc-block-checkout__main,
+	.wc-block-checkout__form{
+		display:contents;
+	}
+	.wc-block-checkout__form > *{ order:0 }
+	.wc-block-components-sidebar-layout .wc-block-components-sidebar,
+	.wc-block-components-sidebar-layout .wc-block-checkout__sidebar{ order:1 }
+	.wc-block-checkout__form > .wc-block-checkout__terms{ order:2 }
+	.wc-block-checkout__form > .wc-block-checkout__actions{ order:3 }
+	/* The summary is its own card and now has neighbours above and below it. */
+	.wc-block-checkout__sidebar{ margin-block:var(--space-m) }
+
+	/* *** THE SPLIT IN TWO IS BUILT AND SWITCHED OFF - TRY AGAIN LATER. ***
+	   Owner's actual want: itemisation at the top, promo code and totals here.
+	   darling-ui.js has summarySplit(), which walks the real tree and marks
+	   every wrapper between the layout and each summary block so this file can
+	   dissolve them - a stylesheet cannot name the unclassed <div> React puts
+	   in that chain, which is why the walk exists at all. Measured working: the
+	   money card landed exactly where he asked.
+
+	   It is off because it also put Поръчай at the top of the page, and the
+	   button that takes the money is not something to leave to a guess. The
+	   call is commented out in darling-ui.js with the same note. When it is
+	   picked up: measure where .wc-block-checkout__actions actually sits once
+	   the whole chain is dissolved, because the two-wrapper version above shows
+	   it IS a child of the form - so something in the longer chain moves it.
+
+	   And no, dequeuing does not help. The owner asked. Dequeuing removes their
+	   stylesheet; what is in the way is their DOM. */
+
+
 
 	/* The ordering above replaces WooCommerce's own, which we dequeued and which
 	   only moved the whole sidebar:
