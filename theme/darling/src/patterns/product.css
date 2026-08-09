@@ -55,10 +55,9 @@
    with a dull one.
    ========================================================================== */
 
+/* Frame in layout.css. */
 .d-product{
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-s) var(--gutter) var(--space-xl);
+	padding-block:var(--space-s) var(--space-xl);
 }
 
 /* -- the two columns ---------------------------------------------------------

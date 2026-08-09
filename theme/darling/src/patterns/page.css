@@ -113,10 +113,9 @@ main .entry-content{
    404
    ========================================================================== */
 
+/* Frame in layout.css. */
 .d-404{
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-xl) var(--gutter) var(--space-m);
+	padding-block:var(--space-xl) var(--space-m);
 	text-align:center;
 }
 .d-404__title{ margin:0 0 var(--space-xs); font:var(--type-section) }
@@ -215,10 +214,11 @@ main .entry-content{
    PREVIOUS section, and that is exactly what the owner reported. The 42 was the
    heading's own top margin, not the eyebrow's bottom one, which is why raising
    the eyebrow alone would not have closed it. */
+/* Frame in layout.css - including margin-inline:auto, which is why this says
+   margin-block rather than a four-value margin. A shorthand here would quietly
+   re-set the inline margin to 0 and knock the heading off centre. */
 .d-section-title{
-	max-width:var(--page-max);
-	margin:var(--section-y) auto var(--space-s);
-	padding-inline:var(--gutter);
+	margin-block:var(--section-y) var(--space-s);
 	font:var(--type-section);
 	color:var(--ink);
 }

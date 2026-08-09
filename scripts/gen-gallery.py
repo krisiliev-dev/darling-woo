@@ -2407,6 +2407,97 @@ list never reached it and it has been rendering as the browser&rsquo;s own
 control this whole time.</div>
 </section>''')
 
+# --------------------------------------------------------------- primitives ---
+# The four that were missing. Each one existed already - written by hand, with
+# its own numbers, in between three and nine files.
+A(u'''<section class="sec" id="primitives"><h2>Rules</h2><h3>Layout primitives &mdash; the small closed set everything is composed from</h3>
+<p class="note">A page is not a list of components. It is components inside
+<em>layouts</em>, and there are only a handful of layouts in any website. Naming
+them is what stops each surface inventing its own spacing: eight primitives, and
+every arrangement on the site is a composition of them.</p>
+<p class="note"><b>The rule they exist to make possible:</b> a surface owns
+padding, a layout owns gaps, and a component owns neither. That is why a
+checkbox can go inside a panel inside a table without anyone having to reason
+about it &mdash; the checkbox has no opinion about what is above it, so it
+cannot be wrong about it. Nesting goes wrong through <em>double padding</em>,
+not through alignment.</p>
+
+<p class="lbl">CLUSTER &mdash; a row of things that wraps. It existed nine times before it existed once</p>
+<div class="d-box d-box--outline">
+<div class="d-cluster">
+  <span class="d-badge">&#x41D;&#x43E;&#x432;&#x43E;</span>
+  <span class="d-badge d-badge--sale">&#x41D;&#x430;&#x43C;&#x430;&#x43B;&#x435;&#x43D;&#x438;&#x435;</span>
+  <span class="d-badge">&#x41F;&#x43E;&#x441;&#x43B;&#x435;&#x434;&#x43D;&#x438; 2</span>
+  <a class="d-btn d-btn--quiet" href="#">&#x421;&#x44A;&#x440;&#x430;&#x432;&#x43D;&#x438;</a>
+  <a class="d-btn d-btn--text" href="#">&#x41E;&#x442;&#x43A;&#x430;&#x436;&#x438;</a>
+</div>
+</div>
+<p class="lbl">&mdash;&mdash; and the same markup with <code>--between</code>, <code>--end</code>, <code>--baseline</code></p>
+<div class="d-box d-box--outline d-stack d-stack--tight">
+<div class="d-cluster d-cluster--between"><span>&#x41C;&#x435;&#x436;&#x434;&#x438;&#x43D;&#x435;&#x43D; &#x441;&#x431;&#x43E;&#x440;</span><b>26,40 &euro;</b></div>
+<div class="d-cluster d-cluster--end"><a class="d-btn d-btn--text" href="#">&#x41E;&#x442;&#x43A;&#x430;&#x436;&#x438;</a><a class="d-btn d-finish" href="#">&#x417;&#x430;&#x43F;&#x430;&#x437;&#x438;</a></div>
+<div class="d-cluster d-cluster--baseline"><span style="font:var(--type-section)">42,00 &euro;</span><del style="color:var(--ink-quiet)">56,00 &euro;</del><span style="font-size:var(--fs-fine);color:var(--ink-quiet)">&#x441; &#x414;&#x414;&#x421;</span></div>
+</div>
+
+<p class="lbl">BOX &mdash; the only thing allowed to own inner padding</p>
+<div class="d-cluster d-cluster--loose d-cluster--top">
+  <div class="d-box d-box--raised" style="flex:1;min-width:200px"><b>--raised</b><br>a card&rsquo;s surface</div>
+  <div class="d-box d-box--quiet" style="flex:1;min-width:200px"><b>--quiet</b><br>a lift that is not a card</div>
+  <div class="d-box d-box--outline" style="flex:1;min-width:200px"><b>--outline</b><br>a hairline only</div>
+</div>
+<p class="lbl">&mdash;&mdash; and the failure it is here to prevent: a padded box as the only child of a padded box</p>
+<div class="d-cluster d-cluster--loose d-cluster--top">
+  <div class="d-box d-box--outline" style="flex:1;min-width:240px">
+    <div class="d-box d-box--quiet">Two paddings. 40&nbsp;px of air nobody asked for.</div>
+  </div>
+  <div class="d-box d-box--outline d-box--flush" style="flex:1;min-width:240px">
+    <div class="d-box d-box--quiet">One padding, because the outer box asked for <code>--flush</code>.</div>
+  </div>
+</div>
+
+<p class="lbl">SWITCHER &mdash; n columns or one, decided by the CONTAINER and not by a media query</p>
+<p class="note">Identical markup in a wide box and a narrow one, at the same
+window size. A breakpoint cannot do this: a media query only ever knows about
+the viewport, so it cannot tell that this thing is inside a sidebar.</p>
+<div class="d-cluster d-cluster--loose d-cluster--top">
+  <div class="d-box d-box--outline" style="width:640px;max-width:100%">
+    <div class="d-switcher">
+      <div class="d-box d-box--quiet">&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</div>
+      <div class="d-box d-box--quiet">&#x41F;&#x43B;&#x430;&#x449;&#x430;&#x43D;&#x435;</div>
+      <div class="d-box d-box--quiet">&#x412;&#x440;&#x44A;&#x449;&#x430;&#x43D;&#x435;</div>
+    </div>
+  </div>
+  <div class="d-box d-box--outline" style="width:260px">
+    <div class="d-switcher">
+      <div class="d-box d-box--quiet">&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</div>
+      <div class="d-box d-box--quiet">&#x41F;&#x43B;&#x430;&#x449;&#x430;&#x43D;&#x435;</div>
+      <div class="d-box d-box--quiet">&#x412;&#x440;&#x44A;&#x449;&#x430;&#x43D;&#x435;</div>
+    </div>
+  </div>
+</div>
+
+<p class="lbl">FRAME &mdash; media with a ratio, so a picture never resizes the row it lands in</p>
+<div class="d-cluster d-cluster--loose d-cluster--top">
+  <div style="width:200px"><div class="d-frame"><img src="''' + CUTOUT + u'''" alt=""></div><p class="lbl">4 / 3, the default</p></div>
+  <div style="width:200px"><div class="d-frame d-frame--square"><img src="''' + CUTOUT + u'''" alt=""></div><p class="lbl">--square</p></div>
+  <div style="width:200px"><div class="d-frame d-frame--wide"><img src="''' + CUTOUT + u'''" alt=""></div><p class="lbl">--wide</p></div>
+  <div style="width:200px"><div class="d-frame d-frame--square d-frame--contain"><img src="''' + CUTOUT + u'''" alt=""></div><p class="lbl">--contain, which letterboxes rather than crops</p></div>
+</div>
+
+<div class="todo"><b>Eight primitives now: shell, split, stack, grid, cluster,
+box, switcher, frame.</b> Four of them are new and nothing has been converted to
+them yet &mdash; the hand-written flex rows in the header, footer, filters, card
+actions and payment icons are still hand-written. Converting them is worth doing
+<em>after</em> the composition matrix, not before, because the matrix is what
+will say which of those hand-written rows were actually wrong.<br><br>
+<b>And one rule is stated but not yet enforced:</b> a component never sets its
+own outer margin. Known offenders are listed at the foot of
+<code>src/patterns/layout.css</code> &mdash; <code>.d-intake</code>,
+<code>.d-courier</code>, and two adopted WooCommerce families. The matrix gate
+is what will hold the line, by measuring the rendered margin rather than
+grepping for the word.</div>
+</section>''')
+
 # ---------------------------------------------------------------- alignment ---
 # *** THE ONE SECTION THAT IS NOT ABOUT A COMPONENT. ***
 # Everything above shows a pattern on its own, where it is always correct. What
@@ -2633,6 +2724,7 @@ NAV_LABEL = {
 	'pages':     u'Pages, a11y',
 	'filters':   u'Filters',
 	'mappick':   u'Map picker',
+	'primitives': u'Primitives',
 	'align':     u'Alignment',
 	'next':      u'Still to come',
 }

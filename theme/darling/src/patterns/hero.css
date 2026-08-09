@@ -37,9 +37,8 @@
 	/* The grey hero had no inline padding at all - it relied on whatever wrapper
 	   it happened to be in, so on the home page it ran to the edge. The claret
 	   variant overrides this with its own larger padding below. */
-	padding:var(--space-m) var(--gutter);
-	max-width:var(--page-max);
-	margin-inline:auto;
+	/* Frame in layout.css; the inline gutter used to be written here too. */
+	padding-block:var(--space-m);
 }
 .d-hero > *{ min-width:0 }   /* grid children default to min-content, not 0 */
 

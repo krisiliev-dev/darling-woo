@@ -27,6 +27,10 @@
      .d-shell    the page frame: how wide content gets, and where it starts
      .d-split    a main column with something beside it - checkout, cart, account
      .d-stack    vertical rhythm in a column, so blocks do not each invent a gap
+     .d-cluster  a row of things that wraps - chips, buttons, icons, meta
+     .d-box      padding and a surface. THE ONLY THING THAT OWNS INNER PADDING
+     .d-switcher n columns or one, decided by the container and not by a query
+     .d-frame    media with a ratio, so a picture never resizes the row it is in
      --control   one width for a checkbox, a radio and anything else that sits
                  in front of a line of text, so their text agrees on a rail
 
@@ -39,7 +43,23 @@
    box-sizing is declared here rather than trusted: the frame is the one place
    where a border-box mistake moves every rail on the page at once, and this
    file has to be correct without reading base/elements.css. */
-.d-shell{
+.d-shell,
+/* *** SIX PATTERNS THAT PREDATE .d-shell, TAKING THE FRAME BY NAME. ***
+   The tidy end state is `class="d-archive d-shell"` in the markup. The markup
+   is WordPress block templates, where every class is written TWICE - once in
+   the HTML and once in the block comment's JSON beside it - and the two
+   silently desyncing is how a block stops being editable. Twenty edits across
+   eight templates for a rename is a bad trade today.
+
+   So they are named here instead. It is still ONE declaration of the frame,
+   which was the entire point; it is just reached by two routes. When the
+   templates are next regenerated, delete these six lines. */
+.d-grid,
+.d-archive,
+.d-product,
+.d-hero,
+.d-404,
+.d-section-title{
 	box-sizing:border-box;
 	max-width:var(--page-max);
 	margin-inline:auto;
@@ -115,6 +135,150 @@
    between blocks - otherwise a section title floats equidistant between the
    thing it names and the thing above. */
 .d-stack > :is(h2, h3, h4) + *{ margin-block-start:var(--stack-tight) }
+
+/* -- a row of things that wraps -------------------------------------------------
+   *** THIS EXISTED NINE TIMES BEFORE IT EXISTED ONCE. ***
+   `display:flex; flex-wrap:wrap; gap:...; align-items:center` is written by
+   hand in the header, the footer, the filters, the card actions, the payment
+   icons, the chip rows and three places in the product page - each with its own
+   gap, because each was typed rather than asked for. That is the same failure
+   the page frame had, one axis down.
+
+   The gap is a variable rather than a set of classes for each size, so a
+   caller can ask for a different one in place without a new modifier existing
+   for it. align-items:center is the default because a row of unequal things
+   nearly always wants its middles lined up, not its tops. */
+.d-cluster{
+	--gap: var(--inline);
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--gap);
+}
+.d-cluster--tight{ --gap: var(--space-3xs) }
+.d-cluster--loose{ --gap: var(--space-s) }
+.d-cluster--top{ align-items:flex-start }
+/* Baseline, for a row where the text must line up rather than the boxes - a
+   price beside a struck-out price, a label beside a value. */
+.d-cluster--baseline{ align-items:baseline }
+.d-cluster--end{ justify-content:flex-end }
+.d-cluster--between{ justify-content:space-between }
+.d-cluster--center{ justify-content:center }
+
+/* -- the one thing allowed to own inner padding ---------------------------------
+   *** NESTING GOES WRONG THROUGH DOUBLE PADDING, NOT THROUGH ALIGNMENT. ***
+   A checkbox inside a panel inside a table cell is not hard to align. It is
+   hard to space, because three of those four things each think they should
+   inset their contents, and the result is 60px of air nobody asked for.
+
+   So: a surface owns padding, a layout owns gaps, and a component owns neither.
+   .d-box is the surface. .d-stack, .d-cluster, .d-split and .d-grid own gaps
+   and never pad. Everything else owns nothing and can therefore be dropped
+   anywhere.
+
+   The rule cannot be enforced in CSS - `.d-box > .d-box { padding:0 }` would
+   break the legitimate case of a card inside a card. It is enforced by the
+   composition matrix and its gate, which render the nestings and measure them. */
+.d-box{
+	--pad: var(--space-s);
+	box-sizing:border-box;
+	padding:var(--pad);
+}
+.d-box--tight{ --pad: var(--space-2xs) }
+.d-box--roomy{ --pad: var(--space-m) }
+.d-box--flush{ --pad: 0 }
+.d-box--raised{
+	background:var(--surface-raised);
+	border-radius:var(--radius-l);
+	box-shadow:var(--shadow-card);
+}
+.d-box--quiet{
+	background:var(--surface-quiet);
+	border-radius:var(--radius-l);
+}
+.d-box--outline{
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+}
+
+/* -- n columns, or one, with no breakpoint --------------------------------------
+   *** A BREAKPOINT IS A GUESS ABOUT THE WINDOW; THIS IS A FACT ABOUT THE BOX. ***
+   The children go side by side while there is room for each of them to be
+   --threshold wide, and stack the instant there is not. It works inside a
+   sidebar, inside a drawer, inside a table cell - none of which a media query
+   can see, because a media query only ever knows about the viewport.
+
+   The arithmetic: when the container is narrower than --threshold the basis
+   goes hugely positive and each child claims a whole row; when it is wider the
+   basis goes hugely negative and flex-grow shares the row out. The 999 is the
+   standard multiplier for "large enough to saturate", not a magic number. */
+.d-switcher{
+	--threshold: 30rem;
+	--gap: var(--space-m);
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--gap);
+}
+.d-switcher > *{
+	flex-grow:1;
+	flex-basis:calc((var(--threshold) - 100%) * 999);
+}
+/* Past four children the row is too thin to be worth having, whatever the
+   width, so it becomes a column instead. `:nth-last-child(n+5)` selects every
+   child when there are five or more, and `~ *` catches the rest of them. */
+.d-switcher > :nth-last-child(n+5),
+.d-switcher > :nth-last-child(n+5) ~ *{ flex-basis:100% }
+
+/* -- media that does not decide the height of the row it is in --------------------
+   *** AN IMAGE WITHOUT A RATIO IS A LAYOUT SHIFT WAITING FOR A SLOW CONNECTION.
+   *** The row is one height until the picture arrives and another afterwards,
+   and on a phone that is the whole page moving under a thumb. The frame holds
+   the space before there is anything in it.
+
+   object-fit:cover crops rather than distorts. --contain is for a product
+   photograph that must not lose its edges; it will letterbox, which is the
+   honest trade. */
+.d-frame{
+	--ratio: 4 / 3;
+	position:relative;
+	display:block;
+	overflow:hidden;
+	aspect-ratio:var(--ratio);
+	border-radius:var(--radius-s);
+	background:var(--surface-quiet);
+}
+.d-frame > :is(img, video, iframe, svg, picture){
+	display:block;
+	width:100%;
+	height:100%;
+	object-fit:cover;
+}
+.d-frame--square{ --ratio: 1 }
+.d-frame--tall{ --ratio: 3 / 4 }
+.d-frame--wide{ --ratio: 16 / 9 }
+.d-frame--contain > :is(img, video){ object-fit:contain }
+
+/* -- the rule the primitives exist to make possible -------------------------------
+   *** A COMPONENT NEVER SETS ITS OWN OUTER MARGIN. ***
+   The gap between two things belongs to whatever CONTAINS them, because only
+   the container knows what the two things are. A margin written on a component
+   travels with it: the same notice then carries a different gap depending on
+   what it happens to sit next to, and the first one in a column pushes the
+   column's own top down for no reason anybody can find.
+
+   Every mature system lands on this rule independently, and it is the reason a
+   checkbox can be put inside a panel inside a table without anyone reasoning
+   about it: the checkbox has no opinion about what is above it, so it cannot
+   be wrong about it.
+
+   We do not fully obey it yet. Known offenders, listed so they are not quietly
+   forgotten: .d-intake and .d-courier set margin-block, the adopted
+   .wc-block-components-checkbox and .wc-block-components-text-input each set a
+   bottom margin, and .d-prose sets margins on its headings - which is the one
+   defensible case, because prose IS a stack and nobody wraps CMS output.
+
+   Enforced by measurement rather than by grep: the composition matrix renders
+   each component alone and asserts its computed outer margin is zero. */
 
 /* -- the control column ---------------------------------------------------------
    *** A CHECKBOX AND A RADIO ARE THE SAME COLUMN. ***

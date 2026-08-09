@@ -85,13 +85,13 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 }
 
 /* -- the grid ---------------------------------------------------------------- */
+/* The frame - max-width, centring, the gutter - is NOT here any more. It is
+   declared once in patterns/layout.css, which names this class alongside
+   .d-shell. What is left is what makes a grid a grid. */
 .d-grid{
 	display:grid;
 	grid-template-columns:repeat(auto-fill, minmax(15rem, 1fr));
 	gap:var(--grid-gap);
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding-inline:var(--gutter);
 }
 /* The list view is the same grid with one column and the card laid on its side,
    so switching view does not re-flow anything but the card itself. */
@@ -104,10 +104,9 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 .d-grid--list .d-card__accent{ display:none }
 
 /* -- the archive layout ------------------------------------------------------ */
+/* Frame in layout.css; only the vertical air is this pattern's business. */
 .d-archive{
-	max-width:var(--page-max);
-	margin-inline:auto;
-	padding:var(--space-s) var(--gutter) var(--space-l);
+	padding-block:var(--space-s) var(--space-l);
 }
 .d-archive__title{
 	margin:var(--space-3xs) 0 var(--space-2xs);
