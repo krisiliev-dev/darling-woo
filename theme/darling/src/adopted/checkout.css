@@ -217,11 +217,58 @@
 	display:block;
 }
 
-/* The slab at the top of the page. Woo renders the express-payment region
-   whether or not any express method exists. */
+/* -- express payment, moved to where it belongs ------------------------------
+   *** THE OWNER'S CALL, AND HE IS RIGHT ABOUT THE ORDER. *** Payment comes
+   after a customer has said who they are and where it goes, so a wallet button
+   above the first field is asking for the order before asking for the address.
+   It now sits directly above Поръчай.
+
+   *** THIS IS A VISUAL REORDER, NOT A REAL ONE, AND THAT IS A REAL CAVEAT. ***
+   The checkout's blocks live in the PAGE's content in the database, not in this
+   theme, so the theme cannot change their source order. flex `order` moves the
+   picture and leaves the DOM alone - which means a keyboard or a screen reader
+   still meets express payment first, before the contact fields. It is a
+   shortcut placed first for people who cannot see where it is, which is not the
+   worst possible answer, but the correct fix is to drag the Express Checkout
+   block below the order notes in the checkout page editor and delete these
+   three rules.
+
+   The form is a <form> and was display:block, so it had no order to give. Only
+   the two blocks that move say so; everything else keeps source order at 0. */
+.wc-block-checkout__form{
+	display:flex;
+	flex-direction:column;
+}
+.wc-block-checkout__form > div:has(> .wc-block-components-express-payment){ order:1 }
+.wc-block-checkout__form > .wc-block-checkout__terms{ order:2 }
+.wc-block-checkout__form > .wc-block-checkout__actions{ order:3 }
+
 .wc-block-components-express-payment--checkout{
 	border:0;
 	padding:0;
+}
+.wc-block-components-express-payment__title-container{
+	margin-block-end:var(--space-xs);
+}
+/* *** THE DIVIDER WAS SITTING ON THE BUTTON. *** Woo's own spacing went with
+   its stylesheet and nothing replaced it, so "Или" was a line of text jammed
+   under the wallet. It is a divider, so it is drawn as one: the word between
+   two rules, with the air a separator needs on both sides. */
+.wc-block-components-express-payment-continue-rule{
+	display:flex;
+	align-items:center;
+	gap:var(--space-xs);
+	margin-block:var(--space-m);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+	text-transform:none;
+}
+.wc-block-components-express-payment-continue-rule::before,
+.wc-block-components-express-payment-continue-rule::after{
+	content:"";
+	flex:1 1 auto;
+	height:1px;
+	background:var(--hairline);
 }
 
 /* Stripe's own container, which holds an iframe: a surface, not a control. */

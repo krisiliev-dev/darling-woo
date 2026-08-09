@@ -24,7 +24,11 @@
 		'Contact information': 'Данни за контакт',
 		'Payment options': 'Начин на плащане',
 		'Express Checkout': 'Бързо плащане',
-		'Or continue below': 'Или продължи по-долу',
+		// *** "Or continue below" IS ONLY TRUE WHILE THE WALLET IS AT THE TOP. ***
+		// The owner moved express payment down to just above the order button, where
+		// there is nothing below it to continue to. A divider between the wallet and
+		// the button says everything it needs to with one word.
+		'Or continue below': 'Или',
 		'You are currently checking out as a guest.': 'Поръчваш като гост.',
 		'Use same address for billing': 'Използвай същия адрес и за фактуриране',
 		'Phone (optional)': 'Телефон (по избор)',
