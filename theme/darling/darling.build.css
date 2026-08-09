@@ -10215,6 +10215,43 @@ li.product .wp-block-button__link{
 	flex:none;
 }
 
+/* -- a rate row is a name and a price, and the price belongs at the far end ---
+   *** MEASURED WITH AN ADDRESS IN THE FORM, WHICH IS THE ONLY WAY TO SEE IT. ***
+   Woo puts the label and the price in one __label-group, and our rule left that
+   group as a block - so five shipping rates rendered as
+   "BoxNow — до автомат€1.64", with no space at all between the name and the
+   money. Every capture before this one had an empty address, so the group had
+   only ever contained one child and looked correct.
+
+   Baseline, not centre: the price is a different size from the name and they
+   have to sit on the same line of text, not on the same centre line. */
+.wc-block-components-radio-control__label-group{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:baseline;
+	gap:var(--inline);
+}
+.wc-block-components-radio-control__secondary-label{
+	margin-inline-start:auto;
+	font-weight:var(--fw-medium);
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+/* A description belongs under the label it describes, across both columns. */
+.wc-block-components-radio-control__description-group,
+.wc-block-components-radio-control__description{
+	flex-basis:100%;
+	margin:0;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+/* Five rates in a column need more room than two payment methods do: this is
+   the one list on the checkout where a customer compares rows against each
+   other, and a thumb has to land on the right one. */
+.wc-block-components-shipping-rates-control .wc-block-components-radio-control__option{
+	padding-block:var(--space-2xs);
+}
+
 
 /* ==== adopted/notice.css ==== */
 /* =============================================================================
@@ -12628,9 +12665,30 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    *** THE DEFAULT IS VISIBLE, ON PURPOSE. *** No attribute means the script did
    not run, and an empty heading is a smaller failure than a wallet button
    nobody can reach. */
-.wc-block-components-express-payment[data-d-express="empty"]{ display:none }
+/* *** IT IS NOT display:none, AND THAT IS THE WHOLE TRICK. ***
+   display:none gives every descendant a zero-height box, so the script that
+   decides this - which decides by MEASURING the wallet - can never see one that
+   arrives late. Hide it that way and a customer on a slow connection whose
+   Google Pay mounts a second after we gave up loses it permanently, because the
+   thing we would have measured is now unmeasurable. The bug is invisible on a
+   fast connection, which is the worst kind.
+
+   Out of flow and invisible instead: visibility:hidden keeps the layout boxes,
+   so the iframe still reports its real height and the next reading flips it
+   back. It is also not focusable, so a keyboard does not walk into a wallet
+   nobody can see. */
+.wc-block-components-express-payment[data-d-express="empty"]{
+	position:absolute;
+	visibility:hidden;
+	height:0;
+	overflow:hidden;
+	pointer-events:none;
+}
+/* The wrapper keeps its own box, so it collapses on its own once the region is
+   out of flow - but its margins would leave a gap where nothing is. */
 .wc-block-checkout__form > div:has(> .wc-block-components-express-payment[data-d-express="empty"]){
-	display:none;
+	margin:0;
+	padding:0;
 }
 /* The "or carry on below" rule is a SIBLING of the region, not a child, so it
    survives hiding the region and leaves a lone horizontal line where the

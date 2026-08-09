@@ -452,9 +452,9 @@
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
 		(root || document).querySelectorAll('.wc-block-components-totals-coupon').forEach(couponOpen);
-		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(function (el) {
-			if (!el.dataset.dExpressInit) { el.dataset.dExpressInit = '1'; expressState(el); }
-		});
+		/* NOT guarded by a dataset flag - see expressState, which guards on the
+		   row it is actually watching rather than on the region it was found in. */
+		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(expressState);
 		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
@@ -490,15 +490,41 @@
 	      reach. */
 	function expressState(region) {
 		var row = region.querySelector('.wc-block-components-express-payment__event-buttons');
-		if (!row) { return; }
-		/* 24px: a mounted wallet is 40px minimum by Stripe's own inline
-		   min-height, and a collapsed one is 0. Anything between is mid-
-		   animation and will be read again. */
+		/* *** NO BUTTON ROW AT ALL IS NOT "UNKNOWN", IT IS EMPTY. ***
+		   This used to clear the attribute and fall back to the visible
+		   default, and that is exactly what kept the empty slab on screen
+		   through three captures after the row itself was being measured
+		   correctly. The region is rendered, its content container is not
+		   there, and there is nothing that could appear in it. "Absent
+		   attribute means live" is for one case only: this script never ran. */
+		if (!row) { region.setAttribute('data-d-express', 'empty'); return; }
+		/* *** MEASURE THE THING THAT IS OR IS NOT THERE, NOT A BOX AROUND IT. ***
+		   Three goes at this, each measuring one box further out and each
+		   producing a byte-identical screenshot of the same empty slab:
+
+		     the region        - always there, so useless
+		     the button row    - Stripe leaves a placeholder at min-height:40px
+		                         whether or not a wallet mounts, so a row of 40
+		                         reads as "live" over an empty gap. THIS is the
+		                         one that fooled me twice.
+		     the iframe        - the actual wallet. Collapsed to 0 when there is
+		                         nothing to offer, absent when nothing mounted.
+
+		   So: a wallet is on offer when something that can be pressed has a
+		   height. Buttons are included because a non-Stripe express method may
+		   render a real one; today there are none, which is why the earlier
+		   :has(button) rule never fired. */
 		var settle = function () {
-			var h = row.getBoundingClientRect().height;
-			region.setAttribute('data-d-express', h > 24 ? 'live' : 'empty');
+			var live = false;
+			var kids = region.querySelectorAll('iframe, button');
+			for (var i = 0; i < kids.length; i++) {
+				if (kids[i].getBoundingClientRect().height > 24) { live = true; break; }
+			}
+			region.setAttribute('data-d-express', live ? 'live' : 'empty');
 		};
 		settle();
+		if (region.dExpressRow === row) { return; }   /* already watching this row */
+		region.dExpressRow = row;
 		if (window.ResizeObserver) {
 			new window.ResizeObserver(settle).observe(row);
 		}
@@ -514,6 +540,38 @@
 	if (document.readyState === 'loading')
 		document.addEventListener('DOMContentLoaded', function () { init(); });
 	else init();
+
+	/* *** init() ONCE IS NOT ENOUGH ON A REACT PAGE, AND B4 PROVED IT. ***
+	   With an address typed into the checkout, WooCommerce re-renders the form -
+	   and the express-payment region that came back was a NEW node. Our
+	   data-d-express attribute was on the old one, the ResizeObserver was
+	   watching a detached element, and the empty slab the owner reported was
+	   back in the very next screenshot. Every module here is guarded by a
+	   dataset flag on the element, so re-running init on a fresh node is safe
+	   and re-running it on an old one does nothing.
+
+	   Debounced with rAF: a React commit fires many mutations and there is no
+	   sense answering each one. Scoped to added element nodes, so typing in a
+	   field - which mutates attributes and text - does not schedule anything. */
+	if (window.MutationObserver) {
+		var pending = false;
+		var rerun = function () {
+			pending = false;
+			init();
+		};
+		new MutationObserver(function (records) {
+			if (pending) { return; }
+			for (var i = 0; i < records.length; i++) {
+				for (var j = 0; j < records[i].addedNodes.length; j++) {
+					if (records[i].addedNodes[j].nodeType === 1) {
+						pending = true;
+						requestAnimationFrame(rerun);
+						return;
+					}
+				}
+			}
+		}).observe(document.body, { childList: true, subtree: true });
+	}
 
 	/* WooCommerce blocks mount late and re-render; anything we styled can appear
 	   after we ran. Cheap to re-scan, and init is idempotent. */

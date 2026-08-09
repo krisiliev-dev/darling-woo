@@ -348,9 +348,30 @@
    *** THE DEFAULT IS VISIBLE, ON PURPOSE. *** No attribute means the script did
    not run, and an empty heading is a smaller failure than a wallet button
    nobody can reach. */
-.wc-block-components-express-payment[data-d-express="empty"]{ display:none }
+/* *** IT IS NOT display:none, AND THAT IS THE WHOLE TRICK. ***
+   display:none gives every descendant a zero-height box, so the script that
+   decides this - which decides by MEASURING the wallet - can never see one that
+   arrives late. Hide it that way and a customer on a slow connection whose
+   Google Pay mounts a second after we gave up loses it permanently, because the
+   thing we would have measured is now unmeasurable. The bug is invisible on a
+   fast connection, which is the worst kind.
+
+   Out of flow and invisible instead: visibility:hidden keeps the layout boxes,
+   so the iframe still reports its real height and the next reading flips it
+   back. It is also not focusable, so a keyboard does not walk into a wallet
+   nobody can see. */
+.wc-block-components-express-payment[data-d-express="empty"]{
+	position:absolute;
+	visibility:hidden;
+	height:0;
+	overflow:hidden;
+	pointer-events:none;
+}
+/* The wrapper keeps its own box, so it collapses on its own once the region is
+   out of flow - but its margins would leave a gap where nothing is. */
 .wc-block-checkout__form > div:has(> .wc-block-components-express-payment[data-d-express="empty"]){
-	display:none;
+	margin:0;
+	padding:0;
 }
 /* The "or carry on below" rule is a SIBLING of the region, not a child, so it
    survives hiding the region and leaves a lone horizontal line where the

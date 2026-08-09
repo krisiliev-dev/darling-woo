@@ -10217,6 +10217,43 @@ li.product .wp-block-button__link{
 	flex:none;
 }
 
+/* -- a rate row is a name and a price, and the price belongs at the far end ---
+   *** MEASURED WITH AN ADDRESS IN THE FORM, WHICH IS THE ONLY WAY TO SEE IT. ***
+   Woo puts the label and the price in one __label-group, and our rule left that
+   group as a block - so five shipping rates rendered as
+   "BoxNow — до автомат€1.64", with no space at all between the name and the
+   money. Every capture before this one had an empty address, so the group had
+   only ever contained one child and looked correct.
+
+   Baseline, not centre: the price is a different size from the name and they
+   have to sit on the same line of text, not on the same centre line. */
+.wc-block-components-radio-control__label-group{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:baseline;
+	gap:var(--inline);
+}
+.wc-block-components-radio-control__secondary-label{
+	margin-inline-start:auto;
+	font-weight:var(--fw-medium);
+	font-variant-numeric:tabular-nums;
+	white-space:nowrap;
+}
+/* A description belongs under the label it describes, across both columns. */
+.wc-block-components-radio-control__description-group,
+.wc-block-components-radio-control__description{
+	flex-basis:100%;
+	margin:0;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+/* Five rates in a column need more room than two payment methods do: this is
+   the one list on the checkout where a customer compares rows against each
+   other, and a thumb has to land on the right one. */
+.wc-block-components-shipping-rates-control .wc-block-components-radio-control__option{
+	padding-block:var(--space-2xs);
+}
+
 
 /* ==== adopted/notice.css ==== */
 /* =============================================================================
@@ -12499,19 +12536,49 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:block;
 }
 
-/* The empty slab at the top of the page. Woo renders the express-payment
-   region whether or not any express method exists, and with the gateways down
-   it is a bordered box containing a heading and a horizontal rule. */
+/* -- express payment ---------------------------------------------------------
+   *** IT IS BELOW THE FIELDS NOW, AND IN THE DOM RATHER THAN IN A PICTURE. ***
+   Owner's call, and he is right about the order: payment comes after a
+   customer has said who they are and where it goes, so a wallet button above
+   the first field asks for the order before asking for the address.
+
+   This was three CSS `order` rules for about an hour, because the checkout's
+   blocks live in the PAGE's content in the database and a theme cannot reach
+   them. flex order moves the picture and leaves the DOM alone, which would
+   have left a keyboard user meeting the wallet before the contact fields - a
+   shortcut placed first for the people least able to see where it is.
+
+   The block was moved for real instead, in the page content, with wp-cli:
+   express-payment-block now sits between order-note-block and terms-block.
+   The three order rules and the flex column are deleted; source order is the
+   order. Backup of the original page content is on the box at
+   /srv/darling/prod/checkout-page-20260809-225607.bak.html. */
 .wc-block-components-express-payment--checkout{
 	border:0;
 	padding:0;
 }
-.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe)){
-	display:none;
+.wc-block-components-express-payment__title-container{
+	margin-block-end:var(--space-xs);
 }
-.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe))
-	+ .wc-block-components-checkout-step__heading{
-	margin-top:0;
+/* *** THE DIVIDER WAS SITTING ON THE BUTTON. *** Woo's own spacing went with
+   its stylesheet and nothing replaced it, so "Или" was a line of text jammed
+   under the wallet. It is a divider, so it is drawn as one: the word between
+   two rules, with the air a separator needs on both sides. */
+.wc-block-components-express-payment-continue-rule{
+	display:flex;
+	align-items:center;
+	gap:var(--space-xs);
+	margin-block:var(--space-m);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+	text-transform:none;
+}
+.wc-block-components-express-payment-continue-rule::before,
+.wc-block-components-express-payment-continue-rule::after{
+	content:"";
+	flex:1 1 auto;
+	height:1px;
+	background:var(--hairline);
 }
 
 /* Stripe's own container, which holds an iframe: a surface, not a control. */
@@ -12581,14 +12648,55 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 .wc-block-components-checkout-order-summary__title-price{ display:none }
 
 /* -- the express region, when there is nothing express about it -----------
-   Woo renders the heading and the "or carry on below" rule whether or not any
-   express method exists, so with no gateways the page opens with a title over
-   an empty box. The whole wrapper goes, not just the box - otherwise the
-   heading stays and points at nothing. */
-.wc-block-checkout__form > div:has(> .wc-block-components-express-payment:not(:has(button)):not(:has(iframe))){
-	display:none;
+   The owner reported a "Бързо плащане" heading with nothing under it, and the
+   rule written for it - hide when there is no <button> and no <iframe> - never
+   fired once. Measured, on the live page, with Stripe reachable:
+
+     buttons 0, iframes 1, iframe height 56px
+
+   There is NEVER a button. Stripe's express element is an iframe, always, and
+   when no wallet is available it keeps the iframe and animates its height to
+   zero. So the discriminator is not the presence of anything; it is a HEIGHT,
+   which no selector can read. And when Stripe cannot load at all the region is
+   not rendered - so the state that needed answering was the only one CSS could
+   not see.
+
+   darling-ui.js measures the button row and writes data-d-express. This hides
+   what it marks.
+
+   *** THE DEFAULT IS VISIBLE, ON PURPOSE. *** No attribute means the script did
+   not run, and an empty heading is a smaller failure than a wallet button
+   nobody can reach. */
+/* *** IT IS NOT display:none, AND THAT IS THE WHOLE TRICK. ***
+   display:none gives every descendant a zero-height box, so the script that
+   decides this - which decides by MEASURING the wallet - can never see one that
+   arrives late. Hide it that way and a customer on a slow connection whose
+   Google Pay mounts a second after we gave up loses it permanently, because the
+   thing we would have measured is now unmeasurable. The bug is invisible on a
+   fast connection, which is the worst kind.
+
+   Out of flow and invisible instead: visibility:hidden keeps the layout boxes,
+   so the iframe still reports its real height and the next reading flips it
+   back. It is also not focusable, so a keyboard does not walk into a wallet
+   nobody can see. */
+.wc-block-components-express-payment[data-d-express="empty"]{
+	position:absolute;
+	visibility:hidden;
+	height:0;
+	overflow:hidden;
+	pointer-events:none;
 }
-.wc-block-components-express-payment:not(:has(button)):not(:has(iframe)){
+/* The wrapper keeps its own box, so it collapses on its own once the region is
+   out of flow - but its margins would leave a gap where nothing is. */
+.wc-block-checkout__form > div:has(> .wc-block-components-express-payment[data-d-express="empty"]){
+	margin:0;
+	padding:0;
+}
+/* The "or carry on below" rule is a SIBLING of the region, not a child, so it
+   survives hiding the region and leaves a lone horizontal line where the
+   wallet used to be. */
+.wc-block-checkout__form:has(.wc-block-components-express-payment[data-d-express="empty"])
+	.wc-block-components-express-payment-continue-rule{
 	display:none;
 }
 
@@ -14150,6 +14258,9 @@ that is the next component.</div>
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
 		(root || document).querySelectorAll('.wc-block-components-totals-coupon').forEach(couponOpen);
+		/* NOT guarded by a dataset flag - see expressState, which guards on the
+		   row it is actually watching rather than on the region it was found in. */
+		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(expressState);
 		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
@@ -14162,11 +14273,111 @@ that is the next component.</div>
 		});
 	}
 
+
+	/* 8. THE EXPRESS SLAB THAT IS SOMETIMES A TITLE AND NOTHING ELSE.
+	      The owner sees "Бързо плащане" over empty space. A stylesheet cannot
+	      answer it, and I wrote a stylesheet rule for it twice before measuring.
+
+	      *** MEASURED ON THE LIVE PAGE: buttons 0, iframes 1, iframe height 56.
+	      *** There is never a <button>. Stripe's express element is an iframe,
+	      always, and when no wallet is available it KEEPS the iframe and
+	      animates its height to zero. So the difference between "a wallet is
+	      offered" and "nothing is offered" is a height, and a selector cannot
+	      read a height.
+
+	      Stripe also decides late, and then animates over 350ms, so one reading
+	      at load time is a reading of the wrong moment. This watches instead:
+	      a ResizeObserver for the settle, and a short poll for the browsers
+	      that do not have one.
+
+	      Writes data-d-express; the stylesheet hides what it marks. Absent
+	      means the script never ran, and the CSS treats that as "live" - an
+	      empty heading is a smaller failure than a wallet button nobody can
+	      reach. */
+	function expressState(region) {
+		var row = region.querySelector('.wc-block-components-express-payment__event-buttons');
+		/* *** NO BUTTON ROW AT ALL IS NOT "UNKNOWN", IT IS EMPTY. ***
+		   This used to clear the attribute and fall back to the visible
+		   default, and that is exactly what kept the empty slab on screen
+		   through three captures after the row itself was being measured
+		   correctly. The region is rendered, its content container is not
+		   there, and there is nothing that could appear in it. "Absent
+		   attribute means live" is for one case only: this script never ran. */
+		if (!row) { region.setAttribute('data-d-express', 'empty'); return; }
+		/* *** MEASURE THE THING THAT IS OR IS NOT THERE, NOT A BOX AROUND IT. ***
+		   Three goes at this, each measuring one box further out and each
+		   producing a byte-identical screenshot of the same empty slab:
+
+		     the region        - always there, so useless
+		     the button row    - Stripe leaves a placeholder at min-height:40px
+		                         whether or not a wallet mounts, so a row of 40
+		                         reads as "live" over an empty gap. THIS is the
+		                         one that fooled me twice.
+		     the iframe        - the actual wallet. Collapsed to 0 when there is
+		                         nothing to offer, absent when nothing mounted.
+
+		   So: a wallet is on offer when something that can be pressed has a
+		   height. Buttons are included because a non-Stripe express method may
+		   render a real one; today there are none, which is why the earlier
+		   :has(button) rule never fired. */
+		var settle = function () {
+			var live = false;
+			var kids = region.querySelectorAll('iframe, button');
+			for (var i = 0; i < kids.length; i++) {
+				if (kids[i].getBoundingClientRect().height > 24) { live = true; break; }
+			}
+			region.setAttribute('data-d-express', live ? 'live' : 'empty');
+		};
+		settle();
+		if (region.dExpressRow === row) { return; }   /* already watching this row */
+		region.dExpressRow = row;
+		if (window.ResizeObserver) {
+			new window.ResizeObserver(settle).observe(row);
+		}
+		var n = 0;
+		var t = setInterval(function () {
+			settle();
+			if (++n > 24) { clearInterval(t); }
+		}, 250);
+	}
+
 	cartEvents();
 
 	if (document.readyState === 'loading')
 		document.addEventListener('DOMContentLoaded', function () { init(); });
 	else init();
+
+	/* *** init() ONCE IS NOT ENOUGH ON A REACT PAGE, AND B4 PROVED IT. ***
+	   With an address typed into the checkout, WooCommerce re-renders the form -
+	   and the express-payment region that came back was a NEW node. Our
+	   data-d-express attribute was on the old one, the ResizeObserver was
+	   watching a detached element, and the empty slab the owner reported was
+	   back in the very next screenshot. Every module here is guarded by a
+	   dataset flag on the element, so re-running init on a fresh node is safe
+	   and re-running it on an old one does nothing.
+
+	   Debounced with rAF: a React commit fires many mutations and there is no
+	   sense answering each one. Scoped to added element nodes, so typing in a
+	   field - which mutates attributes and text - does not schedule anything. */
+	if (window.MutationObserver) {
+		var pending = false;
+		var rerun = function () {
+			pending = false;
+			init();
+		};
+		new MutationObserver(function (records) {
+			if (pending) { return; }
+			for (var i = 0; i < records.length; i++) {
+				for (var j = 0; j < records[i].addedNodes.length; j++) {
+					if (records[i].addedNodes[j].nodeType === 1) {
+						pending = true;
+						requestAnimationFrame(rerun);
+						return;
+					}
+				}
+			}
+		}).observe(document.body, { childList: true, subtree: true });
+	}
 
 	/* WooCommerce blocks mount late and re-render; anything we styled can appear
 	   after we ran. Cheap to re-scan, and init is idempotent. */

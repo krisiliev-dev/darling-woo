@@ -42,12 +42,33 @@ const check = (what, got, want) => {
     if (!ex) return { present: false };
     const rule = document.querySelector('.wc-block-components-express-payment-continue-rule');
     return { present: true, state: ex.getAttribute('data-d-express'),
-             visible: ex.getBoundingClientRect().height > 0,
+             visible: getComputedStyle(ex).visibility !== 'hidden' && ex.getBoundingClientRect().height > 0,
              ruleVisible: rule ? rule.getBoundingClientRect().height > 0 : null,
              rowHeight: Math.round((ex.querySelector('.wc-block-components-express-payment__event-buttons') || { getBoundingClientRect: () => ({ height: 0 }) }).getBoundingClientRect().height) };
   });
 
-  console.log('1 a wallet is offered');
+  // *** THE LIVE CASE CANNOT BE ASSUMED EITHER. *** Headless Chromium offered
+  // Google Pay every time for a week and then stopped, and this gate failed on
+  // a correct build because its PRECONDITION had gone. So: use the real wallet
+  // when there is one, and stand one in when there is not - the assertion is
+  // about our rule, not about Stripe's mood, and the output says which it was.
+  const real = await p.evaluate(() => {
+    const ex = document.querySelector('.wc-block-components-express-payment');
+    if (!ex) return null;
+    const kids = ex.querySelectorAll('iframe, button');
+    for (const k of kids) if (k.getBoundingClientRect().height > 24) return true;
+    const row = ex.querySelector('.wc-block-components-express-payment__event-buttons');
+    if (!row) return false;
+    const stand = document.createElement('button');
+    stand.type = 'button';
+    stand.setAttribute('data-stand-in', '');
+    stand.style.cssText = 'height:40px;width:180px;display:block';
+    stand.textContent = 'stand-in wallet';
+    row.appendChild(stand);
+    return false;
+  });
+  await p.waitForTimeout(900);
+  console.log('1 a wallet is offered' + (real ? '  (a real one mounted)' : '  (stood in - none mounted this run)'));
   const live = await read();
   if (!live.present) { console.log('  the express region is not on the page at all - nothing to gate'); await b.close(); process.exit(0); }
   check('marked live', live.state, 'live');
@@ -60,6 +81,10 @@ const check = (what, got, want) => {
     // that rather than removing anything, so the script is answering the real
     // DOM and not a convenient one.
     const ex = document.querySelector('.wc-block-components-express-payment');
+    // the stand-in from step 1 goes too, or step 2 measures step 1's prop
+    ex.querySelectorAll('[data-stand-in]').forEach(function (s) { s.remove(); });
+    // the stand-in from step 1 goes too, or step 2 is testing step 1's prop
+    for (const s of ex.querySelectorAll('[data-stand-in]')) s.remove();
     for (const el of ex.querySelectorAll('iframe, .__PrivateStripeElement, [style*="min-height"]')) {
       el.style.setProperty('height', '0px', 'important');
       el.style.setProperty('min-height', '0px', 'important');
