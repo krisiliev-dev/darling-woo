@@ -39,6 +39,17 @@
 	--grid-gap:      var(--space-s);    /* between cards in a grid             */
 	--inline:        var(--space-2xs);  /* between things on one line          */
 
+	/* -- the control column --------------------------------------------------
+	   One width for anything that sits in front of a line of text and has to
+	   put that text on a rail: a checkbox, a radio, a list bullet.
+
+	   *** IT IS HERE BECAUSE IT WAS IN TWO PLACES AND THEY DISAGREED. ***
+	   The checkbox was 1.15rem and the radio 1.25rem, set months apart in the
+	   same file, so a column of tickboxes and a column of radios started their
+	   text 1.6px apart - too small to name and exactly large enough to make a
+	   form feel loose. A size that two components must share is a token. */
+	--control:       1.25rem;
+
 	/* -- the page column -----------------------------------------------------
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye

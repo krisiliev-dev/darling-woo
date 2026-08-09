@@ -309,6 +309,17 @@
 	--grid-gap:      var(--space-s);    /* between cards in a grid             */
 	--inline:        var(--space-2xs);  /* between things on one line          */
 
+	/* -- the control column --------------------------------------------------
+	   One width for anything that sits in front of a line of text and has to
+	   put that text on a rail: a checkbox, a radio, a list bullet.
+
+	   *** IT IS HERE BECAUSE IT WAS IN TWO PLACES AND THEY DISAGREED. ***
+	   The checkbox was 1.15rem and the radio 1.25rem, set months apart in the
+	   same file, so a column of tickboxes and a column of radios started their
+	   text 1.6px apart - too small to name and exactly large enough to make a
+	   form feel loose. A size that two components must share is a token. */
+	--control:       1.25rem;
+
 	/* -- the page column -----------------------------------------------------
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye
@@ -763,6 +774,134 @@ hr{
    it is not inside. `clip` cuts the overflow without creating that container.
    Same reason the band pattern is a grid rather than a negative margin. */
 main{ overflow-x:clip }
+
+}
+
+/* ==== patterns/layout.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / THE PAGE FRAME, AND WHAT LINES UP WITH WHAT
+
+   Every other file in patterns/ draws a thing. This one draws nothing. It
+   answers one question - *where does content start?* - and it exists because
+   until now seven files answered it separately.
+
+   *** MEASURED, AT 1440, WITH ONLY darling.build.css LOADED. ***
+   Seven patterns each declared `max-width:var(--page-max)` with their own
+   padding beside it, and the page came out with three different left rails:
+
+       x=180   .d-header__inner, and the logo inside it
+       x=220   .d-section-title, .d-grid, .d-archive, .d-product, .d-hero
+       x=230   a card's text, which is the card's own padding and is correct
+
+   So the header's content sat 40px left of everything under it. Nobody typed
+   that number: header.css and mega.css padded with --space-s while the other
+   five padded with --gutter, and --gutter is --space-xl. Two files reached for
+   the smaller token years apart and the page acquired a second rail.
+
+   *** THIS IS WHY A FRAME IS A COMPONENT AND NOT A HABIT. ***
+   A rule repeated in seven files is seven chances to differ, and the difference
+   is invisible in every file - it is only visible on the page, where nobody is
+   reading CSS. One class, one declaration, one rail.
+
+   -- what is in here ---------------------------------------------------------
+     .d-shell    the page frame: how wide content gets, and where it starts
+     .d-split    a main column with something beside it - checkout, cart, account
+     .d-stack    vertical rhythm in a column, so blocks do not each invent a gap
+     --control   one width for a checkbox, a radio and anything else that sits
+                 in front of a line of text, so their text agrees on a rail
+
+   Anything that needs to sit on the page rail asks for .d-shell. Anything that
+   needs to break OUT of it (a full-bleed band, the footer) says so by not being
+   in one - see band.css, which uses --page-max directly and deliberately.
+   ========================================================================== */
+
+/* -- the frame ----------------------------------------------------------------
+   box-sizing is declared here rather than trusted: the frame is the one place
+   where a border-box mistake moves every rail on the page at once, and this
+   file has to be correct without reading base/elements.css. */
+.d-shell{
+	box-sizing:border-box;
+	max-width:var(--page-max);
+	margin-inline:auto;
+	padding-inline:var(--gutter);
+}
+/* A shell inside a shell would pad twice. This is for the common case: a header
+   bar that is full-bleed, with a .d-shell inside it that is already padded by
+   its parent's own inset. */
+.d-shell--flush{ padding-inline:0 }
+/* Prose is measured by the eye, not by the layout - see --measure-lede in
+   space.css. Still centred on the same rail, so a paragraph and the section
+   title above it start together. */
+.d-shell--prose{ max-width:var(--measure-lede) }
+
+/* -- a column with something beside it -----------------------------------------
+   Checkout, the cart and the account page are all one long column with a
+   smaller one at its side, and all three had been written separately.
+
+   *** THE ASIDE IS A rem WIDTH, NOT A PERCENTAGE. *** A percentage aside keeps
+   shrinking as the window does, so the order summary reaches a width where its
+   own two-column rows wrap and it looks broken - at exactly the sizes nobody
+   opens on a desktop to check. A fixed column stops being a column instead:
+   below 62rem it is simply the next block down.
+
+   Source order is main-then-aside, which is the order a keyboard walks it. On a
+   phone the summary belongs above the form for a shop, and that is an --order
+   decision per surface, not a default. */
+/* *** THE BREAKPOINT IS A LITERAL AND CANNOT BE A TOKEN. *** A media query is
+   evaluated before custom properties exist, so `@media (min-width: var(--x))`
+   is not a rule that loses a fight - it is a rule that never parses. Writing
+   --split-at here and using it below would look like a system and behave like
+   a typo. 62rem, twice, said out loud. */
+.d-split{
+	--aside: 21rem;
+	display:grid;
+	grid-template-columns:1fr;
+	gap:var(--space-l);
+	align-items:start;
+}
+@media (min-width: 62rem){
+	.d-split{ grid-template-columns:minmax(0, 1fr) var(--aside) }
+}
+.d-split__main{ min-width:0 }   /* grid children floor at min-content, not 0 */
+.d-split__aside{ min-width:0 }
+/* Sticky is opt-in. A sidebar taller than the viewport that is also sticky
+   cannot be scrolled to its own bottom, which is how an order summary hides its
+   total. Only ask for it on a short one. */
+.d-split__aside--sticky{
+	position:sticky;
+	top:var(--space-s);
+}
+
+/* -- rhythm --------------------------------------------------------------------
+   *** THE GAP BELONGS BETWEEN THE BLOCKS, NOT ON THEM. ***
+   A margin on the block travels with it: the same component then carries a
+   different gap depending on what it is next to, and the first one in a column
+   pushes the column's own top down. The owl selector puts the space where it
+   actually is - between - so the first child starts flush and the last one
+   leaves no trailing hole.
+
+   --stack is a token, and it is overridable per instance, so a tight group asks
+   for less without a new class per size. */
+.d-stack{ --gap: var(--stack) }
+.d-stack > * + *{ margin-block-start:var(--gap) }
+.d-stack--tight{ --gap: var(--stack-tight) }
+.d-stack--loose{ --gap: var(--space-l) }
+/* A heading owns the block under it, so it sits closer to it than the gap
+   between blocks - otherwise a section title floats equidistant between the
+   thing it names and the thing above. */
+.d-stack > :is(h2, h3, h4) + *{ margin-block-start:var(--stack-tight) }
+
+/* -- the control column ---------------------------------------------------------
+   *** A CHECKBOX AND A RADIO ARE THE SAME COLUMN. ***
+   They were 1.15rem and 1.25rem, set in two places months apart, so a list of
+   tickboxes and a list of radios put their text on rails 1.6px apart. That is
+   too small to see and exactly large enough to make a form feel loose without
+   anyone being able to say why.
+
+   The token itself lives in tokens/space.css as --control, because it is a
+   measurement and this file is not allowed to hold one. Both controls read it;
+   a third that ever appears reads it too. */
 
 }
 
@@ -1416,13 +1555,21 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	from{ box-shadow:0 1px 0 rgb(0 0 0 / 0) }
 	to  { box-shadow:0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -12px rgb(0 0 0 / .16) }
 }
+/* *** THE FRAME IS NOT WRITTEN HERE ANY MORE - THE ELEMENT ASKS FOR .d-shell.
+   *** It used to carry its own `max-width:var(--page-max); margin:0 auto;
+   padding:… var(--space-s)`, and --space-s is not --gutter: measured at 1440,
+   the logo started at x=180 while every heading, grid and hero under it started
+   at x=220. Forty pixels of misalignment that nobody chose - two files reached
+   for a different token for the same job.
+
+   So this rule now says only what is true of a HEADER BAR, and the rail comes
+   from the one place that owns it. Vertical padding stays, because how tall the
+   bar is has nothing to do with where the page starts. */
 .d-header__inner{
 	display:flex;
 	align-items:center;
 	gap:var(--space-s);
-	max-width:var(--page-max);
-	margin:0 auto;
-	padding:var(--space-2xs) var(--space-s);
+	padding-block:var(--space-2xs);
 }
 
 /* -- the wordmark -----------------------------------------------------------
@@ -1519,14 +1666,17 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 .d-nav__mega:hover > .d-mega,
 .d-nav__mega:focus-within > .d-mega,
 .d-nav__trigger[aria-expanded="true"] + .d-mega{ display:block }
+/* The same story one level down, and worse: this one centred on --page-max with
+   NO inline padding at all, so the mega menu's first column started at the page
+   max's own edge - a third rail, 60px left of the content it is a menu for.
+   .d-shell in the markup, list semantics here. The 12/48 gap is the next thing
+   to answer for; it predates the space scale. */
 .d-mega__list{
 	display:grid;
 	grid-template-columns:repeat(3, 1fr);
 	gap:12px 48px;
-	max-width:var(--page-max);
-	margin:0 auto;
-	padding:0;
 	list-style:none;
+	margin:0;
 }
 /* *** THE FLOURISH IS TWO STARS, AND THEY ARE MARKS RATHER THAN CHARACTERS. ***
    The old rule used content:"\2726" and content:"\2727" - two Unicode dingbats
@@ -4564,8 +4714,14 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 }
 .d-check input{
 	appearance:none;
-	width:1.18em;
-	height:1.18em;
+	/* *** ONE WIDTH FOR EVERY CONTROL THAT SITS IN FRONT OF TEXT. ***
+	   This was 1.18em - and em, so it changed size with whatever font-size the
+	   label happened to have - while the adopted checkbox was 1.15rem and the
+	   adopted radio 1.25rem. Three sizes for one job, which means three text
+	   rails in a form that mixes them. --control is the size; see
+	   tokens/space.css. */
+	width:var(--control);
+	height:var(--control);
 	margin:.14em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -4579,8 +4735,10 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-check input[type="radio"]{ border-radius:var(--radius-circle) }
 .d-check input::before{
 	content:"";
-	width:.62em;
-	height:.62em;
+	/* The mark is a proportion of the box, not a second measurement - change
+	   --control and the tick still fits. */
+	width:calc(var(--control) * .525);
+	height:calc(var(--control) * .525);
 	transform:scale(0);
 	transition:transform 140ms var(--ease-float);
 	background:var(--action-ink);
@@ -4589,7 +4747,7 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-check input[type="radio"]::before{
 	clip-path:none;
 	border-radius:var(--radius-circle);
-	width:.52em; height:.52em;
+	width:calc(var(--control) * .44); height:calc(var(--control) * .44);
 }
 .d-check input:checked{ background:var(--action); border-color:var(--action) }
 .d-check input:checked::before{ transform:scale(1) }
@@ -9492,9 +9650,9 @@ li.product .wp-block-button__link{
 	grid-row:1;
 	justify-self:start;
 	flex:none;
-	width:1.15rem;
-	height:1.15rem;
-	min-width:1.15rem;
+	width:var(--control);
+	height:var(--control);
+	min-width:var(--control);
 	margin:.16em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -9527,8 +9685,8 @@ li.product .wp-block-button__link{
 	grid-row:1;
 	align-self:start;
 	justify-self:start;
-	width:.95rem;
-	height:.95rem;
+	width:calc(var(--control) - .2rem);
+	height:calc(var(--control) - .2rem);
 	/* The box carries margin-top:.16em, and the tick is .2rem smaller than the
 	   box, so half of that difference centres it. Written as the arithmetic
 	   rather than as a measured constant, so it survives a change to either. */
@@ -9547,7 +9705,10 @@ li.product .wp-block-button__link{
    `space-xs + 1.18em + inline` - and 1.18em is 16.5px at this font size while
    the control measures 20px. So the description started 5px left of the label
    it belongs under. A token cannot drift from itself. */
-.wc-block-components-radio-control{ --radio: 1.25rem }
+/* --radio was the second half of a size that is now one token; kept as a
+   name because the rules below read it, pointed at --control so it cannot
+   drift from the checkbox again. */
+.wc-block-components-radio-control{ --radio: var(--control) }
 .wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
 	grid-template-columns:auto 1fr;

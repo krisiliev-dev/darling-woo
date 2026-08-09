@@ -105,6 +105,23 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .gnav a{font:var(--fw-medium) 13px/1 var(--font-ui);color:var(--ink);margin-right:18px}
 .todo{font-size:var(--fs-fine);color:var(--ink-quiet);border-left:3px solid var(--hairline);
   padding-left:12px;margin-top:14px}
+/* -- the alignment section's guides. GALLERY CHROME, NOT THE SYSTEM. ---------
+   Every guide below is positioned with the SAME token the component reads, so
+   the line is not an opinion about where the rail is - it is the rail. A
+   component that misses it is missing its own token. */
+.algn{position:relative;margin:0 0 26px}
+.algn-page{position:relative;max-width:var(--page-max);margin-inline:auto;
+  outline:1px solid var(--hairline);border-radius:var(--radius-m)}
+.gl{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed var(--g-shadow);
+  pointer-events:none;z-index:60;transition:opacity 140ms ease}
+.gl--was{border-left-style:dotted;border-left-color:var(--c-cherry)}
+.gl > b{position:absolute;top:5px;left:5px;font:var(--fw-medium) 10px/1.4 var(--font-ui);
+  letter-spacing:.05em;text-transform:uppercase;color:var(--g-deep);white-space:nowrap;
+  background:var(--surface-page);padding:1px 5px;border-radius:3px}
+.gl--was > b{color:var(--c-cherry);top:auto;bottom:5px}
+.gl--low > b{top:auto;bottom:5px}
+.gl--right > b{left:auto;right:5px}
+.sec:has(#alg-g:not(:checked)) .gl{opacity:0}
 </style></head><body><div class="wrap">
 <!--GNAV-->
 ''')
@@ -814,12 +831,12 @@ now <em>underlined</em> as well as coloured, because colour alone is the one cue
 colour-blind visitor does not get.</p>
 <div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
 <header class="d-header" style="position:relative">
-  <div class="d-header__inner">
+  <div class="d-header__inner d-shell">
     <a class="d-header__logo" href="#">Дарлинг</a>
     <nav class="d-nav"><ul>
       <li><a href="#" aria-current="page">Начало</a></li>
       <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list">
+        <div class="d-mega"><ul class="d-mega__list d-shell">
           <li><a class="d-mega__link" href="#">За кухнята</a></li>
           <li><a class="d-mega__link" href="#">За банята</a></li>
           <li><a class="d-mega__link" href="#">За децата</a></li>
@@ -2369,6 +2386,157 @@ list never reached it and it has been rendering as the browser&rsquo;s own
 control this whole time.</div>
 </section>''')
 
+# ---------------------------------------------------------------- alignment ---
+# *** THE ONE SECTION THAT IS NOT ABOUT A COMPONENT. ***
+# Everything above shows a pattern on its own, where it is always correct. What
+# an owner actually sees is two correct patterns starting in different places,
+# and no screenshot of either one on its own can show that. So: components next
+# to each other, with the rails drawn from the tokens they read.
+A(u'''<section class="sec" id="align"><h2>Rules</h2><h3>Alignment &mdash; what lines up with what, and with the page</h3>
+<p class="note">Most of what reads as untidy on a real page is not a component
+being wrong. It is two correct components starting in slightly different
+places, and neither one&rsquo;s own screenshot can show it.</p>
+<p class="note"><b>Measured at 1440, with only the built stylesheet loaded:</b>
+the page had <b>three</b> left rails. <code>x=180</code> for the header and its
+logo, <code>x=220</code> for every section title, grid, archive, product and
+hero, and the mega menu&rsquo;s columns at the page maximum&rsquo;s own edge with
+no gutter at all. Nobody chose that: seven files each wrote
+<code>max-width:var(--page-max)</code> beside their own padding, and two reached
+for <code>--space-s</code> where the other five used <code>--gutter</code>. A
+rule repeated in seven files is seven chances to differ, and the difference is
+invisible in every one of them.</p>
+<p class="note">The frame is now one class &mdash; <code>.d-shell</code> in
+<code>src/patterns/layout.css</code> &mdash; and every guide below is positioned
+with the same token the component reads. The line is not an opinion about where
+the rail is; it <em>is</em> the rail, so a component that misses it is missing
+its own token.</p>
+<p class="lbl"><label><input type="checkbox" id="alg-g" checked> Show guides</label></p>
+
+<p class="lbl">1 &middot; THE PAGE RAIL &mdash; header, section title and grid, all in <code>.d-shell</code></p>
+<div class="algn"><div class="algn-page">
+<i class="gl gl--low" style="left:var(--gutter)"><b>page rail &mdash; --gutter</b></i>
+<i class="gl" style="left:auto;right:var(--gutter)"></i>
+<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start</b></i>
+<header class="d-header" style="position:relative;border-radius:var(--radius-m) var(--radius-m) 0 0">
+  <div class="d-header__inner d-shell">
+    <a class="d-header__logo" href="#">&#x414;&#x430;&#x440;&#x43B;&#x438;&#x43D;&#x433;</a>
+    <nav class="d-nav"><ul>
+      <li><a href="#" aria-current="page">&#x41D;&#x430;&#x447;&#x430;&#x43B;&#x43E;</a></li>
+      <li><a href="#">&#x41F;&#x440;&#x43E;&#x43C;&#x43E;&#x446;&#x438;&#x438;</a></li>
+    </ul></nav>
+  </div>
+</header>
+<h2 class="d-section-title" style="margin-block:var(--space-m) var(--space-s)">&#x41D;&#x43E;&#x432;&#x43E; &#x432; &#x43C;&#x430;&#x433;&#x430;&#x437;&#x438;&#x43D;&#x430;</h2>
+<div class="d-grid" style="padding-bottom:var(--space-m)">''')
+for name, price, now, chip in PRODUCTS[:3]:
+    A('<article class="d-card">')
+    A('<div class="d-card__media">')
+    if chip:
+        A('<span class="d-card__chip d-finish">%s</span>' % html.escape(chip))
+    A('<img src="%s" alt=""></div>' % CUTOUT)
+    A('<div class="d-card__accent d-finish"></div>')
+    A('<h3 class="d-card__title"><a href="#">%s</a></h3>' % html.escape(name))
+    A('<p class="d-card__price">%s \u043b\u0432.</p>' % price)
+    A('</article>')
+A(u'''</div>
+</div></div>
+<p class="note">The logo, the heading and the first card&rsquo;s left edge are one
+line. Before <code>.d-shell</code> the logo sat on the cherry dots &mdash; forty
+pixels to the left of everything it sits above.</p>
+
+<p class="lbl">2 &middot; A COLUMN WITH SOMETHING BESIDE IT &mdash; <code>.d-split</code></p>
+<div class="algn"><div class="algn-page">
+<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<i class="gl gl--right" style="left:auto;right:var(--gutter)"><b>and the aside ends on it</b></i>
+<div class="d-shell" style="padding-block:var(--space-m)">
+<div class="d-split">
+  <div class="d-split__main d-stack">
+    <h3 style="font:var(--type-section);margin:0">&#x410;&#x434;&#x440;&#x435;&#x441; &#x437;&#x430; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</h3>
+    <div class="d-fieldgrid" style="margin-top:0">
+      <div class="d-field"><label class="d-field__label">&#x418;&#x43C;&#x435;</label>
+        <input class="d-field__control" type="text" value="&#x41C;&#x430;&#x440;&#x438;&#x44F;" placeholder=" "><p class="d-field__error"></p></div>
+      <div class="d-field"><label class="d-field__label">&#x424;&#x430;&#x43C;&#x438;&#x43B;&#x438;&#x44F;</label>
+        <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+      <div class="d-field d-field--wide"><label class="d-field__label">&#x410;&#x434;&#x440;&#x435;&#x441;</label>
+        <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+    </div>
+    <label class="d-check"><input type="checkbox" checked><span>&#x418;&#x437;&#x43F;&#x43E;&#x43B;&#x437;&#x432;&#x430;&#x439; &#x441;&#x44A;&#x449;&#x438;&#x44F; &#x430;&#x434;&#x440;&#x435;&#x441; &#x438; &#x437;&#x430; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x438;&#x440;&#x430;&#x43D;&#x435;</span></label>
+    <button class="d-btn d-finish" style="width:100%">&#x41F;&#x43E;&#x440;&#x44A;&#x447;&#x430;&#x439;</button>
+  </div>
+  <aside class="d-split__aside">
+    <div style="padding:var(--space-s);background:var(--surface-raised);
+         border:1px solid var(--hairline);border-radius:var(--radius-l)">
+      <p style="margin:0 0 var(--stack-tight);font:var(--type-section);font-size:var(--fs-ui)">&#x41E;&#x431;&#x43E;&#x431;&#x449;&#x435;&#x43D;&#x438;&#x435;</p>
+      <div class="d-stack d-stack--tight">
+        <p style="display:flex;justify-content:space-between;margin:0;font-size:var(--fs-meta)"><span>&#x41C;&#x435;&#x436;&#x434;&#x438;&#x43D;&#x435;&#x43D; &#x441;&#x431;&#x43E;&#x440;</span><b>26,40 &euro;</b></p>
+        <p style="display:flex;justify-content:space-between;margin:0;font-size:var(--fs-meta)"><span>&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</span><b>5,90 &euro;</b></p>
+        <p style="display:flex;justify-content:space-between;margin:0"><span><b>&#x41E;&#x431;&#x449;&#x43E;</b></span><b>32,30 &euro;</b></p>
+      </div>
+    </div>
+  </aside>
+</div></div>
+</div></div>
+<p class="note">The aside is <code>21rem</code>, not a percentage. A percentage
+column keeps shrinking until the summary&rsquo;s own two-column rows wrap, at
+window sizes nobody opens on a desktop to check. Below <code>62rem</code> it
+stops being a column and becomes the next block down &mdash; narrow this page to
+see it. The stand-in surface inside it is exactly that: a box drawn from tokens,
+not a component we have agreed on.</p>
+
+<p class="lbl">3 &middot; THE CONTROL COLUMN &mdash; a tick, a radio and Woo&rsquo;s own checkbox, one text rail</p>
+<div class="algn"><div class="algn-page">
+<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<i class="gl gl--low" style="left:calc(var(--gutter) + var(--control) + var(--inline))"><b>text rail &mdash; --control + --inline</b></i>
+<div class="d-shell d-stack d-stack--tight" style="padding-block:var(--space-m)">
+<label class="d-check"><input type="checkbox" checked><span>&#x418;&#x441;&#x43A;&#x430;&#x43C; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x430; &#x437;&#x430; &#x444;&#x438;&#x440;&#x43C;&#x430;</span></label>
+<label class="d-check"><input type="radio" name="alg-r" checked><span>&#x421;&#x43F;&#x438;&#x434;&#x438; &#x43E;&#x444;&#x438;&#x441;</span></label>
+<label class="d-check"><input type="radio" name="alg-r"><span>&#x414;&#x43E; &#x430;&#x434;&#x440;&#x435;&#x441;</span></label>
+<div class="wc-block-components-form">
+<div class="wc-block-components-checkbox">
+<label for="alg-wc"><input id="alg-wc" class="wc-block-components-checkbox__input" type="checkbox" checked>
+<svg class="wc-block-components-checkbox__mark" aria-hidden="true" viewBox="0 0 24 20"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path></svg>
+<span class="wc-block-components-checkbox__label">WooCommerce&rsquo;s own checkbox, unmodified markup</span></label>
+</div></div>
+</div>
+</div></div>
+<p class="note">Three components, three files, one rail. They were
+<code>1.18em</code>, <code>1.15rem</code> and <code>1.25rem</code> &mdash; three
+sizes for one job, so a form that mixed them put its text on rails up to
+3.5&nbsp;px apart. Too small to name, exactly large enough to make a form feel
+loose. One token, <code>--control</code>, and the em one is gone: an em control
+changed size with whatever font-size its label happened to have.</p>
+
+<p class="lbl">4 &middot; RHYTHM &mdash; <code>.d-stack</code>, and why the gap is not a margin</p>
+<div class="algn"><div class="algn-page">
+<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<div class="d-shell" style="padding-block:var(--space-m)">
+<div class="d-stack">
+  <h3 style="font:var(--type-section);margin:0">&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</h3>
+  <div class="d-notice d-notice--info"><span class="d-notice__stars"></span>
+  <span class="d-notice__stars"></span><span class="d-notice__stars"></span>
+  <div class="d-notice__body"><span class="d-notice__title">&#x411;&#x435;&#x437;&#x43F;&#x43B;&#x430;&#x442;&#x43D;&#x430; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</span>&#x41D;&#x430;&#x434; 100 &euro; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;&#x442;&#x430; &#x435; &#x437;&#x430; &#x43D;&#x430;&#x448;&#x430; &#x441;&#x43C;&#x435;&#x442;&#x43A;&#x430;.</div></div>
+  <p style="margin:0">&#x411;&#x43B;&#x43E;&#x43A; &#x435;&#x434;&#x438;&#x43D;.</p>
+  <p style="margin:0">&#x411;&#x43B;&#x43E;&#x43A; &#x434;&#x432;&#x430;.</p>
+</div>
+</div>
+</div></div>
+<p class="note">The heading sits closer to what it names than blocks sit to each
+other &mdash; <code>--stack-tight</code> after a heading, <code>--stack</code>
+between blocks &mdash; so a title reads as belonging to the thing under it rather
+than floating between two. The gap is <em>between</em>: the first block starts
+flush against the top of its column and the last one leaves no trailing hole,
+which a margin on the block itself cannot do.</p>
+
+<div class="todo"><b>What this section is for.</b> B1 of the checkout port is
+&ldquo;the form&rsquo;s own frame&rdquo;, and the honest way to do it is not to
+write rules for the checkout &mdash; it is to have a frame, a split and a rhythm
+that every page uses, and then let the checkout be one of them. Anything still
+declaring its own <code>max-width:var(--page-max)</code> is on the list:
+<code>.d-grid</code>, <code>.d-archive</code>, <code>.d-product</code>,
+<code>.d-hero</code>, <code>.d-404</code> and <code>.d-section-title</code> all
+predate <code>.d-shell</code> and still agree with it by hand.</div>
+</section>''')
+
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>Where this actually stands</h3>
 <p class="note"><b>The patterns are done and reviewed.</b> Every section above
@@ -2430,6 +2598,7 @@ NAV_LABEL = {
 	'pages':     u'Pages, a11y',
 	'filters':   u'Filters',
 	'mappick':   u'Map picker',
+	'align':     u'Alignment',
 	'next':      u'Still to come',
 }
 # Not by pattern-matching the opening tag: two sections legitimately do not open

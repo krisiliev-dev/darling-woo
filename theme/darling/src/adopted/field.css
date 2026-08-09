@@ -252,9 +252,9 @@
 	grid-row:1;
 	justify-self:start;
 	flex:none;
-	width:1.15rem;
-	height:1.15rem;
-	min-width:1.15rem;
+	width:var(--control);
+	height:var(--control);
+	min-width:var(--control);
 	margin:.16em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -287,8 +287,8 @@
 	grid-row:1;
 	align-self:start;
 	justify-self:start;
-	width:.95rem;
-	height:.95rem;
+	width:calc(var(--control) - .2rem);
+	height:calc(var(--control) - .2rem);
 	/* The box carries margin-top:.16em, and the tick is .2rem smaller than the
 	   box, so half of that difference centres it. Written as the arithmetic
 	   rather than as a measured constant, so it survives a change to either. */
@@ -307,7 +307,10 @@
    `space-xs + 1.18em + inline` - and 1.18em is 16.5px at this font size while
    the control measures 20px. So the description started 5px left of the label
    it belongs under. A token cannot drift from itself. */
-.wc-block-components-radio-control{ --radio: 1.25rem }
+/* --radio was the second half of a size that is now one token; kept as a
+   name because the rules below read it, pointed at --control so it cannot
+   drift from the checkbox again. */
+.wc-block-components-radio-control{ --radio: var(--control) }
 .wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
 	grid-template-columns:auto 1fr;

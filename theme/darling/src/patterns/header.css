@@ -54,13 +54,21 @@
 	from{ box-shadow:0 1px 0 rgb(0 0 0 / 0) }
 	to  { box-shadow:0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -12px rgb(0 0 0 / .16) }
 }
+/* *** THE FRAME IS NOT WRITTEN HERE ANY MORE - THE ELEMENT ASKS FOR .d-shell.
+   *** It used to carry its own `max-width:var(--page-max); margin:0 auto;
+   padding:… var(--space-s)`, and --space-s is not --gutter: measured at 1440,
+   the logo started at x=180 while every heading, grid and hero under it started
+   at x=220. Forty pixels of misalignment that nobody chose - two files reached
+   for a different token for the same job.
+
+   So this rule now says only what is true of a HEADER BAR, and the rail comes
+   from the one place that owns it. Vertical padding stays, because how tall the
+   bar is has nothing to do with where the page starts. */
 .d-header__inner{
 	display:flex;
 	align-items:center;
 	gap:var(--space-s);
-	max-width:var(--page-max);
-	margin:0 auto;
-	padding:var(--space-2xs) var(--space-s);
+	padding-block:var(--space-2xs);
 }
 
 /* -- the wordmark -----------------------------------------------------------
@@ -157,14 +165,17 @@
 .d-nav__mega:hover > .d-mega,
 .d-nav__mega:focus-within > .d-mega,
 .d-nav__trigger[aria-expanded="true"] + .d-mega{ display:block }
+/* The same story one level down, and worse: this one centred on --page-max with
+   NO inline padding at all, so the mega menu's first column started at the page
+   max's own edge - a third rail, 60px left of the content it is a menu for.
+   .d-shell in the markup, list semantics here. The 12/48 gap is the next thing
+   to answer for; it predates the space scale. */
 .d-mega__list{
 	display:grid;
 	grid-template-columns:repeat(3, 1fr);
 	gap:12px 48px;
-	max-width:var(--page-max);
-	margin:0 auto;
-	padding:0;
 	list-style:none;
+	margin:0;
 }
 /* *** THE FLOURISH IS TWO STARS, AND THEY ARE MARKS RATHER THAN CHARACTERS. ***
    The old rule used content:"\2726" and content:"\2727" - two Unicode dingbats

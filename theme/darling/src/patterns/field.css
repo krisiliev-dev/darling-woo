@@ -255,8 +255,14 @@
 }
 .d-check input{
 	appearance:none;
-	width:1.18em;
-	height:1.18em;
+	/* *** ONE WIDTH FOR EVERY CONTROL THAT SITS IN FRONT OF TEXT. ***
+	   This was 1.18em - and em, so it changed size with whatever font-size the
+	   label happened to have - while the adopted checkbox was 1.15rem and the
+	   adopted radio 1.25rem. Three sizes for one job, which means three text
+	   rails in a form that mixes them. --control is the size; see
+	   tokens/space.css. */
+	width:var(--control);
+	height:var(--control);
 	margin:.14em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -270,8 +276,10 @@
 .d-check input[type="radio"]{ border-radius:var(--radius-circle) }
 .d-check input::before{
 	content:"";
-	width:.62em;
-	height:.62em;
+	/* The mark is a proportion of the box, not a second measurement - change
+	   --control and the tick still fits. */
+	width:calc(var(--control) * .525);
+	height:calc(var(--control) * .525);
 	transform:scale(0);
 	transition:transform 140ms var(--ease-float);
 	background:var(--action-ink);
@@ -280,7 +288,7 @@
 .d-check input[type="radio"]::before{
 	clip-path:none;
 	border-radius:var(--radius-circle);
-	width:.52em; height:.52em;
+	width:calc(var(--control) * .44); height:calc(var(--control) * .44);
 }
 .d-check input:checked{ background:var(--action); border-color:var(--action) }
 .d-check input:checked::before{ transform:scale(1) }

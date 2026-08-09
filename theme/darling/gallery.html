@@ -310,6 +310,17 @@
 	--grid-gap:      var(--space-s);    /* between cards in a grid             */
 	--inline:        var(--space-2xs);  /* between things on one line          */
 
+	/* -- the control column --------------------------------------------------
+	   One width for anything that sits in front of a line of text and has to
+	   put that text on a rail: a checkbox, a radio, a list bullet.
+
+	   *** IT IS HERE BECAUSE IT WAS IN TWO PLACES AND THEY DISAGREED. ***
+	   The checkbox was 1.15rem and the radio 1.25rem, set months apart in the
+	   same file, so a column of tickboxes and a column of radios started their
+	   text 1.6px apart - too small to name and exactly large enough to make a
+	   form feel loose. A size that two components must share is a token. */
+	--control:       1.25rem;
+
 	/* -- the page column -----------------------------------------------------
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye
@@ -765,6 +776,134 @@ hr{
    it is not inside. `clip` cuts the overflow without creating that container.
    Same reason the band pattern is a grid rather than a negative margin. */
 main{ overflow-x:clip }
+
+}
+
+/* ==== patterns/layout.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / THE PAGE FRAME, AND WHAT LINES UP WITH WHAT
+
+   Every other file in patterns/ draws a thing. This one draws nothing. It
+   answers one question - *where does content start?* - and it exists because
+   until now seven files answered it separately.
+
+   *** MEASURED, AT 1440, WITH ONLY darling.build.css LOADED. ***
+   Seven patterns each declared `max-width:var(--page-max)` with their own
+   padding beside it, and the page came out with three different left rails:
+
+       x=180   .d-header__inner, and the logo inside it
+       x=220   .d-section-title, .d-grid, .d-archive, .d-product, .d-hero
+       x=230   a card's text, which is the card's own padding and is correct
+
+   So the header's content sat 40px left of everything under it. Nobody typed
+   that number: header.css and mega.css padded with --space-s while the other
+   five padded with --gutter, and --gutter is --space-xl. Two files reached for
+   the smaller token years apart and the page acquired a second rail.
+
+   *** THIS IS WHY A FRAME IS A COMPONENT AND NOT A HABIT. ***
+   A rule repeated in seven files is seven chances to differ, and the difference
+   is invisible in every file - it is only visible on the page, where nobody is
+   reading CSS. One class, one declaration, one rail.
+
+   -- what is in here ---------------------------------------------------------
+     .d-shell    the page frame: how wide content gets, and where it starts
+     .d-split    a main column with something beside it - checkout, cart, account
+     .d-stack    vertical rhythm in a column, so blocks do not each invent a gap
+     --control   one width for a checkbox, a radio and anything else that sits
+                 in front of a line of text, so their text agrees on a rail
+
+   Anything that needs to sit on the page rail asks for .d-shell. Anything that
+   needs to break OUT of it (a full-bleed band, the footer) says so by not being
+   in one - see band.css, which uses --page-max directly and deliberately.
+   ========================================================================== */
+
+/* -- the frame ----------------------------------------------------------------
+   box-sizing is declared here rather than trusted: the frame is the one place
+   where a border-box mistake moves every rail on the page at once, and this
+   file has to be correct without reading base/elements.css. */
+.d-shell{
+	box-sizing:border-box;
+	max-width:var(--page-max);
+	margin-inline:auto;
+	padding-inline:var(--gutter);
+}
+/* A shell inside a shell would pad twice. This is for the common case: a header
+   bar that is full-bleed, with a .d-shell inside it that is already padded by
+   its parent's own inset. */
+.d-shell--flush{ padding-inline:0 }
+/* Prose is measured by the eye, not by the layout - see --measure-lede in
+   space.css. Still centred on the same rail, so a paragraph and the section
+   title above it start together. */
+.d-shell--prose{ max-width:var(--measure-lede) }
+
+/* -- a column with something beside it -----------------------------------------
+   Checkout, the cart and the account page are all one long column with a
+   smaller one at its side, and all three had been written separately.
+
+   *** THE ASIDE IS A rem WIDTH, NOT A PERCENTAGE. *** A percentage aside keeps
+   shrinking as the window does, so the order summary reaches a width where its
+   own two-column rows wrap and it looks broken - at exactly the sizes nobody
+   opens on a desktop to check. A fixed column stops being a column instead:
+   below 62rem it is simply the next block down.
+
+   Source order is main-then-aside, which is the order a keyboard walks it. On a
+   phone the summary belongs above the form for a shop, and that is an --order
+   decision per surface, not a default. */
+/* *** THE BREAKPOINT IS A LITERAL AND CANNOT BE A TOKEN. *** A media query is
+   evaluated before custom properties exist, so `@media (min-width: var(--x))`
+   is not a rule that loses a fight - it is a rule that never parses. Writing
+   --split-at here and using it below would look like a system and behave like
+   a typo. 62rem, twice, said out loud. */
+.d-split{
+	--aside: 21rem;
+	display:grid;
+	grid-template-columns:1fr;
+	gap:var(--space-l);
+	align-items:start;
+}
+@media (min-width: 62rem){
+	.d-split{ grid-template-columns:minmax(0, 1fr) var(--aside) }
+}
+.d-split__main{ min-width:0 }   /* grid children floor at min-content, not 0 */
+.d-split__aside{ min-width:0 }
+/* Sticky is opt-in. A sidebar taller than the viewport that is also sticky
+   cannot be scrolled to its own bottom, which is how an order summary hides its
+   total. Only ask for it on a short one. */
+.d-split__aside--sticky{
+	position:sticky;
+	top:var(--space-s);
+}
+
+/* -- rhythm --------------------------------------------------------------------
+   *** THE GAP BELONGS BETWEEN THE BLOCKS, NOT ON THEM. ***
+   A margin on the block travels with it: the same component then carries a
+   different gap depending on what it is next to, and the first one in a column
+   pushes the column's own top down. The owl selector puts the space where it
+   actually is - between - so the first child starts flush and the last one
+   leaves no trailing hole.
+
+   --stack is a token, and it is overridable per instance, so a tight group asks
+   for less without a new class per size. */
+.d-stack{ --gap: var(--stack) }
+.d-stack > * + *{ margin-block-start:var(--gap) }
+.d-stack--tight{ --gap: var(--stack-tight) }
+.d-stack--loose{ --gap: var(--space-l) }
+/* A heading owns the block under it, so it sits closer to it than the gap
+   between blocks - otherwise a section title floats equidistant between the
+   thing it names and the thing above. */
+.d-stack > :is(h2, h3, h4) + *{ margin-block-start:var(--stack-tight) }
+
+/* -- the control column ---------------------------------------------------------
+   *** A CHECKBOX AND A RADIO ARE THE SAME COLUMN. ***
+   They were 1.15rem and 1.25rem, set in two places months apart, so a list of
+   tickboxes and a list of radios put their text on rails 1.6px apart. That is
+   too small to see and exactly large enough to make a form feel loose without
+   anyone being able to say why.
+
+   The token itself lives in tokens/space.css as --control, because it is a
+   measurement and this file is not allowed to hold one. Both controls read it;
+   a third that ever appears reads it too. */
 
 }
 
@@ -1418,13 +1557,21 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	from{ box-shadow:0 1px 0 rgb(0 0 0 / 0) }
 	to  { box-shadow:0 1px 2px rgb(0 0 0 / .05), 0 10px 24px -12px rgb(0 0 0 / .16) }
 }
+/* *** THE FRAME IS NOT WRITTEN HERE ANY MORE - THE ELEMENT ASKS FOR .d-shell.
+   *** It used to carry its own `max-width:var(--page-max); margin:0 auto;
+   padding:… var(--space-s)`, and --space-s is not --gutter: measured at 1440,
+   the logo started at x=180 while every heading, grid and hero under it started
+   at x=220. Forty pixels of misalignment that nobody chose - two files reached
+   for a different token for the same job.
+
+   So this rule now says only what is true of a HEADER BAR, and the rail comes
+   from the one place that owns it. Vertical padding stays, because how tall the
+   bar is has nothing to do with where the page starts. */
 .d-header__inner{
 	display:flex;
 	align-items:center;
 	gap:var(--space-s);
-	max-width:var(--page-max);
-	margin:0 auto;
-	padding:var(--space-2xs) var(--space-s);
+	padding-block:var(--space-2xs);
 }
 
 /* -- the wordmark -----------------------------------------------------------
@@ -1521,14 +1668,17 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 .d-nav__mega:hover > .d-mega,
 .d-nav__mega:focus-within > .d-mega,
 .d-nav__trigger[aria-expanded="true"] + .d-mega{ display:block }
+/* The same story one level down, and worse: this one centred on --page-max with
+   NO inline padding at all, so the mega menu's first column started at the page
+   max's own edge - a third rail, 60px left of the content it is a menu for.
+   .d-shell in the markup, list semantics here. The 12/48 gap is the next thing
+   to answer for; it predates the space scale. */
 .d-mega__list{
 	display:grid;
 	grid-template-columns:repeat(3, 1fr);
 	gap:12px 48px;
-	max-width:var(--page-max);
-	margin:0 auto;
-	padding:0;
 	list-style:none;
+	margin:0;
 }
 /* *** THE FLOURISH IS TWO STARS, AND THEY ARE MARKS RATHER THAN CHARACTERS. ***
    The old rule used content:"\2726" and content:"\2727" - two Unicode dingbats
@@ -4566,8 +4716,14 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 }
 .d-check input{
 	appearance:none;
-	width:1.18em;
-	height:1.18em;
+	/* *** ONE WIDTH FOR EVERY CONTROL THAT SITS IN FRONT OF TEXT. ***
+	   This was 1.18em - and em, so it changed size with whatever font-size the
+	   label happened to have - while the adopted checkbox was 1.15rem and the
+	   adopted radio 1.25rem. Three sizes for one job, which means three text
+	   rails in a form that mixes them. --control is the size; see
+	   tokens/space.css. */
+	width:var(--control);
+	height:var(--control);
 	margin:.14em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -4581,8 +4737,10 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-check input[type="radio"]{ border-radius:var(--radius-circle) }
 .d-check input::before{
 	content:"";
-	width:.62em;
-	height:.62em;
+	/* The mark is a proportion of the box, not a second measurement - change
+	   --control and the tick still fits. */
+	width:calc(var(--control) * .525);
+	height:calc(var(--control) * .525);
 	transform:scale(0);
 	transition:transform 140ms var(--ease-float);
 	background:var(--action-ink);
@@ -4591,7 +4749,7 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 .d-check input[type="radio"]::before{
 	clip-path:none;
 	border-radius:var(--radius-circle);
-	width:.52em; height:.52em;
+	width:calc(var(--control) * .44); height:calc(var(--control) * .44);
 }
 .d-check input:checked{ background:var(--action); border-color:var(--action) }
 .d-check input:checked::before{ transform:scale(1) }
@@ -9482,14 +9640,21 @@ li.product .wp-block-button__link{
    declared in em still stretches to its grid area unless it is told not to.
    justify-self keeps it square, and the size is a rem so it does not change
    with the label's font. */
+/* *** THE TICK WAS 27px ABOVE THE BOX, AND THAT IS AUTO-PLACEMENT, NOT MAGIC.
+   *** The mark is placed explicitly at row 1 / column 1. The input asked for
+   column 1 and said nothing about the row, so grid auto-placement found row 1
+   column 1 already taken and dropped the input into row 2 - one full row below
+   its own tick. Measured: input at y=995, mark at y=968. Naming the row is the
+   whole fix; both items now share the cell. */
 .wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type="checkbox"]{
 	appearance:none;
 	grid-column:1;
+	grid-row:1;
 	justify-self:start;
 	flex:none;
-	width:1.15rem;
-	height:1.15rem;
-	min-width:1.15rem;
+	width:var(--control);
+	height:var(--control);
+	min-width:var(--control);
 	margin:.16em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -9522,10 +9687,13 @@ li.product .wp-block-button__link{
 	grid-row:1;
 	align-self:start;
 	justify-self:start;
-	width:.95rem;
-	height:.95rem;
+	width:calc(var(--control) - .2rem);
+	height:calc(var(--control) - .2rem);
+	/* The box carries margin-top:.16em, and the tick is .2rem smaller than the
+	   box, so half of that difference centres it. Written as the arithmetic
+	   rather than as a measured constant, so it survives a change to either. */
 	margin-left:.1rem;
-	margin-top:.32em;
+	margin-top:calc(.16em + .1rem);
 	fill:var(--action-ink);
 	pointer-events:none;
 }
@@ -9539,7 +9707,10 @@ li.product .wp-block-button__link{
    `space-xs + 1.18em + inline` - and 1.18em is 16.5px at this font size while
    the control measures 20px. So the description started 5px left of the label
    it belongs under. A token cannot drift from itself. */
-.wc-block-components-radio-control{ --radio: 1.25rem }
+/* --radio was the second half of a size that is now one token; kept as a
+   name because the rules below read it, pointed at --control so it cannot
+   drift from the checkbox again. */
+.wc-block-components-radio-control{ --radio: var(--control) }
 .wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
 	grid-template-columns:auto 1fr;
@@ -9836,6 +10007,20 @@ li.product .wp-block-button__link{
 	font-size:var(--fs-meta);
 	list-style:none;
 }
+/* *** justify-self ON THE LINK DID NOTHING, BECAUSE ITS PARENT IS NOT A GRID.
+   *** The banner is a grid, but the link lives one level down inside
+   __content, which WooCommerce leaves as a block - so the alignment property
+   was being read by a box that had no columns to align in. Measured: content
+   display:block, the anchor's justify-self:end honoured by nobody. The row has
+   to be declared where the link actually sits. auto margin, not justify-self,
+   so a wrapped line still starts at the left edge. */
+.wc-block-components-notice-banner__content{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+.wc-block-components-notice-banner__content > a{ margin-inline-start:auto }
 .wc-block-components-notice-banner.is-error,
 .woocommerce-error{
 	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
@@ -12323,6 +12508,27 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:none;
 }
 
+/* *** A RAW TEXT INPUT ASKING FOR A COURIER OFFICE ID. ***
+   The delivery plugin renders `order_darling/office-id` as a free-text field
+   labelled "Офис на куриера (optional)", and a customer typing an office ID by
+   hand is not a thing that can work - we already have an office picker that
+   knows the real list. The field is the plugin's to remove, and the plugin is
+   not ours to change today, so this hides the control while leaving the input
+   in the form: it still submits, so the picker can write into it.
+
+   *** THIS IS A STOPGAP AND SHOULD DIE. *** The plugin must consume our picker.
+   Hidden, not removed, so nothing silently stops being sent to Barsy. */
+.wc-block-components-address-form__darling-office-id{
+	position:absolute;
+	width:1px;
+	height:1px;
+	padding:0;
+	margin:-1px;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+}
+
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
@@ -12348,7 +12554,13 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 }
 .wc-block-checkout__terms a{ color:var(--action) }
 
-.wc-block-checkout__actions{ padding-block:var(--space-s) 0 }
+/* *** THE PAGE ENDED ON THE BUTTON'S LAST PIXEL. ***
+   Measured on the dequeued capture: document scrollHeight 1761, the Поръчай
+   button's bottom 1761. Nothing below it at all - the button was sitting on the
+   bottom edge of the document like a sill. A full-page screenshot was clipping
+   it for the same reason a thumb would. The space belongs under the actions,
+   not on some wrapper, so it survives whatever the page is embedded in. */
+.wc-block-checkout__actions{ padding-block:var(--space-s) var(--space-l) }
 .wc-block-checkout__actions_row{
 	display:flex;
 	align-items:center;
@@ -12727,8 +12939,25 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .gnav a{font:var(--fw-medium) 13px/1 var(--font-ui);color:var(--ink);margin-right:18px}
 .todo{font-size:var(--fs-fine);color:var(--ink-quiet);border-left:3px solid var(--hairline);
   padding-left:12px;margin-top:14px}
+/* -- the alignment section's guides. GALLERY CHROME, NOT THE SYSTEM. ---------
+   Every guide below is positioned with the SAME token the component reads, so
+   the line is not an opinion about where the rail is - it is the rail. A
+   component that misses it is missing its own token. */
+.algn{position:relative;margin:0 0 26px}
+.algn-page{position:relative;max-width:var(--page-max);margin-inline:auto;
+  outline:1px solid var(--hairline);border-radius:var(--radius-m)}
+.gl{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed var(--g-shadow);
+  pointer-events:none;z-index:60;transition:opacity 140ms ease}
+.gl--was{border-left-style:dotted;border-left-color:var(--c-cherry)}
+.gl > b{position:absolute;top:5px;left:5px;font:var(--fw-medium) 10px/1.4 var(--font-ui);
+  letter-spacing:.05em;text-transform:uppercase;color:var(--g-deep);white-space:nowrap;
+  background:var(--surface-page);padding:1px 5px;border-radius:3px}
+.gl--was > b{color:var(--c-cherry);top:auto;bottom:5px}
+.gl--low > b{top:auto;bottom:5px}
+.gl--right > b{left:auto;right:5px}
+.sec:has(#alg-g:not(:checked)) .gl{opacity:0}
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#next">Still to come</a></nav>
+<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#align">Alignment</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -13553,13 +13782,31 @@ that is the next component.</div>
 		   re-rendered the sidebar. A replaced node arrives without the
 		   attribute and gets opened again, and an already-open one only has the
 		   attribute re-set, so there is no loop. */
+		/* *** GIVING FOCUS BACK ON THE SAME TICK GAVE IT BACK TOO EARLY. ***
+		   Woo focuses the coupon input from a React effect, which runs after
+		   this function has already returned - so the synchronous restore below
+		   was undone a frame later and every screenshot of the checkout showed
+		   the discount field wearing its focus ring, reading as an error.
+		   Measured: `document.activeElement === the coupon input`, and the label
+		   painted in --action, on a page nobody had touched.
+
+		   So the restore is repeated across the frames their effect can land in,
+		   and it only fires while focus is still inside this panel: the moment
+		   the customer clicks the field themselves, focus is theirs and we stop
+		   taking it. */
 		if (btn.getAttribute('aria-expanded') !== 'true') {
 			var was = document.activeElement;
+			var give = function () {
+				var a = document.activeElement;
+				if (!a || !panel.contains(a)) { return; }
+				if (was && was.focus && was !== document.body && !panel.contains(was)) { was.focus(); }
+				else if (a.blur) { a.blur(); }
+			};
 			btn.click();
-			if (was && was.focus && was !== document.body) { was.focus(); }
-			else if (document.activeElement && document.activeElement.blur) {
-				document.activeElement.blur();
-			}
+			give();
+			requestAnimationFrame(function () { give(); requestAnimationFrame(give); });
+			setTimeout(give, 60);
+			setTimeout(give, 240);
 		}
 		/* The attribute is what the stylesheet waits for, so the button only
 		   disappears once it has actually been pressed. */
@@ -13678,12 +13925,12 @@ now <em>underlined</em> as well as coloured, because colour alone is the one cue
 colour-blind visitor does not get.</p>
 <div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
 <header class="d-header" style="position:relative">
-  <div class="d-header__inner">
+  <div class="d-header__inner d-shell">
     <a class="d-header__logo" href="#">Дарлинг</a>
     <nav class="d-nav"><ul>
       <li><a href="#" aria-current="page">Начало</a></li>
       <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list">
+        <div class="d-mega"><ul class="d-mega__list d-shell">
           <li><a class="d-mega__link" href="#">За кухнята</a></li>
           <li><a class="d-mega__link" href="#">За банята</a></li>
           <li><a class="d-mega__link" href="#">За децата</a></li>
@@ -15112,6 +15359,138 @@ because there is no live range to build the slider against yet.<br><br>
 has no <code>.d-field</code> around it, so the field pattern&rsquo;s selector
 list never reached it and it has been rendering as the browser&rsquo;s own
 control this whole time.</div>
+</section><section class="sec" id="align"><h2>Rules</h2><h3>Alignment &mdash; what lines up with what, and with the page</h3>
+<p class="note">Most of what reads as untidy on a real page is not a component
+being wrong. It is two correct components starting in slightly different
+places, and neither one&rsquo;s own screenshot can show it.</p>
+<p class="note"><b>Measured at 1440, with only the built stylesheet loaded:</b>
+the page had <b>three</b> left rails. <code>x=180</code> for the header and its
+logo, <code>x=220</code> for every section title, grid, archive, product and
+hero, and the mega menu&rsquo;s columns at the page maximum&rsquo;s own edge with
+no gutter at all. Nobody chose that: seven files each wrote
+<code>max-width:var(--page-max)</code> beside their own padding, and two reached
+for <code>--space-s</code> where the other five used <code>--gutter</code>. A
+rule repeated in seven files is seven chances to differ, and the difference is
+invisible in every one of them.</p>
+<p class="note">The frame is now one class &mdash; <code>.d-shell</code> in
+<code>src/patterns/layout.css</code> &mdash; and every guide below is positioned
+with the same token the component reads. The line is not an opinion about where
+the rail is; it <em>is</em> the rail, so a component that misses it is missing
+its own token.</p>
+<p class="lbl"><label><input type="checkbox" id="alg-g" checked> Show guides</label></p>
+
+<p class="lbl">1 &middot; THE PAGE RAIL &mdash; header, section title and grid, all in <code>.d-shell</code></p>
+<div class="algn"><div class="algn-page">
+<i class="gl gl--low" style="left:var(--gutter)"><b>page rail &mdash; --gutter</b></i>
+<i class="gl" style="left:auto;right:var(--gutter)"></i>
+<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start</b></i>
+<header class="d-header" style="position:relative;border-radius:var(--radius-m) var(--radius-m) 0 0">
+  <div class="d-header__inner d-shell">
+    <a class="d-header__logo" href="#">&#x414;&#x430;&#x440;&#x43B;&#x438;&#x43D;&#x433;</a>
+    <nav class="d-nav"><ul>
+      <li><a href="#" aria-current="page">&#x41D;&#x430;&#x447;&#x430;&#x43B;&#x43E;</a></li>
+      <li><a href="#">&#x41F;&#x440;&#x43E;&#x43C;&#x43E;&#x446;&#x438;&#x438;</a></li>
+    </ul></nav>
+  </div>
+</header>
+<h2 class="d-section-title" style="margin-block:var(--space-m) var(--space-s)">&#x41D;&#x43E;&#x432;&#x43E; &#x432; &#x43C;&#x430;&#x433;&#x430;&#x437;&#x438;&#x43D;&#x430;</h2>
+<div class="d-grid" style="padding-bottom:var(--space-m)"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p></article><article class="d-card"><div class="d-card__media"><span class="d-card__chip d-finish">Ново</span><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p></article><article class="d-card"><div class="d-card__media"><span class="d-card__chip d-finish">Намаление</span><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Ленена кърпа</a></h3><p class="d-card__price">22,00 лв.</p></article></div>
+</div></div>
+<p class="note">The logo, the heading and the first card&rsquo;s left edge are one
+line. Before <code>.d-shell</code> the logo sat on the cherry dots &mdash; forty
+pixels to the left of everything it sits above.</p>
+
+<p class="lbl">2 &middot; A COLUMN WITH SOMETHING BESIDE IT &mdash; <code>.d-split</code></p>
+<div class="algn"><div class="algn-page">
+<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<i class="gl gl--right" style="left:auto;right:var(--gutter)"><b>and the aside ends on it</b></i>
+<div class="d-shell" style="padding-block:var(--space-m)">
+<div class="d-split">
+  <div class="d-split__main d-stack">
+    <h3 style="font:var(--type-section);margin:0">&#x410;&#x434;&#x440;&#x435;&#x441; &#x437;&#x430; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</h3>
+    <div class="d-fieldgrid" style="margin-top:0">
+      <div class="d-field"><label class="d-field__label">&#x418;&#x43C;&#x435;</label>
+        <input class="d-field__control" type="text" value="&#x41C;&#x430;&#x440;&#x438;&#x44F;" placeholder=" "><p class="d-field__error"></p></div>
+      <div class="d-field"><label class="d-field__label">&#x424;&#x430;&#x43C;&#x438;&#x43B;&#x438;&#x44F;</label>
+        <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+      <div class="d-field d-field--wide"><label class="d-field__label">&#x410;&#x434;&#x440;&#x435;&#x441;</label>
+        <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+    </div>
+    <label class="d-check"><input type="checkbox" checked><span>&#x418;&#x437;&#x43F;&#x43E;&#x43B;&#x437;&#x432;&#x430;&#x439; &#x441;&#x44A;&#x449;&#x438;&#x44F; &#x430;&#x434;&#x440;&#x435;&#x441; &#x438; &#x437;&#x430; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x438;&#x440;&#x430;&#x43D;&#x435;</span></label>
+    <button class="d-btn d-finish" style="width:100%">&#x41F;&#x43E;&#x440;&#x44A;&#x447;&#x430;&#x439;</button>
+  </div>
+  <aside class="d-split__aside">
+    <div style="padding:var(--space-s);background:var(--surface-raised);
+         border:1px solid var(--hairline);border-radius:var(--radius-l)">
+      <p style="margin:0 0 var(--stack-tight);font:var(--type-section);font-size:var(--fs-ui)">&#x41E;&#x431;&#x43E;&#x431;&#x449;&#x435;&#x43D;&#x438;&#x435;</p>
+      <div class="d-stack d-stack--tight">
+        <p style="display:flex;justify-content:space-between;margin:0;font-size:var(--fs-meta)"><span>&#x41C;&#x435;&#x436;&#x434;&#x438;&#x43D;&#x435;&#x43D; &#x441;&#x431;&#x43E;&#x440;</span><b>26,40 &euro;</b></p>
+        <p style="display:flex;justify-content:space-between;margin:0;font-size:var(--fs-meta)"><span>&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</span><b>5,90 &euro;</b></p>
+        <p style="display:flex;justify-content:space-between;margin:0"><span><b>&#x41E;&#x431;&#x449;&#x43E;</b></span><b>32,30 &euro;</b></p>
+      </div>
+    </div>
+  </aside>
+</div></div>
+</div></div>
+<p class="note">The aside is <code>21rem</code>, not a percentage. A percentage
+column keeps shrinking until the summary&rsquo;s own two-column rows wrap, at
+window sizes nobody opens on a desktop to check. Below <code>62rem</code> it
+stops being a column and becomes the next block down &mdash; narrow this page to
+see it. The stand-in surface inside it is exactly that: a box drawn from tokens,
+not a component we have agreed on.</p>
+
+<p class="lbl">3 &middot; THE CONTROL COLUMN &mdash; a tick, a radio and Woo&rsquo;s own checkbox, one text rail</p>
+<div class="algn"><div class="algn-page">
+<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<i class="gl gl--low" style="left:calc(var(--gutter) + var(--control) + var(--inline))"><b>text rail &mdash; --control + --inline</b></i>
+<div class="d-shell d-stack d-stack--tight" style="padding-block:var(--space-m)">
+<label class="d-check"><input type="checkbox" checked><span>&#x418;&#x441;&#x43A;&#x430;&#x43C; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x430; &#x437;&#x430; &#x444;&#x438;&#x440;&#x43C;&#x430;</span></label>
+<label class="d-check"><input type="radio" name="alg-r" checked><span>&#x421;&#x43F;&#x438;&#x434;&#x438; &#x43E;&#x444;&#x438;&#x441;</span></label>
+<label class="d-check"><input type="radio" name="alg-r"><span>&#x414;&#x43E; &#x430;&#x434;&#x440;&#x435;&#x441;</span></label>
+<div class="wc-block-components-form">
+<div class="wc-block-components-checkbox">
+<label for="alg-wc"><input id="alg-wc" class="wc-block-components-checkbox__input" type="checkbox" checked>
+<svg class="wc-block-components-checkbox__mark" aria-hidden="true" viewBox="0 0 24 20"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path></svg>
+<span class="wc-block-components-checkbox__label">WooCommerce&rsquo;s own checkbox, unmodified markup</span></label>
+</div></div>
+</div>
+</div></div>
+<p class="note">Three components, three files, one rail. They were
+<code>1.18em</code>, <code>1.15rem</code> and <code>1.25rem</code> &mdash; three
+sizes for one job, so a form that mixed them put its text on rails up to
+3.5&nbsp;px apart. Too small to name, exactly large enough to make a form feel
+loose. One token, <code>--control</code>, and the em one is gone: an em control
+changed size with whatever font-size its label happened to have.</p>
+
+<p class="lbl">4 &middot; RHYTHM &mdash; <code>.d-stack</code>, and why the gap is not a margin</p>
+<div class="algn"><div class="algn-page">
+<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<div class="d-shell" style="padding-block:var(--space-m)">
+<div class="d-stack">
+  <h3 style="font:var(--type-section);margin:0">&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</h3>
+  <div class="d-notice d-notice--info"><span class="d-notice__stars"></span>
+  <span class="d-notice__stars"></span><span class="d-notice__stars"></span>
+  <div class="d-notice__body"><span class="d-notice__title">&#x411;&#x435;&#x437;&#x43F;&#x43B;&#x430;&#x442;&#x43D;&#x430; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</span>&#x41D;&#x430;&#x434; 100 &euro; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;&#x442;&#x430; &#x435; &#x437;&#x430; &#x43D;&#x430;&#x448;&#x430; &#x441;&#x43C;&#x435;&#x442;&#x43A;&#x430;.</div></div>
+  <p style="margin:0">&#x411;&#x43B;&#x43E;&#x43A; &#x435;&#x434;&#x438;&#x43D;.</p>
+  <p style="margin:0">&#x411;&#x43B;&#x43E;&#x43A; &#x434;&#x432;&#x430;.</p>
+</div>
+</div>
+</div></div>
+<p class="note">The heading sits closer to what it names than blocks sit to each
+other &mdash; <code>--stack-tight</code> after a heading, <code>--stack</code>
+between blocks &mdash; so a title reads as belonging to the thing under it rather
+than floating between two. The gap is <em>between</em>: the first block starts
+flush against the top of its column and the last one leaves no trailing hole,
+which a margin on the block itself cannot do.</p>
+
+<div class="todo"><b>What this section is for.</b> B1 of the checkout port is
+&ldquo;the form&rsquo;s own frame&rdquo;, and the honest way to do it is not to
+write rules for the checkout &mdash; it is to have a frame, a split and a rhythm
+that every page uses, and then let the checkout be one of them. Anything still
+declaring its own <code>max-width:var(--page-max)</code> is on the list:
+<code>.d-grid</code>, <code>.d-archive</code>, <code>.d-product</code>,
+<code>.d-hero</code>, <code>.d-404</code> and <code>.d-section-title</code> all
+predate <code>.d-shell</code> and still agree with it by hand.</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>Where this actually stands</h3>
 <p class="note"><b>The patterns are done and reviewed.</b> Every section above
