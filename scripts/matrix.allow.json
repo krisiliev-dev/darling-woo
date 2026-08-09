@@ -1,3 +1,2 @@
 {
-  "dbl:div > [box>box] > d-box": "The composition grid generates every primitive inside every other, so box-inside-box is one of the twenty-five cells BY CONSTRUCTION. It is the illustration of the failure, not an instance of it - the Primitives section shows the same pair beside its --flush fix. If this key ever stops matching, the grid changed shape and the waiver should be re-read rather than re-pointed."
 }

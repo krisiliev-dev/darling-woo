@@ -2692,8 +2692,7 @@ predate <code>.d-shell</code> and still agree with it by hand.</div>
 # rendered, and scripts/matrixgate.js measures them. Generated from the list, so
 # adding a primitive adds its whole row and column without anyone remembering to.
 MX_LEAF = (u'<div class="d-box d-box--quiet mx-leaf">\u0430</div>'
-           u'<div class="d-box d-box--quiet mx-leaf">\u0431</div>'
-           u'<div class="d-box d-box--quiet mx-leaf">\u0432</div>')
+           u'<div class="d-box d-box--quiet mx-leaf">\u0431</div>')
 
 def mx_wrap(kind, inner):
     """One layout primitive around whatever is handed to it."""
@@ -2719,18 +2718,40 @@ table, inside a panel, inside a table, it will display properly?&rdquo;</b> You
 do not, and neither does anyone else, because reasoning does not survive two
 levels of nesting. You render it and you measure it. That is this section, and
 <code>scripts/matrixgate.js</code> is the measuring.</p>
-<p class="note">Every cell below is one layout primitive inside another, with
-the same three boxes at the bottom of all of them. The cells are outlined, so a
-child escaping its container is visible as well as measurable. The gate asserts
-three things over the whole section: nothing sticks out past its container, no
-padded box sits alone inside another padded box, and every component rendered on
-its own has zero outer margin.</p>
+<p class="note">Every cell below is <b>two</b> of the inner primitive inside
+one of the outer one, with the same two boxes at the bottom of all of them. Two,
+because a stack with one child and a cluster with one child are the same thing
+&mdash; nothing &mdash; and the first version of this grid had exactly that, so
+twenty of the twenty-five cells were showing the inner primitive and saying
+nothing about the outer. The cells are outlined, so a child escaping its
+container is visible as well as measurable.</p>
+<p class="note"><b>What each one is.</b>
+<code>.d-stack</code> is a column: things one under another, one gap between
+each. <code>.d-cluster</code> is a row that wraps: things side by side at their
+natural widths, wrapping individually when they run out of room.
+<code>.d-switcher</code> is a row that becomes a column all at once: equal
+widths, and either all beside each other or all stacked, decided by how wide its
+container is and never half and half. <code>.d-box</code> is not a layout at all
+&mdash; it is a surface with padding, and the only thing allowed to inset its
+contents. <code>.d-split</code> is a main column with a fixed-width companion
+beside it that drops underneath when there is no room.</p>
+<p class="note">The gate asserts three things over the whole section: nothing
+sticks out past its container, no padded box sits alone inside another padded
+box, and every component rendered on its own has zero outer margin.</p>
 <p class="lbl">EVERY PRIMITIVE INSIDE EVERY OTHER &mdash; 25 cells, generated from the list</p>
 <div class="mx">''')
 for outer in MX_KINDS:
     for inner in MX_KINDS:
+        # *** THE OUTER LAYOUT NEEDS TWO CHILDREN OR IT IS NOT BEING TESTED. ***
+        # The first version put ONE inner layout inside each outer one, and a
+        # stack with one child, a cluster with one child and a switcher with one
+        # child are the same thing: nothing. Twenty of the twenty-five cells
+        # were rendering the inner primitive and saying nothing at all about the
+        # outer. The owner spotted it by looking at them. Two inner groups now,
+        # so the outer's own direction and gap have something to act on.
+        pair = mx_wrap(inner, MX_LEAF) + mx_wrap(inner, MX_LEAF)
         A(u'<div class="mx-cell" data-mx="%s>%s"><p class="mx-lbl">%s &rsaquo; %s</p>%s</div>'
-          % (outer, inner, outer, inner, mx_wrap(outer, mx_wrap(inner, MX_LEAF))))
+          % (outer, inner, outer, inner, mx_wrap(outer, pair)))
 A(u'''</div>
 
 <p class="lbl">AND THE ONES THAT ACTUALLY HAPPEN &mdash; starting with the owner&rsquo;s</p>

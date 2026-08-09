@@ -110,8 +110,13 @@ const ALLOW = fs.existsSync(ALLOW_FILE) ? JSON.parse(fs.readFileSync(ALLOW_FILE,
   console.log('matrix: %d generated cells', out.cells);
 
   let bad = 0;
+  const used = new Set();
   const report = (title, rows, key, fmt) => {
-    const live = rows.filter((r) => !ALLOW[key + ':' + (r.what || '')]);
+    const live = rows.filter((r) => {
+      const k = key + ':' + (r.what || '');
+      if (ALLOW[k]) { used.add(k); return false; }
+      return true;
+    });
     const waived = rows.length - live.length;
     console.log('\n%s: %d%s', title, live.length, waived ? '  (' + waived + ' allowed)' : '');
     for (const r of live) { console.log('  ' + fmt(r)); bad++; }
@@ -123,6 +128,16 @@ const ALLOW = fs.existsSync(ALLOW_FILE) ? JSON.parse(fs.readFileSync(ALLOW_FILE,
   report('components setting their own outer margin', out.margins, 'margin',
          (r) => r.what + '   margin: ' + r.margin);
 
+  // *** A WAIVER THAT MATCHES NOTHING IS A LIE ABOUT THE STATE OF THE CODE. ***
+  // It reads as "we know about this and accepted it" long after the thing it
+  // described has gone, and the next person to hit a real instance finds it
+  // already silenced. Stale waivers fail the gate; deleting one is the fix.
+  const stale = Object.keys(ALLOW).filter((k) => !used.has(k));
+  if (stale.length) {
+    console.log('\nwaivers in matrix.allow.json that matched nothing: ' + stale.length);
+    for (const k of stale) console.log('  ' + k);
+    bad += stale.length;
+  }
   if (bad) { console.log('\nMATRIXGATE FAIL: %d', bad); process.exit(1); }
   console.log('\nmatrixgate: nothing sticks out, nothing is double-padded, no component owns a margin.');
 })();
