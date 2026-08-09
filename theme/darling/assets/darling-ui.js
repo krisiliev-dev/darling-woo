@@ -287,6 +287,19 @@
 	      Opt-in by class: a burst that fired on every click of anything
 	      containing stars would fire on the season banner's link too, where the
 	      stars are a hover effect and popping them is wrong. */
+	/* *** A STYLESHEET CANNOT PREVENT DOM. ***
+	   The burst is nine <i> elements this script creates. Accessibility mode and
+	   reduced motion both say `animation:none !important`, which does not stop
+	   them being made - it makes them appear, hold still around the button for
+	   1.5s and vanish. The owner saw exactly that and read it as the animation
+	   surviving the switch. The guard has to be here, because here is the only
+	   place that knows the elements are about to exist.
+	   Read at fire time, not at init: the switch can be flipped mid-session. */
+	function plainMode() {
+		return document.documentElement.classList.contains('d-a11y')
+			|| (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+	}
+
 	function burstHost(el) {
 		var burst = el.querySelector('.d-burst');
 		if (!burst) return;
@@ -309,6 +322,7 @@
 				burst.style.removeProperty('--burst-x');
 				burst.style.removeProperty('--burst-y');
 			}
+			if (plainMode()) { return; }
 			bump(burst, 'data-pop', 1700);
 		});
 	}

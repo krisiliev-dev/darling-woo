@@ -74,3 +74,16 @@ hr{
 	outline-offset:2px;
 	border-radius:var(--radius-xs);
 }
+
+/* -- the page shell -----------------------------------------------------------
+   *** CLIP, NOT HIDDEN, AND THE DIFFERENCE IS THE STICKY HEADER. ***
+   The full-bleed bands reach past the shell on purpose. Without this, each one
+   pushes a horizontal scrollbar at roughly one viewport width - which is what
+   the owner saw as "the page wobbles sideways on the phone".
+
+   `overflow: hidden` would also stop it, and would make <main> a scroll
+   container: a scroll container is the nearest ancestor for `position: sticky`,
+   so the header would stop sticking to the window and start sticking to a box
+   it is not inside. `clip` cuts the overflow without creating that container.
+   Same reason the band pattern is a grid rather than a negative margin. */
+main{ overflow-x:clip }

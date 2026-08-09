@@ -567,15 +567,31 @@ otate are separate
 /* -- the two kill switches, both non-negotiable, both pure CSS --------------
    Reduced motion means ZERO, not less. The money path is still: a page whose
    job is a transaction does not spend frames on atmosphere. */
+/* *** THE SCROLL-DRIVEN EXEMPTION REGISTER. ***
+   Two elements in this system are positioned by an animation whose timeline
+   is the SCROLL, not the clock:
+
+       .d-scrollframe__thumb   animation-timeline:--d-scroll   (its `top`)
+       .d-header               animation-timeline:scroll(root) (its shadow)
+
+   `animation:none` on those does not remove motion. It removes the mechanism:
+   the thumb stops being a scrollbar and sits at the top of the rail while the
+   content scrolls under it, which is exactly what the owner reported. So
+   every blanket kill in this system excludes them, here and in a11y.css.
+
+   *** ADD TO ALL THREE LISTS WHEN YOU ADD A SCROLL TIMELINE. *** Three copies
+   is worse than one and one is not available: for IMPORTANT declarations the
+   layer order reverses, so `motion` beats `patterns` and a component cannot
+   exempt itself from inside its own file. */
 @media (prefers-reduced-motion: reduce){
-	*, *::before, *::after{ animation:none !important; transition:none !important }
+	*:not(.d-scrollframe__thumb):not(.d-header), *::before, *::after{ animation:none !important; transition:none !important }
 }
 body.woocommerce-cart, body.woocommerce-checkout, body.woocommerce-order-received{
 	--money-path:1;
 }
-body.woocommerce-cart *, body.woocommerce-cart *::before,
-body.woocommerce-checkout *, body.woocommerce-checkout *::before,
-body.woocommerce-order-received *, body.woocommerce-order-received *::before{
+body.woocommerce-cart *:not(.d-scrollframe__thumb):not(.d-header), body.woocommerce-cart *::before,
+body.woocommerce-checkout *:not(.d-scrollframe__thumb):not(.d-header), body.woocommerce-checkout *::before,
+body.woocommerce-order-received *:not(.d-scrollframe__thumb):not(.d-header), body.woocommerce-order-received *::before{
 	animation:none !important;
 }
 /* -- the small movements ----------------------------------------------------
@@ -729,6 +745,19 @@ hr{
 	outline-offset:2px;
 	border-radius:var(--radius-xs);
 }
+
+/* -- the page shell -----------------------------------------------------------
+   *** CLIP, NOT HIDDEN, AND THE DIFFERENCE IS THE STICKY HEADER. ***
+   The full-bleed bands reach past the shell on purpose. Without this, each one
+   pushes a horizontal scrollbar at roughly one viewport width - which is what
+   the owner saw as "the page wobbles sideways on the phone".
+
+   `overflow: hidden` would also stop it, and would make <main> a scroll
+   container: a scroll container is the nearest ancestor for `position: sticky`,
+   so the header would stop sticking to the window and start sticking to a box
+   it is not inside. `clip` cuts the overflow without creating that container.
+   Same reason the band pattern is a grid rather than a negative margin. */
+main{ overflow-x:clip }
 
 }
 
@@ -884,7 +913,8 @@ hr{
 
    WHAT MOVES, AND WHY THAT ONE:
      spinner   always      it IS the event; a still spinner is a bug
-     cart      on add      the only moment the basket changes
+     cart      on hover + on add   the hover invites the click; the add
+                          confirms it. Owner's call, 2026-08-09.
      user      on hover    a bow, because the account is the personal corner
      search    on hover    invites the click; the lens is otherwise dead weight
      heart     on check    a state change the person just made
@@ -1035,6 +1065,15 @@ hr{
 }
 [data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
 [data-added] .d-icon--cart::after{  animation:d-icon-roll 820ms var(--ease-float) }
+/* *** ON HOVER, AT THE OWNER'S REQUEST - AND THE TABLE ABOVE CHANGES WITH IT. ***
+   It read "cart  on add  the only moment the basket changes", which is a good
+   argument and not the one he wants: the mark is on a BUTTON, and a button that
+   only ever moves after you have committed cannot invite the commit. The add
+   still fires it, so nothing is lost - this adds the earlier moment. */
+.d-icon-btn:hover .d-icon--cart,
+.d-icon-btn:focus-visible .d-icon--cart{ animation:d-icon-wheelie 820ms var(--ease-float) }
+.d-icon-btn:hover .d-icon--cart::after,
+.d-icon-btn:focus-visible .d-icon--cart::after{ animation:d-icon-roll 820ms var(--ease-float) }
 /* The tilt was 16deg at one instant and back through 11 immediately - so the
    cart passed through the pose rather than holding it and the owner read it as
    barely tilted. It now snaps up past the mark, settles ON 15deg, HOLDS there
@@ -2063,6 +2102,31 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 /* The free-shipping bar sits between the list and the totals, where it answers
    the question the totals are about to raise. */
 .d-drawer__foot .d-progress{ margin-bottom:var(--space-3xs) }
+
+/* -- the trust line -----------------------------------------------------------
+   One line above the items: cash on delivery, fourteen days to return.
+
+   *** IT IS NOT .d-trustbar, AND THE DIFFERENCE IS THE 320px. ***
+   .d-trustbar is a GRID of three promises across a band - it needs the width to
+   be a row of anything. The drawer is a column three hundred pixels wide, where
+   the same three promises stack into three lines and push the first product
+   below the fold. So this is one sentence with separators, in the drawer's own
+   quiet voice, and the full band stays on the cart page where it fits. */
+.d-drawer__trust{
+	margin:0 0 var(--space-2xs);
+	font-size:var(--fs-fine);
+	line-height:var(--lh-title);
+	letter-spacing:.02em;
+	color:var(--ink-quiet);
+}
+.d-drawer__trust .d-icon{
+	width:.8em;
+	height:.8em;
+	vertical-align:-.05em;
+	margin-inline-end:.3em;
+	color:var(--g-core);
+}
+
 }
 
 /* ==== patterns/band.css ==== */
@@ -4195,6 +4259,15 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
    ========================================================================== */
 
 .d-field{
+	/* *** align-content, NOT A HEIGHT. ***
+	   In a two-column grid the taller cell sets the row height, and a field
+	   with an error message underneath IS taller. Its neighbour then had
+	   two rows to distribute over that height and put its input 14px lower
+	   than the invalid one beside it - measured, and it is what the owner
+	   reported as the field being pushed out of line by its own error.
+	   Packing from the top lines the inputs up and leaves the message
+	   hanging below, which is where it was always meant to be. */
+	align-content:start;
 	position:relative;
 	display:grid;
 	gap:var(--stack-tight);
@@ -5582,7 +5655,15 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	--panel-mark:    var(--tint-cherry-mark);
 	--panel-trail:   var(--trail-cherry);
 }
-.d-panel--quiet{
+.d-panel--quiet,
+/* *** AND THE COMMENT WAS NOT THE CODE. ***
+   The note above says an authored <details> "takes the quiet family". It did
+   not: it joined the base list and got --tint-grey, the PLAIN one. Measured,
+   rgb(241,241,246) against the quiet panel's rgb(222,222,230), which is why the
+   owner saw a panel on a prose page that was not the panel he approved. A
+   comment describing an intention the declaration does not carry out is worse
+   than no comment, because it stops the next person looking. */
+.d-prose .wp-block-details{
 	--panel-surface: var(--tint-grey-quiet);
 	--panel-quiet:   var(--c-grey-300);
 }
@@ -5618,6 +5699,19 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	font-size:var(--fs-meta);
 	color:var(--ink);
 }
+/* *** AN AUTHORED <details> HAS NO __content TO PAD. ***
+   The editor emits <details><summary>..</summary><p>..</p></details> - the body
+   is a bare child, so it took the panel's zero padding and the text started hard
+   against the border while the summary above it was indented. The owner asked
+   for the body to "start in line with the title of the panel", so the padding is
+   the summary's own, written from the same two values rather than a number that
+   happens to match today. */
+.d-prose .wp-block-details > :not(summary){
+	margin-block:0 var(--space-2xs);
+	padding-inline:var(--space-xs) calc(var(--space-xs) + 1.4em);
+	font-size:var(--fs-meta);
+}
+.d-prose .wp-block-details > :last-child{ margin-bottom:var(--space-xs) }
 
 /* -- the pool ---------------------------------------------------------------
    ::details-content is Chrome 131+ / Safari 18.4+. Behind the @supports the
@@ -7016,18 +7110,32 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    resolves against the element's OWN border box, so `--from:-50%` on a 14px
    star moves it seven pixels. That mistake has cost this project two separate
    afternoons - the slider wake and the first burst - so: rem. */
+/* *** THE BAND CLIPS, NOT THE FLOW. ***
+   This box is a child of .d-news, which is max-width:40rem and centred, so with
+   overflow:hidden here the stars were cut off 350px from each edge and appeared
+   out of nothing a third of the way into the band. Measured: a 502px flow box
+   inside a 1240px band. The owner: "I want the stars to spawn in from the
+   sides." The sides belong to the band, so the band does the clipping and this
+   box lets them through.
+
+   *** clip AND NOT hidden, FOR THE USUAL REASON. *** overflow:hidden would make
+   the band a scroll container, and a scroll container is the containing block
+   for position:sticky - so the header would start sticking to the newsletter. */
 .d-news__flow{
 	position:absolute;
 	inset:-1.5rem 0;
-	overflow:hidden;
+	overflow:visible;
 	pointer-events:none;
 }
+.d-band:has(> .d-news){ overflow:clip }
 .d-news__flow i{
 	position:absolute;
 	top:var(--y, 50%);
 	left:50%;
-	width:calc(.8rem * var(--s, 1));
-	height:calc(.8rem * var(--s, 1));
+	/* Three times what it was, at the owner's request. At .8rem they read as
+	   dust at the edge of a band this wide; the point is to be followed. */
+	width:calc(2.4rem * var(--s, 1));
+	height:calc(2.4rem * var(--s, 1));
 	background:var(--g-hi);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
@@ -7260,6 +7368,137 @@ main .entry-content{
 .d-gpsr p{ margin:0 0 var(--space-2xs); font-size:var(--fs-meta) }
 .d-gpsr p:last-child{ margin-bottom:0 }
 
+/* -- the section title --------------------------------------------------------
+   The heading that names a band on the home page. It is the LAST class in the
+   templates with no rule of its own, and it never had much of one: legacy
+   declared it four separate times, in four slices, each adding a font-size or a
+   margin to the last. All four said --fs-section.
+
+   It carries the eyebrow relationship too, which is the part worth keeping. An
+   eyebrow LABELS the heading beneath it, so proximity has to bind DOWNWARD.
+   Measured on the live home page, three of them did the opposite - 0px above
+   and 42px below - which reads as a caption hanging off the bottom of the
+   PREVIOUS section, and that is exactly what the owner reported. The 42 was the
+   heading's own top margin, not the eyebrow's bottom one, which is why raising
+   the eyebrow alone would not have closed it. */
+.d-section-title{
+	max-width:var(--page-max);
+	margin:var(--section-y) auto var(--space-s);
+	padding-inline:var(--gutter);
+	font:var(--type-section);
+	color:var(--ink);
+}
+/* Both eyebrows, because there are two and they are for different grounds:
+   .d-hero__eyebrow is --ink-quiet and works on the page, .d-season__eyebrow is
+   near-white and only works on the cherry band. An eyebrow above a section
+   title on the grey page is the hero one. */
+.d-hero__eyebrow + .d-section-title,
+.d-hero__eyebrow + h2,
+.d-season__eyebrow + .d-section-title,
+.d-season__eyebrow + h2{ margin-top:var(--space-3xs) }
+/* Inside a region that already owns the shell, the title must not open a second
+   one - it would inset twice. */
+.d-archive .d-section-title,
+.d-carousel .d-section-title{ max-width:none; padding-inline:0 }
+
+}
+
+/* ==== patterns/media-fail.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / MEDIA FAIL
+   The slab that stands where a photograph should have been.
+
+   *** THIS IS AN ERROR STATE, NOT A PLACEHOLDER, AND IT SAYS SO. ***
+   The panel refuses to flag a product sellable online without an image, so
+   "no photo yet" is UNREACHABLE on the storefront. If a card has no picture,
+   something upstream is wrong - a placeholder that escaped the rule, or a src
+   that 404s. A pretty grey box would hide that; a sentence does not.
+
+   CSS cannot see a broken <img> and cannot write a sentence, so the element is
+   built by assets/img-fallback.js. What lives here is only its appearance.
+
+   PORTED FROM style.css .d-media-fail / .dmf-bow / .dmf-cap. What changed:
+
+     #5F4442        -> var(--ink)   the caption. The hard-coded value was cocoa
+                                    let down into vanilla, WRITTEN OUT because
+                                    `opacity` and `color-mix` both resolve
+                                    against whatever happens to sit behind the
+                                    slab and this caption has to hold 4.5:1
+                                    wherever a card lands. Full ink is darker
+                                    than the let-down it replaces on the same
+                                    surface, so the measured 5.6:1 can only
+                                    improve - and it is one token instead of a
+                                    number nobody can trace.
+     --d-page-mid   -> var(--surface-quiet)
+     10px           -> var(--radius-s)
+
+   *** THE CONTAINER QUERY IS WHY THE CART DRAWER NEEDS NOTHING OF ITS OWN. ***
+   A cart thumbnail is 64px. The sentence cannot fit there and would stack into
+   a column of single letters, so the caption goes below 120px and the bow
+   carries it alone. That is a CONTAINER query, not a media query: what matters
+   is the size of the SLAB, not of the window. It also means the drawer's old
+   `.darling-cart__noimg` is not a second component - it is this one, small.
+   ========================================================================== */
+
+.d-media-fail{
+	container-type:inline-size;
+	/* Not decoration: an <img> is a replaced element and does NOT inherit the
+	   border-box default, so the 9% padding was once added OUTSIDE a 249px
+	   width and pushed the page 39px wider than the phone. */
+	box-sizing:border-box;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	gap:var(--space-3xs);
+	width:100%;
+	aspect-ratio:1;
+	padding:9%;
+	text-align:center;
+	background:var(--surface-quiet);
+	border-radius:var(--radius-s);
+	color:var(--ink);
+}
+
+/* The bow is the quietest thing that still reads as drawn on purpose, and the
+   reason it is not quieter is measured: the slab is 1.18:1 against the white
+   product card and 1.10:1 against the page it sits on directly. The EDGE of
+   this state is never going to carry it. What carries it is the caption and
+   this motif. Chasing a visible border instead needs roughly #B8A98F, which
+   stops being quiet and starts being a wireframe.
+
+   opacity, not color-mix, and deliberately - unlike the caption, the bow has
+   no contrast floor to hold, so resolving against an unknown backdrop is
+   exactly what we want here and exactly what we did not want there. */
+.d-media-fail__bow{
+	flex:0 0 auto;
+	width:30%;
+	max-width:56px;
+	height:auto;
+	color:var(--c-cocoa);
+	opacity:.3;
+}
+
+.d-media-fail__cap{
+	margin:0;
+	max-width:22ch;
+	font-size:var(--fs-fine);
+	line-height:var(--lh-title);
+	color:inherit;
+}
+
+@container (max-width: 119px){
+	.d-media-fail{ padding:12% }
+	.d-media-fail__cap{ display:none }
+	.d-media-fail__bow{ width:52% }
+}
+
+/* The accessible name lives on the container (role="img" + aria-label), which
+   is what frees the bow to be this quiet and the caption to disappear at 64px:
+   the meaning is not in either of them. */
+.d-media-fail__bow{ pointer-events:none }
+
 }
 
 /* ==== patterns/checkout.css ==== */
@@ -7439,12 +7678,101 @@ html.d-a11y .d-ambient{ display:none !important }
    rule rather than a shared one: prefers-reduced-motion is a SYSTEM setting the
    browser reports, this is a choice the person made on this site, and the two
    want to be switchable independently. */
-html.d-a11y *,
+/* The exclusions are the scroll-driven pair - see the register in
+   tokens/motion.css. Their animations are position, not motion. */
+html.d-a11y *:not(.d-scrollframe__thumb):not(.d-header),
 html.d-a11y *::before,
 html.d-a11y *::after{
 	animation:none !important;
 	transition:none !important;
 }
+
+/* *** THE SPINNER KEEPS SPINNING, AND icon.css ALREADY SAID SO. ***
+   Its own table reads "spinner  always  it IS the event; a still spinner is a
+   bug", and the mode made it a bug. A frozen spinner does not mean "loading
+   without animation", it means "stopped" - the one message the element must
+   never send. Re-declared rather than excluded above, because the exclusion
+   list is for things the mode should not touch at all and this IS touched: it
+   keeps the spin and loses everything around it. */
+/* *** THE CLASS IS DOUBLED, AND AN ODD-LOOKING SELECTOR MARKS A FIGHT. ***
+   The kill above is (0,3,1) - `html.d-a11y` plus a universal carrying two
+   :not()s - and the obvious `html.d-a11y .d-icon--spin` is (0,2,1). Both
+   !important, same layer, so the kill won and the spinner stayed frozen. The
+   two :not()s are mine, added for the scroll timelines, so I widened the
+   selector I then had to beat. Doubling takes this to (0,4,1). */
+html.d-a11y .d-icon--spin.d-icon--spin,
+html.d-a11y .d-icon--spinner.d-icon--spinner{ animation:d-icon-spin 900ms linear infinite !important }
+html.d-a11y .d-icon--spinner.d-icon--spinner{ animation-duration:2.1s !important }
+html.d-a11y .d-icon--spinner.d-icon--spinner::after{ animation:d-icon-spin 2.1s linear infinite !important }
+html.d-a11y .d-icon--spinner.d-icon--spinner::before{ animation:d-icon-spin 1.55s linear infinite reverse !important }
+
+/* *** AND THE CART STREAK IS PAINTED, NOT ANIMATED. ***
+   `.d-icon-btn[data-added]::before` draws a gold gradient and the animation only
+   fades and stretches it, so `animation:none` left the streak on at full
+   strength for the whole 820ms - louder in the plain mode than out of it, which
+   is what the owner saw. Anything whose resting state is invisible only because
+   an animation holds it there must be REMOVED here, not stilled. */
+html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
+
+/* =============================================================================
+   THE NOTICES TRADE THEIR STARS FOR A MARK
+
+   *** THE FALLING STARS ARE THE ERROR'S MEANING, NOT ITS DECORATION. ***
+   Nothing else on that box says "this went wrong" - there is no icon, the tint
+   is nine per cent, and the heading is whatever the message happens to be. So a
+   frozen rain of stars is worse than none: the meaning has gone and the debris
+   is still there, which is what the owner saw.
+
+   In the mode each notice gets the state icon the system already owns instead.
+   One mark, still, at the start of the message, in the state colour - which is
+   the plain version of the same sentence. */
+html.d-a11y .d-notice__stars,
+html.d-a11y .d-notice::after{ display:none !important; content:none !important }
+html.d-a11y .d-notice{ padding-inline-start:calc(var(--space-xs) + 1.9em) }
+html.d-a11y .d-notice::before{
+	content:"" !important;
+	z-index:2;
+	top:var(--space-2xs);
+	left:var(--space-xs);
+	right:auto;
+	width:1.25em;
+	height:1.25em;
+	clip-path:none !important;
+	-webkit-mask-image:var(--icon-info);
+	        mask-image:var(--icon-info);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	        mask-position:center;
+}
+html.d-a11y .d-notice--error::before{
+	background:var(--notice-error-edge);
+	-webkit-mask-image:var(--icon-error);
+	        mask-image:var(--icon-error);
+}
+html.d-a11y .d-notice--warning::before{
+	background:var(--notice-warning-edge);
+	-webkit-mask-image:var(--icon-warning);
+	        mask-image:var(--icon-warning);
+}
+html.d-a11y .d-notice--success::before{
+	background:var(--notice-success-edge);
+	-webkit-mask-image:var(--icon-check);
+	        mask-image:var(--icon-check);
+}
+html.d-a11y .d-notice--info::before{ background:var(--notice-info-edge) }
+/* The bar has no stars to begin with and no room for a mark. */
+html.d-a11y .d-notice--bar{ padding-inline-start:var(--space-xs) }
+html.d-a11y .d-notice--bar::before{ content:none !important }
+
+/* The burst, belt as well as braces. darling-ui.js will not fire it in this
+   mode, but the stars are markup that is always present and only invisible
+   because their animation holds them at zero - so if anything ever sets
+   data-pop from somewhere else, this is what stops nine stars appearing and
+   staying. */
+html.d-a11y .d-burst{ display:none !important }
 
 /* Links are underlined, everywhere, including the ones a component deliberately
    un-underlined. In prose an underline is how a link is a link. */
@@ -10576,6 +10904,23 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 
 
+/* ==== adopted/media-fail.css ==== */
+/* =============================================================================
+   ADOPTED / MEDIA FAIL - one declaration, and it cannot be layered.
+
+   The failed <img> has to be hidden, and BOTH WooCommerce and the parent theme
+   set `display` on product images at the same specificity we could reach from
+   inside a layer - and unlayered beats layered regardless. A broken image that
+   still paints shows the browser's own broken-file icon on top of the slab
+   that exists to replace it.
+
+   The attribute selector is the whole rule on purpose: the JS sets
+   data-d-media-fail to "broken" or "missing" and nothing else does, so this can
+   never catch an image that is fine.
+   ========================================================================== */
+img[data-d-media-fail]{ display:none !important }
+
+
 /* gallery chrome only - not part of the system */
 body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-body)}
 .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 120px}
@@ -10612,7 +10957,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -11337,6 +11682,19 @@ that is the next component.</div>
 	      Opt-in by class: a burst that fired on every click of anything
 	      containing stars would fire on the season banner's link too, where the
 	      stars are a hover effect and popping them is wrong. */
+	/* *** A STYLESHEET CANNOT PREVENT DOM. ***
+	   The burst is nine <i> elements this script creates. Accessibility mode and
+	   reduced motion both say `animation:none !important`, which does not stop
+	   them being made - it makes them appear, hold still around the button for
+	   1.5s and vanish. The owner saw exactly that and read it as the animation
+	   surviving the switch. The guard has to be here, because here is the only
+	   place that knows the elements are about to exist.
+	   Read at fire time, not at init: the switch can be flipped mid-session. */
+	function plainMode() {
+		return document.documentElement.classList.contains('d-a11y')
+			|| (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+	}
+
 	function burstHost(el) {
 		var burst = el.querySelector('.d-burst');
 		if (!burst) return;
@@ -11359,6 +11717,7 @@ that is the next component.</div>
 				burst.style.removeProperty('--burst-x');
 				burst.style.removeProperty('--burst-y');
 			}
+			if (plainMode()) { return; }
 			bump(burst, 'data-pop', 1700);
 		});
 	}
@@ -12178,7 +12537,7 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
 <div class="d-band" style="--surface-band:var(--c-claret)">
   <div class="d-news">
-    <span class="d-news__flow" aria-hidden="true"><i style="--from:-26rem;--y:18%;--s:1.2;--d:0s"></i><i style="--from:26rem;--y:74%;--s:1.0;--d:.35s"></i><i style="--from:-30rem;--y:62%;--s:.85;--d:.7s"></i><i style="--from:30rem;--y:26%;--s:1.35;--d:1.05s"></i><i style="--from:-24rem;--y:88%;--s:1.05;--d:1.4s"></i><i style="--from:28rem;--y:46%;--s:.9;--d:1.75s"></i><i style="--from:-32rem;--y:38%;--s:1.15;--d:2.1s"></i><i style="--from:24rem;--y:8%;--s:.8;--d:2.45s"></i><i style="--from:-28rem;--y:54%;--s:1.3;--d:1.2s"></i></span>
+    <span class="d-news__flow" aria-hidden="true"><i style="--from:-52vw;--y:18%;--s:1.30;--d:0.00s"></i><i style="--from:52vw;--y:74%;--s:1.05;--d:0.20s"></i><i style="--from:-44vw;--y:62%;--s:0.85;--d:0.40s"></i><i style="--from:46vw;--y:26%;--s:1.40;--d:0.60s"></i><i style="--from:-38vw;--y:88%;--s:1.10;--d:0.80s"></i><i style="--from:42vw;--y:46%;--s:0.90;--d:1.00s"></i><i style="--from:-50vw;--y:38%;--s:1.20;--d:1.20s"></i><i style="--from:38vw;--y:8%;--s:0.75;--d:1.40s"></i><i style="--from:-42vw;--y:54%;--s:1.35;--d:1.60s"></i><i style="--from:50vw;--y:92%;--s:0.95;--d:1.80s"></i><i style="--from:-46vw;--y:6%;--s:1.00;--d:2.00s"></i><i style="--from:44vw;--y:66%;--s:1.15;--d:2.20s"></i><i style="--from:-40vw;--y:30%;--s:0.80;--d:2.40s"></i></span>
     <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
     <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
     дома. Без спам, обещаваме.</p>
@@ -12369,7 +12728,7 @@ turning it on. Worth a look with the switch flipped before it ships.</div>
 <button class="d-btn d-btn--quiet" onclick="document.documentElement.classList.toggle('d-a11y')">
   Превключи достъпен режим</button>
 </section><section class="sec" id="checkout"><h2>Patterns</h2>
-<h3>Checkout add-ons &mdash; VAT invoice and courier office</h3>
+<h3>Checkout add-ons &mdash; VAT invoice and the office picker</h3>
 <p class="note"><b>This one is mostly a deletion.</b> The two blocks carried 28
 legacy rules and all but a handful were the system saying something twice: field
 borders and radii, a focus ring (amber &mdash; every other field in the system is
@@ -12421,6 +12780,57 @@ card, a grid and a disabled state.</p>
   <p class="d-notice__body">Един артикул е по заявка &mdash; поръчката тръгва до
   5 работни дни.</p>
 </div>
+<p class="lbl" style="margin-top:22px">The office picker, in the five states it actually has</p>
+<p class="note">The card above is the resting one. These are the other four the
+plugin writes into that same select, plus what the order review prints once a
+choice is made. A picker is mostly not resting, so reviewing only the resting
+state is reviewing the part that never goes wrong.</p>
+<div class="d-courier">
+  <div class="d-courier__fields">
+    <div class="d-field"><label class="d-field__label" for="dcs-1">Преди град</label>
+      <select class="d-field__control" id="dcs-1"><option>Изберете офис</option></select>
+      <p class="d-field__hint">Изберете град, за да видите офисите наблизо.</p></div>
+
+    <div class="d-field"><label class="d-field__label" for="dcs-2">Докато зарежда</label>
+      <select class="d-field__control" id="dcs-2" disabled><option>Зареждане…</option></select>
+      <p class="d-field__hint"><span class="d-icon d-icon--spinner" aria-hidden="true"></span>
+      Офисите се теглят от куриера.</p></div>
+
+    <div class="d-field d-field--invalid"><label class="d-field__label" for="dcs-3">Ако куриерът мълчи</label>
+      <select class="d-field__control" id="dcs-3" aria-invalid="true"><option>Грешка при зареждане</option></select>
+      <p class="d-field__error">Опитайте пак или изберете доставка до адрес.</p></div>
+
+    <div class="d-field"><label class="d-field__label" for="dcs-4">Град без офис</label>
+      <select class="d-field__control" id="dcs-4"><option>Няма офиси в този град</option></select>
+      <p class="d-field__hint">Най-близкият е в Пловдив, на 14 км.</p></div>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:22px">And what the order review prints</p>
+<div class="d-trust" style="max-width:32rem">
+  <p class="d-trust__ship"><span class="d-icon d-icon--truck" aria-hidden="true"></span>
+  <b>Еконт</b> &middot; София, ул. Пример 12</p>
+</div>
+<div class="d-notice d-notice--warning" style="margin-top:10px;max-width:32rem">
+  <p class="d-notice__body">Офисът не е потвърден от куриера. Ще се свържем с вас
+  преди изпращане.</p>
+  <span class="d-notice__stars" aria-hidden="true"></span>
+</div>
+
+<div class="todo"><b>The unconfirmed warning is a hard-coded colour in PHP.</b>
+<code>class-office-field.php</code> prints
+<code>&lt;span style="color:#b01f30"&gt;</code> straight into the order review.
+It is one shade off <code>--notice-error-edge</code>, it is not in any
+stylesheet, and the cutover will therefore not find it &mdash; deleting
+<code>style.css</code> changes nothing about it. It wants to be a
+<code>.d-notice--warning</code>, and that is a plugin change rather than a theme
+one.<br><br>
+<b>The select is the system's select.</b> <code>.d-field select</code> already
+draws our chevron, so the picker needs no rule of its own; the four states above
+are markup and copy, not CSS. The one thing they do need is the disabled state,
+which is why the loading select is really disabled rather than merely
+grey.</div>
+
 <p class="lbl" style="margin-top:22px">The submit, blocked</p>
 <button class="d-btn d-finish d-blocked" aria-disabled="true">Поръчай</button>
 
@@ -12440,6 +12850,115 @@ the plugin can leave the button enabled and put the reason in the field error
 <b>Greyscale as well as opacity.</b> A cherry button at 50% is still cherry and
 still reads as the live action; on the plywood button opacity alone barely
 registers.</div>
+</section><section class="sec" id="media"><h2>Pattern</h2><h3>Failed image</h3>
+<p class="note"><b>This is an error state, not a placeholder.</b> The panel
+refuses to flag a product sellable online without an image, so a card with no
+picture means something upstream is wrong &mdash; a placeholder that escaped the
+rule, or a <code>src</code> that 404s. A pretty grey box would hide that, so the
+slab writes a sentence instead. It is built by <code>assets/img-fallback.js</code>,
+because CSS can neither see a broken <code>&lt;img&gt;</code> nor write a
+sentence; the stylesheet only decides how it looks.</p>
+<p class="note"><b>The three below are one component at three widths.</b> The
+caption disappears under 120px through a <em>container</em> query &mdash; what
+matters is the size of the slab, not of the window &mdash; which is why the cart
+drawer's 64px thumbnail needs no rule of its own. The bow is aria-hidden and the
+accessible name sits on the container, so nothing is lost when it goes.</p>
+<div class="grid" style="align-items:start">
+  <div>
+    <p class="note">In a product card.</p>
+    <article class="d-card"><div class="d-card__media">
+      <div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
+        <p class="d-media-fail__cap" aria-hidden="true">Снимката не може да бъде заредена</p></div>
+    </div>
+    <h3 class="d-card__title"><a href="#">Керамична купа</a></h3>
+    <p class="d-card__price">26,40</p></article>
+  </div>
+  <div>
+    <p class="note">Bare, and square.</p>
+    <div style="max-width:240px"><div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
+      <p class="d-media-fail__cap" aria-hidden="true">Снимката не може да бъде заредена</p></div></div>
+  </div>
+  <div>
+    <p class="note">At 64px, in the cart drawer. Same element.</p>
+    <ul class="d-drawer__list" style="max-width:300px"><li class="d-drawer__line">
+      <div class="d-drawer__line__thumb"><div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
+        <p class="d-media-fail__cap" aria-hidden="true">Снимката не може да бъде заредена</p></div></div>
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Керамична купа</span>
+        <span class="d-drawer__line__meta">&euro;26,40 / 51,64 &#1083;&#1074;.</span>
+      </div></li></ul>
+  </div>
+</div>
+<p class="lbl" style="margin-top:26px">And the three other things batch nine shipped</p>
+<p class="note">All four went into the stylesheet; only the slab went onto the
+page. A component that is only in the stylesheet does not exist, so here are the
+other three.</p>
+
+<p class="note"><b>1. <code>.d-section-title</code></b> &mdash; the heading that
+names a band. Legacy declared it four separate times across four slices, each
+adding a font-size or a margin to the last, and all four said the same size. What
+is worth looking at is not the title, it is the gap ABOVE and BELOW it: an
+eyebrow labels the heading beneath it, so proximity has to bind downward. On the
+live home page three of them had 0px above and 42px below, which reads as a
+caption hanging off the bottom of the previous section.</p>
+<div style="border:1px dashed var(--hairline);border-radius:var(--radius-m);padding:4px 0">
+  <p class="d-hero__eyebrow" style="max-width:1120px;margin:0 auto;padding-inline:var(--gutter)">Току-що пристигна</p>
+  <h2 class="d-section-title">Новото от Дарлинг</h2>
+  <p style="max-width:1120px;margin:0 auto;padding-inline:var(--gutter);color:var(--ink-quiet)">
+  The eyebrow sits close to the title; the title sits far from whatever is above it.</p>
+</div>
+
+<p class="note" style="margin-top:22px"><b>2. <code>.d-drawer__trust</code></b>
+&mdash; one line, and the reason it is not <code>.d-trustbar</code> is width. The
+band version is a grid of three promises and needs the room to be a row of
+anything; in a 300px drawer the same three stack into three lines and push the
+first product below the fold. Both are below, at the width each one gets.</p>
+<div class="grid" style="align-items:start">
+  <div style="max-width:300px;border:1px solid var(--hairline);border-radius:var(--radius-m);padding:14px">
+    <p class="d-drawer__trust"><span class="d-icon d-icon--shield" aria-hidden="true"></span>
+    Наложен платеж &middot; Връщане до 14 дни</p>
+    <ul class="d-drawer__list"><li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e3d9cc'/%3E%3Ccircle cx='50' cy='56' r='26' fill='%23c9b9a6'/%3E%3C/svg%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Керамична купа</span>
+        <span class="d-drawer__line__meta">&euro;26,40</span>
+      </div></li></ul>
+  </div>
+  <div style="grid-column:span 2">
+    <ul class="d-trustbar">
+      <li><b>Наложен платеж</b><span>Плащате при получаване</span></li>
+      <li><b>14 дни за връщане</b><span>Без да обяснявате защо</span></li>
+      <li><b>Доставка за 1&ndash;2 дни</b><span>До офис или до адрес</span></li>
+    </ul>
+  </div>
+</div>
+
+<p class="note" style="margin-top:22px"><b>3. <code>main{ overflow-x: clip }</code></b>
+&mdash; one declaration whose effect is the absence of something, so the only way
+to show it is to turn it off. Both frames below hold the same band, and the band
+is deliberately wider than the frame, the way a full-bleed band is wider than the
+shell. <b>The right one has a horizontal scrollbar.</b> That is what every page
+had. It has to be <code>clip</code> and not <code>hidden</code>, because
+<code>hidden</code> makes the element a scroll container and a scroll container
+is the containing block for <code>position:sticky</code> &mdash; so the header
+would stop sticking to the window and start sticking to a box it is not
+inside.</p>
+<div class="grid" style="grid-template-columns:1fr 1fr">
+  <div>
+    <p class="lbl">overflow-x: clip</p>
+    <div style="overflow-x:clip;border:1px solid var(--hairline);border-radius:var(--radius-m)">
+      <div style="width:150%;background:var(--surface-band);color:var(--ink-on-dark);padding:18px">
+      A band that reaches past the shell, on purpose.</div>
+    </div>
+  </div>
+  <div>
+    <p class="lbl">without it</p>
+    <div style="border:1px solid var(--notice-error-edge);border-radius:var(--radius-m)">
+      <div style="width:150%;background:var(--surface-band);color:var(--ink-on-dark);padding:18px">
+      The same band, and a scrollbar nobody asked for.</div>
+    </div>
+  </div>
+</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>
 <p class="note">card, button, band, notice, rating, field, table, quantity, badge,

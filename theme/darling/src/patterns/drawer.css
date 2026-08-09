@@ -433,3 +433,27 @@
 /* The free-shipping bar sits between the list and the totals, where it answers
    the question the totals are about to raise. */
 .d-drawer__foot .d-progress{ margin-bottom:var(--space-3xs) }
+
+/* -- the trust line -----------------------------------------------------------
+   One line above the items: cash on delivery, fourteen days to return.
+
+   *** IT IS NOT .d-trustbar, AND THE DIFFERENCE IS THE 320px. ***
+   .d-trustbar is a GRID of three promises across a band - it needs the width to
+   be a row of anything. The drawer is a column three hundred pixels wide, where
+   the same three promises stack into three lines and push the first product
+   below the fold. So this is one sentence with separators, in the drawer's own
+   quiet voice, and the full band stays on the cart page where it fits. */
+.d-drawer__trust{
+	margin:0 0 var(--space-2xs);
+	font-size:var(--fs-fine);
+	line-height:var(--lh-title);
+	letter-spacing:.02em;
+	color:var(--ink-quiet);
+}
+.d-drawer__trust .d-icon{
+	width:.8em;
+	height:.8em;
+	vertical-align:-.05em;
+	margin-inline-end:.3em;
+	color:var(--g-core);
+}

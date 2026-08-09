@@ -148,7 +148,8 @@
 
    WHAT MOVES, AND WHY THAT ONE:
      spinner   always      it IS the event; a still spinner is a bug
-     cart      on add      the only moment the basket changes
+     cart      on hover + on add   the hover invites the click; the add
+                          confirms it. Owner's call, 2026-08-09.
      user      on hover    a bow, because the account is the personal corner
      search    on hover    invites the click; the lens is otherwise dead weight
      heart     on check    a state change the person just made
@@ -299,6 +300,15 @@
 }
 [data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
 [data-added] .d-icon--cart::after{  animation:d-icon-roll 820ms var(--ease-float) }
+/* *** ON HOVER, AT THE OWNER'S REQUEST - AND THE TABLE ABOVE CHANGES WITH IT. ***
+   It read "cart  on add  the only moment the basket changes", which is a good
+   argument and not the one he wants: the mark is on a BUTTON, and a button that
+   only ever moves after you have committed cannot invite the commit. The add
+   still fires it, so nothing is lost - this adds the earlier moment. */
+.d-icon-btn:hover .d-icon--cart,
+.d-icon-btn:focus-visible .d-icon--cart{ animation:d-icon-wheelie 820ms var(--ease-float) }
+.d-icon-btn:hover .d-icon--cart::after,
+.d-icon-btn:focus-visible .d-icon--cart::after{ animation:d-icon-roll 820ms var(--ease-float) }
 /* The tilt was 16deg at one instant and back through 11 immediately - so the
    cart passed through the pose rather than holding it and the owner read it as
    barely tilted. It now snaps up past the mark, settles ON 15deg, HOLDS there

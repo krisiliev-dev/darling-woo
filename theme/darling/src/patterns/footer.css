@@ -365,18 +365,32 @@
    resolves against the element's OWN border box, so `--from:-50%` on a 14px
    star moves it seven pixels. That mistake has cost this project two separate
    afternoons - the slider wake and the first burst - so: rem. */
+/* *** THE BAND CLIPS, NOT THE FLOW. ***
+   This box is a child of .d-news, which is max-width:40rem and centred, so with
+   overflow:hidden here the stars were cut off 350px from each edge and appeared
+   out of nothing a third of the way into the band. Measured: a 502px flow box
+   inside a 1240px band. The owner: "I want the stars to spawn in from the
+   sides." The sides belong to the band, so the band does the clipping and this
+   box lets them through.
+
+   *** clip AND NOT hidden, FOR THE USUAL REASON. *** overflow:hidden would make
+   the band a scroll container, and a scroll container is the containing block
+   for position:sticky - so the header would start sticking to the newsletter. */
 .d-news__flow{
 	position:absolute;
 	inset:-1.5rem 0;
-	overflow:hidden;
+	overflow:visible;
 	pointer-events:none;
 }
+.d-band:has(> .d-news){ overflow:clip }
 .d-news__flow i{
 	position:absolute;
 	top:var(--y, 50%);
 	left:50%;
-	width:calc(.8rem * var(--s, 1));
-	height:calc(.8rem * var(--s, 1));
+	/* Three times what it was, at the owner's request. At .8rem they read as
+	   dust at the edge of a band this wide; the point is to be followed. */
+	width:calc(2.4rem * var(--s, 1));
+	height:calc(2.4rem * var(--s, 1));
 	background:var(--g-hi);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);

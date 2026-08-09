@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1624,7 +1624,7 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
 <div class="d-band" style="--surface-band:var(--c-claret)">
   <div class="d-news">
-    <span class="d-news__flow" aria-hidden="true"><i style="--from:-26rem;--y:18%;--s:1.2;--d:0s"></i><i style="--from:26rem;--y:74%;--s:1.0;--d:.35s"></i><i style="--from:-30rem;--y:62%;--s:.85;--d:.7s"></i><i style="--from:30rem;--y:26%;--s:1.35;--d:1.05s"></i><i style="--from:-24rem;--y:88%;--s:1.05;--d:1.4s"></i><i style="--from:28rem;--y:46%;--s:.9;--d:1.75s"></i><i style="--from:-32rem;--y:38%;--s:1.15;--d:2.1s"></i><i style="--from:24rem;--y:8%;--s:.8;--d:2.45s"></i><i style="--from:-28rem;--y:54%;--s:1.3;--d:1.2s"></i></span>
+    <span class="d-news__flow" aria-hidden="true"><i style="--from:-52vw;--y:18%;--s:1.30;--d:0.00s"></i><i style="--from:52vw;--y:74%;--s:1.05;--d:0.20s"></i><i style="--from:-44vw;--y:62%;--s:0.85;--d:0.40s"></i><i style="--from:46vw;--y:26%;--s:1.40;--d:0.60s"></i><i style="--from:-38vw;--y:88%;--s:1.10;--d:0.80s"></i><i style="--from:42vw;--y:46%;--s:0.90;--d:1.00s"></i><i style="--from:-50vw;--y:38%;--s:1.20;--d:1.20s"></i><i style="--from:38vw;--y:8%;--s:0.75;--d:1.40s"></i><i style="--from:-42vw;--y:54%;--s:1.35;--d:1.60s"></i><i style="--from:50vw;--y:92%;--s:0.95;--d:1.80s"></i><i style="--from:-46vw;--y:6%;--s:1.00;--d:2.00s"></i><i style="--from:44vw;--y:66%;--s:1.15;--d:2.20s"></i><i style="--from:-40vw;--y:30%;--s:0.80;--d:2.40s"></i></span>
     <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
     <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
     дома. Без спам, обещаваме.</p>
@@ -1827,7 +1827,7 @@ A(PAGES_MARKUP)
 
 
 CHECKOUT_MARKUP = '''<section class="sec" id="checkout"><h2>Patterns</h2>
-<h3>Checkout add-ons &mdash; VAT invoice and courier office</h3>
+<h3>Checkout add-ons &mdash; VAT invoice and the office picker</h3>
 <p class="note"><b>This one is mostly a deletion.</b> The two blocks carried 28
 legacy rules and all but a handful were the system saying something twice: field
 borders and radii, a focus ring (amber &mdash; every other field in the system is
@@ -1879,6 +1879,57 @@ card, a grid and a disabled state.</p>
   <p class="d-notice__body">Един артикул е по заявка &mdash; поръчката тръгва до
   5 работни дни.</p>
 </div>
+<p class="lbl" style="margin-top:22px">The office picker, in the five states it actually has</p>
+<p class="note">The card above is the resting one. These are the other four the
+plugin writes into that same select, plus what the order review prints once a
+choice is made. A picker is mostly not resting, so reviewing only the resting
+state is reviewing the part that never goes wrong.</p>
+<div class="d-courier">
+  <div class="d-courier__fields">
+    <div class="d-field"><label class="d-field__label" for="dcs-1">Преди град</label>
+      <select class="d-field__control" id="dcs-1"><option>Изберете офис</option></select>
+      <p class="d-field__hint">Изберете град, за да видите офисите наблизо.</p></div>
+
+    <div class="d-field"><label class="d-field__label" for="dcs-2">Докато зарежда</label>
+      <select class="d-field__control" id="dcs-2" disabled><option>Зареждане…</option></select>
+      <p class="d-field__hint"><span class="d-icon d-icon--spinner" aria-hidden="true"></span>
+      Офисите се теглят от куриера.</p></div>
+
+    <div class="d-field d-field--invalid"><label class="d-field__label" for="dcs-3">Ако куриерът мълчи</label>
+      <select class="d-field__control" id="dcs-3" aria-invalid="true"><option>Грешка при зареждане</option></select>
+      <p class="d-field__error">Опитайте пак или изберете доставка до адрес.</p></div>
+
+    <div class="d-field"><label class="d-field__label" for="dcs-4">Град без офис</label>
+      <select class="d-field__control" id="dcs-4"><option>Няма офиси в този град</option></select>
+      <p class="d-field__hint">Най-близкият е в Пловдив, на 14 км.</p></div>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:22px">And what the order review prints</p>
+<div class="d-trust" style="max-width:32rem">
+  <p class="d-trust__ship"><span class="d-icon d-icon--truck" aria-hidden="true"></span>
+  <b>Еконт</b> &middot; София, ул. Пример 12</p>
+</div>
+<div class="d-notice d-notice--warning" style="margin-top:10px;max-width:32rem">
+  <p class="d-notice__body">Офисът не е потвърден от куриера. Ще се свържем с вас
+  преди изпращане.</p>
+  <span class="d-notice__stars" aria-hidden="true"></span>
+</div>
+
+<div class="todo"><b>The unconfirmed warning is a hard-coded colour in PHP.</b>
+<code>class-office-field.php</code> prints
+<code>&lt;span style="color:#b01f30"&gt;</code> straight into the order review.
+It is one shade off <code>--notice-error-edge</code>, it is not in any
+stylesheet, and the cutover will therefore not find it &mdash; deleting
+<code>style.css</code> changes nothing about it. It wants to be a
+<code>.d-notice--warning</code>, and that is a plugin change rather than a theme
+one.<br><br>
+<b>The select is the system's select.</b> <code>.d-field select</code> already
+draws our chevron, so the picker needs no rule of its own; the four states above
+are markup and copy, not CSS. The one thing they do need is the disabled state,
+which is why the loading select is really disabled rather than merely
+grey.</div>
+
 <p class="lbl" style="margin-top:22px">The submit, blocked</p>
 <button class="d-btn d-finish d-blocked" aria-disabled="true">Поръчай</button>
 
@@ -1902,6 +1953,129 @@ registers.</div>
 
 # ----------------------------------------------------------------- checkout ---
 A(CHECKOUT_MARKUP)
+
+MEDIA_FAIL_CAP = u'\u0421\u043d\u0438\u043c\u043a\u0430\u0442\u0430 \u043d\u0435 \u043c\u043e\u0436\u0435 \u0434\u0430 \u0431\u044a\u0434\u0435 \u0437\u0430\u0440\u0435\u0434\u0435\u043d\u0430'
+MEDIA_FAIL_NAME = u'\u041a\u0435\u0440\u0430\u043c\u0438\u0447\u043d\u0430 \u043a\u0443\u043f\u0430'
+# The brand bow, from the hero constant defined above - NOT a new one. The
+# live slab renders assets/img-fallback.js's BOW, which is this same path,
+# so the gallery and the page draw one mark rather than two that resemble
+# each other.
+# The torn bow: the SAME path as BOW above, rendered twice and clipped to
+# either side of one jag, which is how a tear stays a tear of THIS mark.
+# Kept in step with assets/img-fallback.js by rev11cgate.js, which compares
+# the path data in both files rather than trusting this comment.
+MEDIA_FAIL_BOW = ('<svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>')
+
+A('''<section class="sec" id="media"><h2>Pattern</h2><h3>Failed image</h3>
+<p class="note"><b>This is an error state, not a placeholder.</b> The panel
+refuses to flag a product sellable online without an image, so a card with no
+picture means something upstream is wrong &mdash; a placeholder that escaped the
+rule, or a <code>src</code> that 404s. A pretty grey box would hide that, so the
+slab writes a sentence instead. It is built by <code>assets/img-fallback.js</code>,
+because CSS can neither see a broken <code>&lt;img&gt;</code> nor write a
+sentence; the stylesheet only decides how it looks.</p>
+<p class="note"><b>The three below are one component at three widths.</b> The
+caption disappears under 120px through a <em>container</em> query &mdash; what
+matters is the size of the slab, not of the window &mdash; which is why the cart
+drawer's 64px thumbnail needs no rule of its own. The bow is aria-hidden and the
+accessible name sits on the container, so nothing is lost when it goes.</p>
+<div class="grid" style="align-items:start">
+  <div>
+    <p class="note">In a product card.</p>
+    <article class="d-card"><div class="d-card__media">
+      <div class="d-media-fail" role="img" aria-label="%(cap)s">%(bow)s
+        <p class="d-media-fail__cap" aria-hidden="true">%(cap)s</p></div>
+    </div>
+    <h3 class="d-card__title"><a href="#">%(name)s</a></h3>
+    <p class="d-card__price">26,40</p></article>
+  </div>
+  <div>
+    <p class="note">Bare, and square.</p>
+    <div style="max-width:240px"><div class="d-media-fail" role="img" aria-label="%(cap)s">%(bow)s
+      <p class="d-media-fail__cap" aria-hidden="true">%(cap)s</p></div></div>
+  </div>
+  <div>
+    <p class="note">At 64px, in the cart drawer. Same element.</p>
+    <ul class="d-drawer__list" style="max-width:300px"><li class="d-drawer__line">
+      <div class="d-drawer__line__thumb"><div class="d-media-fail" role="img" aria-label="%(cap)s">%(bow)s
+        <p class="d-media-fail__cap" aria-hidden="true">%(cap)s</p></div></div>
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">%(name)s</span>
+        <span class="d-drawer__line__meta">&euro;26,40 / 51,64 &#1083;&#1074;.</span>
+      </div></li></ul>
+  </div>
+</div>
+<p class="lbl" style="margin-top:26px">And the three other things batch nine shipped</p>
+<p class="note">All four went into the stylesheet; only the slab went onto the
+page. A component that is only in the stylesheet does not exist, so here are the
+other three.</p>
+
+<p class="note"><b>1. <code>.d-section-title</code></b> &mdash; the heading that
+names a band. Legacy declared it four separate times across four slices, each
+adding a font-size or a margin to the last, and all four said the same size. What
+is worth looking at is not the title, it is the gap ABOVE and BELOW it: an
+eyebrow labels the heading beneath it, so proximity has to bind downward. On the
+live home page three of them had 0px above and 42px below, which reads as a
+caption hanging off the bottom of the previous section.</p>
+<div style="border:1px dashed var(--hairline);border-radius:var(--radius-m);padding:4px 0">
+  <p class="d-hero__eyebrow" style="max-width:1120px;margin:0 auto;padding-inline:var(--gutter)">Току-що пристигна</p>
+  <h2 class="d-section-title">Новото от Дарлинг</h2>
+  <p style="max-width:1120px;margin:0 auto;padding-inline:var(--gutter);color:var(--ink-quiet)">
+  The eyebrow sits close to the title; the title sits far from whatever is above it.</p>
+</div>
+
+<p class="note" style="margin-top:22px"><b>2. <code>.d-drawer__trust</code></b>
+&mdash; one line, and the reason it is not <code>.d-trustbar</code> is width. The
+band version is a grid of three promises and needs the room to be a row of
+anything; in a 300px drawer the same three stack into three lines and push the
+first product below the fold. Both are below, at the width each one gets.</p>
+<div class="grid" style="align-items:start">
+  <div style="max-width:300px;border:1px solid var(--hairline);border-radius:var(--radius-m);padding:14px">
+    <p class="d-drawer__trust"><span class="d-icon d-icon--shield" aria-hidden="true"></span>
+    Наложен платеж &middot; Връщане до 14 дни</p>
+    <ul class="d-drawer__list"><li class="d-drawer__line">
+      <img class="d-drawer__line__thumb" src="data:image/svg+xml;utf8,%%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%%3E%%3Crect width='100' height='100' fill='%%23e3d9cc'/%%3E%%3Ccircle cx='50' cy='56' r='26' fill='%%23c9b9a6'/%%3E%%3C/svg%%3E" alt="">
+      <div class="d-drawer__line__body">
+        <span class="d-drawer__line__name">Керамична купа</span>
+        <span class="d-drawer__line__meta">&euro;26,40</span>
+      </div></li></ul>
+  </div>
+  <div style="grid-column:span 2">
+    <ul class="d-trustbar">
+      <li><b>Наложен платеж</b><span>Плащате при получаване</span></li>
+      <li><b>14 дни за връщане</b><span>Без да обяснявате защо</span></li>
+      <li><b>Доставка за 1&ndash;2 дни</b><span>До офис или до адрес</span></li>
+    </ul>
+  </div>
+</div>
+
+<p class="note" style="margin-top:22px"><b>3. <code>main{ overflow-x: clip }</code></b>
+&mdash; one declaration whose effect is the absence of something, so the only way
+to show it is to turn it off. Both frames below hold the same band, and the band
+is deliberately wider than the frame, the way a full-bleed band is wider than the
+shell. <b>The right one has a horizontal scrollbar.</b> That is what every page
+had. It has to be <code>clip</code> and not <code>hidden</code>, because
+<code>hidden</code> makes the element a scroll container and a scroll container
+is the containing block for <code>position:sticky</code> &mdash; so the header
+would stop sticking to the window and start sticking to a box it is not
+inside.</p>
+<div class="grid" style="grid-template-columns:1fr 1fr">
+  <div>
+    <p class="lbl">overflow-x: clip</p>
+    <div style="overflow-x:clip;border:1px solid var(--hairline);border-radius:var(--radius-m)">
+      <div style="width:150%%;background:var(--surface-band);color:var(--ink-on-dark);padding:18px">
+      A band that reaches past the shell, on purpose.</div>
+    </div>
+  </div>
+  <div>
+    <p class="lbl">without it</p>
+    <div style="border:1px solid var(--notice-error-edge);border-radius:var(--radius-m)">
+      <div style="width:150%%;background:var(--surface-band);color:var(--ink-on-dark);padding:18px">
+      The same band, and a scrollbar nobody asked for.</div>
+    </div>
+  </div>
+</div>
+</section>''' %(dict(cap=MEDIA_FAIL_CAP, bow=MEDIA_FAIL_BOW, name=MEDIA_FAIL_NAME)))
 
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>

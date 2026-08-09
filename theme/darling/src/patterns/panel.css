@@ -103,7 +103,15 @@
 	--panel-mark:    var(--tint-cherry-mark);
 	--panel-trail:   var(--trail-cherry);
 }
-.d-panel--quiet{
+.d-panel--quiet,
+/* *** AND THE COMMENT WAS NOT THE CODE. ***
+   The note above says an authored <details> "takes the quiet family". It did
+   not: it joined the base list and got --tint-grey, the PLAIN one. Measured,
+   rgb(241,241,246) against the quiet panel's rgb(222,222,230), which is why the
+   owner saw a panel on a prose page that was not the panel he approved. A
+   comment describing an intention the declaration does not carry out is worse
+   than no comment, because it stops the next person looking. */
+.d-prose .wp-block-details{
 	--panel-surface: var(--tint-grey-quiet);
 	--panel-quiet:   var(--c-grey-300);
 }
@@ -139,6 +147,19 @@
 	font-size:var(--fs-meta);
 	color:var(--ink);
 }
+/* *** AN AUTHORED <details> HAS NO __content TO PAD. ***
+   The editor emits <details><summary>..</summary><p>..</p></details> - the body
+   is a bare child, so it took the panel's zero padding and the text started hard
+   against the border while the summary above it was indented. The owner asked
+   for the body to "start in line with the title of the panel", so the padding is
+   the summary's own, written from the same two values rather than a number that
+   happens to match today. */
+.d-prose .wp-block-details > :not(summary){
+	margin-block:0 var(--space-2xs);
+	padding-inline:var(--space-xs) calc(var(--space-xs) + 1.4em);
+	font-size:var(--fs-meta);
+}
+.d-prose .wp-block-details > :last-child{ margin-bottom:var(--space-xs) }
 
 /* -- the pool ---------------------------------------------------------------
    ::details-content is Chrome 131+ / Safari 18.4+. Behind the @supports the

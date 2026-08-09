@@ -201,3 +201,36 @@ main .entry-content{
    most products and a table for three lines is furniture. */
 .d-gpsr p{ margin:0 0 var(--space-2xs); font-size:var(--fs-meta) }
 .d-gpsr p:last-child{ margin-bottom:0 }
+
+/* -- the section title --------------------------------------------------------
+   The heading that names a band on the home page. It is the LAST class in the
+   templates with no rule of its own, and it never had much of one: legacy
+   declared it four separate times, in four slices, each adding a font-size or a
+   margin to the last. All four said --fs-section.
+
+   It carries the eyebrow relationship too, which is the part worth keeping. An
+   eyebrow LABELS the heading beneath it, so proximity has to bind DOWNWARD.
+   Measured on the live home page, three of them did the opposite - 0px above
+   and 42px below - which reads as a caption hanging off the bottom of the
+   PREVIOUS section, and that is exactly what the owner reported. The 42 was the
+   heading's own top margin, not the eyebrow's bottom one, which is why raising
+   the eyebrow alone would not have closed it. */
+.d-section-title{
+	max-width:var(--page-max);
+	margin:var(--section-y) auto var(--space-s);
+	padding-inline:var(--gutter);
+	font:var(--type-section);
+	color:var(--ink);
+}
+/* Both eyebrows, because there are two and they are for different grounds:
+   .d-hero__eyebrow is --ink-quiet and works on the page, .d-season__eyebrow is
+   near-white and only works on the cherry band. An eyebrow above a section
+   title on the grey page is the hero one. */
+.d-hero__eyebrow + .d-section-title,
+.d-hero__eyebrow + h2,
+.d-season__eyebrow + .d-section-title,
+.d-season__eyebrow + h2{ margin-top:var(--space-3xs) }
+/* Inside a region that already owns the shell, the title must not open a second
+   one - it would inset twice. */
+.d-archive .d-section-title,
+.d-carousel .d-section-title{ max-width:none; padding-inline:0 }

@@ -95,15 +95,31 @@
 /* -- the two kill switches, both non-negotiable, both pure CSS --------------
    Reduced motion means ZERO, not less. The money path is still: a page whose
    job is a transaction does not spend frames on atmosphere. */
+/* *** THE SCROLL-DRIVEN EXEMPTION REGISTER. ***
+   Two elements in this system are positioned by an animation whose timeline
+   is the SCROLL, not the clock:
+
+       .d-scrollframe__thumb   animation-timeline:--d-scroll   (its `top`)
+       .d-header               animation-timeline:scroll(root) (its shadow)
+
+   `animation:none` on those does not remove motion. It removes the mechanism:
+   the thumb stops being a scrollbar and sits at the top of the rail while the
+   content scrolls under it, which is exactly what the owner reported. So
+   every blanket kill in this system excludes them, here and in a11y.css.
+
+   *** ADD TO ALL THREE LISTS WHEN YOU ADD A SCROLL TIMELINE. *** Three copies
+   is worse than one and one is not available: for IMPORTANT declarations the
+   layer order reverses, so `motion` beats `patterns` and a component cannot
+   exempt itself from inside its own file. */
 @media (prefers-reduced-motion: reduce){
-	*, *::before, *::after{ animation:none !important; transition:none !important }
+	*:not(.d-scrollframe__thumb):not(.d-header), *::before, *::after{ animation:none !important; transition:none !important }
 }
 body.woocommerce-cart, body.woocommerce-checkout, body.woocommerce-order-received{
 	--money-path:1;
 }
-body.woocommerce-cart *, body.woocommerce-cart *::before,
-body.woocommerce-checkout *, body.woocommerce-checkout *::before,
-body.woocommerce-order-received *, body.woocommerce-order-received *::before{
+body.woocommerce-cart *:not(.d-scrollframe__thumb):not(.d-header), body.woocommerce-cart *::before,
+body.woocommerce-checkout *:not(.d-scrollframe__thumb):not(.d-header), body.woocommerce-checkout *::before,
+body.woocommerce-order-received *:not(.d-scrollframe__thumb):not(.d-header), body.woocommerce-order-received *::before{
 	animation:none !important;
 }
 /* -- the small movements ----------------------------------------------------

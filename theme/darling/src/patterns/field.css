@@ -19,6 +19,15 @@
    ========================================================================== */
 
 .d-field{
+	/* *** align-content, NOT A HEIGHT. ***
+	   In a two-column grid the taller cell sets the row height, and a field
+	   with an error message underneath IS taller. Its neighbour then had
+	   two rows to distribute over that height and put its input 14px lower
+	   than the invalid one beside it - measured, and it is what the owner
+	   reported as the field being pushed out of line by its own error.
+	   Packing from the top lines the inputs up and leaves the message
+	   hanging below, which is where it was always meant to be. */
+	align-content:start;
 	position:relative;
 	display:grid;
 	gap:var(--stack-tight);

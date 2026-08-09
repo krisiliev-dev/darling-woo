@@ -1,0 +1,14 @@
+/* =============================================================================
+   ADOPTED / MEDIA FAIL - one declaration, and it cannot be layered.
+
+   The failed <img> has to be hidden, and BOTH WooCommerce and the parent theme
+   set `display` on product images at the same specificity we could reach from
+   inside a layer - and unlayered beats layered regardless. A broken image that
+   still paints shows the browser's own broken-file icon on top of the slab
+   that exists to replace it.
+
+   The attribute selector is the whole rule on purpose: the JS sets
+   data-d-media-fail to "broken" or "missing" and nothing else does, so this can
+   never catch an image that is fine.
+   ========================================================================== */
+img[data-d-media-fail]{ display:none !important }

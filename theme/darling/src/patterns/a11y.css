@@ -61,12 +61,101 @@ html.d-a11y .d-ambient{ display:none !important }
    rule rather than a shared one: prefers-reduced-motion is a SYSTEM setting the
    browser reports, this is a choice the person made on this site, and the two
    want to be switchable independently. */
-html.d-a11y *,
+/* The exclusions are the scroll-driven pair - see the register in
+   tokens/motion.css. Their animations are position, not motion. */
+html.d-a11y *:not(.d-scrollframe__thumb):not(.d-header),
 html.d-a11y *::before,
 html.d-a11y *::after{
 	animation:none !important;
 	transition:none !important;
 }
+
+/* *** THE SPINNER KEEPS SPINNING, AND icon.css ALREADY SAID SO. ***
+   Its own table reads "spinner  always  it IS the event; a still spinner is a
+   bug", and the mode made it a bug. A frozen spinner does not mean "loading
+   without animation", it means "stopped" - the one message the element must
+   never send. Re-declared rather than excluded above, because the exclusion
+   list is for things the mode should not touch at all and this IS touched: it
+   keeps the spin and loses everything around it. */
+/* *** THE CLASS IS DOUBLED, AND AN ODD-LOOKING SELECTOR MARKS A FIGHT. ***
+   The kill above is (0,3,1) - `html.d-a11y` plus a universal carrying two
+   :not()s - and the obvious `html.d-a11y .d-icon--spin` is (0,2,1). Both
+   !important, same layer, so the kill won and the spinner stayed frozen. The
+   two :not()s are mine, added for the scroll timelines, so I widened the
+   selector I then had to beat. Doubling takes this to (0,4,1). */
+html.d-a11y .d-icon--spin.d-icon--spin,
+html.d-a11y .d-icon--spinner.d-icon--spinner{ animation:d-icon-spin 900ms linear infinite !important }
+html.d-a11y .d-icon--spinner.d-icon--spinner{ animation-duration:2.1s !important }
+html.d-a11y .d-icon--spinner.d-icon--spinner::after{ animation:d-icon-spin 2.1s linear infinite !important }
+html.d-a11y .d-icon--spinner.d-icon--spinner::before{ animation:d-icon-spin 1.55s linear infinite reverse !important }
+
+/* *** AND THE CART STREAK IS PAINTED, NOT ANIMATED. ***
+   `.d-icon-btn[data-added]::before` draws a gold gradient and the animation only
+   fades and stretches it, so `animation:none` left the streak on at full
+   strength for the whole 820ms - louder in the plain mode than out of it, which
+   is what the owner saw. Anything whose resting state is invisible only because
+   an animation holds it there must be REMOVED here, not stilled. */
+html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
+
+/* =============================================================================
+   THE NOTICES TRADE THEIR STARS FOR A MARK
+
+   *** THE FALLING STARS ARE THE ERROR'S MEANING, NOT ITS DECORATION. ***
+   Nothing else on that box says "this went wrong" - there is no icon, the tint
+   is nine per cent, and the heading is whatever the message happens to be. So a
+   frozen rain of stars is worse than none: the meaning has gone and the debris
+   is still there, which is what the owner saw.
+
+   In the mode each notice gets the state icon the system already owns instead.
+   One mark, still, at the start of the message, in the state colour - which is
+   the plain version of the same sentence. */
+html.d-a11y .d-notice__stars,
+html.d-a11y .d-notice::after{ display:none !important; content:none !important }
+html.d-a11y .d-notice{ padding-inline-start:calc(var(--space-xs) + 1.9em) }
+html.d-a11y .d-notice::before{
+	content:"" !important;
+	z-index:2;
+	top:var(--space-2xs);
+	left:var(--space-xs);
+	right:auto;
+	width:1.25em;
+	height:1.25em;
+	clip-path:none !important;
+	-webkit-mask-image:var(--icon-info);
+	        mask-image:var(--icon-info);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+	-webkit-mask-position:center;
+	        mask-position:center;
+}
+html.d-a11y .d-notice--error::before{
+	background:var(--notice-error-edge);
+	-webkit-mask-image:var(--icon-error);
+	        mask-image:var(--icon-error);
+}
+html.d-a11y .d-notice--warning::before{
+	background:var(--notice-warning-edge);
+	-webkit-mask-image:var(--icon-warning);
+	        mask-image:var(--icon-warning);
+}
+html.d-a11y .d-notice--success::before{
+	background:var(--notice-success-edge);
+	-webkit-mask-image:var(--icon-check);
+	        mask-image:var(--icon-check);
+}
+html.d-a11y .d-notice--info::before{ background:var(--notice-info-edge) }
+/* The bar has no stars to begin with and no room for a mark. */
+html.d-a11y .d-notice--bar{ padding-inline-start:var(--space-xs) }
+html.d-a11y .d-notice--bar::before{ content:none !important }
+
+/* The burst, belt as well as braces. darling-ui.js will not fire it in this
+   mode, but the stars are markup that is always present and only invisible
+   because their animation holds them at zero - so if anything ever sets
+   data-pop from somewhere else, this is what stops nine stars appearing and
+   staying. */
+html.d-a11y .d-burst{ display:none !important }
 
 /* Links are underlined, everywhere, including the ones a component deliberately
    un-underlined. In prose an underline is how a link is a link. */

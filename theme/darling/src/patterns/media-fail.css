@@ -1,0 +1,93 @@
+/* =============================================================================
+   PATTERN / MEDIA FAIL
+   The slab that stands where a photograph should have been.
+
+   *** THIS IS AN ERROR STATE, NOT A PLACEHOLDER, AND IT SAYS SO. ***
+   The panel refuses to flag a product sellable online without an image, so
+   "no photo yet" is UNREACHABLE on the storefront. If a card has no picture,
+   something upstream is wrong - a placeholder that escaped the rule, or a src
+   that 404s. A pretty grey box would hide that; a sentence does not.
+
+   CSS cannot see a broken <img> and cannot write a sentence, so the element is
+   built by assets/img-fallback.js. What lives here is only its appearance.
+
+   PORTED FROM style.css .d-media-fail / .dmf-bow / .dmf-cap. What changed:
+
+     #5F4442        -> var(--ink)   the caption. The hard-coded value was cocoa
+                                    let down into vanilla, WRITTEN OUT because
+                                    `opacity` and `color-mix` both resolve
+                                    against whatever happens to sit behind the
+                                    slab and this caption has to hold 4.5:1
+                                    wherever a card lands. Full ink is darker
+                                    than the let-down it replaces on the same
+                                    surface, so the measured 5.6:1 can only
+                                    improve - and it is one token instead of a
+                                    number nobody can trace.
+     --d-page-mid   -> var(--surface-quiet)
+     10px           -> var(--radius-s)
+
+   *** THE CONTAINER QUERY IS WHY THE CART DRAWER NEEDS NOTHING OF ITS OWN. ***
+   A cart thumbnail is 64px. The sentence cannot fit there and would stack into
+   a column of single letters, so the caption goes below 120px and the bow
+   carries it alone. That is a CONTAINER query, not a media query: what matters
+   is the size of the SLAB, not of the window. It also means the drawer's old
+   `.darling-cart__noimg` is not a second component - it is this one, small.
+   ========================================================================== */
+
+.d-media-fail{
+	container-type:inline-size;
+	/* Not decoration: an <img> is a replaced element and does NOT inherit the
+	   border-box default, so the 9% padding was once added OUTSIDE a 249px
+	   width and pushed the page 39px wider than the phone. */
+	box-sizing:border-box;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	gap:var(--space-3xs);
+	width:100%;
+	aspect-ratio:1;
+	padding:9%;
+	text-align:center;
+	background:var(--surface-quiet);
+	border-radius:var(--radius-s);
+	color:var(--ink);
+}
+
+/* The bow is the quietest thing that still reads as drawn on purpose, and the
+   reason it is not quieter is measured: the slab is 1.18:1 against the white
+   product card and 1.10:1 against the page it sits on directly. The EDGE of
+   this state is never going to carry it. What carries it is the caption and
+   this motif. Chasing a visible border instead needs roughly #B8A98F, which
+   stops being quiet and starts being a wireframe.
+
+   opacity, not color-mix, and deliberately - unlike the caption, the bow has
+   no contrast floor to hold, so resolving against an unknown backdrop is
+   exactly what we want here and exactly what we did not want there. */
+.d-media-fail__bow{
+	flex:0 0 auto;
+	width:30%;
+	max-width:56px;
+	height:auto;
+	color:var(--c-cocoa);
+	opacity:.3;
+}
+
+.d-media-fail__cap{
+	margin:0;
+	max-width:22ch;
+	font-size:var(--fs-fine);
+	line-height:var(--lh-title);
+	color:inherit;
+}
+
+@container (max-width: 119px){
+	.d-media-fail{ padding:12% }
+	.d-media-fail__cap{ display:none }
+	.d-media-fail__bow{ width:52% }
+}
+
+/* The accessible name lives on the container (role="img" + aria-label), which
+   is what frees the bow to be this quiet and the caption to disappear at 64px:
+   the meaning is not in either of them. */
+.d-media-fail__bow{ pointer-events:none }

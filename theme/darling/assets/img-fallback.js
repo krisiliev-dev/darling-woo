@@ -24,9 +24,14 @@
 	var CAPTION = 'Изображението не се зареди';
 
 	/* Same path data as .de-bow in the empty-state — one motif, not two. */
-	var BOW = '<svg class="dmf-bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true" focusable="false">'
-		+ '<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>'
-		+ '<circle cx="12" cy="6" r="2.4"/></svg>';
+	/* *** THE SAME BOW, TORN - NOT A DIFFERENT ONE. ***
+	   The owner asked for tears. So this is the identical path drawn twice,
+	   each half clipped to one side of a jagged line, with the right half
+	   nudged and turned six degrees. The tear cannot drift away from the
+	   mark because there is only one mark: change the path and both halves
+	   change with it. tokens/icon.css records what happened the last time I
+	   drew a plausible bow instead of the real one. */
+	var BOW = '<svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>';
 
 	var MEDIA_SEL = [
 		'.darling-grid li',
@@ -61,7 +66,7 @@
 		el.className = 'd-media-fail';
 		el.setAttribute('role', 'img');
 		el.setAttribute('aria-label', CAPTION);
-		el.innerHTML = BOW + '<p class="dmf-cap" aria-hidden="true">' + CAPTION + '</p>';
+		el.innerHTML = BOW + '<p class="d-media-fail__cap" aria-hidden="true">' + CAPTION + '</p>';
 
 		/* The RATIO comes from the width/height ATTRIBUTES, not from the rendered
 		   box. A broken image has no rendered box worth reading — it collapses
