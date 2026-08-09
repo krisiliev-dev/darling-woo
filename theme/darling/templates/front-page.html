@@ -1,75 +1,76 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
 <!-- wp:html -->
-<main class="darling-home darling-home--v2">
+<!-- No wrapper class. The shell used to live on main.darling-home - one
+     max-width and one gutter for the whole page - and every full-bleed band then
+     had to fight its way back out with a negative margin. Each pattern owns its
+     own shell now, and main carries overflow-x:clip so the bands can reach past
+     it without pushing a scrollbar. -->
+<main>
 
-	<!-- Red hero band, exact live copy: serif headline with the italic word,
-	     white sub-paragraph. The visual (glow + bow + stars) animates from the
-	     ported stylesheet — markup identical to the Shopify capture.
-	     Full-bleed via the WRAPPER (same lesson as darling-news-band): the outer
-	     section paints the cherry edge-to-edge, the inner div holds the
-	     constrained grid. No negative margins anywhere. -->
-	<section class="darling-hero-band">
-	<div class="darling-hero darling-hero--red">
-		<div class="darling-hero__copy">
-			<h1 class="darling-hero__title">Тайната на една <em>домакиня.</em></h1>
-			<p class="darling-hero__sub">
+	<!-- Full-bleed via the WRAPPER: the outer band paints the cherry edge to edge,
+	     the inner grid stays constrained. No negative margins anywhere. -->
+	<div class="d-hero-band">
+	<div class="d-hero d-hero--red">
+		<div class="d-hero__copy">
+			<h1 class="d-hero__title">Тайната на една <em>домакиня.</em></h1>
+			<p class="d-hero__sub">
 				Домът ти го заслужава, darling. Качество за цял живот или изгодно решение
 				за момента — при нас има и двете, честно обозначени.
 			</p>
-			<p class="darling-hero__actions">
-				<a class="d-btn d-btn--primary" href="/shop/">Разгледай всичко</a>
-				<a class="d-btn d-btn--ghost d-btn--on-red" href="/product-category/promocii/">Промоции</a>
+			<p class="d-hero__actions">
+				<a class="d-btn d-finish" href="/shop/">Разгледай всичко</a>
+				<!-- Was .d-btn--ghost.d-btn--on-red. The quiet button takes its ink
+				     from the claret context now - see the note in hero.css. -->
+				<a class="d-btn d-btn--quiet" href="/product-category/promocii/">Промоции</a>
 			</p>
 		</div>
-		<div class="darling-hero-visual dhv-red" aria-hidden="true">
-			<span class="dhv-glow"></span>
-			<svg class="dhv-bow" viewBox="0 0 24 12" fill="currentColor">
-				<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
-				<circle cx="12" cy="6" r="2.4"/>
-			</svg>
-			<i class="dhv-s s1">✦</i><i class="dhv-s s2">✧</i><i class="dhv-s s3">✦</i>
-			<i class="dhv-s s4">✧</i><i class="dhv-s s5">✦</i>
+		<div class="d-hero__visual" aria-hidden="true">
+			<span class="d-hero__glow"></span>
+			<svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg>
+			<!-- Empty spans. These were typed dingbats (✦ / ✧), and U+2726 is missing
+			     from plenty of system fonts and falls back to a tofu box; the star is
+			     a mask now. Placement is :nth-of-type, so they need no s1..s5. -->
+			<span class="d-hero__star"></span><span class="d-hero__star"></span>
+			<span class="d-hero__star"></span><span class="d-hero__star"></span>
 		</div>
 	</div>
-	</section>
+	</div>
 
-	<!-- Photo category cards, scroll-snap carousel like the live site. -->
-	<!--
-	  `sizes` is NOT the box width, and that is the whole trick. The tile is
-	  `clamp(160px,17vw,210px)` with `aspect-ratio:4/5` and `object-fit:cover`, and the
-	  sources are 3:2 landscape. Cover scales by HEIGHT here, so the browser needs an
-	  image about `box-height x 1.5` wide - roughly 300px on a phone and 400px on a
-	  desktop - not the 160/210 the box measures. Feed `sizes` the box width and a
-	  retina desktop picks the 440w file for a slot that needs 800w, and the tiles go
-	  soft. Measured: jpg set 792 KB -> 440w webp set 160 KB, 800w webp set 393 KB.
-	-->
-	<section class="darling-catsv2" aria-label="Категории">
-		<p class="ds-eyebrow">ЗА ЦЕЛИЯ ДОМ</p>
-		<h2 class="darling-section-title">Категории</h2>
-		<div class="darling-catsv2__row">
-			<a href="/product-category/za-kuhnyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-kuhnyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-kuhnyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За кухнята</span></a>
-			<a href="/product-category/za-banyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-banyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-banyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-banyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За банята</span></a>
-			<a href="/product-category/dekoraciya-za-doma/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma-440.webp 440w, /wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma.jpg" alt="" loading="lazy" decoding="async"></picture><span>Декорация за дома</span></a>
-			<a href="/product-category/za-gradinata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-gradinata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-gradinata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-gradinata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За градината</span></a>
-			<a href="/product-category/pochistvane/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/pochistvane-440.webp 440w, /wp-content/themes/darling/assets/img/categories/pochistvane-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/pochistvane.jpg" alt="" loading="lazy" decoding="async"></picture><span>Почистване</span></a>
-			<a href="/product-category/parti/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/parti-440.webp 440w, /wp-content/themes/darling/assets/img/categories/parti-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/parti.jpg" alt="" loading="lazy" decoding="async"></picture><span>Парти и празници</span></a>
-			<a href="/product-category/za-decata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-decata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-decata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-decata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За децата</span></a>
-			<a href="/product-category/podaraci/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/podaraci-440.webp 440w, /wp-content/themes/darling/assets/img/categories/podaraci-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/podaraci.jpg" alt="" loading="lazy" decoding="async"></picture><span>Подаръци</span></a>
+	<!-- Photo category tiles, scroll-snap, like the live site.
+	     `sizes` is NOT the box width, and that is the whole trick. The tile is
+	     clamp(160px,17vw,210px) with aspect-ratio:4/5 and object-fit:cover, and
+	     the sources are 3:2 landscape. Cover scales by HEIGHT here, so the browser
+	     needs an image about box-height x 1.5 wide - roughly 300px on a phone and
+	     400px on a desktop - not the 160/210 the box measures. Feed it the box
+	     width and a retina desktop picks the 440w file for a slot that needs 800w,
+	     and the tiles go soft. Measured: jpg set 792 KB -> 440w webp 160 KB. -->
+	<p class="d-hero__eyebrow">За целия дом</p>
+	<h2 class="d-section-title">Категории</h2>
+	<div class="d-carousel" aria-label="Категории">
+		<div class="d-carousel__row">
+			<a class="d-carousel__tile" href="/product-category/za-kuhnyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-kuhnyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-kuhnyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За кухнята</span></a>
+			<a class="d-carousel__tile" href="/product-category/za-banyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-banyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-banyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-banyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За банята</span></a>
+			<a class="d-carousel__tile" href="/product-category/dekoraciya-za-doma/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma-440.webp 440w, /wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/dekoraciya-za-doma.jpg" alt="" loading="lazy" decoding="async"></picture><span>Декорация за дома</span></a>
+			<a class="d-carousel__tile" href="/product-category/za-gradinata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-gradinata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-gradinata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-gradinata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За градината</span></a>
+			<a class="d-carousel__tile" href="/product-category/pochistvane/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/pochistvane-440.webp 440w, /wp-content/themes/darling/assets/img/categories/pochistvane-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/pochistvane.jpg" alt="" loading="lazy" decoding="async"></picture><span>Почистване</span></a>
+			<a class="d-carousel__tile" href="/product-category/parti/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/parti-440.webp 440w, /wp-content/themes/darling/assets/img/categories/parti-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/parti.jpg" alt="" loading="lazy" decoding="async"></picture><span>Парти и празници</span></a>
+			<a class="d-carousel__tile" href="/product-category/za-decata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-decata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-decata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-decata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За децата</span></a>
+			<a class="d-carousel__tile" href="/product-category/podaraci/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/podaraci-440.webp 440w, /wp-content/themes/darling/assets/img/categories/podaraci-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/podaraci.jpg" alt="" loading="lazy" decoding="async"></picture><span>Подаръци</span></a>
 		</div>
-	</section>
+	</div>
 <!-- /wp:html -->
 
-<!-- wp:paragraph {"className":"ds-eyebrow"} -->
-<p class="ds-eyebrow">ЛИЧНО ИЗБРАНО</p>
+<!-- wp:paragraph {"className":"d-hero__eyebrow"} -->
+<p class="d-hero__eyebrow">Лично избрано</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
-<h2 class="wp-block-heading darling-section-title">Изборът на Lady D</h2>
+<!-- wp:heading {"level":2,"className":"d-section-title"} -->
+<h2 class="wp-block-heading d-section-title">Изборът на Lady D</h2>
 <!-- /wp:heading -->
 
-<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date","taxQuery":{"product_cat":[24]}},"className":"darling-grid"} -->
-<div class="wp-block-query darling-grid">
+<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date","taxQuery":{"product_cat":[24]}},"className":"d-grid"} -->
+<div class="wp-block-query d-grid">
 	<!-- wp:post-template -->
 		<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
 		<!-- wp:post-title {"level":3,"isLink":true} /-->
@@ -77,38 +78,38 @@
 		<!-- wp:woocommerce/product-button /-->
 	<!-- /wp:post-template -->
 	<!-- wp:query-no-results -->
-		<!-- wp:paragraph {"className":"darling-empty"} -->
-		<p class="darling-empty">Изборът на Lady D пристига съвсем скоро.</p>
+		<!-- wp:paragraph {"className":"d-empty"} -->
+		<p class="d-empty">Изборът на Lady D пристига съвсем скоро.</p>
 		<!-- /wp:paragraph -->
 	<!-- /wp:query-no-results -->
 </div>
 <!-- /wp:query -->
 
 <!-- wp:html -->
-<!-- .darling-season carries darling-drift: the gradient moves slowly across
-     the band. Copy is seasonal and meant to be edited. -->
-<div class="darling-season">
+<!-- The season band drifts its gradient slowly across itself. Copy is seasonal
+     and meant to be edited. -->
+<div class="d-season">
 	<div>
-		<p class="ds-eyebrow">Сезонно, darling</p>
-		<h3>Лято в двора</h3>
+		<p class="d-season__eyebrow">Сезонно, darling</p>
+		<h3 class="d-season__title">Лято в двора</h3>
 		<p>Фенери, мебели и всичко за градината — защото дворът също е стая на дома.</p>
 	</div>
-	<a href="/product-category/za-gradinata/">Към градината</a>
+	<a class="d-season__cta" href="/product-category/za-gradinata/">Към градината</a>
 </div>
 <!-- /wp:html -->
 
-<!-- wp:paragraph {"className":"ds-eyebrow"} -->
-<p class="ds-eyebrow">ТОКУ-ЩО ПРИСТИГНА</p>
+<!-- wp:paragraph {"className":"d-hero__eyebrow"} -->
+<p class="d-hero__eyebrow">Току-що пристигна</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
-<h2 class="wp-block-heading darling-section-title">Ново в Darling</h2>
+<!-- wp:heading {"level":2,"className":"d-section-title"} -->
+<h2 class="wp-block-heading d-section-title">Ново в Darling</h2>
 <!-- /wp:heading -->
 
-<!-- Real product grid, so it fills in by itself the moment the catalogue lands
-     rather than needing another pass. -->
-<!-- wp:query {"query":{"perPage":8,"postType":"product","order":"desc","orderBy":"date"},"className":"darling-grid"} -->
-<div class="wp-block-query darling-grid">
+<!-- A real product grid, so it fills in by itself the moment the catalogue
+     lands rather than needing another pass. -->
+<!-- wp:query {"query":{"perPage":8,"postType":"product","order":"desc","orderBy":"date"},"className":"d-grid"} -->
+<div class="wp-block-query d-grid">
 	<!-- wp:post-template -->
 		<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
 		<!-- wp:post-title {"level":3,"isLink":true} /-->
@@ -116,39 +117,45 @@
 		<!-- wp:woocommerce/product-button /-->
 	<!-- /wp:post-template -->
 	<!-- wp:query-no-results -->
-		<!-- wp:paragraph {"className":"darling-empty"} -->
-		<p class="darling-empty">Продуктите пристигат съвсем скоро.</p>
+		<!-- wp:paragraph {"className":"d-empty"} -->
+		<p class="d-empty">Продуктите пристигат съвсем скоро.</p>
 		<!-- /wp:paragraph -->
 	<!-- /wp:query-no-results -->
 </div>
 <!-- /wp:query -->
 
 <!-- wp:html -->
-<!-- Trust row: four promises, verbatim from the live site. -->
-<p class="ds-eyebrow">ОБЕЩАНИЕТО НИ</p>
-<section class="darling-trust" aria-label="Защо Darling">
-	<div><i>✦</i><h3>Еконт и Спиди</h3><p>До адрес или до офис — ти избираш.</p></div>
-	<div><i>✦</i><h3>Наложен платеж</h3><p>Плати при получаване или с карта.</p></div>
-	<div><i>✦</i><h3>Лесно връщане</h3><p>14 дни, без излишни въпроси.</p></div>
-	<div><i>✦</i><h3>Реални магазини</h3><p>Посети ни в Свищов, darling.</p></div>
-</section>
+<!-- Four promises. The star in front of each one is b::before, drawn with
+     clip-path - it was a typed ✦, and an error message is the worst place to
+     find out a font has no U+2726. -->
+<p class="d-hero__eyebrow">Обещанието ни</p>
+<ul class="d-trustbar" aria-label="Защо Darling">
+	<li><b>Еконт и Спиди</b><span>До адрес или до офис — ти избираш.</span></li>
+	<li><b>Наложен платеж</b><span>Плати при получаване или с карта.</span></li>
+	<li><b>Лесно връщане</b><span>14 дни, без излишни въпроси.</span></li>
+	<li><b>Реални магазини</b><span>Посети ни в Свищов, darling.</span></li>
+</ul>
 
-<!-- Newsletter band. The form posts to our own relay (never the panel token in
-     the browser); copy verbatim from the live site. -->
-<section class="darling-news-band" aria-label="Бюлетин">
-<div class="darling-news">
-	<p class="ds-eyebrow">ОСТАНИ НАБЛИЗО</p>
-	<h3>Само хубави неща, <em>обещаваме.</em></h3>
-	<p>Веднъж седмично: нови попълнения, промоции и по някоя идея за дома. С щипка блясък, разбира се.</p>
-	<form class="dn-row darling-news__form" data-darling-newsletter>
+<!-- Newsletter band. The form posts to our own relay - never the panel token in
+     the browser. The stars fly in from both sides and shrink towards the field:
+     two twinkling corners are decoration, a drift inward is direction, and it
+     ends where the thing you want is. -->
+<div class="d-band" style="--surface-band:var(--c-claret)" aria-label="Бюлетин">
+<div class="d-news">
+	<span class="d-news__flow" aria-hidden="true"><i style="--from:-52vw;--y:18%;--s:1.30;--d:0.00s"></i><i style="--from:52vw;--y:74%;--s:1.05;--d:0.20s"></i><i style="--from:-44vw;--y:62%;--s:0.85;--d:0.40s"></i><i style="--from:46vw;--y:26%;--s:1.40;--d:0.60s"></i><i style="--from:-38vw;--y:88%;--s:1.10;--d:0.80s"></i><i style="--from:42vw;--y:46%;--s:0.90;--d:1.00s"></i><i style="--from:-50vw;--y:38%;--s:1.20;--d:1.20s"></i><i style="--from:38vw;--y:8%;--s:0.75;--d:1.40s"></i><i style="--from:-42vw;--y:54%;--s:1.35;--d:1.60s"></i><i style="--from:50vw;--y:92%;--s:0.95;--d:1.80s"></i><i style="--from:-46vw;--y:6%;--s:1.00;--d:2.00s"></i><i style="--from:44vw;--y:66%;--s:1.15;--d:2.20s"></i><i style="--from:-40vw;--y:30%;--s:0.80;--d:2.40s"></i></span>
+	<p class="d-season__eyebrow">Остани наблизо</p>
+	<h3 class="d-news__title">Само хубави неща, <em>обещаваме.</em></h3>
+	<p>Веднъж седмично: нови попълнения, промоции и по някоя идея за дома. С щипка
+	блясък, разбира се.</p>
+	<form class="d-news__form" data-darling-newsletter>
 		<input type="email" name="email" required placeholder="имейл адрес, darling" aria-label="Имейл адрес" autocomplete="email">
-		<input type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="darling-news__hp">
-		<button type="submit" class="d-btn d-btn--primary">Абонирай ме</button>
+		<label class="d-news__hp">Не попълвайте<input type="text" name="website" value="" tabindex="-1" autocomplete="off"></label>
+		<button type="submit" class="d-btn d-finish">Абонирай ме</button>
 	</form>
-	<p class="darling-news__note">Абонираните получават отстъпка за първата поръчка — кодът пристига в имейла ти.</p>
-	<p class="dn-ok darling-news__result" data-darling-newsletter-result role="status" aria-live="polite" hidden></p>
+	<p class="d-news__note">Абонираните получават отстъпка за първата поръчка — кодът пристига в имейла ти.</p>
+	<p class="d-news__result" data-darling-newsletter-result role="status" aria-live="polite" hidden></p>
 </div>
-</section>
+</div>
 <script>
 (function () {
 	var f = document.querySelector('[data-darling-newsletter]');
@@ -181,8 +188,9 @@
 <!-- /wp:html -->
 
 <!-- main closes here, not after the category strip. 11 472 characters of content
-     (two product query sections and the seasonal band) used to render outside every
-     landmark, so landmark navigation and the skip link stopped short of them. -->
+     - two product query sections and the seasonal band - used to render outside
+     every landmark, so landmark navigation and the skip link stopped short of
+     them. -->
 <!-- wp:html -->
 </main>
 <!-- /wp:html -->

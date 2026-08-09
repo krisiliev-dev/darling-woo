@@ -1,67 +1,105 @@
-// The brand bow lives in four files now, and tokens/icon.css records in capitals
-// what happens when I draw a plausible one instead of the real one:
+// The brand bow is drawn in six files now, and tokens/icon.css records in
+// capitals what happens when I draw a plausible one instead of the real one:
 //
 //     *** THE BRAND BOW, NOT A BOW. *** ... the one I drew before was a
 //     plausible bow and the wrong one, which is worse than no bow: the mark
 //     people recognise is this shape.
 //
 // I did it again on 2026-08-09, in the gallery, and it rendered as a pair of
-// spectacles. So this compares the PATH DATA in every file that carries it, and
-// fails when they disagree. A comment asking the next person to keep four copies
-// in step is not a mechanism.
+// spectacles.
+//
+// *** THIS SCANS EVERY SOURCE FILE, NOT A LIST. *** The first version carried
+// four filenames, and the very next patch added two more copies - the empty
+// state's inline <svg> in two templates - which the gate would have walked
+// straight past. A hand-written list of places to check is a list somebody has
+// to remember to extend, and remembering is the thing that failed here twice.
 const fs = require('fs');
+const path = require('path');
 let fails = 0;
 const ok = (c, label, detail) => { if (!c) fails++;
   console.log('  %s  %s%s', c ? 'PASS' : '*FAIL*', label, detail ? '   ' + detail : ''); };
 
-// The knot circle and the two loops. Whitespace is normalised because the same
-// path is written across three lines in one file and on one line in another,
-// but nothing else is: a different number is a different bow.
-const norm = (s) => s.replace(/\s+/g, ' ').trim();
+const walk = (dir, out = []) => {
+  if (!fs.existsSync(dir)) return out;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) { if (e.name !== 'node_modules') walk(p, out); }
+    else if (/\.(css|js|html|php|py)$/.test(e.name)) out.push(p);
+  }
+  return out;
+};
 
-// *** ANCHORED ON `M12 6`, WHICH IS THE BOW'S OWN FIRST MOVE. ***
-// The first version of this gate took the first <path> in each file and
-// reported that two of them differed. They did - it had picked up the torn
-// version's CLIP path, which is a jagged line and not a bow at all. A gate that
-// matches "a path" rather than "this path" reports a difference between two
-// things that were never the same kind of thing.
-const SOURCES = [
-  ['theme/darling/src/tokens/icon.css', /--icon-bow:[\s\S]*?d='(M12 6[^']+)'/],
-  ['theme/darling/assets/img-fallback.js', /var BOW = '[\s\S]*?<path d="(M12 6[^"]+)"/],
-  ['theme/darling/assets/header.js', /var BOW = '[\s\S]*?<path d="(M12 6[^"]+)"/],
-  ['scripts/gen-gallery.py', /BOW = \('<svg class="d-hero__bow"[\s\S]*?<path d="(M12 6[^"]+)"/],
-];
+// Generated artefacts hold copies of their own sources; checking them reports
+// the same shape twice and calls the second one a finding.
+const GENERATED = ['theme/darling/darling.build.css', 'theme/darling/gallery.html'];
+// The two sheets the cutover deletes are allowed to keep whatever they have.
+const DOOMED = ['theme/darling/style.css', 'theme/darling/assets/darling.css'];
 
-console.log('THE BRAND BOW, IN EVERY FILE THAT DRAWS IT');
-const found = [];
-for (const [file, re] of SOURCES) {
-  if (!fs.existsSync(file)) { ok(false, file, 'file missing'); continue; }
-  const m = fs.readFileSync(file, 'utf8').match(re);
-  if (!m) { ok(false, file, 'no bow path found - has the constant been renamed?'); continue; }
-  found.push([file, norm(m[1])]);
-  console.log('     ' + (file + '                                          ').slice(0, 42)
-    + ' ' + norm(m[1]).slice(0, 46) + '…');
+// The bow's own first move. Anchored on it because the first version of this
+// gate took "the first <path> in the file" and reported a difference between a
+// bow and the torn version's CLIP path, which is a jagged line and not a bow.
+const START = 'M12 6 L3.2 1.4';
+const CANON = fs.readFileSync('theme/darling/src/tokens/icon.css', 'utf8')
+  .match(/--icon-bow:[\s\S]*?d='(M12 6[^']+)'/);
+
+console.log('THE BRAND BOW, WHEREVER IT IS DRAWN');
+ok(!!CANON, 'the canonical path is in tokens/icon.css as --icon-bow');
+if (!CANON) { process.exit(1); }
+const canon = CANON[1].replace(/\s+/g, ' ').trim();
+console.log('     canonical   ' + canon);
+
+const files = [...walk('theme/darling'), ...walk('scripts')]
+  .map((f) => f.replace(/\\/g, '/'))
+  .filter((f) => !GENERATED.includes(f) && !DOOMED.includes(f));
+
+const copies = [];
+const wrong = [];
+for (const f of files) {
+  const s = fs.readFileSync(f, 'utf8');
+  if (s.indexOf(START) === -1) {
+    // *** AN <svg> WEARING A BOW CLASS AND DRAWING SOMETHING ELSE. ***
+    // That is the exact failure this gate exists for, so it is worth catching
+    // even though the path does not match. But only an <svg>: the first version
+    // asked "does this file mention a bow class and contain any <path>?", and
+    // parts/footer.html says yes to both - its bow is a masked <span> and its
+    // <path>s are the Facebook and Instagram marks. It flagged a file that was
+    // right, which is the fastest way to get a gate switched off.
+    if (/<svg[^>]*class="[^"]*__bow/.test(s)) {
+      wrong.push(f + '  (an <svg> bow drawing an unfamiliar path)');
+    }
+    continue;
+  }
+  for (const m of s.matchAll(/d="(M12 6[^"]*)"/g)) {
+    const d = m[1].replace(/\s+/g, ' ').trim();
+    copies.push([f, d]);
+    if (d !== canon) wrong.push(f + '  ' + d.slice(0, 50));
+  }
+  for (const m of s.matchAll(/d='(M12 6[^']*)'/g)) {
+    const d = m[1].replace(/\s+/g, ' ').trim();
+    if (f.endsWith('tokens/icon.css')) continue;   // the canonical one itself
+    copies.push([f, d]);
+    if (d !== canon) wrong.push(f + '  ' + d.slice(0, 50));
+  }
 }
 
-ok(found.length === SOURCES.length, 'every source still carries one',
-  found.length + '/' + SOURCES.length);
+const byFile = {};
+for (const [f] of copies) byFile[f] = (byFile[f] || 0) + 1;
+for (const f of Object.keys(byFile).sort()) console.log('     %dx  %s', byFile[f], f);
 
-if (found.length > 1) {
-  const first = found[0][1];
-  const odd = found.filter(([, d]) => d !== first).map(([f]) => f);
-  ok(odd.length === 0, '*** AND THEY ARE THE SAME PATH ***',
-    odd.length ? 'differs: ' + odd.join(', ') : found.length + ' copies, one shape');
-}
+ok(copies.length > 0, 'the mark is drawn somewhere', copies.length + ' copies');
+ok(wrong.length === 0, '*** EVERY COPY IS THE SAME PATH ***',
+  wrong.length ? wrong.join(' | ') : copies.length + ' copies, one shape');
 
 // The torn version has to be the same path too - that is the whole claim of
 // drawing it twice under a clip rather than redrawing it with a notch.
 const torn = fs.readFileSync('scripts/gen-gallery.py', 'utf8')
   .match(/MEDIA_FAIL_BOW = \(([\s\S]*?)\)\n/);
 if (torn) {
-  const halves = [...torn[1].matchAll(/<path d="(M12 6[^"]+)"/g)].map((m) => norm(m[1]));
-  ok(halves.length === 2 && halves[0] === halves[1] && halves[0] === found[0][1],
+  const halves = [...torn[1].matchAll(/<path d="(M12 6[^"]+)"/g)]
+    .map((m) => m[1].replace(/\s+/g, ' ').trim());
+  ok(halves.length === 2 && halves[0] === halves[1] && halves[0] === canon,
     'the torn bow is two copies of that same path, not a redrawn one',
-    halves.length + ' halves' + (halves.length === 2 && halves[0] === found[0][1]
+    halves.length + ' halves' + (halves.length === 2 && halves[0] === canon
       ? ', matching' : ', NOT matching'));
 } else {
   ok(false, 'the torn bow constant was not found in gen-gallery.py');

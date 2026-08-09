@@ -6,49 +6,49 @@
      finds, so with none present the header skip link pointed at a missing anchor and
      screen-reader landmark navigation had nothing to jump to. This block supplies it. -->
 <!-- wp:html -->
-<main class="darling-product-main">
+<main class="">
 <!-- /wp:html -->
 
-<!-- wp:woocommerce/single-product {"className":"darling-product"} -->
-<div class="wp-block-woocommerce-single-product darling-product">
+<!-- wp:woocommerce/single-product {"className":"d-product"} -->
+<div class="wp-block-woocommerce-single-product d-product">
 
 	<!-- Breadcrumbs removed deliberately: the live site has none, and the one we
 	     rendered exposed the English "Uncategorized" term. -->
 
-	<!-- wp:columns {"className":"darling-product__top"} -->
-	<div class="wp-block-columns darling-product__top">
+	<!-- wp:columns {"className":"d-product__top"} -->
+	<div class="wp-block-columns d-product__top">
 
-		<!-- wp:column {"width":"52%","className":"darling-product__media"} -->
-		<div class="wp-block-column darling-product__media" style="flex-basis:52%">
+		<!-- wp:column {"width":"52%","className":""} -->
+		<div class="wp-block-column" style="flex-basis:52%">
 			<!-- wp:woocommerce/product-image-gallery /-->
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column {"width":"48%","className":"darling-product__buy"} -->
-		<div class="wp-block-column darling-product__buy" style="flex-basis:48%">
+		<!-- wp:column {"width":"48%","className":"d-product__buy"} -->
+		<div class="wp-block-column d-product__buy" style="flex-basis:48%">
 
 			<!-- The H1 must stay the product title and stay singular. The old site
 			     ranks partly on clean heading structure; a template that demotes the
 			     title or adds a second H1 quietly gives that away. -->
-			<!-- wp:post-title {"level":1,"className":"darling-product__title"} /-->
+			<!-- wp:post-title {"level":1,"className":"d-product__title"} /-->
 
 			<!-- wp:woocommerce/product-rating /-->
-			<!-- wp:woocommerce/product-price {"className":"darling-product__price"} /-->
+			<!-- wp:woocommerce/product-price {"className":"d-product__price"} /-->
 
-			<!-- wp:woocommerce/product-summary {"className":"darling-product__excerpt"} /-->
+			<!-- wp:woocommerce/product-summary {"className":"d-product__excerpt"} /-->
 
 			<!-- SKU and the raw stock count are hidden on the live site; the stock
 			     STATE still speaks through Woo's availability line (styled as the
 			     live „По поръчка" badge when a product is on backorder). -->
-			<!-- wp:woocommerce/add-to-cart-form {"className":"darling-product__atc"} /-->
+			<!-- wp:woocommerce/add-to-cart-form {"className":"d-product__atc"} /-->
 
 			<!-- Live pdp-trust block, verbatim copy from the storefront capture
 			     (_scratch_woo/slice8/live_product.html). Classes belong to the
 			     ported darling.css — feed its contract. -->
 			<!-- wp:html -->
-			<div class="darling-pdp-trust">
-				<p class="dpt-cod">✦ <strong>Наложен платеж</strong> — плати при получаване. Отвори и виж, преди да платиш, darling.</p>
-				<p class="dpt-ship">Еконт и Спиди · до адрес или до офис · Поръчай до 15:00 и изпращаме още същия работен ден.</p>
+			<div class="d-trust">
+				<p class="d-trust__cod"><strong>Наложен платеж</strong> — плати при получаване. Отвори и виж, преди да платиш, darling.</p>
+				<p class="d-trust__ship">Еконт и Спиди · до адрес или до офис · Поръчай до 15:00 и изпращаме още същия работен ден.</p>
 				<details><summary>Доставка</summary><div><p>Изпращаме с Еконт или Спиди — ти избираш при поръчка. Поръчки над €77 / 150,60 лв. пътуват безплатно. Плащане при получаване (наложен платеж) или с карта.</p></div></details>
 				<details><summary>Връщане и замяна</summary><div><p>14 дни право на връщане, без излишни въпроси. Подробности на страницата <a href="/pomosht/">Помощ</a>.</p></div></details>
 			</div>
@@ -62,21 +62,21 @@
 	<!-- Full description, reviews and the GPSR panel — rendered ONCE. (The old
 	     template also nested a second product-details block inside product-meta,
 	     which is why „Отзиви" appeared twice on the page.) -->
-	<!-- wp:woocommerce/product-details {"className":"darling-product__details"} /-->
+	<!-- wp:woocommerce/product-details {"className":""} /-->
 
 	<!-- Heading and block are wrapped TOGETHER so one :has() can hide both when
 	     there is nothing related. They cannot be guarded as siblings: :has()
 	     may not be nested inside :has(), and an invalid selector is dropped
 	     silently — which is exactly how the first attempt failed. -->
-	<!-- wp:group {"className":"darling-related","layout":{"type":"default"}} -->
-	<div class="wp-block-group darling-related">
+	<!-- wp:group {"className":"d-related","layout":{"type":"default"}} -->
+	<div class="wp-block-group d-related">
 
-	<!-- wp:heading {"level":2,"className":"darling-section-title"} -->
-	<h2 class="wp-block-heading darling-section-title">Може да ви хареса</h2>
+	<!-- wp:heading {"level":2,"className":"d-section-title"} -->
+	<h2 class="wp-block-heading d-section-title">Може да ви хареса</h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:woocommerce/related-products {"className":"darling-grid"} -->
-	<div class="wp-block-woocommerce-related-products darling-grid">
+	<!-- wp:woocommerce/related-products {"className":"d-grid"} -->
+	<div class="wp-block-woocommerce-related-products d-grid">
 		<!-- wp:woocommerce/product-template -->
 			<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
 			<!-- wp:post-title {"level":3,"isLink":true} /-->

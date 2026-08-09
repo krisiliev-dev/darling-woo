@@ -2353,10 +2353,18 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 	animation:d-twinkle 2.8s var(--ease-float) infinite;
 	pointer-events:none;
 }
-.d-hero__visual .d-hero__star:nth-child(2){ top:12%; left:18%; animation-delay:0s }
-.d-hero__visual .d-hero__star:nth-child(3){ top:26%; right:14%; width:.6rem; height:.6rem; animation-delay:.7s }
-.d-hero__visual .d-hero__star:nth-child(4){ bottom:20%; left:26%; width:.7rem; height:.7rem; animation-delay:1.4s }
-.d-hero__visual .d-hero__star:nth-child(5){ bottom:12%; right:22%; animation-delay:2.1s }
+/* *** nth-of-TYPE, BECAUSE nth-child COUNTED THE BOW. ***
+   The children are: glow, bow, star, star, star, star. So `:nth-child(2)` was
+   the BOW - a compound that matches nothing - and the fourth star, at child 6,
+   had no rule at all and sat at the flex centre behind the bow. Four stars in
+   the markup, three in the sky, and one rule that never applied to anything.
+   Nothing errors: a compound that cannot match is legal CSS.
+   Counting SPANS instead (the glow is a span, the bow is an <svg>) makes the
+   numbering independent of where the bow sits among its siblings. */
+.d-hero__visual .d-hero__star:nth-of-type(2){ top:12%; left:18%; animation-delay:0s }
+.d-hero__visual .d-hero__star:nth-of-type(3){ top:26%; right:14%; width:.6rem; height:.6rem; animation-delay:.7s }
+.d-hero__visual .d-hero__star:nth-of-type(4){ bottom:20%; left:26%; width:.7rem; height:.7rem; animation-delay:1.4s }
+.d-hero__visual .d-hero__star:nth-of-type(5){ bottom:12%; right:22%; animation-delay:2.1s }
 
 /* -- narrow ------------------------------------------------------------------
    820px, the old breakpoint exactly, so nothing shifts at the cutover. The
@@ -2535,6 +2543,23 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	font-weight:var(--fw-regular);
 	opacity:.85;
 }
+
+/* -- the second choice, on the claret --------------------------------------
+   *** THE CONTEXT SUPPLIES THE COLOUR; THERE IS NO --on-red VARIANT. ***
+   Legacy had one: `.d-btn--on-red` set a cream edge and cream text so the
+   outline button could be read on this band. "The second choice" and "on a dark
+   ground" are two different questions, and a class that answers both means a
+   third class the day something else is dark. The quiet button reads two
+   properties, and a dark ground re-points them - which is how --ink-on-dark
+   already works everywhere else here. */
+.d-hero--red .d-btn--quiet{
+	color:var(--ink-on-dark);
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--ink-on-dark) 55%, transparent);
+}
+.d-hero--red .d-btn--quiet:hover{
+	background:color-mix(in oklab, var(--ink-on-dark) 12%, transparent);
+}
+
 }
 
 /* ==== patterns/burst.css ==== */

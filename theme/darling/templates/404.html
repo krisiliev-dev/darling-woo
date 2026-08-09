@@ -1,23 +1,23 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
 <!-- wp:html -->
-<main class="darling-404">
-	<h1 class="darling-404__title">Хм, тази страница я няма.</h1>
-	<p class="darling-404__sub">
+<main class="d-404">
+	<h1 class="d-404__title">Хм, тази страница я няма.</h1>
+	<p class="d-404__sub">
 		Може би се е разместила при голямото пролетно чистене.
 		Виж какво друго намерихме, darling&hellip;
 	</p>
-	<p class="darling-404__actions">
-		<a class="d-btn d-btn--primary" href="/shop/">Обратно към магазина</a>
+	<p class="d-404__actions">
+		<a class="d-btn" href="/shop/">Обратно към магазина</a>
 	</p>
 <!-- /wp:html -->
 
-<!-- wp:heading {"level":2,"className":"darling-section-title darling-404__discover"} -->
-<h2 class="wp-block-heading darling-section-title darling-404__discover">Открий нещо ново</h2>
+<!-- wp:heading {"level":2,"className":"d-section-title"} -->
+<h2 class="wp-block-heading d-section-title">Открий нещо ново</h2>
 <!-- /wp:heading -->
 
-<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date"},"className":"darling-grid"} -->
-<div class="wp-block-query darling-grid">
+<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date"},"className":"d-grid"} -->
+<div class="wp-block-query d-grid">
 	<!-- wp:post-template -->
 		<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
 		<!-- wp:post-title {"level":3,"isLink":true} /-->
@@ -25,8 +25,8 @@
 		<!-- wp:woocommerce/product-button /-->
 	<!-- /wp:post-template -->
 	<!-- wp:query-no-results -->
-		<!-- wp:paragraph {"className":"darling-empty"} -->
-		<p class="darling-empty">Продуктите пристигат съвсем скоро.</p>
+		<!-- wp:paragraph {"className":"d-empty"} -->
+		<p class="d-empty">Продуктите пристигат съвсем скоро.</p>
 		<!-- /wp:paragraph -->
 	<!-- /wp:query-no-results -->
 </div>
