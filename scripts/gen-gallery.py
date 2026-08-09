@@ -2898,6 +2898,87 @@ until the templates are regenerated. That is the rest of B1, and it is now a
 visible consequence rather than a note.</div>
 </section>''')
 
+# ------------------------------------------------------------------ rategrid ---
+# Owner, 2026-08-10: five couriers with up to three methods each is fifteen
+# radio rows in a column - "a lot of the page", and hard to compare. A matrix
+# instead: couriers across, methods down, empty where a courier does not offer
+# one, cheapest row on top.
+RATES = [
+    # method label,        boxnow,   speedy,   econt,    dhl,     bgpost
+    (u'\u0414\u043e \u0430\u0432\u0442\u043e\u043c\u0430\u0442',
+     u'1,64', None, None, None, u'2,10'),
+    (u'\u0414\u043e \u043e\u0444\u0438\u0441',
+     None, u'4,42', u'7,31', None, u'3,95'),
+    (u'\u0414\u043e \u0430\u0434\u0440\u0435\u0441',
+     None, u'7,17', u'8,55', u'12,40', u'6,20'),
+]
+COURIERS = [u'BoxNow', u'\u0421\u043f\u0438\u0434\u0438', u'\u0415\u043a\u043e\u043d\u0442',
+            u'DHL', u'\u0411\u044a\u043b\u0433. \u043f\u043e\u0449\u0438']
+
+A(u'''<section class="sec" id="rategrid"><h2>Pattern</h2><h3>Choice table &mdash; the delivery matrix</h3>
+<p class="note">Five couriers with up to three methods each is <b>fifteen radio
+rows in a column</b>. The list below the fold, the prices in fifteen different
+places, and no way to see that Спиди to an office is cheaper than Еконт to an
+office without reading both. Same information as a matrix: couriers across,
+methods down, every price in the same place in its row.</p>
+<p class="note"><b>Which component is it?</b> Both, and that is the answer
+rather than a dodge. What is on screen is a <em>table</em> of prices, so the
+grid, the tone and the headers are a table variant &mdash;
+<code>.d-table--choice</code>. What it does is a <em>radio group</em>, exactly
+one of which is chosen, so the cell control lives beside
+<code>.d-check</code> in field.css &mdash; <code>.d-choice</code>. The input is
+still a real radio: it is what is focused, what arrow keys move between, what a
+screen reader announces and what the form submits. Only the dot is gone.</p>
+<p class="note"><b>An empty cell is a statement, so it is drawn.</b> Left blank
+it reads as a rendering fault and the customer has to work out that the hole
+means &ldquo;Еконт does not do lockers&rdquo;. A dashed quiet box says
+unavailable without claiming to be pressable.</p>
+<table class="d-table d-table--choice" style="max-width:760px">
+<caption class="screen-reader-text">\u041d\u0430\u0447\u0438\u043d \u043d\u0430 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430</caption>
+<thead><tr><td></td>''' + u''.join(
+  u'<th scope="col"><span class="d-ratehead">%s</span></th>' % c for c in COURIERS
+) + u'</tr></thead><tbody>')
+first = True
+for row in RATES:
+    method = row[0]
+    A(u'<tr><th scope="row">%s</th>' % method)
+    for i, price in enumerate(row[1:]):
+        if price is None:
+            A(u'<td></td>')
+        else:
+            checked = u' checked' if first else u''
+            first = False
+            A(u'<td><label class="d-choice">'
+              u'<input type="radio" name="gallery-rate" aria-label="%s, %s, %s \u043b\u0432."%s>'
+              u'<span class="d-choice__price">%s \u043b\u0432.</span></label></td>'
+              % (COURIERS[i], method, price, checked, price))
+    A(u'</tr>')
+A(u'''</tbody></table>
+<p class="lbl" style="margin-top:22px">The same five couriers as WooCommerce renders them today &mdash; nine rows, and this is only three of the five</p>
+<div class="d-stack d-stack--tight" style="max-width:420px">
+<label class="d-check"><input type="radio" name="gallery-rate-list" checked><span>BoxNow &mdash; \u0434\u043e \u0430\u0432\u0442\u043e\u043c\u0430\u0442 &nbsp; 1,64 \u043b\u0432.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>\u0421\u043f\u0438\u0434\u0438 &mdash; \u0434\u043e \u043e\u0444\u0438\u0441 &nbsp; 4,42 \u043b\u0432.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>\u0421\u043f\u0438\u0434\u0438 &mdash; \u0434\u043e \u0430\u0434\u0440\u0435\u0441 &nbsp; 7,17 \u043b\u0432.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>\u0415\u043a\u043e\u043d\u0442 &mdash; \u0434\u043e \u043e\u0444\u0438\u0441 &nbsp; 7,31 \u043b\u0432.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>\u0415\u043a\u043e\u043d\u0442 &mdash; \u0434\u043e \u0430\u0434\u0440\u0435\u0441 &nbsp; 8,55 \u043b\u0432.</span></label>
+</div>
+<div class="todo"><b>Not done, and each one is a decision rather than CSS.</b>
+<br><br><b>The logos.</b> The head cell takes an <code>&lt;img&gt;</code> and
+falls back to the wordmark, which is what is drawn above &mdash; we have no
+courier logo files, and four of the five are Bulgarian couriers whose wordmarks
+a customer here reads faster than a symbol anyway. Real logos are trademark
+files and belong in the licence register like every other image.<br><br>
+<b>Cheapest on top.</b> Sorting needs the numbers, so it is not CSS's to do:
+the markup has to arrive sorted. Above it is sorted by hand.<br><br>
+<b>And WooCommerce does not emit this markup.</b> It renders a flat list of
+labels whose <code>for</code> is <code>radio-control-1-darling_speedy:office</code>
+&mdash; courier and method, both in the attribute. That is enough to place every
+existing label into a grid cell with attribute selectors and no DOM surgery at
+all, which is the plan: no rebuilding of React-owned nodes, nothing to be undone
+by a re-render. The headers are the part that has to be added rather than moved.
+</div>
+</section>''')
+
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>Where this actually stands</h3>
 <p class="note"><b>The patterns are done and reviewed.</b> Every section above
@@ -2962,6 +3043,7 @@ NAV_LABEL = {
 	'primitives': u'Primitives',
 	'align':     u'Alignment',
 	'matrix':    u'Composition',
+	'rategrid':  u'Choice table',
 	'next':      u'Still to come',
 }
 # Not by pattern-matching the opening tag: two sections legitimately do not open

@@ -5004,6 +5004,87 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	outline-offset:2px;
 }
 
+/* =============================================================================
+   THE CHOICE CELL
+   A radio whose target is the whole box rather than the dot.
+
+   *** THE CONTROL IS STILL A RADIO AND THAT IS NOT NEGOTIABLE. *** The input is
+   in the markup, one name across the group, and it is what is focused, what
+   arrow keys move between, what a screen reader announces and what a form
+   submits. Only the DOT is gone. Hiding a radio and drawing a box is how a
+   choice grid is built everywhere; hiding a radio and drawing a box with a
+   <div> is how one stops working for everyone who does not use a mouse.
+
+   Visually hidden, not display:none - a display:none input is not focusable
+   and is skipped by the arrow-key behaviour that makes a radio group a radio
+   group.
+   ========================================================================== */
+
+.d-choice{
+	position:relative;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	gap:var(--space-3xs);
+	min-height:2.75rem;     /* 44px: the smallest thing a thumb reliably hits */
+	height:100%;
+	padding:var(--space-2xs) var(--space-3xs);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-s);
+	background:var(--surface-raised);
+	cursor:pointer;
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
+}
+.d-choice input{
+	position:absolute;
+	width:1px;
+	height:1px;
+	margin:-1px;
+	padding:0;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+}
+.d-choice__price{
+	font:var(--fw-medium) var(--fs-meta)/1.1 var(--font-ui);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink);
+}
+.d-choice__note{
+	font-size:var(--fs-fine);
+	line-height:1.2;
+	color:var(--ink-quiet);
+	text-align:center;
+}
+.d-choice:hover{ border-color:var(--c-mauve-light) }
+
+/* Checked: the tint pair, not a heavier border alone - a 2px cherry outline on
+   one cell in a grid of fifteen reads as an error state. */
+.d-choice:has(input:checked){
+	border-color:var(--tint-cherry-edge);
+	background:var(--tint-cherry);
+	box-shadow:inset 0 0 0 1px var(--tint-cherry-edge);
+}
+.d-choice:has(input:checked) .d-choice__price{ color:var(--tint-cherry-mark) }
+
+/* *** THE RING IS ON THE BOX, BECAUSE THE INPUT IS ONE PIXEL WIDE. ***
+   :focus-visible on a visually hidden input draws a ring nobody can see. */
+.d-choice:has(input:focus-visible){
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+/* A cell can be selected AND unavailable-looking is a contradiction, so a
+   disabled choice says so plainly and stops being a target. */
+.d-choice:has(input:disabled){
+	border-style:dashed;
+	background:none;
+	color:var(--ink-quiet);
+	cursor:not-allowed;
+}
+
 }
 
 /* ==== patterns/table.css ==== */
@@ -5177,6 +5258,98 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	.d-table--stack tfoot tr{ display:grid; grid-template-columns:1fr auto }
 	.d-table--stack tfoot td{ display:block; padding:0 }
 	.d-table--stack tfoot td::before{ content:none }
+}
+
+/* =============================================================================
+   VARIANT / THE CHOICE TABLE
+   A matrix of options where the cells are the control.
+
+   *** WHY THIS IS A TABLE VARIANT AND NOT A NEW COMPONENT, AND NOT A RADIO
+   VARIANT EITHER. *** The owner asked which it should be. It is both, and that
+   is the answer rather than a dodge: what is on screen is a TABLE of prices -
+   couriers across, delivery methods down, and empty where a courier does not
+   offer one - and what it does is a RADIO GROUP, exactly one of which is
+   chosen. So the table variant lives here and owns the grid, the tone and the
+   headers, and the cell control lives in field.css beside .d-check and owns
+   the input, the focus ring and the checked state. Neither file invents
+   anything the other already has.
+
+   *** WHAT IT IS FOR. *** Five couriers with up to three methods each is
+   fifteen radio rows in a column - the owner's words: a lot of page, and not
+   the easiest thing to compare. As a matrix it is fifteen cells in five
+   columns, every price in the same place in its row, and the gaps say
+   something too: an empty cell IS the information that the courier does not
+   deliver that way.
+
+   *** THE CHEAPEST ROW GOES ON TOP. *** Sorting is not CSS's to do - it needs
+   the numbers - so the markup arrives sorted. Said here because the rule
+   belongs with the component even though it is enforced elsewhere.
+   ========================================================================== */
+
+.d-table--choice{
+	--table-row: transparent;
+	--table-row-alt: transparent;
+	--table-rule: transparent;
+	border-spacing:var(--space-3xs);
+	border-collapse:separate;
+	table-layout:fixed;
+}
+/* The corner cell above the row headers is empty and must not read as a column. */
+.d-table--choice thead td:first-child{ background:none; border:0 }
+
+/* -- the column head: a courier ------------------------------------------------
+   A logo if there is one, the name if there is not. The name is not a fallback
+   in the apologetic sense - four of these are Bulgarian couriers whose
+   wordmarks a customer here reads faster than a symbol. */
+.d-table--choice thead th{
+	padding:var(--space-2xs) var(--space-3xs);
+	text-align:center;
+	vertical-align:bottom;
+	font:var(--fw-medium) var(--fs-fine)/1.2 var(--font-ui);
+	color:var(--ink-quiet);
+	background:none;
+	border:0;
+}
+.d-ratehead{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	gap:var(--space-3xs);
+}
+.d-ratehead img{
+	display:block;
+	max-width:100%;
+	height:1.5rem;          /* one height for every logo, whatever its file */
+	object-fit:contain;
+}
+
+/* -- the row head: a delivery method ------------------------------------------ */
+.d-table--choice tbody th{
+	width:9.5rem;
+	padding:var(--space-2xs) var(--space-xs) var(--space-2xs) 0;
+	text-align:start;
+	vertical-align:middle;
+	font:var(--fw-medium) var(--fs-meta)/1.25 var(--font-ui);
+	color:var(--ink);
+	background:none;
+	border:0;
+}
+
+/* -- the cells ---------------------------------------------------------------- */
+.d-table--choice tbody td{
+	padding:0;
+	background:none;
+	border:0;
+	vertical-align:stretch;
+}
+/* *** AN EMPTY CELL IS A STATEMENT, SO IT IS DRAWN. ***
+   Left blank it reads as a rendering fault - "why is there a hole" - and the
+   customer has to work out that the hole means "Еконт does not do lockers".
+   A dashed, quiet box says unavailable without claiming to be pressable. */
+.d-table--choice td:empty{
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-s);
+	min-height:2.75rem;
 }
 
 }

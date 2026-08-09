@@ -5006,6 +5006,87 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	outline-offset:2px;
 }
 
+/* =============================================================================
+   THE CHOICE CELL
+   A radio whose target is the whole box rather than the dot.
+
+   *** THE CONTROL IS STILL A RADIO AND THAT IS NOT NEGOTIABLE. *** The input is
+   in the markup, one name across the group, and it is what is focused, what
+   arrow keys move between, what a screen reader announces and what a form
+   submits. Only the DOT is gone. Hiding a radio and drawing a box is how a
+   choice grid is built everywhere; hiding a radio and drawing a box with a
+   <div> is how one stops working for everyone who does not use a mouse.
+
+   Visually hidden, not display:none - a display:none input is not focusable
+   and is skipped by the arrow-key behaviour that makes a radio group a radio
+   group.
+   ========================================================================== */
+
+.d-choice{
+	position:relative;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	gap:var(--space-3xs);
+	min-height:2.75rem;     /* 44px: the smallest thing a thumb reliably hits */
+	height:100%;
+	padding:var(--space-2xs) var(--space-3xs);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-s);
+	background:var(--surface-raised);
+	cursor:pointer;
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
+}
+.d-choice input{
+	position:absolute;
+	width:1px;
+	height:1px;
+	margin:-1px;
+	padding:0;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+}
+.d-choice__price{
+	font:var(--fw-medium) var(--fs-meta)/1.1 var(--font-ui);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink);
+}
+.d-choice__note{
+	font-size:var(--fs-fine);
+	line-height:1.2;
+	color:var(--ink-quiet);
+	text-align:center;
+}
+.d-choice:hover{ border-color:var(--c-mauve-light) }
+
+/* Checked: the tint pair, not a heavier border alone - a 2px cherry outline on
+   one cell in a grid of fifteen reads as an error state. */
+.d-choice:has(input:checked){
+	border-color:var(--tint-cherry-edge);
+	background:var(--tint-cherry);
+	box-shadow:inset 0 0 0 1px var(--tint-cherry-edge);
+}
+.d-choice:has(input:checked) .d-choice__price{ color:var(--tint-cherry-mark) }
+
+/* *** THE RING IS ON THE BOX, BECAUSE THE INPUT IS ONE PIXEL WIDE. ***
+   :focus-visible on a visually hidden input draws a ring nobody can see. */
+.d-choice:has(input:focus-visible){
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+/* A cell can be selected AND unavailable-looking is a contradiction, so a
+   disabled choice says so plainly and stops being a target. */
+.d-choice:has(input:disabled){
+	border-style:dashed;
+	background:none;
+	color:var(--ink-quiet);
+	cursor:not-allowed;
+}
+
 }
 
 /* ==== patterns/table.css ==== */
@@ -5179,6 +5260,98 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	.d-table--stack tfoot tr{ display:grid; grid-template-columns:1fr auto }
 	.d-table--stack tfoot td{ display:block; padding:0 }
 	.d-table--stack tfoot td::before{ content:none }
+}
+
+/* =============================================================================
+   VARIANT / THE CHOICE TABLE
+   A matrix of options where the cells are the control.
+
+   *** WHY THIS IS A TABLE VARIANT AND NOT A NEW COMPONENT, AND NOT A RADIO
+   VARIANT EITHER. *** The owner asked which it should be. It is both, and that
+   is the answer rather than a dodge: what is on screen is a TABLE of prices -
+   couriers across, delivery methods down, and empty where a courier does not
+   offer one - and what it does is a RADIO GROUP, exactly one of which is
+   chosen. So the table variant lives here and owns the grid, the tone and the
+   headers, and the cell control lives in field.css beside .d-check and owns
+   the input, the focus ring and the checked state. Neither file invents
+   anything the other already has.
+
+   *** WHAT IT IS FOR. *** Five couriers with up to three methods each is
+   fifteen radio rows in a column - the owner's words: a lot of page, and not
+   the easiest thing to compare. As a matrix it is fifteen cells in five
+   columns, every price in the same place in its row, and the gaps say
+   something too: an empty cell IS the information that the courier does not
+   deliver that way.
+
+   *** THE CHEAPEST ROW GOES ON TOP. *** Sorting is not CSS's to do - it needs
+   the numbers - so the markup arrives sorted. Said here because the rule
+   belongs with the component even though it is enforced elsewhere.
+   ========================================================================== */
+
+.d-table--choice{
+	--table-row: transparent;
+	--table-row-alt: transparent;
+	--table-rule: transparent;
+	border-spacing:var(--space-3xs);
+	border-collapse:separate;
+	table-layout:fixed;
+}
+/* The corner cell above the row headers is empty and must not read as a column. */
+.d-table--choice thead td:first-child{ background:none; border:0 }
+
+/* -- the column head: a courier ------------------------------------------------
+   A logo if there is one, the name if there is not. The name is not a fallback
+   in the apologetic sense - four of these are Bulgarian couriers whose
+   wordmarks a customer here reads faster than a symbol. */
+.d-table--choice thead th{
+	padding:var(--space-2xs) var(--space-3xs);
+	text-align:center;
+	vertical-align:bottom;
+	font:var(--fw-medium) var(--fs-fine)/1.2 var(--font-ui);
+	color:var(--ink-quiet);
+	background:none;
+	border:0;
+}
+.d-ratehead{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	gap:var(--space-3xs);
+}
+.d-ratehead img{
+	display:block;
+	max-width:100%;
+	height:1.5rem;          /* one height for every logo, whatever its file */
+	object-fit:contain;
+}
+
+/* -- the row head: a delivery method ------------------------------------------ */
+.d-table--choice tbody th{
+	width:9.5rem;
+	padding:var(--space-2xs) var(--space-xs) var(--space-2xs) 0;
+	text-align:start;
+	vertical-align:middle;
+	font:var(--fw-medium) var(--fs-meta)/1.25 var(--font-ui);
+	color:var(--ink);
+	background:none;
+	border:0;
+}
+
+/* -- the cells ---------------------------------------------------------------- */
+.d-table--choice tbody td{
+	padding:0;
+	background:none;
+	border:0;
+	vertical-align:stretch;
+}
+/* *** AN EMPTY CELL IS A STATEMENT, SO IT IS DRAWN. ***
+   Left blank it reads as a rendering fault - "why is there a hole" - and the
+   customer has to work out that the hole means "Еконт does not do lockers".
+   A dashed, quiet box says unavailable without claiming to be pressable. */
+.d-table--choice td:empty{
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-s);
+	min-height:2.75rem;
 }
 
 }
@@ -13368,7 +13541,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 
 .sec:has(#alg-g:not(:checked)) .gl{opacity:0}
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#next">Still to come</a></nav>
+<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -16250,6 +16423,50 @@ templates where a class is written twice. Nested in a 230&nbsp;px cell that is
 60&nbsp;px of gutter each side and nothing left over, so it cannot be composed
 until the templates are regenerated. That is the rest of B1, and it is now a
 visible consequence rather than a note.</div>
+</section><section class="sec" id="rategrid"><h2>Pattern</h2><h3>Choice table &mdash; the delivery matrix</h3>
+<p class="note">Five couriers with up to three methods each is <b>fifteen radio
+rows in a column</b>. The list below the fold, the prices in fifteen different
+places, and no way to see that Спиди to an office is cheaper than Еконт to an
+office without reading both. Same information as a matrix: couriers across,
+methods down, every price in the same place in its row.</p>
+<p class="note"><b>Which component is it?</b> Both, and that is the answer
+rather than a dodge. What is on screen is a <em>table</em> of prices, so the
+grid, the tone and the headers are a table variant &mdash;
+<code>.d-table--choice</code>. What it does is a <em>radio group</em>, exactly
+one of which is chosen, so the cell control lives beside
+<code>.d-check</code> in field.css &mdash; <code>.d-choice</code>. The input is
+still a real radio: it is what is focused, what arrow keys move between, what a
+screen reader announces and what the form submits. Only the dot is gone.</p>
+<p class="note"><b>An empty cell is a statement, so it is drawn.</b> Left blank
+it reads as a rendering fault and the customer has to work out that the hole
+means &ldquo;Еконт does not do lockers&rdquo;. A dashed quiet box says
+unavailable without claiming to be pressable.</p>
+<table class="d-table d-table--choice" style="max-width:760px">
+<caption class="screen-reader-text">Начин на доставка</caption>
+<thead><tr><td></td><th scope="col"><span class="d-ratehead">BoxNow</span></th><th scope="col"><span class="d-ratehead">Спиди</span></th><th scope="col"><span class="d-ratehead">Еконт</span></th><th scope="col"><span class="d-ratehead">DHL</span></th><th scope="col"><span class="d-ratehead">Бълг. пощи</span></th></tr></thead><tbody><tr><th scope="row">До автомат</th><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="BoxNow, До автомат, 1,64 лв." checked><span class="d-choice__price">1,64 лв.</span></label></td><td></td><td></td><td></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Бълг. пощи, До автомат, 2,10 лв."><span class="d-choice__price">2,10 лв.</span></label></td></tr><tr><th scope="row">До офис</th><td></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Спиди, До офис, 4,42 лв."><span class="d-choice__price">4,42 лв.</span></label></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Еконт, До офис, 7,31 лв."><span class="d-choice__price">7,31 лв.</span></label></td><td></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Бълг. пощи, До офис, 3,95 лв."><span class="d-choice__price">3,95 лв.</span></label></td></tr><tr><th scope="row">До адрес</th><td></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Спиди, До адрес, 7,17 лв."><span class="d-choice__price">7,17 лв.</span></label></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Еконт, До адрес, 8,55 лв."><span class="d-choice__price">8,55 лв.</span></label></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="DHL, До адрес, 12,40 лв."><span class="d-choice__price">12,40 лв.</span></label></td><td><label class="d-choice"><input type="radio" name="gallery-rate" aria-label="Бълг. пощи, До адрес, 6,20 лв."><span class="d-choice__price">6,20 лв.</span></label></td></tr></tbody></table>
+<p class="lbl" style="margin-top:22px">The same five couriers as WooCommerce renders them today &mdash; nine rows, and this is only three of the five</p>
+<div class="d-stack d-stack--tight" style="max-width:420px">
+<label class="d-check"><input type="radio" name="gallery-rate-list" checked><span>BoxNow &mdash; до автомат &nbsp; 1,64 лв.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>Спиди &mdash; до офис &nbsp; 4,42 лв.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>Спиди &mdash; до адрес &nbsp; 7,17 лв.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>Еконт &mdash; до офис &nbsp; 7,31 лв.</span></label>
+<label class="d-check"><input type="radio" name="gallery-rate-list"><span>Еконт &mdash; до адрес &nbsp; 8,55 лв.</span></label>
+</div>
+<div class="todo"><b>Not done, and each one is a decision rather than CSS.</b>
+<br><br><b>The logos.</b> The head cell takes an <code>&lt;img&gt;</code> and
+falls back to the wordmark, which is what is drawn above &mdash; we have no
+courier logo files, and four of the five are Bulgarian couriers whose wordmarks
+a customer here reads faster than a symbol anyway. Real logos are trademark
+files and belong in the licence register like every other image.<br><br>
+<b>Cheapest on top.</b> Sorting needs the numbers, so it is not CSS's to do:
+the markup has to arrive sorted. Above it is sorted by hand.<br><br>
+<b>And WooCommerce does not emit this markup.</b> It renders a flat list of
+labels whose <code>for</code> is <code>radio-control-1-darling_speedy:office</code>
+&mdash; courier and method, both in the attribute. That is enough to place every
+existing label into a grid cell with attribute selectors and no DOM surgery at
+all, which is the plan: no rebuilding of React-owned nodes, nothing to be undone
+by a re-render. The headers are the part that has to be added rather than moved.
+</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>Where this actually stands</h3>
 <p class="note"><b>The patterns are done and reviewed.</b> Every section above

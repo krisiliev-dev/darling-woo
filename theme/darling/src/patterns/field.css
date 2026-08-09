@@ -315,3 +315,84 @@
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
+
+/* =============================================================================
+   THE CHOICE CELL
+   A radio whose target is the whole box rather than the dot.
+
+   *** THE CONTROL IS STILL A RADIO AND THAT IS NOT NEGOTIABLE. *** The input is
+   in the markup, one name across the group, and it is what is focused, what
+   arrow keys move between, what a screen reader announces and what a form
+   submits. Only the DOT is gone. Hiding a radio and drawing a box is how a
+   choice grid is built everywhere; hiding a radio and drawing a box with a
+   <div> is how one stops working for everyone who does not use a mouse.
+
+   Visually hidden, not display:none - a display:none input is not focusable
+   and is skipped by the arrow-key behaviour that makes a radio group a radio
+   group.
+   ========================================================================== */
+
+.d-choice{
+	position:relative;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	gap:var(--space-3xs);
+	min-height:2.75rem;     /* 44px: the smallest thing a thumb reliably hits */
+	height:100%;
+	padding:var(--space-2xs) var(--space-3xs);
+	border:1px solid var(--edge-field);
+	border-radius:var(--radius-s);
+	background:var(--surface-raised);
+	cursor:pointer;
+	transition:border-color var(--dur-ui) var(--ease-float),
+	           background var(--dur-ui) var(--ease-float),
+	           box-shadow var(--dur-ui) var(--ease-float);
+}
+.d-choice input{
+	position:absolute;
+	width:1px;
+	height:1px;
+	margin:-1px;
+	padding:0;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+}
+.d-choice__price{
+	font:var(--fw-medium) var(--fs-meta)/1.1 var(--font-ui);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink);
+}
+.d-choice__note{
+	font-size:var(--fs-fine);
+	line-height:1.2;
+	color:var(--ink-quiet);
+	text-align:center;
+}
+.d-choice:hover{ border-color:var(--c-mauve-light) }
+
+/* Checked: the tint pair, not a heavier border alone - a 2px cherry outline on
+   one cell in a grid of fifteen reads as an error state. */
+.d-choice:has(input:checked){
+	border-color:var(--tint-cherry-edge);
+	background:var(--tint-cherry);
+	box-shadow:inset 0 0 0 1px var(--tint-cherry-edge);
+}
+.d-choice:has(input:checked) .d-choice__price{ color:var(--tint-cherry-mark) }
+
+/* *** THE RING IS ON THE BOX, BECAUSE THE INPUT IS ONE PIXEL WIDE. ***
+   :focus-visible on a visually hidden input draws a ring nobody can see. */
+.d-choice:has(input:focus-visible){
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+/* A cell can be selected AND unavailable-looking is a contradiction, so a
+   disabled choice says so plainly and stops being a target. */
+.d-choice:has(input:disabled){
+	border-style:dashed;
+	background:none;
+	color:var(--ink-quiet);
+	cursor:not-allowed;
+}

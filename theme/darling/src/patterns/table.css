@@ -168,3 +168,95 @@
 	.d-table--stack tfoot td{ display:block; padding:0 }
 	.d-table--stack tfoot td::before{ content:none }
 }
+
+/* =============================================================================
+   VARIANT / THE CHOICE TABLE
+   A matrix of options where the cells are the control.
+
+   *** WHY THIS IS A TABLE VARIANT AND NOT A NEW COMPONENT, AND NOT A RADIO
+   VARIANT EITHER. *** The owner asked which it should be. It is both, and that
+   is the answer rather than a dodge: what is on screen is a TABLE of prices -
+   couriers across, delivery methods down, and empty where a courier does not
+   offer one - and what it does is a RADIO GROUP, exactly one of which is
+   chosen. So the table variant lives here and owns the grid, the tone and the
+   headers, and the cell control lives in field.css beside .d-check and owns
+   the input, the focus ring and the checked state. Neither file invents
+   anything the other already has.
+
+   *** WHAT IT IS FOR. *** Five couriers with up to three methods each is
+   fifteen radio rows in a column - the owner's words: a lot of page, and not
+   the easiest thing to compare. As a matrix it is fifteen cells in five
+   columns, every price in the same place in its row, and the gaps say
+   something too: an empty cell IS the information that the courier does not
+   deliver that way.
+
+   *** THE CHEAPEST ROW GOES ON TOP. *** Sorting is not CSS's to do - it needs
+   the numbers - so the markup arrives sorted. Said here because the rule
+   belongs with the component even though it is enforced elsewhere.
+   ========================================================================== */
+
+.d-table--choice{
+	--table-row: transparent;
+	--table-row-alt: transparent;
+	--table-rule: transparent;
+	border-spacing:var(--space-3xs);
+	border-collapse:separate;
+	table-layout:fixed;
+}
+/* The corner cell above the row headers is empty and must not read as a column. */
+.d-table--choice thead td:first-child{ background:none; border:0 }
+
+/* -- the column head: a courier ------------------------------------------------
+   A logo if there is one, the name if there is not. The name is not a fallback
+   in the apologetic sense - four of these are Bulgarian couriers whose
+   wordmarks a customer here reads faster than a symbol. */
+.d-table--choice thead th{
+	padding:var(--space-2xs) var(--space-3xs);
+	text-align:center;
+	vertical-align:bottom;
+	font:var(--fw-medium) var(--fs-fine)/1.2 var(--font-ui);
+	color:var(--ink-quiet);
+	background:none;
+	border:0;
+}
+.d-ratehead{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	gap:var(--space-3xs);
+}
+.d-ratehead img{
+	display:block;
+	max-width:100%;
+	height:1.5rem;          /* one height for every logo, whatever its file */
+	object-fit:contain;
+}
+
+/* -- the row head: a delivery method ------------------------------------------ */
+.d-table--choice tbody th{
+	width:9.5rem;
+	padding:var(--space-2xs) var(--space-xs) var(--space-2xs) 0;
+	text-align:start;
+	vertical-align:middle;
+	font:var(--fw-medium) var(--fs-meta)/1.25 var(--font-ui);
+	color:var(--ink);
+	background:none;
+	border:0;
+}
+
+/* -- the cells ---------------------------------------------------------------- */
+.d-table--choice tbody td{
+	padding:0;
+	background:none;
+	border:0;
+	vertical-align:stretch;
+}
+/* *** AN EMPTY CELL IS A STATEMENT, SO IT IS DRAWN. ***
+   Left blank it reads as a rendering fault - "why is there a hole" - and the
+   customer has to work out that the hole means "Еконт does not do lockers".
+   A dashed, quiet box says unavailable without claiming to be pressable. */
+.d-table--choice td:empty{
+	border:1px dashed var(--hairline);
+	border-radius:var(--radius-s);
+	min-height:2.75rem;
+}
