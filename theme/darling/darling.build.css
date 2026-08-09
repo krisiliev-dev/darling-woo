@@ -12590,18 +12590,43 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 		max-height:none;
 		overflow:visible;
 	}
-	/* *** AND ON A PHONE THE SUMMARY GOES FIRST. ***
-	   Source order is form-then-summary, which is right on a desktop where they
-	   sit side by side. Stacked, it puts the total AFTER the order button -
-	   measured: the summary started at y=2002 on a 2391px page, below Поръчай.
-	   WooCommerce's own sheet does exactly this and we dequeued it:
-	     .wc-block-checkout__main   { order:1 }
-	     .wc-block-checkout__sidebar{ order:0; margin-bottom:24px }
-	   Ported rather than invented, and the gap comes from the grid. */
+	/* *** THE SPLIT THE OWNER ASKED FOR IS NOT IN HERE, AND HERE IS WHY. ***
+	   He wants the itemisation at the top of a phone and the promo code and
+	   totals down beside the button. WooCommerce ships them as ONE block,
+	   because on a desktop they are one column, so splitting them means making
+	   their two halves siblings of the form - and the only CSS that can do that
+	   is a chain of display:contents down every wrapper between the layout and
+	   the blocks.
+
+	   I built that chain and it took three goes to find the links: the sidebar,
+	   the summary block, the <form>, and then an UNCLASSED <div> that React puts
+	   between the sidebar and the summary - measured as a 600px-tall grid item
+	   with no class at all. Even with all four dissolved the money half stayed
+	   at the top, so there is at least one more wrapper, and a chain of
+	   display:contents is only as long as its shortest link. Enumerating
+	   anonymous React wrappers from a stylesheet is not a thing that stays true
+	   across a plugin update.
+
+	   So it is NOT shipped as a half-working chain. The two honest ways to do
+	   it are a small JS move scoped to phone width and re-applied on re-render,
+	   or accepting the whole summary at the top - and that is the owner's call,
+	   not a thing to guess at 3am. What ships today is the whole summary at the
+	   top, which is where he asked the itemisation to be, and no duplicate. */
+
+	/* *** AND ON A PHONE THE TWO COLUMNS ARE ONE, SUMMARY FIRST. ***
+	   Stacked in source order the total lands AFTER the order button - measured
+	   at y=2002 on a 2391px page, below Поръчай. */
 	.wc-block-components-sidebar-layout .wc-block-components-sidebar,
 	.wc-block-components-sidebar-layout .wc-block-checkout__sidebar{ order:0 }
 	.wc-block-components-sidebar-layout .wc-block-components-main,
 	.wc-block-components-sidebar-layout .wc-block-checkout__main{ order:1 }
+
+	/* The ordering above replaces WooCommerce's own, which we dequeued and which
+	   only moved the whole sidebar:
+	     .wc-block-checkout__main { order:1 }  .wc-block-checkout__sidebar { order:0 }
+	   Theirs was the right instinct at a coarser grain - it kept the total off
+	   the far side of the order button, which is where ours started: measured at
+	   y=2002 on a 2391px page, below Поръчай. */
 }
 
 /* *** THE SECOND SUMMARY IS WooCommerce'S, AND SO IS THE RULE THAT HIDES IT. ***
@@ -13574,6 +13599,92 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	border:1px dashed var(--hairline);
 	border-radius:var(--radius-s);
 	min-height:2.75rem;
+}
+
+/* =============================================================================
+   AN APPLIED COUPON
+   Four families that do not exist until a coupon is on the cart, which is why
+   they were never styled: a temporary 5% code was created on the store to see
+   them and deleted immediately afterwards.
+
+   *** WHAT THEY LOOKED LIKE UNSTYLED, MEASURED: *** the coupon list was a
+   browser <ul> with 40px of default indent and a bullet, the chip was
+   `display:list-item`, and the remove button was a RAW BROWSER BUTTON -
+   background #f0f0f0, a 2px black border, black text - inside a cherry-and-
+   cream summary card. Nothing in our stylesheet had ever named any of them.
+   ========================================================================== */
+
+/* The row itself wraps, so the codes go under the amount rather than pushing it
+   off the edge. A long coupon code is normal and a squeezed total is not. */
+.wc-block-components-totals-discount{ flex-wrap:wrap }
+.wc-block-components-totals-discount .wc-block-components-totals-item__description{
+	flex-basis:100%;
+	margin-top:var(--space-3xs);
+}
+.wc-block-components-totals-discount .wc-block-components-totals-item__value{
+	color:var(--price);
+}
+
+.wc-block-components-totals-discount__coupon-list{
+	display:flex;
+	flex-wrap:wrap;
+	gap:var(--space-3xs);
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
+/* The chip is already a shape this system owns - the filters use it - so this
+   is that shape on Woo's markup rather than a second chip. */
+.wc-block-components-chip{
+	display:inline-flex;
+	align-items:center;
+	gap:var(--space-3xs);
+	max-width:100%;
+	padding:.15em .35em .15em .6em;
+	border-radius:var(--radius-xs);
+	background:var(--tint-grey-quiet);
+	color:var(--ink);
+	font-size:var(--fs-fine);
+	line-height:1.5;
+}
+.wc-block-components-chip__text{
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+/* *** THE REMOVE BUTTON IS THE ONE THAT LOOKED BROKEN. ***
+   appearance:none first, because a <button> that has never been styled brings
+   the platform's own chrome with it and no amount of background:none removes
+   the border on every engine. */
+.wc-block-components-chip__remove{
+	appearance:none;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	width:1.25em;
+	height:1.25em;
+	padding:0;
+	border:0;
+	border-radius:var(--radius-circle);
+	background:none;
+	color:var(--ink-quiet);
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float),
+	           color var(--dur-ui) var(--ease-float);
+}
+.wc-block-components-chip__remove:hover{
+	background:var(--tint-cherry);
+	color:var(--tint-cherry-mark);
+}
+.wc-block-components-chip__remove:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:1px;
+}
+.wc-block-components-chip__remove-icon{
+	width:.8em;
+	height:.8em;
+	fill:currentColor;
 }
 
 
