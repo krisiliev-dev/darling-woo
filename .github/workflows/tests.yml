@@ -65,3 +65,57 @@ jobs:
       # Exit 2 = the protocol class was not found; exit 1 = an assertion failed. Neither deploys.
       - name: BORICA protocol vector gate
         run: php tests/borica-protocol-gate.php
+
+  generated:
+    # *** THE GENERATED FILES ARE SHIPPED, NOT BUILT ON THE BOX. ***
+    # infra/deploy.sh rsyncs theme/darling/ verbatim, and the box has no node -
+    # checked, `command -v node` is empty there. So what the site serves is
+    # whatever was committed, and the only question worth asking automatically is
+    # whether the committed version is the one the sources produce.
+    #
+    # This replaces the plan in claude/CUTOVER_GATE_20260808.md to run the build
+    # on the box from cron. That would have been worse: it rebuilds in place, so
+    # the box would serve a stylesheet that exists in no commit and cannot be
+    # reviewed after the fact.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Regenerate, and diff against what was committed
+        run: |
+          # The gallery is NOT in this list, and that is a real gap rather than a
+          # tidy one: gen-gallery.py takes three to six minutes. It is a review
+          # document, not something the storefront serves, so it is excluded -
+          # said out loud, because a silent exclusion reads as coverage.
+          node scripts/gen-category-banners.js
+          node scripts/build-css.js
+          node scripts/gen-theme-json.js
+          node scripts/resolve-tokens.js
+          node scripts/gen-stripe-appearance.js
+          if ! git diff --quiet -- theme/darling/darling.build.css \
+                 theme/darling/theme.json theme/darling/tokens.resolved.json \
+                 theme/darling/assets/stripe-appearance.js \
+                 theme/darling/src/generated/; then
+            echo "::error::a generated file in the repo is not what its sources produce."
+            echo "The box serves the COMMITTED copy - infra/deploy.sh rsyncs theme/ verbatim -"
+            echo "so this means the live stylesheet would be a version nobody reviewed."
+            echo "Run: node scripts/build.js"
+            git --no-pager diff --stat -- theme/darling
+            exit 1
+          fi
+          echo "every generated file matches its sources (gallery excluded, see above)"
+
+      - name: Does the stylesheet answer the markup we ship?
+        run: python scripts/markupgate.py
+
+      - name: One bow
+        run: node scripts/bowgate.js
+
+      - name: One accessibility class
+        run: node scripts/a11ygate.js
