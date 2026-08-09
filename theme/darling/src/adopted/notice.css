@@ -54,6 +54,20 @@
 	font-size:var(--fs-meta);
 	list-style:none;
 }
+/* *** justify-self ON THE LINK DID NOTHING, BECAUSE ITS PARENT IS NOT A GRID.
+   *** The banner is a grid, but the link lives one level down inside
+   __content, which WooCommerce leaves as a block - so the alignment property
+   was being read by a box that had no columns to align in. Measured: content
+   display:block, the anchor's justify-self:end honoured by nobody. The row has
+   to be declared where the link actually sits. auto margin, not justify-self,
+   so a wrapped line still starts at the left edge. */
+.wc-block-components-notice-banner__content{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+.wc-block-components-notice-banner__content > a{ margin-inline-start:auto }
 .wc-block-components-notice-banner.is-error,
 .woocommerce-error{
 	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));

@@ -9480,9 +9480,16 @@ li.product .wp-block-button__link{
    declared in em still stretches to its grid area unless it is told not to.
    justify-self keeps it square, and the size is a rem so it does not change
    with the label's font. */
+/* *** THE TICK WAS 27px ABOVE THE BOX, AND THAT IS AUTO-PLACEMENT, NOT MAGIC.
+   *** The mark is placed explicitly at row 1 / column 1. The input asked for
+   column 1 and said nothing about the row, so grid auto-placement found row 1
+   column 1 already taken and dropped the input into row 2 - one full row below
+   its own tick. Measured: input at y=995, mark at y=968. Naming the row is the
+   whole fix; both items now share the cell. */
 .wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type="checkbox"]{
 	appearance:none;
 	grid-column:1;
+	grid-row:1;
 	justify-self:start;
 	flex:none;
 	width:1.15rem;
@@ -9504,14 +9511,29 @@ li.product .wp-block-button__link{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
+/* *** THE TICK SITS IN THE BOX, SO IT HAS TO BE THE BOX'S SIZE MINUS ITS EDGE.
+   *** Woo's SVG has its own viewBox and no padding, and at exactly the input's
+   width it touched three sides. Inset by the border and a hair, and centred on
+   the same grid cell rather than aligned to the start of it. */
+/* *** AN UNCHECKED BOX WAS SHOWING A TICK. ***
+   Woo hides the mark with `:not(:checked) + __mark { display:none }` - a rule,
+   not a coincidence, and one we never ported. Read out of checkout.css rather
+   than guessed. Everything else about the mark is ours. */
+.wc-block-components-checkbox__input[type="checkbox"]:not(:checked) + .wc-block-components-checkbox__mark{
+	display:none;
+}
 .wc-block-components-checkbox__mark{
 	grid-column:1;
 	grid-row:1;
 	align-self:start;
 	justify-self:start;
-	width:1.15rem;
-	height:1.15rem;
-	margin-top:.16em;
+	width:.95rem;
+	height:.95rem;
+	/* The box carries margin-top:.16em, and the tick is .2rem smaller than the
+	   box, so half of that difference centres it. Written as the arithmetic
+	   rather than as a measured constant, so it survives a change to either. */
+	margin-left:.1rem;
+	margin-top:calc(.16em + .1rem);
 	fill:var(--action-ink);
 	pointer-events:none;
 }
@@ -9531,60 +9553,47 @@ li.product .wp-block-button__link{
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
 	align-items:center;
-	padding:var(--space-2xs) var(--space-xs);
+	padding:var(--space-3xs) 0;
 	margin:0;
 	cursor:pointer;
 	font-size:var(--fs-meta);
 }
-/* *** NO BOX AROUND EACH PAYMENT METHOD. ***
-   Two bordered pills, one inside the other's shadow, read as a single frame
-   drawn around the pair - the owner saw a border he had not asked for twice
-   before I stopped defending it. A list of two options does not need boxes: the
-   chosen one is tinted and carries a marker down its inside edge, and the rest
-   are text with a control beside them. Same argument as the checkout steps -
-   five slabs is an accordion nobody can open. */
-.wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
-	border:0;
-	border-radius:var(--radius-m);
-	background:transparent;
-	margin-bottom:var(--space-3xs);
-	overflow:hidden;
-	transition:background var(--dur-ui) var(--ease-float);
-}
-.wc-block-components-radio-control-accordion-option:hover{ background:var(--surface-quiet) }
-/* *** THE BORDER THE OWNER KEPT SEEING IS WooCommerce'S, ON THE GROUP. ***
-   Removing it from the option was not enough: wc-blocks.css draws a frame
-   around the whole radio-control and a second one around the checked option,
-   and my `border:0` was on the option alone. A local harness with only our
-   sheet showed no borders at all, which is exactly how a fix can look finished
-   and not be - the borders live in a stylesheet the harness did not load.
+/* *** A RADIO IS A RADIO. NO BOX, NO TINT, NO RIM. ***
+   I gave the payment options a tinted row with a cherry bar down the inside
+   edge, which is a component this system does not have and nobody asked for.
+   The owner: "they can just be radio buttons on their own, no need to wrap them
+   in anything". He is right - the control already says which one is chosen, and
+   a highlighted row says it a second time in a language the rest of the site
+   does not speak.
 
-   Both are named here, at a weight that clears Woo's, and the group loses its
-   padding with them so the options sit flush in the step. */
-.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control{
+   *** AND THE FRAME HE KEPT SEEING WAS NEVER ON THIS ELEMENT. ***
+   blocks/checkout.css draws it on two families we had never named:
+   `--highlight-checked` (13 rules) and `.wc-block-checkout__payment-method`
+   (10 rules). I removed the border from the accordion option twice and measured
+   "0px none" on the group, because I was measuring the wrong element. Both are
+   named below, and both are turned off. */
+.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control,
+.wc-block-components-form .wc-block-components-radio-control--highlight-checked.wc-block-components-radio-control--highlight-checked,
+.wc-block-components-form .wc-block-checkout__payment-method.wc-block-checkout__payment-method{
 	padding:0;
 	border:0;
+	border-radius:0;
 	box-shadow:none;
 	background:none;
 }
 .wc-block-components-form .wc-block-components-radio-control
 	.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
+	margin:0;
+	padding:0;
 	border:0;
+	border-radius:0;
 	box-shadow:none;
+	background:none;
+	overflow:visible;
 }
-
-/* The marker, not a border: a bar down the inside edge of the chosen option.
-   It reads at a glance in a list, and it cannot be mistaken for a frame around
-   everything the way two adjacent outlines were. */
-.wc-block-components-radio-control-accordion-option{ position:relative }
-.wc-block-components-radio-control-accordion-option--checked-option-highlighted::before{
-	content:"";
-	position:absolute;
-	inset-block:0;
-	inset-inline-start:0;
-	width:3px;
-	border-radius:var(--radius-pill);
-	background:var(--action);
+.wc-block-components-form .wc-block-components-radio-control-accordion-option
+	+ .wc-block-components-radio-control-accordion-option{
+	margin-top:var(--space-3xs);
 }
 
 /* *** THE CHECKED RULE WAS LIGHTER THAN THE RESTING ONE. ***
@@ -9593,11 +9602,9 @@ li.product .wp-block-button__link{
    looked like a tint was the label's copy of the rule painted over the top,
    which is also why the label row read darker than the description under it.
    Same weight as the rule it has to beat, and on the option only. */
-.wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
-.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked:not(.wc-block-components-radio-control-accordion-option *){
-	border-color:var(--action);
-	background:color-mix(in oklab, var(--action) 7%, var(--surface-raised));
-}
+/* Nothing. The chosen option is the one with the filled control, which is what
+   a radio has always meant. Kept as a comment rather than deleted so the next
+   person does not re-add a highlight thinking it was an oversight. */
 /* *** WooCommerce TAKES THE RADIO OUT OF FLOW, SO OUR GRID HAD ONE ITEM. ***
    The option above is display:grid with an auto column for the control - and
    their input is position:absolute, so it is not a grid item at all. The label
@@ -9657,8 +9664,7 @@ li.product .wp-block-button__link{
 }
 .wc-block-components-radio-control__label{ font-weight:var(--fw-medium) }
 .wc-block-components-radio-control-accordion-content{
-	padding:0 var(--space-xs) var(--space-2xs)
-	        calc(var(--space-xs) + var(--radio, 1.25rem) + var(--inline));
+	padding:0 0 var(--space-2xs) calc(var(--radio, 1.25rem) + var(--inline));
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
@@ -9838,6 +9844,20 @@ li.product .wp-block-button__link{
 	font-size:var(--fs-meta);
 	list-style:none;
 }
+/* *** justify-self ON THE LINK DID NOTHING, BECAUSE ITS PARENT IS NOT A GRID.
+   *** The banner is a grid, but the link lives one level down inside
+   __content, which WooCommerce leaves as a block - so the alignment property
+   was being read by a box that had no columns to align in. Measured: content
+   display:block, the anchor's justify-self:end honoured by nobody. The row has
+   to be declared where the link actually sits. auto margin, not justify-self,
+   so a wrapped line still starts at the left edge. */
+.wc-block-components-notice-banner__content{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+.wc-block-components-notice-banner__content > a{ margin-inline-start:auto }
 .wc-block-components-notice-banner.is-error,
 .woocommerce-error{
 	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
@@ -11916,8 +11936,21 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 		grid-template-columns:minmax(0,1fr);
 		gap:var(--space-m);
 	}
+	/* *** MY OWN OVERRIDE, AT A LOWER WEIGHT THAN MY OWN RULE. ***
+	   The card is stuck at (0,2,0) - `.sidebar-layout .sidebar` - and this
+	   unsticking was written at (0,1,0), so on a phone the summary stayed
+	   sticky and floated over the address fields. Measured: position sticky at
+	   430px, sitting on top of "Телефон". Second time today that a rule lost to
+	   one of mine; both times because I raised the base and left the override
+	   where it was. */
+	.wc-block-components-sidebar-layout .wc-block-components-sidebar,
+	.wc-block-components-sidebar-layout .wc-block-checkout__sidebar,
 	.wc-block-components-sidebar,
-	.wc-block-checkout__sidebar{ position:static; max-height:none; overflow:visible }
+	.wc-block-checkout__sidebar{
+		position:static;
+		max-height:none;
+		overflow:visible;
+	}
 }
 
 /* -- a step -------------------------------------------------------------------
@@ -12019,6 +12052,115 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:none;
 }
 
+/* -- WHAT THE PARSE OF blocks/checkout.css TURNED UP -------------------------
+   791 rules, 165 families, and we had named 62 of them. These are the ones the
+   checkout renders TODAY and we had never touched. The rest of the unnamed
+   hundred are surfaces this store does not switch on - local pickup, pickup
+   options, address autocomplete, the password-strength meter - and porting CSS
+   for a surface nobody can reach is how a stylesheet gets to 166 KB.
+
+   *** THE FIELDSETS ARE FLEX ROWS, WHICH IS WHY OUR GRID KEPT LOSING. ***
+   __shipping-fields and __billing-fields carry SIXTY rules each of flex layout,
+   gaps and bases. Our grid is on .wc-block-components-address-form inside them,
+   so the two were laying out the same fields twice. */
+.wc-block-checkout__shipping-fields,
+.wc-block-checkout__billing-fields{
+	display:block;
+}
+
+/* The empty slab at the top of the page. Woo renders the express-payment
+   region whether or not any express method exists, and with the gateways down
+   it is a bordered box containing a heading and a horizontal rule. */
+.wc-block-components-express-payment--checkout{
+	border:0;
+	padding:0;
+}
+.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe)){
+	display:none;
+}
+.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe))
+	+ .wc-block-components-checkout-step__heading{
+	margin-top:0;
+}
+
+/* Stripe's own container, which holds an iframe: a surface, not a control. */
+.wc-block-gateway-container{
+	margin-block:var(--space-2xs);
+}
+
+.wc-block-components-shipping-rates-control__package{
+	display:flex;
+	flex-direction:column;
+	gap:var(--space-3xs);
+	font-size:var(--fs-meta);
+}
+.wc-block-components-totals-shipping{ background:none }
+
+/* -- TWO OF WooCommerce'S RULES ARE MECHANISMS, NOT DECORATION -------------
+   *** DEQUEUE THESE AND THE PAGE STOPS WORKING, NOT JUST LOOKING RIGHT. ***
+   Both were read out of checkout.css verbatim rather than inferred, because a
+   mechanism cannot be guessed from a class name.
+
+   1. THE ADDRESS CARD AND THE ADDRESS FORM ARE BOTH ALWAYS IN THE DOM. Woo
+      crossfades between them on `.is-editing`, and the inactive one is
+      collapsed by CSS. Without these rules BOTH render - which is the
+      "duplicate country field" at the top of Адрес за доставка: not a
+      duplicate field, the summary card and the form showing at once.
+
+   2. THE SECOND ADDRESS LINE IS PARKED OFF-SCREEN until the toggle reveals it.
+      Woo does that with `left:-20000px`. Without it, it is the thin empty box
+      under "+ Добави apartment, suite, etc.".
+
+   The transition keeps Woo's 0.3s but takes our curve. */
+.wc-block-components-address-address-wrapper{ position:relative }
+.wc-block-components-address-address-wrapper .wc-block-components-address-card-wrapper,
+.wc-block-components-address-address-wrapper .wc-block-components-address-form-wrapper{
+	width:100%;
+}
+.wc-block-components-address-address-wrapper.is-animated .wc-block-components-address-card-wrapper,
+.wc-block-components-address-address-wrapper.is-animated .wc-block-components-address-form-wrapper{
+	transition:.3s var(--ease-float);
+}
+.wc-block-components-address-address-wrapper.is-editing .wc-block-components-address-form-wrapper{
+	opacity:1;
+}
+.wc-block-components-address-address-wrapper.is-editing .wc-block-components-address-card-wrapper{
+	opacity:0;
+	position:absolute;
+	top:0;
+	visibility:hidden;
+}
+.wc-block-components-address-address-wrapper:not(.is-editing) .wc-block-components-address-form-wrapper{
+	height:0;
+	opacity:0;
+	overflow:hidden;
+	visibility:hidden;
+}
+.wc-block-components-address-address-wrapper:not(.is-editing) .wc-block-components-address-card-wrapper{
+	opacity:1;
+}
+.wc-block-components-address-form__address_2-hidden-input{
+	position:absolute;
+	left:-20000px;
+}
+
+/* -- the summary title says the total twice -------------------------------
+   The price beside the heading and the price in the Общо row are the same
+   number, and the row is the one with a label on it. */
+.wc-block-components-checkout-order-summary__title-price{ display:none }
+
+/* -- the express region, when there is nothing express about it -----------
+   Woo renders the heading and the "or carry on below" rule whether or not any
+   express method exists, so with no gateways the page opens with a title over
+   an empty box. The whole wrapper goes, not just the box - otherwise the
+   heading stays and points at nothing. */
+.wc-block-checkout__form > div:has(> .wc-block-components-express-payment:not(:has(button)):not(:has(iframe))){
+	display:none;
+}
+.wc-block-components-express-payment:not(:has(button)):not(:has(iframe)){
+	display:none;
+}
+
 /* -- the address form ---------------------------------------------------------
    *** THE FIELD ORDER IS WooCommerce'S; ONLY THE COLUMNS ARE OURS. ***
    Two up for the pairs that belong together - the two halves of a name, a town
@@ -12031,6 +12173,16 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	gap:var(--space-2xs) var(--space-xs);
 }
 .wc-block-components-address-form > *{ grid-column:1 / -1 }
+/* *** ONE GAP, NOT A GAP PLUS WHATEVER EACH FIELD BRINGS. ***
+   The select carries its own bottom margin and the text inputs carry a
+   different one, so the space under Държава/Регион and the space under
+   Име/Фамилия were two different numbers. The grid owns the rhythm. */
+.wc-block-components-address-form > *,
+.wc-block-components-address-form .wc-block-components-text-input,
+.wc-block-components-address-form .wc-blocks-components-select,
+.wc-block-components-address-form .wc-block-components-checkbox{
+	margin-block:0;
+}
 .wc-block-components-address-form__first_name,
 .wc-block-components-address-form__last_name,
 .wc-block-components-address-form__city,
@@ -12106,6 +12258,32 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    states a fact, the button offers the alternative. Quiet, because making an
    account is not what this page is for. The anchor is added by darling-ui.js -
    there is no markup here to hang it on. */
+/* -- the notice's own button ----------------------------------------------
+   "Преглед на количката" arrives as <a class="button wc-forward"> inside the
+   banner, and our button rules made it the same cherry pill as Поръчай. A
+   notice is not asking anyone to buy anything: quiet, and in the third column
+   of the banner's grid where it belongs rather than jammed against the text. */
+.wc-block-components-notice-banner .button,
+.wc-block-components-notice-banner .wp-element-button{
+	justify-self:end;
+	align-self:center;
+	padding:.42em .9em;
+	border:0;
+	border-radius:var(--radius-pill);
+	background-color:transparent;
+	background-image:none;
+	box-shadow:inset 0 0 0 1px currentColor;
+	color:inherit;
+	font-size:var(--fs-fine);
+	font-weight:var(--fw-medium);
+	text-decoration:none;
+	white-space:nowrap;
+}
+.wc-block-components-notice-banner .button:hover,
+.wc-block-components-notice-banner .wp-element-button:hover{
+	background-color:color-mix(in oklab, currentColor 10%, transparent);
+}
+
 .wc-block-checkout__guest-checkout-notice{
 	display:flex;
 	flex-wrap:wrap;
@@ -12167,6 +12345,27 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:none;
 }
 
+/* *** A RAW TEXT INPUT ASKING FOR A COURIER OFFICE ID. ***
+   The delivery plugin renders `order_darling/office-id` as a free-text field
+   labelled "Офис на куриера (optional)", and a customer typing an office ID by
+   hand is not a thing that can work - we already have an office picker that
+   knows the real list. The field is the plugin's to remove, and the plugin is
+   not ours to change today, so this hides the control while leaving the input
+   in the form: it still submits, so the picker can write into it.
+
+   *** THIS IS A STOPGAP AND SHOULD DIE. *** The plugin must consume our picker.
+   Hidden, not removed, so nothing silently stops being sent to Barsy. */
+.wc-block-components-address-form__darling-office-id{
+	position:absolute;
+	width:1px;
+	height:1px;
+	padding:0;
+	margin:-1px;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+}
+
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
@@ -12192,7 +12391,13 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 }
 .wc-block-checkout__terms a{ color:var(--action) }
 
-.wc-block-checkout__actions{ padding-block:var(--space-s) 0 }
+/* *** THE PAGE ENDED ON THE BUTTON'S LAST PIXEL. ***
+   Measured on the dequeued capture: document scrollHeight 1761, the Поръчай
+   button's bottom 1761. Nothing below it at all - the button was sitting on the
+   bottom edge of the document like a sill. A full-page screenshot was clipping
+   it for the same reason a thumb would. The space belongs under the actions,
+   not on some wrapper, so it survives whatever the page is embedded in. */
+.wc-block-checkout__actions{ padding-block:var(--space-s) var(--space-l) }
 .wc-block-checkout__actions_row{
 	display:flex;
 	align-items:center;

@@ -85,8 +85,21 @@
 		grid-template-columns:minmax(0,1fr);
 		gap:var(--space-m);
 	}
+	/* *** MY OWN OVERRIDE, AT A LOWER WEIGHT THAN MY OWN RULE. ***
+	   The card is stuck at (0,2,0) - `.sidebar-layout .sidebar` - and this
+	   unsticking was written at (0,1,0), so on a phone the summary stayed
+	   sticky and floated over the address fields. Measured: position sticky at
+	   430px, sitting on top of "Телефон". Second time today that a rule lost to
+	   one of mine; both times because I raised the base and left the override
+	   where it was. */
+	.wc-block-components-sidebar-layout .wc-block-components-sidebar,
+	.wc-block-components-sidebar-layout .wc-block-checkout__sidebar,
 	.wc-block-components-sidebar,
-	.wc-block-checkout__sidebar{ position:static; max-height:none; overflow:visible }
+	.wc-block-checkout__sidebar{
+		position:static;
+		max-height:none;
+		overflow:visible;
+	}
 }
 
 /* -- a step -------------------------------------------------------------------
@@ -188,6 +201,115 @@
 	display:none;
 }
 
+/* -- WHAT THE PARSE OF blocks/checkout.css TURNED UP -------------------------
+   791 rules, 165 families, and we had named 62 of them. These are the ones the
+   checkout renders TODAY and we had never touched. The rest of the unnamed
+   hundred are surfaces this store does not switch on - local pickup, pickup
+   options, address autocomplete, the password-strength meter - and porting CSS
+   for a surface nobody can reach is how a stylesheet gets to 166 KB.
+
+   *** THE FIELDSETS ARE FLEX ROWS, WHICH IS WHY OUR GRID KEPT LOSING. ***
+   __shipping-fields and __billing-fields carry SIXTY rules each of flex layout,
+   gaps and bases. Our grid is on .wc-block-components-address-form inside them,
+   so the two were laying out the same fields twice. */
+.wc-block-checkout__shipping-fields,
+.wc-block-checkout__billing-fields{
+	display:block;
+}
+
+/* The empty slab at the top of the page. Woo renders the express-payment
+   region whether or not any express method exists, and with the gateways down
+   it is a bordered box containing a heading and a horizontal rule. */
+.wc-block-components-express-payment--checkout{
+	border:0;
+	padding:0;
+}
+.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe)){
+	display:none;
+}
+.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe))
+	+ .wc-block-components-checkout-step__heading{
+	margin-top:0;
+}
+
+/* Stripe's own container, which holds an iframe: a surface, not a control. */
+.wc-block-gateway-container{
+	margin-block:var(--space-2xs);
+}
+
+.wc-block-components-shipping-rates-control__package{
+	display:flex;
+	flex-direction:column;
+	gap:var(--space-3xs);
+	font-size:var(--fs-meta);
+}
+.wc-block-components-totals-shipping{ background:none }
+
+/* -- TWO OF WooCommerce'S RULES ARE MECHANISMS, NOT DECORATION -------------
+   *** DEQUEUE THESE AND THE PAGE STOPS WORKING, NOT JUST LOOKING RIGHT. ***
+   Both were read out of checkout.css verbatim rather than inferred, because a
+   mechanism cannot be guessed from a class name.
+
+   1. THE ADDRESS CARD AND THE ADDRESS FORM ARE BOTH ALWAYS IN THE DOM. Woo
+      crossfades between them on `.is-editing`, and the inactive one is
+      collapsed by CSS. Without these rules BOTH render - which is the
+      "duplicate country field" at the top of Адрес за доставка: not a
+      duplicate field, the summary card and the form showing at once.
+
+   2. THE SECOND ADDRESS LINE IS PARKED OFF-SCREEN until the toggle reveals it.
+      Woo does that with `left:-20000px`. Without it, it is the thin empty box
+      under "+ Добави apartment, suite, etc.".
+
+   The transition keeps Woo's 0.3s but takes our curve. */
+.wc-block-components-address-address-wrapper{ position:relative }
+.wc-block-components-address-address-wrapper .wc-block-components-address-card-wrapper,
+.wc-block-components-address-address-wrapper .wc-block-components-address-form-wrapper{
+	width:100%;
+}
+.wc-block-components-address-address-wrapper.is-animated .wc-block-components-address-card-wrapper,
+.wc-block-components-address-address-wrapper.is-animated .wc-block-components-address-form-wrapper{
+	transition:.3s var(--ease-float);
+}
+.wc-block-components-address-address-wrapper.is-editing .wc-block-components-address-form-wrapper{
+	opacity:1;
+}
+.wc-block-components-address-address-wrapper.is-editing .wc-block-components-address-card-wrapper{
+	opacity:0;
+	position:absolute;
+	top:0;
+	visibility:hidden;
+}
+.wc-block-components-address-address-wrapper:not(.is-editing) .wc-block-components-address-form-wrapper{
+	height:0;
+	opacity:0;
+	overflow:hidden;
+	visibility:hidden;
+}
+.wc-block-components-address-address-wrapper:not(.is-editing) .wc-block-components-address-card-wrapper{
+	opacity:1;
+}
+.wc-block-components-address-form__address_2-hidden-input{
+	position:absolute;
+	left:-20000px;
+}
+
+/* -- the summary title says the total twice -------------------------------
+   The price beside the heading and the price in the Общо row are the same
+   number, and the row is the one with a label on it. */
+.wc-block-components-checkout-order-summary__title-price{ display:none }
+
+/* -- the express region, when there is nothing express about it -----------
+   Woo renders the heading and the "or carry on below" rule whether or not any
+   express method exists, so with no gateways the page opens with a title over
+   an empty box. The whole wrapper goes, not just the box - otherwise the
+   heading stays and points at nothing. */
+.wc-block-checkout__form > div:has(> .wc-block-components-express-payment:not(:has(button)):not(:has(iframe))){
+	display:none;
+}
+.wc-block-components-express-payment:not(:has(button)):not(:has(iframe)){
+	display:none;
+}
+
 /* -- the address form ---------------------------------------------------------
    *** THE FIELD ORDER IS WooCommerce'S; ONLY THE COLUMNS ARE OURS. ***
    Two up for the pairs that belong together - the two halves of a name, a town
@@ -200,6 +322,16 @@
 	gap:var(--space-2xs) var(--space-xs);
 }
 .wc-block-components-address-form > *{ grid-column:1 / -1 }
+/* *** ONE GAP, NOT A GAP PLUS WHATEVER EACH FIELD BRINGS. ***
+   The select carries its own bottom margin and the text inputs carry a
+   different one, so the space under Държава/Регион and the space under
+   Име/Фамилия were two different numbers. The grid owns the rhythm. */
+.wc-block-components-address-form > *,
+.wc-block-components-address-form .wc-block-components-text-input,
+.wc-block-components-address-form .wc-blocks-components-select,
+.wc-block-components-address-form .wc-block-components-checkbox{
+	margin-block:0;
+}
 .wc-block-components-address-form__first_name,
 .wc-block-components-address-form__last_name,
 .wc-block-components-address-form__city,
@@ -275,6 +407,32 @@
    states a fact, the button offers the alternative. Quiet, because making an
    account is not what this page is for. The anchor is added by darling-ui.js -
    there is no markup here to hang it on. */
+/* -- the notice's own button ----------------------------------------------
+   "Преглед на количката" arrives as <a class="button wc-forward"> inside the
+   banner, and our button rules made it the same cherry pill as Поръчай. A
+   notice is not asking anyone to buy anything: quiet, and in the third column
+   of the banner's grid where it belongs rather than jammed against the text. */
+.wc-block-components-notice-banner .button,
+.wc-block-components-notice-banner .wp-element-button{
+	justify-self:end;
+	align-self:center;
+	padding:.42em .9em;
+	border:0;
+	border-radius:var(--radius-pill);
+	background-color:transparent;
+	background-image:none;
+	box-shadow:inset 0 0 0 1px currentColor;
+	color:inherit;
+	font-size:var(--fs-fine);
+	font-weight:var(--fw-medium);
+	text-decoration:none;
+	white-space:nowrap;
+}
+.wc-block-components-notice-banner .button:hover,
+.wc-block-components-notice-banner .wp-element-button:hover{
+	background-color:color-mix(in oklab, currentColor 10%, transparent);
+}
+
 .wc-block-checkout__guest-checkout-notice{
 	display:flex;
 	flex-wrap:wrap;
@@ -336,6 +494,27 @@
 	display:none;
 }
 
+/* *** A RAW TEXT INPUT ASKING FOR A COURIER OFFICE ID. ***
+   The delivery plugin renders `order_darling/office-id` as a free-text field
+   labelled "Офис на куриера (optional)", and a customer typing an office ID by
+   hand is not a thing that can work - we already have an office picker that
+   knows the real list. The field is the plugin's to remove, and the plugin is
+   not ours to change today, so this hides the control while leaving the input
+   in the form: it still submits, so the picker can write into it.
+
+   *** THIS IS A STOPGAP AND SHOULD DIE. *** The plugin must consume our picker.
+   Hidden, not removed, so nothing silently stops being sent to Barsy. */
+.wc-block-components-address-form__darling-office-id{
+	position:absolute;
+	width:1px;
+	height:1px;
+	padding:0;
+	margin:-1px;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+}
+
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
@@ -361,7 +540,13 @@
 }
 .wc-block-checkout__terms a{ color:var(--action) }
 
-.wc-block-checkout__actions{ padding-block:var(--space-s) 0 }
+/* *** THE PAGE ENDED ON THE BUTTON'S LAST PIXEL. ***
+   Measured on the dequeued capture: document scrollHeight 1761, the Поръчай
+   button's bottom 1761. Nothing below it at all - the button was sitting on the
+   bottom edge of the document like a sill. A full-page screenshot was clipping
+   it for the same reason a thumb would. The space belongs under the actions,
+   not on some wrapper, so it survives whatever the page is embedded in. */
+.wc-block-checkout__actions{ padding-block:var(--space-s) var(--space-l) }
 .wc-block-checkout__actions_row{
 	display:flex;
 	align-items:center;

@@ -387,13 +387,31 @@
 		   re-rendered the sidebar. A replaced node arrives without the
 		   attribute and gets opened again, and an already-open one only has the
 		   attribute re-set, so there is no loop. */
+		/* *** GIVING FOCUS BACK ON THE SAME TICK GAVE IT BACK TOO EARLY. ***
+		   Woo focuses the coupon input from a React effect, which runs after
+		   this function has already returned - so the synchronous restore below
+		   was undone a frame later and every screenshot of the checkout showed
+		   the discount field wearing its focus ring, reading as an error.
+		   Measured: `document.activeElement === the coupon input`, and the label
+		   painted in --action, on a page nobody had touched.
+
+		   So the restore is repeated across the frames their effect can land in,
+		   and it only fires while focus is still inside this panel: the moment
+		   the customer clicks the field themselves, focus is theirs and we stop
+		   taking it. */
 		if (btn.getAttribute('aria-expanded') !== 'true') {
 			var was = document.activeElement;
+			var give = function () {
+				var a = document.activeElement;
+				if (!a || !panel.contains(a)) { return; }
+				if (was && was.focus && was !== document.body && !panel.contains(was)) { was.focus(); }
+				else if (a.blur) { a.blur(); }
+			};
 			btn.click();
-			if (was && was.focus && was !== document.body) { was.focus(); }
-			else if (document.activeElement && document.activeElement.blur) {
-				document.activeElement.blur();
-			}
+			give();
+			requestAnimationFrame(function () { give(); requestAnimationFrame(give); });
+			setTimeout(give, 60);
+			setTimeout(give, 240);
 		}
 		/* The attribute is what the stylesheet waits for, so the button only
 		   disappears once it has actually been pressed. */

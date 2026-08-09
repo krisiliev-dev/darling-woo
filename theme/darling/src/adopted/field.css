@@ -240,9 +240,16 @@
    declared in em still stretches to its grid area unless it is told not to.
    justify-self keeps it square, and the size is a rem so it does not change
    with the label's font. */
+/* *** THE TICK WAS 27px ABOVE THE BOX, AND THAT IS AUTO-PLACEMENT, NOT MAGIC.
+   *** The mark is placed explicitly at row 1 / column 1. The input asked for
+   column 1 and said nothing about the row, so grid auto-placement found row 1
+   column 1 already taken and dropped the input into row 2 - one full row below
+   its own tick. Measured: input at y=995, mark at y=968. Naming the row is the
+   whole fix; both items now share the cell. */
 .wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type="checkbox"]{
 	appearance:none;
 	grid-column:1;
+	grid-row:1;
 	justify-self:start;
 	flex:none;
 	width:1.15rem;
@@ -264,14 +271,29 @@
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
+/* *** THE TICK SITS IN THE BOX, SO IT HAS TO BE THE BOX'S SIZE MINUS ITS EDGE.
+   *** Woo's SVG has its own viewBox and no padding, and at exactly the input's
+   width it touched three sides. Inset by the border and a hair, and centred on
+   the same grid cell rather than aligned to the start of it. */
+/* *** AN UNCHECKED BOX WAS SHOWING A TICK. ***
+   Woo hides the mark with `:not(:checked) + __mark { display:none }` - a rule,
+   not a coincidence, and one we never ported. Read out of checkout.css rather
+   than guessed. Everything else about the mark is ours. */
+.wc-block-components-checkbox__input[type="checkbox"]:not(:checked) + .wc-block-components-checkbox__mark{
+	display:none;
+}
 .wc-block-components-checkbox__mark{
 	grid-column:1;
 	grid-row:1;
 	align-self:start;
 	justify-self:start;
-	width:1.15rem;
-	height:1.15rem;
-	margin-top:.16em;
+	width:.95rem;
+	height:.95rem;
+	/* The box carries margin-top:.16em, and the tick is .2rem smaller than the
+	   box, so half of that difference centres it. Written as the arithmetic
+	   rather than as a measured constant, so it survives a change to either. */
+	margin-left:.1rem;
+	margin-top:calc(.16em + .1rem);
 	fill:var(--action-ink);
 	pointer-events:none;
 }
@@ -291,60 +313,47 @@
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
 	align-items:center;
-	padding:var(--space-2xs) var(--space-xs);
+	padding:var(--space-3xs) 0;
 	margin:0;
 	cursor:pointer;
 	font-size:var(--fs-meta);
 }
-/* *** NO BOX AROUND EACH PAYMENT METHOD. ***
-   Two bordered pills, one inside the other's shadow, read as a single frame
-   drawn around the pair - the owner saw a border he had not asked for twice
-   before I stopped defending it. A list of two options does not need boxes: the
-   chosen one is tinted and carries a marker down its inside edge, and the rest
-   are text with a control beside them. Same argument as the checkout steps -
-   five slabs is an accordion nobody can open. */
-.wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
-	border:0;
-	border-radius:var(--radius-m);
-	background:transparent;
-	margin-bottom:var(--space-3xs);
-	overflow:hidden;
-	transition:background var(--dur-ui) var(--ease-float);
-}
-.wc-block-components-radio-control-accordion-option:hover{ background:var(--surface-quiet) }
-/* *** THE BORDER THE OWNER KEPT SEEING IS WooCommerce'S, ON THE GROUP. ***
-   Removing it from the option was not enough: wc-blocks.css draws a frame
-   around the whole radio-control and a second one around the checked option,
-   and my `border:0` was on the option alone. A local harness with only our
-   sheet showed no borders at all, which is exactly how a fix can look finished
-   and not be - the borders live in a stylesheet the harness did not load.
+/* *** A RADIO IS A RADIO. NO BOX, NO TINT, NO RIM. ***
+   I gave the payment options a tinted row with a cherry bar down the inside
+   edge, which is a component this system does not have and nobody asked for.
+   The owner: "they can just be radio buttons on their own, no need to wrap them
+   in anything". He is right - the control already says which one is chosen, and
+   a highlighted row says it a second time in a language the rest of the site
+   does not speak.
 
-   Both are named here, at a weight that clears Woo's, and the group loses its
-   padding with them so the options sit flush in the step. */
-.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control{
+   *** AND THE FRAME HE KEPT SEEING WAS NEVER ON THIS ELEMENT. ***
+   blocks/checkout.css draws it on two families we had never named:
+   `--highlight-checked` (13 rules) and `.wc-block-checkout__payment-method`
+   (10 rules). I removed the border from the accordion option twice and measured
+   "0px none" on the group, because I was measuring the wrong element. Both are
+   named below, and both are turned off. */
+.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control,
+.wc-block-components-form .wc-block-components-radio-control--highlight-checked.wc-block-components-radio-control--highlight-checked,
+.wc-block-components-form .wc-block-checkout__payment-method.wc-block-checkout__payment-method{
 	padding:0;
 	border:0;
+	border-radius:0;
 	box-shadow:none;
 	background:none;
 }
 .wc-block-components-form .wc-block-components-radio-control
 	.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
+	margin:0;
+	padding:0;
 	border:0;
+	border-radius:0;
 	box-shadow:none;
+	background:none;
+	overflow:visible;
 }
-
-/* The marker, not a border: a bar down the inside edge of the chosen option.
-   It reads at a glance in a list, and it cannot be mistaken for a frame around
-   everything the way two adjacent outlines were. */
-.wc-block-components-radio-control-accordion-option{ position:relative }
-.wc-block-components-radio-control-accordion-option--checked-option-highlighted::before{
-	content:"";
-	position:absolute;
-	inset-block:0;
-	inset-inline-start:0;
-	width:3px;
-	border-radius:var(--radius-pill);
-	background:var(--action);
+.wc-block-components-form .wc-block-components-radio-control-accordion-option
+	+ .wc-block-components-radio-control-accordion-option{
+	margin-top:var(--space-3xs);
 }
 
 /* *** THE CHECKED RULE WAS LIGHTER THAN THE RESTING ONE. ***
@@ -353,11 +362,9 @@
    looked like a tint was the label's copy of the rule painted over the top,
    which is also why the label row read darker than the description under it.
    Same weight as the rule it has to beat, and on the option only. */
-.wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
-.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked:not(.wc-block-components-radio-control-accordion-option *){
-	border-color:var(--action);
-	background:color-mix(in oklab, var(--action) 7%, var(--surface-raised));
-}
+/* Nothing. The chosen option is the one with the filled control, which is what
+   a radio has always meant. Kept as a comment rather than deleted so the next
+   person does not re-add a highlight thinking it was an oversight. */
 /* *** WooCommerce TAKES THE RADIO OUT OF FLOW, SO OUR GRID HAD ONE ITEM. ***
    The option above is display:grid with an auto column for the control - and
    their input is position:absolute, so it is not a grid item at all. The label
@@ -417,8 +424,7 @@
 }
 .wc-block-components-radio-control__label{ font-weight:var(--fw-medium) }
 .wc-block-components-radio-control-accordion-content{
-	padding:0 var(--space-xs) var(--space-2xs)
-	        calc(var(--space-xs) + var(--radio, 1.25rem) + var(--inline));
+	padding:0 0 var(--space-2xs) calc(var(--radio, 1.25rem) + var(--inline));
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
