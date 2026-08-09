@@ -1,5 +1,5 @@
 {
- "_built_sha256": "26591a311e2f573b955dd26b118e7a751056712e67314125b9223222f797f88f",
+ "_built_sha256": "5cd5adb2c7379ea26e5856eaf7d4dcb84c495ec5c96dcb35ba944c03f02a6b0c",
  "--action": {
   "raw": "#D42A3C",
   "type": "colour",
@@ -130,6 +130,11 @@
   "type": "colour",
   "computed": "rgb(255, 255, 255)",
   "hex": "#ffffff"
+ },
+ "--control": {
+  "raw": "1rem",
+  "type": "length",
+  "computed": "16px"
  },
  "--delay-turn": {
   "raw": "260ms",
@@ -344,6 +349,11 @@
   "raw": "clamp(3rem,     2.6206rem + 1.4118vw, 3.75rem)",
   "type": "length",
   "computed": "60px"
+ },
+ "--gutter-bar": {
+  "raw": "clamp(2rem,     1.7471rem + 0.9412vw, 2.5rem)",
+  "type": "length",
+  "computed": "40px"
  },
  "--hairline": {
   "raw": "#D4D4DD",

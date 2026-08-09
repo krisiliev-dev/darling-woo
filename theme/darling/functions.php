@@ -304,3 +304,64 @@ add_action( 'template_redirect', function () {
 	wp_safe_redirect( $shop ? $shop : home_url( '/' ), 302 );
 	exit;
 } );
+
+/**
+ * *** THE CARD FIELDS ARE THE ONE PLACE IN THE SYSTEM A STYLESHEET CANNOT
+ * REACH. *** They live in a cross-origin iframe on js.stripe.com. Stripe's only
+ * styling surface is an `appearance` object handed to Elements in JavaScript.
+ *
+ * Measured on the live checkout, before this existed:
+ *   wc_stripe_upe_params is a real global (localised on wc-stripe-upe-classic)
+ *   and it has NO `blocksAppearance` key.
+ *
+ * Read out of the plugin's own built JS (build/upe-blocks.js) rather than from
+ * documentation for some other version:
+ *
+ *     const key = isBlocks ? 'blocksAppearance' : 'appearance';
+ *     const given = wc_stripe_upe_params?.[key];
+ *     if (given) return given;              // <- ours, used verbatim
+ *     ...                                    // otherwise SAMPLE THE PAGE
+ *
+ * That fallback is why the card fields look like a near-miss of our theme: the
+ * plugin walks the DOM with getComputedStyle, finds some input, and copies it.
+ * A near-miss is worse than a mismatch, because it reads as a rendering fault.
+ *
+ * assets/stripe-appearance.js is GENERATED from tokens.resolved.json by
+ * scripts/gen-stripe-appearance.js, so the day --edge-field moves, the three
+ * fields that take the money move with every other field on the page.
+ *
+ * Attached to the handle that CREATES the global, after it, so there is
+ * something to assign to; the blocks bundle reads it later, at mount.
+ *
+ * *** NOT YET PROVEN AGAINST A REAL PAYMENT. *** It is proven to reach inside
+ * the iframe - injected at document-start in a browser, the card fields took
+ * our radius, edge, ink and labels - but no test-mode order has been placed
+ * through it. Do that before this ships, per WOO_SURFACE_INVENTORY.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( ! function_exists( 'is_checkout' ) || ( ! is_checkout() && ! is_cart() ) ) {
+		return;
+	}
+	$src = get_stylesheet_directory() . '/assets/stripe-appearance.js';
+	if ( ! file_exists( $src ) ) {
+		return;
+	}
+	$appearance = file_get_contents( $src );
+	if ( false === $appearance ) {
+		return;
+	}
+	// Both keys: the blocks checkout reads blocksAppearance, the classic one
+	// reads appearance, and this theme has to survive either being the live
+	// checkout. Guarded, because the plugin may be deactivated.
+	$assign = $appearance . "\n"
+		. "if (typeof window.wc_stripe_upe_params === 'object' && window.wc_stripe_upe_params) {\n"
+		. "\twindow.wc_stripe_upe_params.blocksAppearance = window.darlingStripeAppearance;\n"
+		. "\twindow.wc_stripe_upe_params.appearance = window.darlingStripeAppearance;\n"
+		. "}\n";
+
+	foreach ( array( 'wc-stripe-upe-classic', 'wc-stripe-blocks-integration' ) as $handle ) {
+		if ( wp_script_is( $handle, 'registered' ) || wp_script_is( $handle, 'enqueued' ) ) {
+			wp_add_inline_script( $handle, $assign, 'after' );
+		}
+	}
+}, 30 );
