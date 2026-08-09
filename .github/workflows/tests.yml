@@ -93,13 +93,17 @@ jobs:
           # tidy one: gen-gallery.py takes three to six minutes. It is a review
           # document, not something the storefront serves, so it is excluded -
           # said out loud, because a silent exclusion reads as coverage.
+          # resolve-tokens.js is NOT here: it needs a real browser, because it
+          # resolves color-mix() by measuring rather than by re-implementing.
+          # There is no package.json to install playwright from, and a chromium
+          # download on every push to verify a reference table is a poor trade.
+          # It is checked by fingerprint in the next step instead.
           node scripts/gen-category-banners.js
           node scripts/build-css.js
           node scripts/gen-theme-json.js
-          node scripts/resolve-tokens.js
           node scripts/gen-stripe-appearance.js
           if ! git diff --quiet -- theme/darling/darling.build.css \
-                 theme/darling/theme.json theme/darling/tokens.resolved.json \
+                 theme/darling/theme.json \
                  theme/darling/assets/stripe-appearance.js \
                  theme/darling/src/generated/; then
             echo "::error::a generated file in the repo is not what its sources produce."
@@ -110,6 +114,31 @@ jobs:
             exit 1
           fi
           echo "every generated file matches its sources (gallery excluded, see above)"
+
+      - name: Is the resolved token table stale?
+        run: |
+          # resolve-tokens.js has one input, and it stamps that input's hash into
+          # its own output. So this asks the only question available without a
+          # browser: was this table made from THIS stylesheet? It cannot say the
+          # table is right. It can say it is not stale, and stale is the failure
+          # that actually happens - it was stale the first time this job ran.
+          node -e '
+            const fs = require("fs"), crypto = require("crypto");
+            const css = fs.readFileSync("theme/darling/darling.build.css");
+            const want = crypto.createHash("sha256").update(css).digest("hex");
+            const got = JSON.parse(fs.readFileSync("theme/darling/tokens.resolved.json"))._built_sha256;
+            if (!got) {
+              console.error("::error::tokens.resolved.json carries no _built_sha256 - run: node scripts/resolve-tokens.js");
+              process.exit(1);
+            }
+            if (got !== want) {
+              console.error("::error::tokens.resolved.json was made from a different stylesheet.");
+              console.error("  stylesheet " + want.slice(0, 16) + "  table " + got.slice(0, 16));
+              console.error("  run: node scripts/resolve-tokens.js   (needs playwright locally)");
+              process.exit(1);
+            }
+            console.log("the resolved table matches the committed stylesheet");
+          '
 
       - name: Does the stylesheet answer the markup we ship?
         run: python scripts/markupgate.py

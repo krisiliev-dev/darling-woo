@@ -30,6 +30,7 @@
    ========================================================================== */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -125,12 +126,25 @@ function tokenNames() {
   /* rgb() -> hex, because every consumer downstream is a format that wants hex:
      Stripe's appearance object, an email client, a print stylesheet. */
   let colours = 0, lengths = 0;
-  for (const v of Object.values(out)) {
+  /* out, not stamped: the fingerprint is not a token. */
+for (const v of Object.values(out)) {
     if (v.type === 'colour') colours++;
     if (v.type === 'length') lengths++;
   }
 
-  fs.writeFileSync(OUT, JSON.stringify(out, null, 1));
+  /* *** THE TABLE RECORDS WHICH STYLESHEET MADE IT. ***
+     This file needs a real browser to exist - it resolves color-mix() by
+     measuring rather than by re-implementing, because a re-implementation that
+     agrees with Chrome today disagrees with it eventually - and CI has no
+     browser and this repo has no package.json to install one with. So instead
+     of checking the table by regenerating it, CI checks that the stylesheet it
+     was made from is the stylesheet that is committed. One input, one hash.
+     It cannot tell you the table is correct; it can tell you it is not stale,
+     and stale is the failure that actually happens. */
+  const stamped = Object.assign(
+    { _built_sha256: crypto.createHash('sha256').update(css).digest('hex') },
+    out);
+  fs.writeFileSync(OUT, JSON.stringify(stamped, null, 1));
   console.log('resolve-tokens: %d tokens -> %d colours, %d lengths, %d other',
     names.length, colours, lengths, names.length - colours - lengths);
   console.log('  sample: --tint-cherry  %s  ->  %s',
