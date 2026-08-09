@@ -12497,32 +12497,23 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:block;
 }
 
-/* -- express payment, moved to where it belongs ------------------------------
-   *** THE OWNER'S CALL, AND HE IS RIGHT ABOUT THE ORDER. *** Payment comes
-   after a customer has said who they are and where it goes, so a wallet button
-   above the first field is asking for the order before asking for the address.
-   It now sits directly above Поръчай.
+/* -- express payment ---------------------------------------------------------
+   *** IT IS BELOW THE FIELDS NOW, AND IN THE DOM RATHER THAN IN A PICTURE. ***
+   Owner's call, and he is right about the order: payment comes after a
+   customer has said who they are and where it goes, so a wallet button above
+   the first field asks for the order before asking for the address.
 
-   *** THIS IS A VISUAL REORDER, NOT A REAL ONE, AND THAT IS A REAL CAVEAT. ***
-   The checkout's blocks live in the PAGE's content in the database, not in this
-   theme, so the theme cannot change their source order. flex `order` moves the
-   picture and leaves the DOM alone - which means a keyboard or a screen reader
-   still meets express payment first, before the contact fields. It is a
-   shortcut placed first for people who cannot see where it is, which is not the
-   worst possible answer, but the correct fix is to drag the Express Checkout
-   block below the order notes in the checkout page editor and delete these
-   three rules.
+   This was three CSS `order` rules for about an hour, because the checkout's
+   blocks live in the PAGE's content in the database and a theme cannot reach
+   them. flex order moves the picture and leaves the DOM alone, which would
+   have left a keyboard user meeting the wallet before the contact fields - a
+   shortcut placed first for the people least able to see where it is.
 
-   The form is a <form> and was display:block, so it had no order to give. Only
-   the two blocks that move say so; everything else keeps source order at 0. */
-.wc-block-checkout__form{
-	display:flex;
-	flex-direction:column;
-}
-.wc-block-checkout__form > div:has(> .wc-block-components-express-payment){ order:1 }
-.wc-block-checkout__form > .wc-block-checkout__terms{ order:2 }
-.wc-block-checkout__form > .wc-block-checkout__actions{ order:3 }
-
+   The block was moved for real instead, in the page content, with wp-cli:
+   express-payment-block now sits between order-note-block and terms-block.
+   The three order rules and the flex column are deleted; source order is the
+   order. Backup of the original page content is on the box at
+   /srv/darling/prod/checkout-page-20260809-225607.bak.html. */
 .wc-block-components-express-payment--checkout{
 	border:0;
 	padding:0;
