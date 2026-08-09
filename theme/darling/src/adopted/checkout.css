@@ -119,8 +119,17 @@
 	border-bottom-style:solid;
 	border-bottom-color:var(--hairline);
 }
-.wc-block-components-checkout-step + .wc-block-components-checkout-step{
+/* *** `+` FAILED ON THE SECOND STEP, BECAUSE THEY ARE NOT ALWAYS ADJACENT. ***
+   WooCommerce drops a notices container between fieldsets, so "Адрес за
+   доставка" had no top padding at all and sat on the rule above it while every
+   step below it had air. Measured: padTop 0px on steps one AND two, 29.7px on
+   the rest. Every step gets the padding and the first gives it back - a rule
+   that does not care what is in between. */
+.wc-block-components-checkout-step.wc-block-components-checkout-step{
 	padding-top:var(--space-m);
+}
+.wc-block-components-checkout-step.wc-block-components-checkout-step:first-of-type{
+	padding-top:0;
 }
 .wc-block-components-checkout-step.wc-block-components-checkout-step:last-of-type{
 	border-bottom-style:none;
@@ -136,8 +145,11 @@
    silently, and the measurement said 24px when it should have said 32. Source
    order decides ties, and a media query does not change that. */
 @media (max-width: 900px){
-	.wc-block-components-checkout-step + .wc-block-components-checkout-step{
+	.wc-block-components-checkout-step.wc-block-components-checkout-step{
 		padding-top:var(--space-l);
+	}
+	.wc-block-components-checkout-step.wc-block-components-checkout-step:first-of-type{
+		padding-top:0;
 	}
 }
 
@@ -259,11 +271,37 @@
 }
 
 /* -- the small print inside the form ----------------------------------------- */
+/* "Поръчваш като гост." and the way out of it belong on one line: the sentence
+   states a fact, the button offers the alternative. Quiet, because making an
+   account is not what this page is for. The anchor is added by darling-ui.js -
+   there is no markup here to hang it on. */
 .wc-block-checkout__guest-checkout-notice{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
 	margin:var(--space-3xs) 0 0;
 	font:var(--type-ui);
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
+}
+.d-guest-account{
+	display:inline-flex;
+	align-items:center;
+	padding:.42em .9em;
+	border-radius:var(--radius-pill);
+	background:transparent;
+	box-shadow:inset 0 0 0 1px var(--edge-field);
+	color:var(--ink);
+	font-size:var(--fs-fine);
+	font-weight:var(--fw-medium);
+	text-decoration:none;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-guest-account:hover{ background:var(--surface-quiet) }
+.d-guest-account:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
 }
 .wc-block-components-shipping-rates-control__no-shipping-address-message{
 	margin:0;
@@ -303,7 +341,10 @@
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
    terms are not a required tick, so any rule that assumes a control beside that
    class is wrong here. Scoped to the terms block rather than fought. */
-.wc-block-checkout__order-notes{ padding-block:var(--space-s) }
+/* The step above already ends in its own padding, and this added a second
+   band of air after the last field - which is the gap under "Офис на куриера"
+   that had no reason to be there. */
+.wc-block-checkout__order-notes{ padding-block:0 }
 .wc-block-checkout__add-note{ margin:0 }
 
 .wc-block-checkout__terms{
@@ -390,6 +431,18 @@
 }
 .wc-block-components-totals-coupon[data-d-coupon-open] .wc-block-components-panel__content{
 	padding:0;
+}
+/* *** AND IT STOPS WEARING THE PANEL. ***
+   panel.css dresses .wc-block-components-panel - edge, corner, inset padding -
+   which is right for a disclosure and wrong for a row with a field in it. Once
+   the thing is permanently open it is not a panel, so the chrome goes and the
+   field and its button sit on the card like every other row. Measured: 0 16px
+   of padding and a box-shadow drawing the border the owner saw. */
+.wc-block-components-totals-coupon[data-d-coupon-open]{
+	padding:0;
+	border:0;
+	box-shadow:none;
+	background:none;
 }
 .wc-block-components-totals-coupon__form{
 	display:grid;
@@ -496,12 +549,17 @@
 	   €13.50 landing in two different places down one column. */
 	text-align:end;
 }
+/* *** `flex:1 0 100%` GAVE EVERY ROW A SECOND LINE, EMPTY OR NOT. ***
+   Woo renders the description div always, containing whitespace - so `:empty`
+   never matched it and a full-width flex basis forced a line break the row had
+   no content for. The label and the number then sat at the TOP of a two-line
+   band and read as misaligned against the rows around them. Let it be as wide
+   as it is: nothing, when there is nothing in it. */
 .wc-block-components-totals-item__description{
-	flex:1 0 100%;
+	flex:0 1 auto;
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
-.wc-block-components-totals-item__description:empty{ display:none }
 
 /* The line the eye goes to. Bigger, and cocoa rather than cherry - cherry is
    what you press, and a number is not a control. */

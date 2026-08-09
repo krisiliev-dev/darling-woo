@@ -9536,16 +9536,57 @@ li.product .wp-block-button__link{
 	cursor:pointer;
 	font-size:var(--fs-meta);
 }
+/* *** NO BOX AROUND EACH PAYMENT METHOD. ***
+   Two bordered pills, one inside the other's shadow, read as a single frame
+   drawn around the pair - the owner saw a border he had not asked for twice
+   before I stopped defending it. A list of two options does not need boxes: the
+   chosen one is tinted and carries a marker down its inside edge, and the rest
+   are text with a control beside them. Same argument as the checkout steps -
+   five slabs is an accordion nobody can open. */
 .wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
-	border:1px solid var(--edge-field);
+	border:0;
 	border-radius:var(--radius-m);
-	background:var(--surface-raised);
-	margin-bottom:var(--space-2xs);
+	background:transparent;
+	margin-bottom:var(--space-3xs);
 	overflow:hidden;
-	transition:border-color var(--dur-ui) var(--ease-float),
-	           background var(--dur-ui) var(--ease-float);
+	transition:background var(--dur-ui) var(--ease-float);
 }
-.wc-block-components-radio-control-accordion-option:hover{ border-color:var(--c-mauve-light) }
+.wc-block-components-radio-control-accordion-option:hover{ background:var(--surface-quiet) }
+/* *** THE BORDER THE OWNER KEPT SEEING IS WooCommerce'S, ON THE GROUP. ***
+   Removing it from the option was not enough: wc-blocks.css draws a frame
+   around the whole radio-control and a second one around the checked option,
+   and my `border:0` was on the option alone. A local harness with only our
+   sheet showed no borders at all, which is exactly how a fix can look finished
+   and not be - the borders live in a stylesheet the harness did not load.
+
+   Both are named here, at a weight that clears Woo's, and the group loses its
+   padding with them so the options sit flush in the step. */
+.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control{
+	padding:0;
+	border:0;
+	box-shadow:none;
+	background:none;
+}
+.wc-block-components-form .wc-block-components-radio-control
+	.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
+	border:0;
+	box-shadow:none;
+}
+
+/* The marker, not a border: a bar down the inside edge of the chosen option.
+   It reads at a glance in a list, and it cannot be mistaken for a frame around
+   everything the way two adjacent outlines were. */
+.wc-block-components-radio-control-accordion-option{ position:relative }
+.wc-block-components-radio-control-accordion-option--checked-option-highlighted::before{
+	content:"";
+	position:absolute;
+	inset-block:0;
+	inset-inline-start:0;
+	width:3px;
+	border-radius:var(--radius-pill);
+	background:var(--action);
+}
+
 /* *** THE CHECKED RULE WAS LIGHTER THAN THE RESTING ONE. ***
    The resting surface is set at (0,3,0) - doubled class, inside .form - and
    this was at (0,1,0), so the selected option never actually tinted. What
@@ -9581,6 +9622,11 @@ li.product .wp-block-button__link{
 .wc-block-components-radio-control__input{
 	appearance:none;
 	flex:none;
+	/* The option is a grid with align-items:center, and centring a 20px control
+	   against a 21px line of text puts it half a pixel high and reads as more.
+	   Aligned to the text's own box instead. */
+	align-self:center;
+	translate:0 -.5px;
 	width:var(--radio, 1.25rem);
 	height:var(--radio, 1.25rem);
 	margin:0;
@@ -11904,8 +11950,17 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	border-bottom-style:solid;
 	border-bottom-color:var(--hairline);
 }
-.wc-block-components-checkout-step + .wc-block-components-checkout-step{
+/* *** `+` FAILED ON THE SECOND STEP, BECAUSE THEY ARE NOT ALWAYS ADJACENT. ***
+   WooCommerce drops a notices container between fieldsets, so "Адрес за
+   доставка" had no top padding at all and sat on the rule above it while every
+   step below it had air. Measured: padTop 0px on steps one AND two, 29.7px on
+   the rest. Every step gets the padding and the first gives it back - a rule
+   that does not care what is in between. */
+.wc-block-components-checkout-step.wc-block-components-checkout-step{
 	padding-top:var(--space-m);
+}
+.wc-block-components-checkout-step.wc-block-components-checkout-step:first-of-type{
+	padding-top:0;
 }
 .wc-block-components-checkout-step.wc-block-components-checkout-step:last-of-type{
 	border-bottom-style:none;
@@ -11921,8 +11976,11 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    silently, and the measurement said 24px when it should have said 32. Source
    order decides ties, and a media query does not change that. */
 @media (max-width: 900px){
-	.wc-block-components-checkout-step + .wc-block-components-checkout-step{
+	.wc-block-components-checkout-step.wc-block-components-checkout-step{
 		padding-top:var(--space-l);
+	}
+	.wc-block-components-checkout-step.wc-block-components-checkout-step:first-of-type{
+		padding-top:0;
 	}
 }
 
@@ -12044,11 +12102,37 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 }
 
 /* -- the small print inside the form ----------------------------------------- */
+/* "Поръчваш като гост." and the way out of it belong on one line: the sentence
+   states a fact, the button offers the alternative. Quiet, because making an
+   account is not what this page is for. The anchor is added by darling-ui.js -
+   there is no markup here to hang it on. */
 .wc-block-checkout__guest-checkout-notice{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:center;
+	gap:var(--space-2xs);
 	margin:var(--space-3xs) 0 0;
 	font:var(--type-ui);
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
+}
+.d-guest-account{
+	display:inline-flex;
+	align-items:center;
+	padding:.42em .9em;
+	border-radius:var(--radius-pill);
+	background:transparent;
+	box-shadow:inset 0 0 0 1px var(--edge-field);
+	color:var(--ink);
+	font-size:var(--fs-fine);
+	font-weight:var(--fw-medium);
+	text-decoration:none;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-guest-account:hover{ background:var(--surface-quiet) }
+.d-guest-account:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
 }
 .wc-block-components-shipping-rates-control__no-shipping-address-message{
 	margin:0;
@@ -12088,7 +12172,10 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
    terms are not a required tick, so any rule that assumes a control beside that
    class is wrong here. Scoped to the terms block rather than fought. */
-.wc-block-checkout__order-notes{ padding-block:var(--space-s) }
+/* The step above already ends in its own padding, and this added a second
+   band of air after the last field - which is the gap under "Офис на куриера"
+   that had no reason to be there. */
+.wc-block-checkout__order-notes{ padding-block:0 }
 .wc-block-checkout__add-note{ margin:0 }
 
 .wc-block-checkout__terms{
@@ -12175,6 +12262,18 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 }
 .wc-block-components-totals-coupon[data-d-coupon-open] .wc-block-components-panel__content{
 	padding:0;
+}
+/* *** AND IT STOPS WEARING THE PANEL. ***
+   panel.css dresses .wc-block-components-panel - edge, corner, inset padding -
+   which is right for a disclosure and wrong for a row with a field in it. Once
+   the thing is permanently open it is not a panel, so the chrome goes and the
+   field and its button sit on the card like every other row. Measured: 0 16px
+   of padding and a box-shadow drawing the border the owner saw. */
+.wc-block-components-totals-coupon[data-d-coupon-open]{
+	padding:0;
+	border:0;
+	box-shadow:none;
+	background:none;
 }
 .wc-block-components-totals-coupon__form{
 	display:grid;
@@ -12281,12 +12380,17 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	   €13.50 landing in two different places down one column. */
 	text-align:end;
 }
+/* *** `flex:1 0 100%` GAVE EVERY ROW A SECOND LINE, EMPTY OR NOT. ***
+   Woo renders the description div always, containing whitespace - so `:empty`
+   never matched it and a full-width flex basis forced a line break the row had
+   no content for. The label and the number then sat at the TOP of a two-line
+   band and read as misaligned against the rows around them. Let it be as wide
+   as it is: nothing, when there is nothing in it. */
 .wc-block-components-totals-item__description{
-	flex:1 0 100%;
+	flex:0 1 auto;
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
-.wc-block-components-totals-item__description:empty{ display:none }
 
 /* The line the eye goes to. Bigger, and cocoa rather than cherry - cherry is
    what you press, and a number is not a control. */

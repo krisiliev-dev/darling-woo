@@ -400,6 +400,25 @@
 		panel.setAttribute('data-d-coupon-open', '');
 	}
 
+	/* 7. A WAY OUT OF GUEST CHECKOUT.
+	      "Поръчваш като гост." states a fact and offers nothing. The owner asked
+	      for the alternative beside it, and there is no markup to hang it on - Woo
+	      renders that sentence as a bare <p>. So we add one anchor.
+
+	      *** THE BETTER FIX IS A WooCommerce SETTING, NOT THIS. *** Woo can render
+	      a "create an account?" tick inside the checkout, which keeps the customer
+	      in the flow instead of sending them to /my-account/ mid-order. This is
+	      the version we can ship from the theme; the setting is the version that
+	      should replace it. */
+	function guestAccount(p) {
+		if (p.querySelector('.d-guest-account')) { return; }
+		var a = document.createElement('a');
+		a.className = 'd-guest-account';
+		a.href = '/my-account/';
+		a.textContent = 'Направи си профил';
+		p.appendChild(a);
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -415,6 +434,7 @@
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
 		(root || document).querySelectorAll('.wc-block-components-totals-coupon').forEach(couponOpen);
+		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
 		});

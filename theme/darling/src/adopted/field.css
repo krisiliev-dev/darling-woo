@@ -296,16 +296,57 @@
 	cursor:pointer;
 	font-size:var(--fs-meta);
 }
+/* *** NO BOX AROUND EACH PAYMENT METHOD. ***
+   Two bordered pills, one inside the other's shadow, read as a single frame
+   drawn around the pair - the owner saw a border he had not asked for twice
+   before I stopped defending it. A list of two options does not need boxes: the
+   chosen one is tinted and carries a marker down its inside edge, and the rest
+   are text with a control beside them. Same argument as the checkout steps -
+   five slabs is an accordion nobody can open. */
 .wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
-	border:1px solid var(--edge-field);
+	border:0;
 	border-radius:var(--radius-m);
-	background:var(--surface-raised);
-	margin-bottom:var(--space-2xs);
+	background:transparent;
+	margin-bottom:var(--space-3xs);
 	overflow:hidden;
-	transition:border-color var(--dur-ui) var(--ease-float),
-	           background var(--dur-ui) var(--ease-float);
+	transition:background var(--dur-ui) var(--ease-float);
 }
-.wc-block-components-radio-control-accordion-option:hover{ border-color:var(--c-mauve-light) }
+.wc-block-components-radio-control-accordion-option:hover{ background:var(--surface-quiet) }
+/* *** THE BORDER THE OWNER KEPT SEEING IS WooCommerce'S, ON THE GROUP. ***
+   Removing it from the option was not enough: wc-blocks.css draws a frame
+   around the whole radio-control and a second one around the checked option,
+   and my `border:0` was on the option alone. A local harness with only our
+   sheet showed no borders at all, which is exactly how a fix can look finished
+   and not be - the borders live in a stylesheet the harness did not load.
+
+   Both are named here, at a weight that clears Woo's, and the group loses its
+   padding with them so the options sit flush in the step. */
+.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control{
+	padding:0;
+	border:0;
+	box-shadow:none;
+	background:none;
+}
+.wc-block-components-form .wc-block-components-radio-control
+	.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option{
+	border:0;
+	box-shadow:none;
+}
+
+/* The marker, not a border: a bar down the inside edge of the chosen option.
+   It reads at a glance in a list, and it cannot be mistaken for a frame around
+   everything the way two adjacent outlines were. */
+.wc-block-components-radio-control-accordion-option{ position:relative }
+.wc-block-components-radio-control-accordion-option--checked-option-highlighted::before{
+	content:"";
+	position:absolute;
+	inset-block:0;
+	inset-inline-start:0;
+	width:3px;
+	border-radius:var(--radius-pill);
+	background:var(--action);
+}
+
 /* *** THE CHECKED RULE WAS LIGHTER THAN THE RESTING ONE. ***
    The resting surface is set at (0,3,0) - doubled class, inside .form - and
    this was at (0,1,0), so the selected option never actually tinted. What
@@ -341,6 +382,11 @@
 .wc-block-components-radio-control__input{
 	appearance:none;
 	flex:none;
+	/* The option is a grid with align-items:center, and centring a 20px control
+	   against a 21px line of text puts it half a pixel high and reads as more.
+	   Aligned to the text's own box instead. */
+	align-self:center;
+	translate:0 -.5px;
 	width:var(--radio, 1.25rem);
 	height:var(--radio, 1.25rem);
 	margin:0;
