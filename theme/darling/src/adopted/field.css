@@ -229,6 +229,8 @@
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
 	align-items:start;
+	/* Same inset as .d-check - see the note there. */
+	padding-inline-start:var(--inline);
 	cursor:pointer;
 	font-size:var(--fs-meta);
 	line-height:var(--lh-body);
@@ -313,6 +315,7 @@
 .wc-block-components-radio-control{ --radio: var(--control) }
 .wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
+	padding-inline-start:var(--inline);   /* the control's inset - see .d-check */
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
 	align-items:center;

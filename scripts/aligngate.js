@@ -40,6 +40,7 @@ const eq = (what, a, b) => {
         splitH: q('.d-split__main h3'), splitField: q('.d-split__main .d-field'),
         asideRight: q('.d-split__aside', R),
         checkText: q('.d-check span'), wooText: q('.wc-block-components-checkbox__label'),
+        checkBox: q('.d-check input'), wooBox: q('.wc-block-components-checkbox__input'),
         stackH: q('.d-stack > h3'), shellContent: contentLeft('.d-shell') };
     });
   });
@@ -59,8 +60,13 @@ const eq = (what, a, b) => {
   eq('aside ends on the right rail', m[1].asideRight, m[1].guides[1] + 1);
 
   console.log('3 the control column');
-  eq('our control text on the text rail', m[2].checkText, m[2].guides[1]);
-  eq('Woo control text on the text rail', m[2].wooText, m[2].guides[1]);
+  // Two rails here since the owner asked for the control to be inset: the
+  // control sits one --inline in from the page rail, the text one --inline
+  // past the control. guides are [page, control, text].
+  eq('our tick box on the control rail', m[2].checkBox, m[2].guides[1]);
+  eq('Woo tick box on the control rail', m[2].wooBox, m[2].guides[1]);
+  eq('our control text on the text rail', m[2].checkText, m[2].guides[2]);
+  eq('Woo control text on the text rail', m[2].wooText, m[2].guides[2]);
   eq('the shell that holds them starts on the page rail', m[2].shellContent, m[2].guides[0]);
 
   console.log('4 rhythm');

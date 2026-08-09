@@ -180,12 +180,16 @@
    break the legitimate case of a card inside a card. It is enforced by the
    composition matrix and its gate, which render the nestings and measure them. */
 .d-box{
-	--pad: var(--space-s);
+	/* Owner, on the first render: a fifth smaller. --space-s to --space-xs is
+	   16->12 at the small end and 20->15 at the large one, which is that, and
+	   it stays on the scale - the alternative was 0.8 x --space-s, a number
+	   that is on no step and would drift the day the scale moves. */
+	--pad: var(--space-xs);
 	box-sizing:border-box;
 	padding:var(--pad);
 }
 .d-box--tight{ --pad: var(--space-2xs) }
-.d-box--roomy{ --pad: var(--space-m) }
+.d-box--roomy{ --pad: var(--space-s) }
 .d-box--flush{ --pad: 0 }
 .d-box--raised{
 	background:var(--surface-raised);
@@ -214,7 +218,8 @@
    standard multiplier for "large enough to saturate", not a magic number. */
 .d-switcher{
 	--threshold: 30rem;
-	--gap: var(--space-m);
+	/* Owner: half. --space-m to --space-xs is 24->12 and 30->15. */
+	--gap: var(--space-xs);
 	display:flex;
 	flex-wrap:wrap;
 	gap:var(--gap);

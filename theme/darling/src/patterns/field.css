@@ -245,11 +245,24 @@
    Drawn, not native: a native checkbox cannot be coloured on every platform,
    and the one on the checkout is the control that says "same address for
    billing", which is the single most-clicked control in the flow. */
+/* *** THE CONTROL IS INSET FROM THE ROW'S EDGE, BY THE SAME GAP IT KEEPS ON ITS
+   OTHER SIDE. *** Owner's call: a tick box whose left edge sat exactly on the
+   rail read as cramped, because it had --inline of air to its right, before the
+   label, and none at all to its left. So it gets the same on both sides.
+
+   The ROW's box still starts on the rail - this is padding inside it, not a
+   margin on it - so a checkbox row in a stack still lines up with the headings
+   and fields above it. What moves is the control and its label, together, by
+   one --inline.
+
+   Written on every family that has a control in front of text, because the
+   whole point of --control was that these three stop disagreeing. */
 .d-check{
 	display:grid;
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
 	align-items:start;
+	padding-inline-start:var(--inline);
 	cursor:pointer;
 	font-size:var(--fs-meta);
 }

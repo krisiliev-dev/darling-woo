@@ -2612,7 +2612,8 @@ not a component we have agreed on.</p>
 <p class="lbl">3 &middot; THE CONTROL COLUMN &mdash; a tick, a radio and Woo&rsquo;s own checkbox, one text rail</p>
 <div class="algn"><div class="algn-page">
 <i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
-<i class="gl gl--low" style="left:calc(var(--gutter) + var(--control) + var(--inline))"><b>text rail &mdash; --control + --inline</b></i>
+<i class="gl gl--bar" style="left:calc(var(--gutter) + var(--inline))"><b>control rail</b></i>
+<i class="gl gl--low" style="left:calc(var(--gutter) + var(--inline) + var(--control) + var(--inline))"><b>text rail</b></i>
 <div class="d-shell d-stack d-stack--tight" style="padding-block:var(--space-m)">
 <label class="d-check"><input type="checkbox" checked><span>&#x418;&#x441;&#x43A;&#x430;&#x43C; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x430; &#x437;&#x430; &#x444;&#x438;&#x440;&#x43C;&#x430;</span></label>
 <label class="d-check"><input type="radio" name="alg-r" checked><span>&#x421;&#x43F;&#x438;&#x434;&#x438; &#x43E;&#x444;&#x438;&#x441;</span></label>
@@ -2625,12 +2626,20 @@ not a component we have agreed on.</p>
 </div></div>
 </div>
 </div></div>
-<p class="note">Three components, three files, one rail. They were
-<code>1.18em</code>, <code>1.15rem</code> and <code>1.25rem</code> &mdash; three
-sizes for one job, so a form that mixed them put its text on rails up to
+<p class="note">Three components, three files, two rails &mdash; one for the
+control and one for the text, and all three families on both. They were
+<code>1.18em</code>, <code>1.15rem</code> and <code>1.25rem</code>: three sizes
+for one job, so a form that mixed them put its text on rails up to
 3.5&nbsp;px apart. Too small to name, exactly large enough to make a form feel
-loose. One token, <code>--control</code>, and the em one is gone: an em control
-changed size with whatever font-size its label happened to have.</p>
+loose. One token, <code>--control</code>, at the size the owner had already
+approved, and the em one is gone &mdash; an em control changed size with
+whatever font-size its label happened to have.</p>
+<p class="note"><b>The control is inset from the row&rsquo;s edge by the same gap
+it keeps on its other side.</b> Sitting exactly on the rail it had
+<code>--inline</code> of air to its right, before the label, and none at all to
+its left. The row&rsquo;s own box still starts on the rail &mdash; this is
+padding inside it, not a margin on it &mdash; so a list of tickboxes still lines
+up with the headings and fields above it.</p>
 
 <p class="lbl">4 &middot; RHYTHM &mdash; <code>.d-stack</code>, and why the gap is not a margin</p>
 <div class="algn"><div class="algn-page">
