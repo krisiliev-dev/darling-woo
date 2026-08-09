@@ -106,8 +106,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .todo{font-size:var(--fs-fine);color:var(--ink-quiet);border-left:3px solid var(--hairline);
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#next">Still to come</a></nav>
+<!--GNAV-->
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -2371,26 +2370,96 @@ control this whole time.</div>
 </section>''')
 
 A('''<section class="sec" id="next"><h2>Status</h2>
-<h3>All twelve patterns are written</h3>
-<p class="note">card, button, band, notice, rating, field, table, quantity, badge,
-panel, pagination and skeleton. Every one is written against markup captured from
-the live site rather than against class names, and every one that has to overrule
-WooCommerce lives in <code>src/adopted/</code>, outside the cascade layers, because
-that is the only place it can win.</p>
-<p class="note"><b>What is left is not more patterns.</b> It is the cutover: point
-<code>functions.php</code> at the built stylesheet, add <code>add_editor_style()</code>
-so the block editor gets the same file, delete <code>style.css</code> and
-<code>assets/darling.css</code>, then start taking WooCommerce's own stylesheets off
-one handle at a time in the order set out in the surface inventory.</p>
+<h3>Where this actually stands</h3>
+<p class="note"><b>The patterns are done and reviewed.</b> Every section above
+this one has been through the owner, and every one is written against markup
+captured from the live site rather than against class names. Anything that has
+to overrule WooCommerce lives in <code>src/adopted/</code>, outside the cascade
+layers, because that is the only place it can win.</p>
+<p class="note"><b>What is left is WooCommerce&rsquo;s own furniture</b> &mdash;
+the surfaces we do not author but do have to dress. The catalogue filters
+(above) were the first of four:</p>
+<div class="todo"><b>A. Catalogue filters &mdash; done, and reviewed.</b> Shell
+and both modes are real; everything below the shell is a floor rather than a
+finish, and <code>src/adopted/filters.css</code> says so in capitals. Re-verify
+against the real DOM the day the catalogue has more than one product in
+it.<br><br>
+<b>B. The block checkout&rsquo;s innards.</b> Captured with a browser and a
+seeded cart, because the served page is 3&nbsp;KB of scaffolding and the entire
+form is built by React &mdash; 141 distinct <code>wc-block</code> classes that
+<code>curl</code> cannot see. Steps, address form, totals, payment radios,
+express payment.<br><br>
+<b>C. The two libraries WooCommerce brings with it.</b> select2, which is 230
+rules and is live on <code>/my-account/</code> today, and PhotoSwipe on the
+product gallery. Each is a decision before it is a stylesheet: dress it, or
+replace it with something of ours.<br><br>
+<b>D. Woo&rsquo;s button variants.</b> <code>is-link</code> and
+<code>is-style-outline</code> arrive from the block editor on content nobody
+here wrote, and neither has a home in this system yet.</div>
+<p class="note"><b>Then the cutover</b>, which has not moved: point
+<code>functions.php</code> at the built stylesheet, add
+<code>add_editor_style()</code> so the block editor gets the same file, delete
+<code>style.css</code> and <code>assets/darling.css</code>, then take
+WooCommerce&rsquo;s own stylesheets off one handle at a time in the order set
+out in the surface inventory.</p>
+<p class="note"><b>And two things carried, so they are not quietly lost.</b> The
+map picker above is the styled component only &mdash; the map itself is a later
+job, and OpenFreeMap with MapLibre is the current answer (no key, no quota,
+commercial use explicit, self-hostable, and no SLA, which is the catch). And the
+office-field plugin still emits an inline
+<code style="color:#b01f30">#b01f30</code> that wants to become
+<code>.d-notice--warning</code>.</p>
 </section></div></body></html>''')
 
 out = ''.join(P)
+
+# *** THE NAV IS GENERATED FROM THE SECTIONS, BECAUSE A HAND-KEPT ONE DRIFTS. ***
+# It had: twenty-five sections, twenty-three links. Panel and Slider had no way
+# in, and #small was still advertised as "Quantity, badge, panel" from before the
+# panel got its own section. Nothing was done wrong - a list kept in one place
+# and sections written in another simply separate, and they do it silently.
+#
+# A missing link is now impossible rather than unlikely. NAV_LABEL is only for
+# headings too long to sit in a strip; anything not in it is named after its own
+# <h3>, truncated at the em dash. Add a section, get a link.
+NAV_LABEL = {
+	'chrome':    u'Header',       
+	'footer':    u'Footer',
+	'hero':      u'Hero',
+	'catalogue': u'Catalogue',
+	'pages':     u'Pages, a11y',
+	'filters':   u'Filters',
+	'mappick':   u'Map picker',
+	'next':      u'Still to come',
+}
+# Not by pattern-matching the opening tag: two sections legitimately do not open
+# <h2><h3>. The season strip inside the hero is a second <section class="sec">
+# with NO id - a continuation, not a destination - and #footer carries a style
+# attribute and wraps its heading in .wrap so it can run edge to edge. So: take
+# the id where there is one, take the first <h3> after it wherever it sits, and
+# say out loud how many were anonymous instead of letting the number hide.
+links, anon = [], 0
+for m in re.finditer(r'<section class="sec"([^>]*)>', out):
+	sid = re.search(r'id="([a-z0-9-]+)"', m.group(1))
+	if not sid:
+		anon += 1
+		continue
+	sid = sid.group(1)
+	h3 = re.search(r'<h3>(.*?)</h3>', out[m.end():m.end() + 2000], re.S)
+	assert h3, 'gen-gallery: #%s has no <h3> within 2000 chars to name its nav link' % sid
+	label = NAV_LABEL.get(sid)
+	if not label:
+		label = re.sub(r'<[^>]+>', '', h3.group(1)).split('&mdash;')[0].strip().rstrip(',')
+	links.append(u'<a href="#%s">%s</a>' % (sid, label))
+out = out.replace(u'<!--GNAV-->',
+                  u'<nav class="gnav">%s</nav>' % u''.join(links), 1)
+assert u'<!--GNAV-->' not in out
 # A stray cp1252 run in the OUTPUT means something was mangled on the way in and
 # the gallery would ship with broken Cyrillic. Fail rather than publish it.
 strays = sorted({m.group(0) for m in RUN.finditer(out) if unmangle(m) != m.group(0)})
 assert not strays, strays
 with open(OUT_FILE, 'w', encoding='utf-8') as f:
     f.write(out)
-print('gen-gallery: %d sections, %.1f KB -> %s'
-      % (out.count('<section class="sec"'), len(out.encode()) / 1024,
-         os.path.relpath(OUT_FILE, ROOT)))
+print('gen-gallery: %d sections, %d nav links (%d anonymous), %.1f KB -> %s'
+      % (out.count('<section class="sec"'), len(links), anon,
+         len(out.encode()) / 1024, os.path.relpath(OUT_FILE, ROOT)))

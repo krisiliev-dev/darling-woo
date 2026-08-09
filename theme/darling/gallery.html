@@ -11744,8 +11744,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .todo{font-size:var(--fs-fine);color:var(--ink-quiet);border-left:3px solid var(--hairline);
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#next">Still to come</a></nav>
+<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -12530,10 +12529,16 @@ that is the next component.</div>
 		if (!overlay || !dialog || !close) { return; }
 		overlay.addEventListener('click', function (e) {
 			if (!block.classList.contains('is-overlay-opened')) { return; }
-			/* Only a click that started AND ended outside the panel. Without the
-			   first half, dragging a price handle out of the panel and releasing
-			   closes the thing you were adjusting. */
+			/* *** BOTH HALVES, AND THE FIRST ONE IS THE ONE THAT MATTERS. ***
+			   A click fires on the nearest common ancestor of press and release,
+			   so pressing a price handle INSIDE the panel and releasing on the
+			   scrim arrives here with e.target === the overlay - outside the
+			   dialog by every test this handler can make on the event alone. The
+			   pointerdown below is what remembers where the gesture began.
+			   Without it you drag a slider, overshoot, and the panel you were
+			   adjusting shuts. */
 			if (dialog.contains(e.target)) { return; }
+			if (overlay.dataset.dOutside !== '1') { return; }
 			close.click();
 		});
 		overlay.addEventListener('pointerdown', function (e) {
@@ -14067,15 +14072,43 @@ has no <code>.d-field</code> around it, so the field pattern&rsquo;s selector
 list never reached it and it has been rendering as the browser&rsquo;s own
 control this whole time.</div>
 </section><section class="sec" id="next"><h2>Status</h2>
-<h3>All twelve patterns are written</h3>
-<p class="note">card, button, band, notice, rating, field, table, quantity, badge,
-panel, pagination and skeleton. Every one is written against markup captured from
-the live site rather than against class names, and every one that has to overrule
-WooCommerce lives in <code>src/adopted/</code>, outside the cascade layers, because
-that is the only place it can win.</p>
-<p class="note"><b>What is left is not more patterns.</b> It is the cutover: point
-<code>functions.php</code> at the built stylesheet, add <code>add_editor_style()</code>
-so the block editor gets the same file, delete <code>style.css</code> and
-<code>assets/darling.css</code>, then start taking WooCommerce's own stylesheets off
-one handle at a time in the order set out in the surface inventory.</p>
+<h3>Where this actually stands</h3>
+<p class="note"><b>The patterns are done and reviewed.</b> Every section above
+this one has been through the owner, and every one is written against markup
+captured from the live site rather than against class names. Anything that has
+to overrule WooCommerce lives in <code>src/adopted/</code>, outside the cascade
+layers, because that is the only place it can win.</p>
+<p class="note"><b>What is left is WooCommerce&rsquo;s own furniture</b> &mdash;
+the surfaces we do not author but do have to dress. The catalogue filters
+(above) were the first of four:</p>
+<div class="todo"><b>A. Catalogue filters &mdash; done, and reviewed.</b> Shell
+and both modes are real; everything below the shell is a floor rather than a
+finish, and <code>src/adopted/filters.css</code> says so in capitals. Re-verify
+against the real DOM the day the catalogue has more than one product in
+it.<br><br>
+<b>B. The block checkout&rsquo;s innards.</b> Captured with a browser and a
+seeded cart, because the served page is 3&nbsp;KB of scaffolding and the entire
+form is built by React &mdash; 141 distinct <code>wc-block</code> classes that
+<code>curl</code> cannot see. Steps, address form, totals, payment radios,
+express payment.<br><br>
+<b>C. The two libraries WooCommerce brings with it.</b> select2, which is 230
+rules and is live on <code>/my-account/</code> today, and PhotoSwipe on the
+product gallery. Each is a decision before it is a stylesheet: dress it, or
+replace it with something of ours.<br><br>
+<b>D. Woo&rsquo;s button variants.</b> <code>is-link</code> and
+<code>is-style-outline</code> arrive from the block editor on content nobody
+here wrote, and neither has a home in this system yet.</div>
+<p class="note"><b>Then the cutover</b>, which has not moved: point
+<code>functions.php</code> at the built stylesheet, add
+<code>add_editor_style()</code> so the block editor gets the same file, delete
+<code>style.css</code> and <code>assets/darling.css</code>, then take
+WooCommerce&rsquo;s own stylesheets off one handle at a time in the order set
+out in the surface inventory.</p>
+<p class="note"><b>And two things carried, so they are not quietly lost.</b> The
+map picker above is the styled component only &mdash; the map itself is a later
+job, and OpenFreeMap with MapLibre is the current answer (no key, no quota,
+commercial use explicit, self-hostable, and no SLA, which is the catch). And the
+office-field plugin still emits an inline
+<code style="color:#b01f30">#b01f30</code> that wants to become
+<code>.d-notice--warning</code>.</p>
 </section></div></body></html>
