@@ -452,6 +452,9 @@
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
 		(root || document).querySelectorAll('.wc-block-components-totals-coupon').forEach(couponOpen);
+		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(function (el) {
+			if (!el.dataset.dExpressInit) { el.dataset.dExpressInit = '1'; expressState(el); }
+		});
 		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
@@ -462,6 +465,48 @@
 		(root || document).querySelectorAll('.d-burst-host').forEach(function (el) {
 			if (!el.dataset.dBurst) { el.dataset.dBurst = '1'; burstHost(el); }
 		});
+	}
+
+
+	/* 8. THE EXPRESS SLAB THAT IS SOMETIMES A TITLE AND NOTHING ELSE.
+	      The owner sees "Бързо плащане" over empty space. A stylesheet cannot
+	      answer it, and I wrote a stylesheet rule for it twice before measuring.
+
+	      *** MEASURED ON THE LIVE PAGE: buttons 0, iframes 1, iframe height 56.
+	      *** There is never a <button>. Stripe's express element is an iframe,
+	      always, and when no wallet is available it KEEPS the iframe and
+	      animates its height to zero. So the difference between "a wallet is
+	      offered" and "nothing is offered" is a height, and a selector cannot
+	      read a height.
+
+	      Stripe also decides late, and then animates over 350ms, so one reading
+	      at load time is a reading of the wrong moment. This watches instead:
+	      a ResizeObserver for the settle, and a short poll for the browsers
+	      that do not have one.
+
+	      Writes data-d-express; the stylesheet hides what it marks. Absent
+	      means the script never ran, and the CSS treats that as "live" - an
+	      empty heading is a smaller failure than a wallet button nobody can
+	      reach. */
+	function expressState(region) {
+		var row = region.querySelector('.wc-block-components-express-payment__event-buttons');
+		if (!row) { return; }
+		/* 24px: a mounted wallet is 40px minimum by Stripe's own inline
+		   min-height, and a collapsed one is 0. Anything between is mid-
+		   animation and will be read again. */
+		var settle = function () {
+			var h = row.getBoundingClientRect().height;
+			region.setAttribute('data-d-express', h > 24 ? 'live' : 'empty');
+		};
+		settle();
+		if (window.ResizeObserver) {
+			new window.ResizeObserver(settle).observe(row);
+		}
+		var n = 0;
+		var t = setInterval(function () {
+			settle();
+			if (++n > 24) { clearInterval(t); }
+		}, 250);
 	}
 
 	cartEvents();

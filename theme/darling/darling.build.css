@@ -12497,19 +12497,11 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:block;
 }
 
-/* The empty slab at the top of the page. Woo renders the express-payment
-   region whether or not any express method exists, and with the gateways down
-   it is a bordered box containing a heading and a horizontal rule. */
+/* The slab at the top of the page. Woo renders the express-payment region
+   whether or not any express method exists. */
 .wc-block-components-express-payment--checkout{
 	border:0;
 	padding:0;
-}
-.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe)){
-	display:none;
-}
-.wc-block-components-express-payment--checkout:not(:has(button)):not(:has(iframe))
-	+ .wc-block-components-checkout-step__heading{
-	margin-top:0;
 }
 
 /* Stripe's own container, which holds an iframe: a surface, not a control. */
@@ -12579,14 +12571,34 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 .wc-block-components-checkout-order-summary__title-price{ display:none }
 
 /* -- the express region, when there is nothing express about it -----------
-   Woo renders the heading and the "or carry on below" rule whether or not any
-   express method exists, so with no gateways the page opens with a title over
-   an empty box. The whole wrapper goes, not just the box - otherwise the
-   heading stays and points at nothing. */
-.wc-block-checkout__form > div:has(> .wc-block-components-express-payment:not(:has(button)):not(:has(iframe))){
+   The owner reported a "Бързо плащане" heading with nothing under it, and the
+   rule written for it - hide when there is no <button> and no <iframe> - never
+   fired once. Measured, on the live page, with Stripe reachable:
+
+     buttons 0, iframes 1, iframe height 56px
+
+   There is NEVER a button. Stripe's express element is an iframe, always, and
+   when no wallet is available it keeps the iframe and animates its height to
+   zero. So the discriminator is not the presence of anything; it is a HEIGHT,
+   which no selector can read. And when Stripe cannot load at all the region is
+   not rendered - so the state that needed answering was the only one CSS could
+   not see.
+
+   darling-ui.js measures the button row and writes data-d-express. This hides
+   what it marks.
+
+   *** THE DEFAULT IS VISIBLE, ON PURPOSE. *** No attribute means the script did
+   not run, and an empty heading is a smaller failure than a wallet button
+   nobody can reach. */
+.wc-block-components-express-payment[data-d-express="empty"]{ display:none }
+.wc-block-checkout__form > div:has(> .wc-block-components-express-payment[data-d-express="empty"]){
 	display:none;
 }
-.wc-block-components-express-payment:not(:has(button)):not(:has(iframe)){
+/* The "or carry on below" rule is a SIBLING of the region, not a child, so it
+   survives hiding the region and leaves a lone horizontal line where the
+   wallet used to be. */
+.wc-block-checkout__form:has(.wc-block-components-express-payment[data-d-express="empty"])
+	.wc-block-components-express-payment-continue-rule{
 	display:none;
 }
 
