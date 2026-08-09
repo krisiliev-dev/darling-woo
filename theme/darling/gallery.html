@@ -12652,6 +12652,23 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	   y=2002 on a 2391px page, below Поръчай. */
 }
 
+/* *** A BLOCK WITH NO HEIGHT STILL TAKES A ROW GAP ONCE IT IS A GRID ITEM. ***
+   Measured on the phone: 88px of nothing between "Данни за контакт" and
+   "Адрес за доставка". Two of WooCommerce's blocks render with zero height on
+   this store - the Delivery/Pickup toggle and its options, neither of which is
+   switched on - and dissolving the form turned them into grid items. Each then
+   collected a 24px gap on both sides plus its own 8px top margin: 24+8+24+8+24.
+
+   Nothing was wrong with either block; they were correctly invisible. It is the
+   gap that is the bug, and a gap cannot be told to skip an empty item.
+
+   :has() rather than :empty - they are not empty, they contain empty wrappers.
+   If a control ever appears inside one, the rule stops applying by itself. */
+.wp-block-woocommerce-checkout-shipping-method-block:not(:has(input, button, label, a)),
+.wp-block-woocommerce-checkout-pickup-options-block:not(:has(input, button, label, a)){
+	display:none;
+}
+
 /* *** THE SECOND SUMMARY IS WooCommerce'S, AND SO IS THE RULE THAT HIDES IT. ***
    The owner asked how a floating duplicate "Обобщение на поръчката" happened.
    It is not a duplicate we made: the checkout renders the summary block TWICE,
