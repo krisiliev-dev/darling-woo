@@ -55,11 +55,22 @@
 	   put that text on a rail: a checkbox, a radio, a list bullet.
 
 	   *** IT IS HERE BECAUSE IT WAS IN TWO PLACES AND THEY DISAGREED. ***
-	   The checkbox was 1.15rem and the radio 1.25rem, set months apart in the
-	   same file, so a column of tickboxes and a column of radios started their
-	   text 1.6px apart - too small to name and exactly large enough to make a
-	   form feel loose. A size that two components must share is a token. */
-	--control:       1.25rem;
+	   Three sizes for one job: .d-check at 1.18em, the adopted checkbox at
+	   1.15rem, the adopted radio at 1.25rem. So a form that mixed them started
+	   its text on rails up to 3.5px apart - too small to name and exactly large
+	   enough to make a form feel loose. A size two components must share is a
+	   token.
+
+	   *** THE NUMBER IS OURS, NOT WOO'S, AND THAT IS THE OWNER'S CALL. ***
+	   The first version of this token held 1.25rem - Woo's radio - which made
+	   our own tick box 27% bigger than the one he had already reviewed and
+	   approved. A refactor that changes a rendered size is not a refactor. 1rem
+	   is what .d-check was already measuring (15.72px), so WooCommerce's
+	   controls come down to meet ours rather than ours going up to meet theirs.
+
+	   In rem, not em: at 1.18em the same control was a different size in every
+	   context, because it read whatever font-size its label happened to have. */
+	--control:       1rem;
 
 	/* -- the page column -----------------------------------------------------
 	   How wide the readable column of a full-bleed band is allowed to get. Not
