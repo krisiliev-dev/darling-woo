@@ -9511,11 +9511,38 @@ li.product .wp-block-button__link{
 	           background var(--dur-ui) var(--ease-float);
 }
 .wc-block-components-radio-control-accordion-option:hover{ border-color:var(--c-mauve-light) }
-.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
-.wc-block-components-radio-control__option-checked{
+/* *** THE CHECKED RULE WAS LIGHTER THAN THE RESTING ONE. ***
+   The resting surface is set at (0,3,0) - doubled class, inside .form - and
+   this was at (0,1,0), so the selected option never actually tinted. What
+   looked like a tint was the label's copy of the rule painted over the top,
+   which is also why the label row read darker than the description under it.
+   Same weight as the rule it has to beat, and on the option only. */
+.wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
+.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked:not(.wc-block-components-radio-control-accordion-option *){
 	border-color:var(--action);
 	background:color-mix(in oklab, var(--action) 7%, var(--surface-raised));
 }
+/* *** WooCommerce TAKES THE RADIO OUT OF FLOW, SO OUR GRID HAD ONE ITEM. ***
+   The option above is display:grid with an auto column for the control - and
+   their input is position:absolute, so it is not a grid item at all. The label
+   group took the first column and slid under the control: on the live checkout
+   both payment methods render as a radio sitting on top of their own first
+   letters. Not new, and not this batch's - as old as the grid.
+
+   Static is what the input already was before Woo moved it, so this is a
+   restoration rather than an override. */
+.wc-block-components-form .wc-block-components-radio-control__input.wc-block-components-radio-control__input{
+	position:static;
+	inset:auto;
+}
+
+/* And the tint was painted twice - once on the option, once on its label - so
+   two translucent washes stacked and the label row came out darker than the
+   description under it. One selected option should look like one thing. */
+.wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option-checked{
+	background:transparent;
+}
+
 .wc-block-components-radio-control__input{
 	appearance:none;
 	width:1.18em;
@@ -11701,6 +11728,532 @@ select.orderby:focus-visible{
 /* -- the money path and the plain mode ---------------------------------------- */
 html.d-a11y .wc-block-product-filters__overlay,
 html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
+
+
+/* ==== adopted/checkout.css ==== */
+/* =============================================================================
+   ADOPTED / THE BLOCK CHECKOUT
+   The furniture around the fields: steps, sidebar, totals, actions.
+
+   *** THE SERVED PAGE IS 3 KB OF SCAFFOLDING. THE FORM IS REACT. ***
+   curl gets no inputs, no steps, no totals and no payment controls - every
+   family below is built at runtime. So this was read off a real browser with a
+   real cart in it (checkoutdeep.js -> checkout-shapes.txt), the same discipline
+   as the filters one layer deeper: read the markup, and if the markup does not
+   exist until JavaScript makes it, run the JavaScript.
+
+   WHAT IS ALREADY DRESSED, AND IS NOT REPEATED HERE
+   field.css owns the controls - text input, select, checkbox, radio, validation.
+   notice.css owns .wc-block-components-notice-banner. panel.css owns
+   .wc-block-components-panel, which is what the coupon disclosure is.
+   product.css owns the money amount and the product name. This file is the
+   LAYOUT: what holds those controls, and everything in the sidebar.
+
+   TWO THINGS THE CAPTURE FOUND THAT ARE NOT STYLING PROBLEMS, RECORDED HERE
+   BECAUSE THIS IS WHERE THEY WERE SEEN:
+
+     1. The terms line is HALF IN ENGLISH on the live site - "By proceeding with
+        your purchase you agree to our Terms and Conditions and Политика за
+        поверителност". A string, not a stylesheet.
+     2. .wc-block-components-address-card__edit is a <span type="button"
+        role="button"> with no tabindex, so the control that edits your delivery
+        address cannot be reached by keyboard. Woo's markup, not ours, and CSS
+        cannot fix it - it needs a tabindex from somewhere.
+   ========================================================================== */
+
+/* -- the two columns ----------------------------------------------------------
+   Woo's own layout is a flex row with percentage widths. Ours is a grid, at the
+   header's breakpoint so the page changes shape once, and the summary is a
+   column of its own rather than a float. */
+.wc-block-components-sidebar-layout{
+	display:grid;
+	grid-template-columns:minmax(0,1fr) 22rem;
+	gap:var(--space-l);
+	align-items:start;
+}
+/* *** WooCommerce SIZES THESE TWO IN PER CENT, AND PER CENT OF A GRID TRACK IS
+   NOT PER CENT OF THE ROW. *** checkout.css gives .wc-block-components-main
+   width:65% + padding-right:4.5283% and the sidebar width:35%, which is a flex
+   row talking to itself. Dropped into our grid those percentages resolve against
+   the TRACK, so the main column became 65% of 65% - measured at 442px inside a
+   681px track, and the sidebar 123px inside 352px. The grid owns the widths now;
+   these two just stop arguing. Two classes, because theirs is two. */
+.wc-block-components-sidebar-layout .wc-block-components-main,
+.wc-block-components-sidebar-layout .wc-block-components-sidebar{
+	width:auto;
+	max-width:none;
+	padding-inline:0;
+	min-width:0;
+}
+
+/* *** THE SUMMARY STICKS, AND THAT IS THE POINT OF PUTTING IT IN A COLUMN. ***
+   On a long checkout the total is the number you keep glancing back at. Top
+   offset clears the sticky header. */
+.wc-block-components-sidebar,
+.wc-block-checkout__sidebar{
+	position:sticky;
+	/* 5rem, the same number .d-archive__side uses and for the same reason: the
+	   header has no measured height until it renders, and a token that does not
+	   exist is not better than a number with a note on it. Tied to the archive
+	   sidebar by convention - if one moves, both move. */
+	top:5rem;
+	max-height:calc(100vh - 6rem);
+	overflow:auto;
+	scrollbar-width:thin;
+	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+	padding:var(--space-s);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+	box-shadow:var(--shadow-card);
+}
+
+@media (max-width: 900px){
+	.wc-block-components-sidebar-layout{
+		grid-template-columns:minmax(0,1fr);
+		gap:var(--space-m);
+	}
+	.wc-block-components-sidebar,
+	.wc-block-checkout__sidebar{ position:static; max-height:none; overflow:visible }
+}
+
+/* -- a step -------------------------------------------------------------------
+   Each one is a <fieldset> with a <legend class="screen-reader-text"> and then
+   its own visible heading, which is Woo doing the right thing: the legend names
+   the group for a screen reader and the h2 is what everyone else reads. A
+   fieldset's default border and padding have to go, and they have to go from the
+   fieldset itself rather than from a wrapper, because that is where the browser
+   puts them.
+
+   No box around each step. Five bordered slabs down a page is a form that looks
+   like an accordion nobody can open; a hairline between them says the same thing
+   more quietly. */
+/* *** DOUBLED CLASS, BECAUSE THEIRS IS `.wc-block-components-form .step`. ***
+   (0,2,0) against our (0,1,0), so the single class lost and the hairline never
+   appeared - measured, not guessed: border-bottom-width computed 0px.
+   Doubling ours rather than borrowing their ancestor, because two of these
+   steps - the notes and the terms - sit OUTSIDE the form.
+
+   And LONGHANDS. A shorthand containing var() cannot be read back as its
+   longhands through the CSSOM, so `border-bottom:1px solid var(--hairline)` is
+   invisible to any tool that asks the page what set border-bottom-width -
+   including the probe that found this. Writing it long costs nothing and keeps
+   the rule answerable. */
+.wc-block-components-checkout-step.wc-block-components-checkout-step{
+	margin:0;
+	padding:0 0 var(--space-m);
+	border:0;
+	border-bottom-width:1px;
+	border-bottom-style:solid;
+	border-bottom-color:var(--hairline);
+}
+.wc-block-components-checkout-step + .wc-block-components-checkout-step{
+	padding-top:var(--space-m);
+}
+.wc-block-components-checkout-step.wc-block-components-checkout-step:last-of-type{
+	border-bottom-style:none;
+}
+
+.wc-block-components-checkout-step__heading-container{ margin:0 0 var(--space-xs) }
+.wc-block-components-checkout-step__heading{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:baseline;
+	justify-content:space-between;
+	gap:var(--space-2xs);
+	margin:0;
+}
+/* Theirs is .wc-block-components-title.wc-block-components-title - already
+   doubled, at (0,2,0), and it points font-size at a WordPress preset. Ours has
+   to be at least as heavy to be heard at all. */
+.wc-block-components-checkout-step__title.wc-block-components-checkout-step__title{
+	margin:0;
+	font:var(--type-section);
+	/* --fs-band is 30px, the size of a full-bleed band's heading. Five of those
+	   down a checkout is a poster, not a form. --fs-lede. */
+	font-size:var(--fs-lede);
+	color:var(--ink);
+}
+/* "Already have an account?" and friends sit beside the title, so they are the
+   quiet half of a pair rather than a second heading. */
+.wc-block-components-checkout-step__heading-content{
+	font:var(--type-ui);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+}
+.wc-block-components-checkout-step__content{ margin:0 }
+
+/* An empty notices div at the top of every single step - five of them on this
+   page - each contributing its margin to a gap nobody asked for. */
+.wc-block-components-checkout-step__content > .wc-block-components-notices:empty{
+	display:none;
+}
+
+/* -- the address form ---------------------------------------------------------
+   *** THE FIELD ORDER IS WooCommerce'S; ONLY THE COLUMNS ARE OURS. ***
+   Two up for the pairs that belong together - the two halves of a name, a town
+   and its postcode - and full width for everything else. Named by Woo's own
+   per-field class, so a field this file has never heard of simply spans the
+   row rather than landing somewhere arbitrary. */
+.wc-block-components-address-form{
+	display:grid;
+	grid-template-columns:repeat(2, minmax(0,1fr));
+	gap:var(--space-2xs) var(--space-xs);
+}
+.wc-block-components-address-form > *{ grid-column:1 / -1 }
+.wc-block-components-address-form__first_name,
+.wc-block-components-address-form__last_name,
+.wc-block-components-address-form__city,
+.wc-block-components-address-form__postcode{ grid-column:span 1 }
+
+@media (max-width: 560px){
+	.wc-block-components-address-form{ grid-template-columns:minmax(0,1fr) }
+	.wc-block-components-address-form > *{ grid-column:1 }
+}
+
+/* The "add an apartment, suite, etc" link. Woo renders it as a <button>; it is a
+   link in meaning - it reveals a field, it does not submit anything - so it gets
+   the link treatment and none of the button's weight. */
+.wc-block-components-address-form__address_2-toggle{
+	justify-self:start;
+	padding:0;
+	border:0;
+	background:none;
+	color:var(--action);
+	font:var(--type-ui);
+	font-size:var(--fs-meta);
+	text-decoration:underline;
+	text-underline-offset:.2em;
+	cursor:pointer;
+}
+.wc-block-components-address-form__address_2-toggle:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+	border-radius:var(--radius-xs);
+}
+
+/* -- the address, once it has been given --------------------------------------
+   Woo swaps the form for a card. It is a summary of something you typed, which
+   is the same object as the cart drawer's line summary: quiet surface, no
+   shadow, and the edit control is a link rather than a second button competing
+   with "Поръчай". */
+.wc-block-components-address-card{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:start;
+	justify-content:space-between;
+	gap:var(--space-2xs);
+	padding:var(--space-xs) var(--space-s);
+	border-radius:var(--radius-m);
+	background:var(--surface-quiet);
+}
+.wc-block-components-address-card address{
+	margin:0;
+	font:var(--type-body);
+	font-size:var(--fs-meta);
+	font-style:normal;
+	color:var(--ink);
+}
+.wc-block-components-address-card__address-section{ display:block }
+.wc-block-components-address-card__address-section--secondary{ color:var(--ink-quiet) }
+.wc-block-components-address-card__edit{
+	flex:none;
+	color:var(--action);
+	font:var(--type-ui);
+	font-size:var(--fs-meta);
+	text-decoration:underline;
+	text-underline-offset:.2em;
+	cursor:pointer;
+}
+.wc-block-components-address-card__edit:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+	border-radius:var(--radius-xs);
+}
+
+/* -- the small print inside the form ----------------------------------------- */
+.wc-block-checkout__guest-checkout-notice{
+	margin:var(--space-3xs) 0 0;
+	font:var(--type-ui);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.wc-block-components-shipping-rates-control__no-shipping-address-message{
+	margin:0;
+	padding:var(--space-xs) var(--space-s);
+	border-radius:var(--radius-m);
+	background:var(--surface-quiet);
+	font:var(--type-body);
+	font-size:var(--fs-meta);
+	color:var(--ink-quiet);
+}
+.wc-block-components-payment-method-label{ font-weight:var(--fw-medium) }
+
+/* -- notes, terms, and the button ---------------------------------------------
+   *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
+   Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
+   terms are not a required tick, so any rule that assumes a control beside that
+   class is wrong here. Scoped to the terms block rather than fought. */
+.wc-block-checkout__order-notes{ padding-block:var(--space-s) }
+.wc-block-checkout__add-note{ margin:0 }
+
+.wc-block-checkout__terms{
+	margin:0;
+	padding-block:var(--space-s);
+	font:var(--type-body);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.wc-block-checkout__terms--with-separator{ border-top:1px solid var(--hairline) }
+.wc-block-checkout__terms > .wc-block-components-checkbox__label{
+	display:block;
+	grid-column:auto;
+}
+.wc-block-checkout__terms a{ color:var(--action) }
+
+.wc-block-checkout__actions{ padding-block:var(--space-s) 0 }
+.wc-block-checkout__actions_row{
+	display:flex;
+	align-items:center;
+	gap:var(--space-xs);
+}
+.wc-block-checkout__actions_row--justify-flex-end{ justify-content:flex-end }
+
+/* The one button on the page that takes money. It is the primary, it is full
+   width because on a phone it is the only thing that matters, and its two
+   nested <div>s of text are Woo's loading-state scaffolding - they carry the
+   spinner - so they are flattened rather than removed. */
+/* *** THREE RULES WERE ALREADY PAINTING THIS BUTTON, AND OURS WAS THE LIGHTEST.
+   *** Woo's own checkout.css, the block library's
+   `.wc-block-components-button:not(.is-link)` with !important on the padding,
+   and WordPress's global styles as `:root :where(.wp-element-button)`. Measured
+   at (0,2,0) with a single class of ours against them; the button stayed gold.
+   So: two classes, and background-COLOR rather than the background shorthand -
+   a shorthand with var() in it is unreadable through the CSSOM and unhelpful
+   when the next person asks the page who set this. */
+.wc-block-components-button.wc-block-components-checkout-place-order-button{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	gap:var(--inline);
+	padding:.86em 1.7em;
+	border:0;
+	border-radius:var(--radius-pill);
+	background-color:var(--action);
+	background-image:none;
+	color:var(--action-ink);
+	font:var(--type-ui);
+	font-weight:var(--fw-medium);
+	cursor:pointer;
+	transition:background-color var(--dur-ui) var(--ease-float);
+}
+.wc-block-components-button.wc-block-components-checkout-place-order-button--full-width{
+	width:100%;
+}
+.wc-block-components-button.wc-block-components-checkout-place-order-button:hover{
+	background-color:var(--c-claret);
+}
+.wc-block-components-button.wc-block-components-checkout-place-order-button:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+.wc-block-components-button.wc-block-components-checkout-place-order-button:disabled{
+	opacity:.55;
+	cursor:not-allowed;
+}
+.wc-block-components-checkout-place-order-button .wc-block-components-button__text,
+.wc-block-components-checkout-place-order-button__text{
+	display:contents;
+}
+
+/* -- the sidebar --------------------------------------------------------------
+   The title row is a heading, a total and a chevron. On a desktop the chevron
+   does nothing and the summary is always open; under the breakpoint the whole
+   row is the disclosure. Woo drives that, we only dress it. */
+.wc-block-components-checkout-order-summary__title{
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+	margin:0 0 var(--space-xs);
+	cursor:default;
+}
+.wc-block-components-checkout-order-summary__title-text{
+	margin:0;
+	flex:1 1 auto;
+	font:var(--type-section);
+	/* --fs-band is 30px, the size of a full-bleed band's heading. Five of those
+	   down a checkout is a poster, not a form. --fs-lede. */
+	font-size:var(--fs-lede);
+	color:var(--ink);
+}
+.wc-block-components-checkout-order-summary__title-price{
+	font-weight:var(--fw-medium);
+	color:var(--ink);
+}
+.wc-block-components-checkout-order-summary__title-icon{
+	display:none;                      /* desktop: nothing to expand */
+	flex:none;
+	color:var(--ink-quiet);
+}
+@media (max-width: 900px){
+	.wc-block-components-checkout-order-summary__title{ cursor:pointer }
+	.wc-block-components-checkout-order-summary__title-icon{ display:inline-flex }
+}
+
+/* Woo wraps every block of the summary in a totals-wrapper and gives each one a
+   border. Three of the seven on this page are EMPTY - the wrapper renders
+   whether or not its contents do - so a border on the wrapper draws lines
+   across nothing. The rule is on the wrapper that HAS something in it. */
+.wc-block-components-totals-wrapper{ padding-block:var(--space-xs) }
+.wc-block-components-totals-wrapper:empty{ display:none }
+.wc-block-components-totals-wrapper + .wc-block-components-totals-wrapper:not(:empty){
+	border-top:1px solid var(--hairline);
+}
+
+.wc-block-components-totals-item{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:baseline;
+	justify-content:space-between;
+	gap:var(--space-3xs);
+	font:var(--type-body);
+	font-size:var(--fs-meta);
+	color:var(--ink);
+}
+.wc-block-components-totals-item__label{ color:var(--ink-quiet) }
+.wc-block-components-totals-item__value{ font-weight:var(--fw-medium) }
+.wc-block-components-totals-item__description{
+	flex:1 0 100%;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.wc-block-components-totals-item__description:empty{ display:none }
+
+/* The line the eye goes to. Bigger, and cocoa rather than cherry - cherry is
+   what you press, and a number is not a control. */
+.wc-block-components-totals-footer-item{
+	font-size:var(--fs-lede);
+	font-weight:var(--fw-medium);
+}
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__label{
+	color:var(--ink);
+}
+/* *** THE CLASS IS CALLED tax-value AND IT IS THE TOTAL. ***
+   I read `wc-block-components-totals-footer-item-tax-value` as the "includes
+   VAT" small print and styled it small  and quiet - and it is the grand total
+   itself, so the one number somebody reads before pressing the button came out
+   smaller and greyer than the word beside it. Two screenshots to notice, which
+   is the cost of styling from a class name instead of from what it renders.
+
+   Everything inside the footer's value takes the footer's size, so a nested
+   money span cannot quietly shrink it again. */
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__value,
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__value *{
+	font-size:inherit;
+	font-weight:var(--fw-medium);
+	color:var(--ink);
+}
+
+
+/* -- a line in the summary ----------------------------------------------------
+   Thumbnail, description, price. The quantity is a badge riding the corner of
+   the image, which is where every basket in the world puts it, and the image
+   already has our failed-image slab inside it - the capture found .d-media-fail
+   sitting in Woo's markup, which is the fallback doing its job on a surface
+   nobody wired it into. */
+.wc-block-components-order-summary-item{
+	display:grid;
+	grid-template-columns:3.25rem minmax(0,1fr) auto;
+	gap:var(--space-3xs) var(--space-2xs);
+	align-items:start;
+	padding-block:var(--space-2xs);
+}
+.wc-block-components-order-summary-item + .wc-block-components-order-summary-item{
+	border-top:1px solid var(--hairline);
+}
+/* *** overflow:hidden HERE ATE THE QUANTITY BADGE. ***
+   The badge rides the corner at -.35rem, which is outside the box, so clipping
+   the box clipped the badge. The corner belongs to what is IN the frame - the
+   photograph, or the failed-image slab - not to the frame itself.
+
+   The slab needs no container declared for it, either: media-fail.css makes
+   .d-media-fail its own `container-type:inline-size`, so the caption drops on
+   its own below 119px. (It is still visible on the live checkout, and that is a
+   STALE DEPLOY rather than a bug - the box emits d-media-fail__cap and the
+   deployed img-fallback.js still emits the old dmf-cap. It resolves the moment
+   the theme ships.) */
+.wc-block-components-order-summary-item__image{
+	position:relative;
+	width:3.25rem;
+	aspect-ratio:1;
+}
+.wc-block-components-order-summary-item__image img,
+.wc-block-components-order-summary-item__image .d-media-fail{
+	width:100%;
+	height:100%;
+	display:block;
+	object-fit:cover;
+	border-radius:var(--radius-s);
+	/* The clip moved here WITH the corner, which is the point: the slab clips
+	   its own caption, and the badge - which is not inside it - survives. */
+	overflow:hidden;
+	background:var(--surface-quiet);
+}
+/* Theirs is `.__image .__quantity` at (0,2,0) and paints it pale; a single
+   class of ours was never going to be heard. Measured, like the rest of today. */
+.wc-block-components-order-summary-item__image .wc-block-components-order-summary-item__quantity{
+	position:absolute;
+	top:-.35rem;
+	inset-inline-end:-.35rem;
+	z-index:1;
+	min-width:1.35rem;
+	height:1.35rem;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	padding-inline:.3em;
+	border-radius:var(--radius-pill);
+	background:var(--ink);
+	color:var(--ink-on-dark);
+	font:var(--fw-medium) var(--fs-badge)/var(--lh-flush) var(--font-ui);
+}
+.wc-block-components-order-summary-item__description{ min-width:0 }
+.wc-block-components-order-summary-item__description .wc-block-components-product-name{
+	margin:0;
+	font:var(--type-body);
+	font-size:var(--fs-meta);
+	font-weight:var(--fw-medium);
+	color:var(--ink);
+}
+/* The per-unit price only says something when there is more than one of them,
+   and Woo prints it either way. */
+.wc-block-components-order-summary-item__individual-prices{
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.wc-block-components-order-summary-item__total-price{
+	text-align:end;
+	font-size:var(--fs-meta);
+	font-weight:var(--fw-medium);
+	white-space:nowrap;
+}
+.wc-block-components-product-metadata:empty{ display:none }
+
+/* -- the snackbar -------------------------------------------------------------
+   Woo's transient messages. They are notices, so they are OUR notice - this only
+   says where the stack lives and that an empty one is not a hole in the page. */
+.wc-block-components-notices__snackbar{
+	position:fixed;
+	inset-block-end:var(--space-s);
+	inset-inline-start:var(--space-s);
+	z-index:70;
+	display:flex;
+	flex-direction:column;
+	gap:var(--space-3xs);
+	max-width:min(26rem, calc(100vw - 2 * var(--space-s)));
+	pointer-events:none;
+}
+.wc-block-components-notices__snackbar > *{ pointer-events:auto }
+.wc-block-components-notices__snackbar:has(> div:empty){ display:none }
 
 
 /* ==== adopted/media-fail.css ==== */

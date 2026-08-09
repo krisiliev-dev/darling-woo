@@ -281,11 +281,38 @@
 	           background var(--dur-ui) var(--ease-float);
 }
 .wc-block-components-radio-control-accordion-option:hover{ border-color:var(--c-mauve-light) }
-.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
-.wc-block-components-radio-control__option-checked{
+/* *** THE CHECKED RULE WAS LIGHTER THAN THE RESTING ONE. ***
+   The resting surface is set at (0,3,0) - doubled class, inside .form - and
+   this was at (0,1,0), so the selected option never actually tinted. What
+   looked like a tint was the label's copy of the rule painted over the top,
+   which is also why the label row read darker than the description under it.
+   Same weight as the rule it has to beat, and on the option only. */
+.wc-block-components-form .wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
+.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked:not(.wc-block-components-radio-control-accordion-option *){
 	border-color:var(--action);
 	background:color-mix(in oklab, var(--action) 7%, var(--surface-raised));
 }
+/* *** WooCommerce TAKES THE RADIO OUT OF FLOW, SO OUR GRID HAD ONE ITEM. ***
+   The option above is display:grid with an auto column for the control - and
+   their input is position:absolute, so it is not a grid item at all. The label
+   group took the first column and slid under the control: on the live checkout
+   both payment methods render as a radio sitting on top of their own first
+   letters. Not new, and not this batch's - as old as the grid.
+
+   Static is what the input already was before Woo moved it, so this is a
+   restoration rather than an override. */
+.wc-block-components-form .wc-block-components-radio-control__input.wc-block-components-radio-control__input{
+	position:static;
+	inset:auto;
+}
+
+/* And the tint was painted twice - once on the option, once on its label - so
+   two translucent washes stacked and the label row came out darker than the
+   description under it. One selected option should look like one thing. */
+.wc-block-components-radio-control-accordion-option .wc-block-components-radio-control__option-checked{
+	background:transparent;
+}
+
 .wc-block-components-radio-control__input{
 	appearance:none;
 	width:1.18em;
