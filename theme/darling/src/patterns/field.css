@@ -31,8 +31,14 @@
 	position:relative;
 	display:grid;
 	gap:var(--stack-tight);
-	margin-bottom:var(--space-2xs);
 }
+/* *** THE FIELD USED TO CARRY margin-bottom:var(--space-2xs), AND matrixgate
+   CAUGHT IT ON ITS FIRST RUN. *** A component does not set its own outer
+   margin: the gap between two fields belongs to whatever contains them, and
+   every container that holds fields already provides one - .d-fieldgrid has a
+   gap, .d-stack has a gap, the gallery's own grid has a gap. So the margin was
+   being ADDED to a gap everywhere it appeared, which is why the field rows read
+   as loose. Deleted rather than tuned. */
 
 /* -- the control ------------------------------------------------------------
    One ruleset for every text-like control plus select and textarea. They differ

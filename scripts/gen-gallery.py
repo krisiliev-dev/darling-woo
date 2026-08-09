@@ -131,6 +131,19 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   letter-spacing:.05em;text-transform:uppercase;color:var(--c-mauve);white-space:nowrap;
   background:var(--surface-page);padding:1px 5px;border-radius:3px}
 .sec:has(#alg-g:not(:checked)) .gh{opacity:0}
+/* the composition matrix. Cells are outlined so a child escaping one is visible
+   rather than merely measurable. */
+.mx{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.mx-cell{border:1px solid var(--hairline);border-radius:var(--radius-s);
+  background:var(--surface-page);overflow:visible}
+.mx-lbl{margin:0;padding:5px 8px;border-bottom:1px solid var(--hairline);
+  font:var(--fw-medium) 10px/1.4 var(--font-ui);letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink-quiet)}
+.mx-leaf{font-size:var(--fs-fine)}
+.mx-real{border:1px solid var(--hairline);border-radius:var(--radius-s);
+  padding:10px;margin:0 0 14px;background:var(--surface-page)}
+.mx-alone > div{border:1px dashed var(--c-mauve);border-radius:var(--radius-xs);
+  margin:0 0 10px}
 /* *** THE SPACE UNDER A FIELD IS NOT PADDING - IT IS A RESERVED LINE. ***
    The owner read it as loose padding, which is a fair reading of an empty gap.
    Tinting it while the guides are on says what it is: room kept for the error
@@ -2672,6 +2685,178 @@ declaring its own <code>max-width:var(--page-max)</code> is on the list:
 predate <code>.d-shell</code> and still agree with it by hand.</div>
 </section>''')
 
+# ------------------------------------------------------------------- matrix ---
+# *** THE ONLY HONEST ANSWER TO "WILL A CHECKBOX IN A PANEL IN A TABLE WORK". ***
+# You cannot reason it out past two levels of nesting - the owner's question was
+# three deep and he was right that nobody knows. So the combinations are
+# rendered, and scripts/matrixgate.js measures them. Generated from the list, so
+# adding a primitive adds its whole row and column without anyone remembering to.
+MX_LEAF = (u'<div class="d-box d-box--quiet mx-leaf">\u0430</div>'
+           u'<div class="d-box d-box--quiet mx-leaf">\u0431</div>'
+           u'<div class="d-box d-box--quiet mx-leaf">\u0432</div>')
+
+def mx_wrap(kind, inner):
+    """One layout primitive around whatever is handed to it."""
+    if kind == 'split':
+        # a split needs its two named children, so the inner goes in the main
+        # column and the aside is a stub - anything else would not be a split
+        return (u'<div class="d-split" style="--aside:5rem">'
+                u'<div class="d-split__main">%s</div>'
+                u'<div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div>'
+                u'</div>' % inner)
+    return u'<div class="d-%s">%s</div>' % (kind, inner)
+
+# .d-grid is NOT in this list, and that is a finding rather than an omission:
+# it still carries the page frame (max-width, centring, --gutter) because its
+# markup is WordPress block templates - see layout.css. Nested inside a 230px
+# cell that is 60px of gutter on each side and no room left. It cannot be
+# composed until the templates are regenerated, which is the rest of B1.
+MX_KINDS = ['stack', 'cluster', 'switcher', 'box', 'split']
+
+A(u'''<section class="sec" id="matrix"><h2>Rules</h2><h3>Composition &mdash; every primitive inside every other, and the awkward real ones</h3>
+<p class="note"><b>&ldquo;How do we know that if we put a checkbox next to a
+table, inside a panel, inside a table, it will display properly?&rdquo;</b> You
+do not, and neither does anyone else, because reasoning does not survive two
+levels of nesting. You render it and you measure it. That is this section, and
+<code>scripts/matrixgate.js</code> is the measuring.</p>
+<p class="note">Every cell below is one layout primitive inside another, with
+the same three boxes at the bottom of all of them. The cells are outlined, so a
+child escaping its container is visible as well as measurable. The gate asserts
+three things over the whole section: nothing sticks out past its container, no
+padded box sits alone inside another padded box, and every component rendered on
+its own has zero outer margin.</p>
+<p class="lbl">EVERY PRIMITIVE INSIDE EVERY OTHER &mdash; 25 cells, generated from the list</p>
+<div class="mx">''')
+for outer in MX_KINDS:
+    for inner in MX_KINDS:
+        A(u'<div class="mx-cell" data-mx="%s>%s"><p class="mx-lbl">%s &rsaquo; %s</p>%s</div>'
+          % (outer, inner, outer, inner, mx_wrap(outer, mx_wrap(inner, MX_LEAF))))
+A(u'''</div>
+
+<p class="lbl">AND THE ONES THAT ACTUALLY HAPPEN &mdash; starting with the owner&rsquo;s</p>
+
+<p class="lbl">1 &middot; a checkbox next to a table, inside a panel, inside a table</p>
+<div class="mx-real">
+<table class="d-table" style="max-width:620px"><tbody>
+<tr><td>\u0420\u0435\u0434 \u0435\u0434\u0438\u043d</td><td>
+  <details class="d-panel" open><summary class="d-panel__summary">\u041f\u043e\u0434\u0440\u043e\u0431\u043d\u043e\u0441\u0442\u0438</summary>
+  <div class="d-panel__content">
+    <div class="d-cluster d-cluster--top">
+      <label class="d-check"><input type="checkbox" checked><span>\u0421 \u043a\u0443\u0442\u0438\u044f</span></label>
+      <table class="d-table d-table--flat">
+        <tbody><tr><td>\u0428\u0438\u0440\u0438\u043d\u0430</td><td class="d-table__num">24 \u0441\u043c</td></tr>
+        <tr><td>\u0412\u0438\u0441\u043e\u0447\u0438\u043d\u0430</td><td class="d-table__num">11 \u0441\u043c</td></tr></tbody>
+      </table>
+    </div>
+  </div></details>
+</td></tr>
+<tr><td>\u0420\u0435\u0434 \u0434\u0432\u0430</td><td>&mdash;</td></tr>
+</tbody></table>
+</div>
+
+<p class="lbl">2 &middot; a panel in a split&rsquo;s aside, with a card in a switcher in the main column</p>
+<div class="mx-real">
+<div class="d-split">
+  <div class="d-split__main"><div class="d-switcher">
+    <article class="d-card"><div class="d-card__media"><img src="''' + CUTOUT + u'''" alt=""></div>
+      <h3 class="d-card__title"><a href="#">\u041a\u0435\u0440\u0430\u043c\u0438\u0447\u043d\u0430 \u043a\u0443\u043f\u0430</a></h3>
+      <p class="d-card__price">26,40 \u043b\u0432.</p></article>
+    <article class="d-card"><div class="d-card__media"><img src="''' + CUTOUT + u'''" alt=""></div>
+      <h3 class="d-card__title"><a href="#">\u041b\u0435\u043d\u0435\u043d\u0430 \u043a\u044a\u0440\u043f\u0430</a></h3>
+      <p class="d-card__price">22,00 \u043b\u0432.</p></article>
+  </div></div>
+  <div class="d-split__aside">
+    <details class="d-panel" open><summary class="d-panel__summary">\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430</summary>
+    <div class="d-panel__content">\u0411\u0435\u0437\u043f\u043b\u0430\u0442\u043d\u0430 \u043d\u0430\u0434 100 &euro;.</div></details>
+  </div>
+</div>
+</div>
+
+<p class="lbl">3 &middot; a notice inside a card, and a cluster of badges inside a table cell</p>
+<div class="mx-real">
+<div class="d-cluster d-cluster--top d-cluster--loose">
+  <article class="d-card" style="width:240px">
+    <div class="d-card__media"><img src="''' + CUTOUT + u'''" alt=""></div>
+    <h3 class="d-card__title"><a href="#">\u0421\u0442\u044a\u043a\u043b\u0435\u043d\u0430 \u043a\u0430\u043d\u0430</a></h3>
+    <div class="d-notice d-notice--warning"><span class="d-notice__stars"></span>
+      <span class="d-notice__stars"></span><span class="d-notice__stars"></span>
+      <div class="d-notice__body">\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0438 2 \u0431\u0440\u043e\u044f</div></div>
+    <p class="d-card__price">42,00 \u043b\u0432.</p>
+  </article>
+  <table class="d-table" style="flex:1;min-width:260px"><tbody>
+    <tr><td>\u0421\u044a\u0441\u0442\u043e\u044f\u043d\u0438\u0435</td><td><div class="d-cluster d-cluster--tight">
+      <span class="d-badge">\u041d\u043e\u0432\u043e</span><span class="d-badge d-badge--sale">\u041d\u0430\u043c\u0430\u043b\u0435\u043d\u0438\u0435</span>
+      <span class="d-badge">\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0438 2</span></div></td></tr>
+    <tr><td>\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430</td><td><div class="d-box d-box--quiet">
+      <label class="d-check"><input type="radio" name="mx-r" checked><span>\u0414\u043e \u0430\u0434\u0440\u0435\u0441</span></label>
+      <label class="d-check"><input type="radio" name="mx-r"><span>\u0414\u043e \u043e\u0444\u0438\u0441</span></label>
+    </div></td></tr>
+  </tbody></table>
+</div>
+</div>
+
+<p class="lbl">4 &middot; a field inside a box inside a table cell, beside WooCommerce&rsquo;s own field</p>
+<div class="mx-real">
+<table class="d-table" style="max-width:640px"><tbody>
+<tr><td style="width:50%"><div class="d-box d-box--outline">
+  <div class="d-field"><label class="d-field__label">\u041a\u043e\u0434</label>
+  <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+</div></td>
+<td><div class="d-box d-box--outline"><div class="wc-block-components-form">
+  <div class="wc-block-components-text-input"><input type="text" placeholder=" " id="mx-wc"><label for="mx-wc">\u041a\u043e\u0434</label></div>
+</div></div></td></tr>
+</tbody></table>
+</div>
+
+<p class="lbl">EVERY COMPONENT ON ITS OWN &mdash; the gate reads the outer margin off each of these</p>
+<p class="note">A component must not set its own outer margin: the gap between
+two things belongs to whatever contains them, because only the container knows
+what the two things are. Each dashed box below holds one component as an only
+child, so a margin has nowhere to hide.</p>
+<div class="mx-alone" id="mx-alone">''')
+MX_ALONE = [
+    (u'd-btn', u'<a class="d-btn d-finish" href="#">\u041a\u0443\u043f\u0438</a>'),
+    (u'd-badge', u'<span class="d-badge">\u041d\u043e\u0432\u043e</span>'),
+    (u'd-check', u'<label class="d-check"><input type="checkbox" checked><span>\u0421 \u043a\u0443\u0442\u0438\u044f</span></label>'),
+    (u'd-field', u'<div class="d-field"><label class="d-field__label">\u0418\u043c\u0435</label>'
+                 u'<input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>'),
+    (u'd-notice', u'<div class="d-notice d-notice--info"><span class="d-notice__stars"></span>'
+                  u'<span class="d-notice__stars"></span><span class="d-notice__stars"></span>'
+                  u'<div class="d-notice__body">\u0411\u0435\u0437\u043f\u043b\u0430\u0442\u043d\u0430 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430</div></div>'),
+    (u'd-panel', u'<details class="d-panel"><summary class="d-panel__summary">\u0414\u043e\u0441\u0442\u0430\u0432\u043a\u0430</summary>'
+                 u'<div class="d-panel__content">\u0422\u0435\u043a\u0441\u0442.</div></details>'),
+    (u'd-table', u'<table class="d-table"><tbody><tr><td>\u0420\u0435\u0434</td>'
+                 u'<td class="d-table__num">1,00</td></tr></tbody></table>'),
+    (u'd-card', u'<article class="d-card" style="width:200px"><div class="d-card__media">'
+                u'<img src="' + CUTOUT + u'" alt=""></div>'
+                u'<h3 class="d-card__title"><a href="#">\u041a\u0443\u043f\u0430</a></h3>'
+                u'<p class="d-card__price">26,40 \u043b\u0432.</p></article>'),
+    (u'wc checkbox', u'<div class="wc-block-components-form"><div class="wc-block-components-checkbox" data-mx-target>'
+                     u'<label for="mx-wcc"><input id="mx-wcc" class="wc-block-components-checkbox__input" type="checkbox" checked>'
+                     u'<svg class="wc-block-components-checkbox__mark" aria-hidden="true" viewBox="0 0 24 20">'
+                     u'<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path></svg>'
+                     u'<span class="wc-block-components-checkbox__label">Woo</span></label></div></div>'),
+    (u'wc text input', u'<div class="wc-block-components-form"><div class="wc-block-components-text-input" data-mx-target>'
+                       u'<input type="text" placeholder=" " id="mx-wct"><label for="mx-wct">Woo</label></div></div>'),
+]
+for name, markup in MX_ALONE:
+    A(u'<div data-mx-alone="%s">%s</div>' % (name, markup))
+A(u'''</div>
+<div class="todo"><b>What this section cannot do.</b> It proves the
+combinations it contains and nothing else, and it is a fixed list &mdash; the
+five primitives crossed with themselves plus four real arrangements. It will not
+find a bug in a nesting nobody wrote down. That is a real limit and the answer
+to it is to add rows when a new arrangement appears on the site, which is cheap
+because the grid is generated.<br><br>
+<b>And one primitive is missing from the grid on purpose.</b>
+<code>.d-grid</code> still carries the page frame &mdash; max-width, centring
+and <code>--gutter</code> &mdash; because its markup is WordPress block
+templates where a class is written twice. Nested in a 230&nbsp;px cell that is
+60&nbsp;px of gutter each side and nothing left over, so it cannot be composed
+until the templates are regenerated. That is the rest of B1, and it is now a
+visible consequence rather than a note.</div>
+</section>''')
+
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>Where this actually stands</h3>
 <p class="note"><b>The patterns are done and reviewed.</b> Every section above
@@ -2735,6 +2920,7 @@ NAV_LABEL = {
 	'mappick':   u'Map picker',
 	'primitives': u'Primitives',
 	'align':     u'Alignment',
+	'matrix':    u'Composition',
 	'next':      u'Still to come',
 }
 # Not by pattern-matching the opening tag: two sections legitimately do not open

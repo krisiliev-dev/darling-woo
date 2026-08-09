@@ -4686,8 +4686,14 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	position:relative;
 	display:grid;
 	gap:var(--stack-tight);
-	margin-bottom:var(--space-2xs);
 }
+/* *** THE FIELD USED TO CARRY margin-bottom:var(--space-2xs), AND matrixgate
+   CAUGHT IT ON ITS FIRST RUN. *** A component does not set its own outer
+   margin: the gap between two fields belongs to whatever contains them, and
+   every container that holds fields already provides one - .d-fieldgrid has a
+   gap, .d-stack has a gap, the gallery's own grid has a gap. So the margin was
+   being ADDED to a gap everywhere it appeared, which is why the field rows read
+   as loose. Deleted rather than tuned. */
 
 /* -- the control ------------------------------------------------------------
    One ruleset for every text-like control plus select and textarea. They differ
@@ -9634,9 +9640,16 @@ li.product .wp-block-button__link{
    Woo's own CSS gives this a floating label; we keep the behaviour because the
    markup is built for it and fighting it means absolutely positioning a label
    Woo also positions. What changes is the box, the colours and the ring. */
+/* *** THE BOTTOM MARGIN THAT USED TO BE HERE WAS THE COMPONENT OWNING ITS OWN
+   GAP, AND matrixgate CAUGHT IT. *** Rendered alone, a text input still pushed
+   10px of space below itself, so every container that already had a gap - and
+   the address form does - was adding the two together. checkout.css had a rule
+   zeroing it back out again, which is the shape of the problem: one file adding
+   a margin and another subtracting it.
+
+   The gap now comes from the container, below. */
 .wc-block-components-text-input{
 	position:relative;
-	margin:0 0 var(--space-2xs);
 }
 
 /* *** THE SELECTOR SHAPE HERE IS LOAD-BEARING. MEASURED. ***
@@ -9829,7 +9842,18 @@ li.product .wp-block-button__link{
 */
 /* -- checkbox. The tick is an SVG Woo renders; we colour the box and the mark,
    we do not try to replace it. */
-.wc-block-components-checkbox{ margin:0 0 var(--space-2xs) }
+/* Same as the text input: the gap is the container's, not the checkbox's. */
+.wc-block-components-checkbox{ margin:0 }
+
+/* *** THE CONTAINERS WOOCOMMERCE GIVES US THAT HOLD FIELDS DIRECTLY. ***
+   The owl, not a margin on each field: the space goes BETWEEN, so the first
+   control in a form starts flush and the last leaves no trailing hole. Direct
+   children only, so the address form - which is a grid with its own gap - is
+   spaced as one block rather than having its rows spaced twice. */
+.wc-block-components-form > * + *,
+.wc-block-components-totals-coupon__form > * + *{
+	margin-block-start:var(--space-2xs);
+}
 .wc-block-components-checkbox label{
 	display:grid;
 	grid-template-columns:auto 1fr;
@@ -13174,6 +13198,19 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   letter-spacing:.05em;text-transform:uppercase;color:var(--c-mauve);white-space:nowrap;
   background:var(--surface-page);padding:1px 5px;border-radius:3px}
 .sec:has(#alg-g:not(:checked)) .gh{opacity:0}
+/* the composition matrix. Cells are outlined so a child escaping one is visible
+   rather than merely measurable. */
+.mx{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.mx-cell{border:1px solid var(--hairline);border-radius:var(--radius-s);
+  background:var(--surface-page);overflow:visible}
+.mx-lbl{margin:0;padding:5px 8px;border-bottom:1px solid var(--hairline);
+  font:var(--fw-medium) 10px/1.4 var(--font-ui);letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink-quiet)}
+.mx-leaf{font-size:var(--fs-fine)}
+.mx-real{border:1px solid var(--hairline);border-radius:var(--radius-s);
+  padding:10px;margin:0 0 14px;background:var(--surface-page)}
+.mx-alone > div{border:1px dashed var(--c-mauve);border-radius:var(--radius-xs);
+  margin:0 0 10px}
 /* *** THE SPACE UNDER A FIELD IS NOT PADDING - IT IS A RESERVED LINE. ***
    The owner read it as loose padding, which is a fair reading of an empty gap.
    Tinting it while the guides are on says what it is: room kept for the error
@@ -13187,7 +13224,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 
 .sec:has(#alg-g:not(:checked)) .gl{opacity:0}
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#next">Still to come</a></nav>
+<nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -15830,6 +15867,115 @@ declaring its own <code>max-width:var(--page-max)</code> is on the list:
 <code>.d-grid</code>, <code>.d-archive</code>, <code>.d-product</code>,
 <code>.d-hero</code>, <code>.d-404</code> and <code>.d-section-title</code> all
 predate <code>.d-shell</code> and still agree with it by hand.</div>
+</section><section class="sec" id="matrix"><h2>Rules</h2><h3>Composition &mdash; every primitive inside every other, and the awkward real ones</h3>
+<p class="note"><b>&ldquo;How do we know that if we put a checkbox next to a
+table, inside a panel, inside a table, it will display properly?&rdquo;</b> You
+do not, and neither does anyone else, because reasoning does not survive two
+levels of nesting. You render it and you measure it. That is this section, and
+<code>scripts/matrixgate.js</code> is the measuring.</p>
+<p class="note">Every cell below is one layout primitive inside another, with
+the same three boxes at the bottom of all of them. The cells are outlined, so a
+child escaping its container is visible as well as measurable. The gate asserts
+three things over the whole section: nothing sticks out past its container, no
+padded box sits alone inside another padded box, and every component rendered on
+its own has zero outer margin.</p>
+<p class="lbl">EVERY PRIMITIVE INSIDE EVERY OTHER &mdash; 25 cells, generated from the list</p>
+<div class="mx"><div class="mx-cell" data-mx="stack>stack"><p class="mx-lbl">stack &rsaquo; stack</p><div class="d-stack"><div class="d-stack"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="stack>cluster"><p class="mx-lbl">stack &rsaquo; cluster</p><div class="d-stack"><div class="d-cluster"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="stack>switcher"><p class="mx-lbl">stack &rsaquo; switcher</p><div class="d-stack"><div class="d-switcher"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="stack>box"><p class="mx-lbl">stack &rsaquo; box</p><div class="d-stack"><div class="d-box"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="stack>split"><p class="mx-lbl">stack &rsaquo; split</p><div class="d-stack"><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div></div><div class="mx-cell" data-mx="cluster>stack"><p class="mx-lbl">cluster &rsaquo; stack</p><div class="d-cluster"><div class="d-stack"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="cluster>cluster"><p class="mx-lbl">cluster &rsaquo; cluster</p><div class="d-cluster"><div class="d-cluster"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="cluster>switcher"><p class="mx-lbl">cluster &rsaquo; switcher</p><div class="d-cluster"><div class="d-switcher"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="cluster>box"><p class="mx-lbl">cluster &rsaquo; box</p><div class="d-cluster"><div class="d-box"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="cluster>split"><p class="mx-lbl">cluster &rsaquo; split</p><div class="d-cluster"><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div></div><div class="mx-cell" data-mx="switcher>stack"><p class="mx-lbl">switcher &rsaquo; stack</p><div class="d-switcher"><div class="d-stack"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="switcher>cluster"><p class="mx-lbl">switcher &rsaquo; cluster</p><div class="d-switcher"><div class="d-cluster"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="switcher>switcher"><p class="mx-lbl">switcher &rsaquo; switcher</p><div class="d-switcher"><div class="d-switcher"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="switcher>box"><p class="mx-lbl">switcher &rsaquo; box</p><div class="d-switcher"><div class="d-box"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="switcher>split"><p class="mx-lbl">switcher &rsaquo; split</p><div class="d-switcher"><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div></div><div class="mx-cell" data-mx="box>stack"><p class="mx-lbl">box &rsaquo; stack</p><div class="d-box"><div class="d-stack"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="box>cluster"><p class="mx-lbl">box &rsaquo; cluster</p><div class="d-box"><div class="d-cluster"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="box>switcher"><p class="mx-lbl">box &rsaquo; switcher</p><div class="d-box"><div class="d-switcher"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="box>box"><p class="mx-lbl">box &rsaquo; box</p><div class="d-box"><div class="d-box"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div></div><div class="mx-cell" data-mx="box>split"><p class="mx-lbl">box &rsaquo; split</p><div class="d-box"><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div></div><div class="mx-cell" data-mx="split>stack"><p class="mx-lbl">split &rsaquo; stack</p><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-stack"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div><div class="mx-cell" data-mx="split>cluster"><p class="mx-lbl">split &rsaquo; cluster</p><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-cluster"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div><div class="mx-cell" data-mx="split>switcher"><p class="mx-lbl">split &rsaquo; switcher</p><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-switcher"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div><div class="mx-cell" data-mx="split>box"><p class="mx-lbl">split &rsaquo; box</p><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-box"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div><div class="mx-cell" data-mx="split>split"><p class="mx-lbl">split &rsaquo; split</p><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-split" style="--aside:5rem"><div class="d-split__main"><div class="d-box d-box--quiet mx-leaf">а</div><div class="d-box d-box--quiet mx-leaf">б</div><div class="d-box d-box--quiet mx-leaf">в</div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div><div class="d-split__aside"><div class="d-box d-box--quiet mx-leaf">side</div></div></div></div></div>
+
+<p class="lbl">AND THE ONES THAT ACTUALLY HAPPEN &mdash; starting with the owner&rsquo;s</p>
+
+<p class="lbl">1 &middot; a checkbox next to a table, inside a panel, inside a table</p>
+<div class="mx-real">
+<table class="d-table" style="max-width:620px"><tbody>
+<tr><td>Ред един</td><td>
+  <details class="d-panel" open><summary class="d-panel__summary">Подробности</summary>
+  <div class="d-panel__content">
+    <div class="d-cluster d-cluster--top">
+      <label class="d-check"><input type="checkbox" checked><span>С кутия</span></label>
+      <table class="d-table d-table--flat">
+        <tbody><tr><td>Ширина</td><td class="d-table__num">24 см</td></tr>
+        <tr><td>Височина</td><td class="d-table__num">11 см</td></tr></tbody>
+      </table>
+    </div>
+  </div></details>
+</td></tr>
+<tr><td>Ред два</td><td>&mdash;</td></tr>
+</tbody></table>
+</div>
+
+<p class="lbl">2 &middot; a panel in a split&rsquo;s aside, with a card in a switcher in the main column</p>
+<div class="mx-real">
+<div class="d-split">
+  <div class="d-split__main"><div class="d-switcher">
+    <article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div>
+      <h3 class="d-card__title"><a href="#">Керамична купа</a></h3>
+      <p class="d-card__price">26,40 лв.</p></article>
+    <article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div>
+      <h3 class="d-card__title"><a href="#">Ленена кърпа</a></h3>
+      <p class="d-card__price">22,00 лв.</p></article>
+  </div></div>
+  <div class="d-split__aside">
+    <details class="d-panel" open><summary class="d-panel__summary">Доставка</summary>
+    <div class="d-panel__content">Безплатна над 100 &euro;.</div></details>
+  </div>
+</div>
+</div>
+
+<p class="lbl">3 &middot; a notice inside a card, and a cluster of badges inside a table cell</p>
+<div class="mx-real">
+<div class="d-cluster d-cluster--top d-cluster--loose">
+  <article class="d-card" style="width:240px">
+    <div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div>
+    <h3 class="d-card__title"><a href="#">Стъклена кана</a></h3>
+    <div class="d-notice d-notice--warning"><span class="d-notice__stars"></span>
+      <span class="d-notice__stars"></span><span class="d-notice__stars"></span>
+      <div class="d-notice__body">Последни 2 броя</div></div>
+    <p class="d-card__price">42,00 лв.</p>
+  </article>
+  <table class="d-table" style="flex:1;min-width:260px"><tbody>
+    <tr><td>Състояние</td><td><div class="d-cluster d-cluster--tight">
+      <span class="d-badge">Ново</span><span class="d-badge d-badge--sale">Намаление</span>
+      <span class="d-badge">Последни 2</span></div></td></tr>
+    <tr><td>Доставка</td><td><div class="d-box d-box--quiet">
+      <label class="d-check"><input type="radio" name="mx-r" checked><span>До адрес</span></label>
+      <label class="d-check"><input type="radio" name="mx-r"><span>До офис</span></label>
+    </div></td></tr>
+  </tbody></table>
+</div>
+</div>
+
+<p class="lbl">4 &middot; a field inside a box inside a table cell, beside WooCommerce&rsquo;s own field</p>
+<div class="mx-real">
+<table class="d-table" style="max-width:640px"><tbody>
+<tr><td style="width:50%"><div class="d-box d-box--outline">
+  <div class="d-field"><label class="d-field__label">Код</label>
+  <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+</div></td>
+<td><div class="d-box d-box--outline"><div class="wc-block-components-form">
+  <div class="wc-block-components-text-input"><input type="text" placeholder=" " id="mx-wc"><label for="mx-wc">Код</label></div>
+</div></div></td></tr>
+</tbody></table>
+</div>
+
+<p class="lbl">EVERY COMPONENT ON ITS OWN &mdash; the gate reads the outer margin off each of these</p>
+<p class="note">A component must not set its own outer margin: the gap between
+two things belongs to whatever contains them, because only the container knows
+what the two things are. Each dashed box below holds one component as an only
+child, so a margin has nowhere to hide.</p>
+<div class="mx-alone" id="mx-alone"><div data-mx-alone="d-btn"><a class="d-btn d-finish" href="#">Купи</a></div><div data-mx-alone="d-badge"><span class="d-badge">Ново</span></div><div data-mx-alone="d-check"><label class="d-check"><input type="checkbox" checked><span>С кутия</span></label></div><div data-mx-alone="d-field"><div class="d-field"><label class="d-field__label">Име</label><input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div></div><div data-mx-alone="d-notice"><div class="d-notice d-notice--info"><span class="d-notice__stars"></span><span class="d-notice__stars"></span><span class="d-notice__stars"></span><div class="d-notice__body">Безплатна доставка</div></div></div><div data-mx-alone="d-panel"><details class="d-panel"><summary class="d-panel__summary">Доставка</summary><div class="d-panel__content">Текст.</div></details></div><div data-mx-alone="d-table"><table class="d-table"><tbody><tr><td>Ред</td><td class="d-table__num">1,00</td></tr></tbody></table></div><div data-mx-alone="d-card"><article class="d-card" style="width:200px"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><h3 class="d-card__title"><a href="#">Купа</a></h3><p class="d-card__price">26,40 лв.</p></article></div><div data-mx-alone="wc checkbox"><div class="wc-block-components-form"><div class="wc-block-components-checkbox" data-mx-target><label for="mx-wcc"><input id="mx-wcc" class="wc-block-components-checkbox__input" type="checkbox" checked><svg class="wc-block-components-checkbox__mark" aria-hidden="true" viewBox="0 0 24 20"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path></svg><span class="wc-block-components-checkbox__label">Woo</span></label></div></div></div><div data-mx-alone="wc text input"><div class="wc-block-components-form"><div class="wc-block-components-text-input" data-mx-target><input type="text" placeholder=" " id="mx-wct"><label for="mx-wct">Woo</label></div></div></div></div>
+<div class="todo"><b>What this section cannot do.</b> It proves the
+combinations it contains and nothing else, and it is a fixed list &mdash; the
+five primitives crossed with themselves plus four real arrangements. It will not
+find a bug in a nesting nobody wrote down. That is a real limit and the answer
+to it is to add rows when a new arrangement appears on the site, which is cheap
+because the grid is generated.<br><br>
+<b>And one primitive is missing from the grid on purpose.</b>
+<code>.d-grid</code> still carries the page frame &mdash; max-width, centring
+and <code>--gutter</code> &mdash; because its markup is WordPress block
+templates where a class is written twice. Nested in a 230&nbsp;px cell that is
+60&nbsp;px of gutter each side and nothing left over, so it cannot be composed
+until the templates are regenerated. That is the rest of B1, and it is now a
+visible consequence rather than a note.</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>Where this actually stands</h3>
 <p class="note"><b>The patterns are done and reviewed.</b> Every section above

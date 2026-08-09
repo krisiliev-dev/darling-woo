@@ -4684,8 +4684,14 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	position:relative;
 	display:grid;
 	gap:var(--stack-tight);
-	margin-bottom:var(--space-2xs);
 }
+/* *** THE FIELD USED TO CARRY margin-bottom:var(--space-2xs), AND matrixgate
+   CAUGHT IT ON ITS FIRST RUN. *** A component does not set its own outer
+   margin: the gap between two fields belongs to whatever contains them, and
+   every container that holds fields already provides one - .d-fieldgrid has a
+   gap, .d-stack has a gap, the gallery's own grid has a gap. So the margin was
+   being ADDED to a gap everywhere it appeared, which is why the field rows read
+   as loose. Deleted rather than tuned. */
 
 /* -- the control ------------------------------------------------------------
    One ruleset for every text-like control plus select and textarea. They differ
@@ -9632,9 +9638,16 @@ li.product .wp-block-button__link{
    Woo's own CSS gives this a floating label; we keep the behaviour because the
    markup is built for it and fighting it means absolutely positioning a label
    Woo also positions. What changes is the box, the colours and the ring. */
+/* *** THE BOTTOM MARGIN THAT USED TO BE HERE WAS THE COMPONENT OWNING ITS OWN
+   GAP, AND matrixgate CAUGHT IT. *** Rendered alone, a text input still pushed
+   10px of space below itself, so every container that already had a gap - and
+   the address form does - was adding the two together. checkout.css had a rule
+   zeroing it back out again, which is the shape of the problem: one file adding
+   a margin and another subtracting it.
+
+   The gap now comes from the container, below. */
 .wc-block-components-text-input{
 	position:relative;
-	margin:0 0 var(--space-2xs);
 }
 
 /* *** THE SELECTOR SHAPE HERE IS LOAD-BEARING. MEASURED. ***
@@ -9827,7 +9840,18 @@ li.product .wp-block-button__link{
 */
 /* -- checkbox. The tick is an SVG Woo renders; we colour the box and the mark,
    we do not try to replace it. */
-.wc-block-components-checkbox{ margin:0 0 var(--space-2xs) }
+/* Same as the text input: the gap is the container's, not the checkbox's. */
+.wc-block-components-checkbox{ margin:0 }
+
+/* *** THE CONTAINERS WOOCOMMERCE GIVES US THAT HOLD FIELDS DIRECTLY. ***
+   The owl, not a margin on each field: the space goes BETWEEN, so the first
+   control in a form starts flush and the last leaves no trailing hole. Direct
+   children only, so the address form - which is a grid with its own gap - is
+   spaced as one block rather than having its rows spaced twice. */
+.wc-block-components-form > * + *,
+.wc-block-components-totals-coupon__form > * + *{
+	margin-block-start:var(--space-2xs);
+}
 .wc-block-components-checkbox label{
 	display:grid;
 	grid-template-columns:auto 1fr;
