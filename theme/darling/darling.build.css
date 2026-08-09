@@ -302,6 +302,17 @@
 	   and the whole page re-spaces; change a step above and every role moves
 	   with it. */
 	--gutter:        var(--space-xl);   /* the inset inside a full-bleed band  */
+	/* *** A SECOND RAIL, AND IT IS CHOSEN RATHER THAN LEFT OVER. ***
+	   The owner wants the header bar's content further out than the page's, so
+	   the logo sits nearer the edge than the heading beneath it. That is a
+	   different job from --gutter and so it is a different token: a bar is
+	   chrome, and chrome may sit outside the column it frames.
+
+	   What it must never be again is an ACCIDENT. header.css used to reach for
+	   --space-s here with no comment, and nothing said whether 40px of
+	   difference was a decision or a typo. Now it is named, it is one number,
+	   and aligngate.js asserts the logo is on it. */
+	--gutter-bar:    var(--space-l);    /* the inset of a header or toolbar    */
 	--band-y:        var(--space-2xl);  /* vertical air in a hero or newsletter*/
 	--section-y:     var(--space-xl);   /* vertical air around a page section  */
 	--stack:         var(--space-m);    /* between blocks in a column          */
@@ -830,6 +841,11 @@ main{ overflow-x:clip }
    bar that is full-bleed, with a .d-shell inside it that is already padded by
    its parent's own inset. */
 .d-shell--flush{ padding-inline:0 }
+/* Chrome - a header bar, a toolbar - sits on its own rail, further out than the
+   page's, because the owner asked for the logo nearer the edge than the heading
+   under it. Declared, named and gated, which is the only difference between a
+   second rail and a mistake. */
+.d-shell--bar{ padding-inline:var(--gutter-bar) }
 /* Prose is measured by the eye, not by the layout - see --measure-lede in
    space.css. Still centred on the same rail, so a paragraph and the section
    title above it start together. */

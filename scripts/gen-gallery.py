@@ -121,6 +121,27 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .gl--was > b{color:var(--c-cherry);top:auto;bottom:5px}
 .gl--low > b{top:auto;bottom:5px}
 .gl--right > b{left:auto;right:5px}
+.gl--bar{border-left-color:var(--c-mauve)}
+.gl--bar > b{color:var(--c-mauve)}
+/* horizontal guides. Vertical rhythm is as much alignment as the left rail is,
+   and the section was only drawing one of the two axes. */
+.gh{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--c-mauve);
+  z-index:60;pointer-events:none;transition:opacity 140ms ease}
+.gh > b{position:absolute;right:8px;top:-16px;font:var(--fw-medium) 10px/1.4 var(--font-ui);
+  letter-spacing:.05em;text-transform:uppercase;color:var(--c-mauve);white-space:nowrap;
+  background:var(--surface-page);padding:1px 5px;border-radius:3px}
+.sec:has(#alg-g:not(:checked)) .gh{opacity:0}
+/* *** THE SPACE UNDER A FIELD IS NOT PADDING - IT IS A RESERVED LINE. ***
+   The owner read it as loose padding, which is a fair reading of an empty gap.
+   Tinting it while the guides are on says what it is: room kept for the error
+   message so the page does not grow by 18px per invalid field under a thumb
+   that is already moving. */
+.sec:has(#alg-g:checked) .algn .d-field__error{
+  background:color-mix(in oklab, var(--c-cherry) 9%, transparent);border-radius:3px}
+.sec:has(#alg-g:checked) .algn .d-fieldgrid{
+  background:color-mix(in oklab, var(--g-core) 14%, transparent);border-radius:var(--radius-xs)}
+.sec:has(#alg-g:checked) .algn .d-fieldgrid > *{background:var(--surface-page);border-radius:var(--radius-xs)}
+
 .sec:has(#alg-g:not(:checked)) .gl{opacity:0}
 </style></head><body><div class="wrap">
 <!--GNAV-->
@@ -831,12 +852,12 @@ now <em>underlined</em> as well as coloured, because colour alone is the one cue
 colour-blind visitor does not get.</p>
 <div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
 <header class="d-header" style="position:relative">
-  <div class="d-header__inner d-shell">
+  <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">Дарлинг</a>
     <nav class="d-nav"><ul>
       <li><a href="#" aria-current="page">Начало</a></li>
       <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list d-shell">
+        <div class="d-mega"><ul class="d-mega__list d-shell d-shell--bar">
           <li><a class="d-mega__link" href="#">За кухнята</a></li>
           <li><a class="d-mega__link" href="#">За банята</a></li>
           <li><a class="d-mega__link" href="#">За децата</a></li>
@@ -2416,9 +2437,10 @@ its own token.</p>
 <div class="algn"><div class="algn-page">
 <i class="gl gl--low" style="left:var(--gutter)"><b>page rail &mdash; --gutter</b></i>
 <i class="gl" style="left:auto;right:var(--gutter)"></i>
-<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start</b></i>
+<i class="gl gl--bar" style="left:var(--gutter-bar)"><b>bar rail &mdash; --gutter-bar</b></i>
+<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start, by accident</b></i>
 <header class="d-header" style="position:relative;border-radius:var(--radius-m) var(--radius-m) 0 0">
-  <div class="d-header__inner d-shell">
+  <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">&#x414;&#x430;&#x440;&#x43B;&#x438;&#x43D;&#x433;</a>
     <nav class="d-nav"><ul>
       <li><a href="#" aria-current="page">&#x41D;&#x430;&#x447;&#x430;&#x43B;&#x43E;</a></li>
@@ -2440,9 +2462,14 @@ for name, price, now, chip in PRODUCTS[:3]:
     A('</article>')
 A(u'''</div>
 </div></div>
-<p class="note">The logo, the heading and the first card&rsquo;s left edge are one
-line. Before <code>.d-shell</code> the logo sat on the cherry dots &mdash; forty
-pixels to the left of everything it sits above.</p>
+<p class="note"><b>Two rails, and only one of them is a decision.</b> The heading
+and the first card sit on the page rail. The logo sits further out, on the bar
+rail, because the owner asked for it there &mdash; a header is chrome, and chrome
+may sit outside the column it frames. The cherry dots are where the logo used to
+be: not chosen, just <code>--space-s</code> typed into <code>header.css</code>
+where five other files had typed <code>--gutter</code>. The difference between
+that and this is that <code>--gutter-bar</code> is named, is one number, and
+<code>aligngate.js</code> fails if the logo ever leaves it.</p>
 
 <p class="lbl">2 &middot; A COLUMN WITH SOMETHING BESIDE IT &mdash; <code>.d-split</code></p>
 <div class="algn"><div class="algn-page">
@@ -2476,6 +2503,14 @@ pixels to the left of everything it sits above.</p>
   </aside>
 </div></div>
 </div></div>
+<p class="note"><b>The vertical axis is alignment too, and the first version of
+this section only drew one of the two.</b> With the guides on, the gold behind
+the field grid is its <code>--space-xs</code> gap and the pink strips are the
+<code>.d-field__error</code> lines. That is the answer to &ldquo;why is there so
+much padding under a field&rdquo;: there is none. Every field keeps a line in
+reserve for its error message, always, so a form cannot grow by 18&nbsp;px per
+invalid field under a thumb that is already moving toward the button. It is the
+one piece of empty space on the page that is doing a job.</p>
 <p class="note">The aside is <code>21rem</code>, not a percentage. A percentage
 column keeps shrinking until the summary&rsquo;s own two-column rows wrap, at
 window sizes nobody opens on a desktop to check. Below <code>62rem</code> it

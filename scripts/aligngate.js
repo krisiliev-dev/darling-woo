@@ -47,7 +47,9 @@ const eq = (what, a, b) => {
   if (m.length !== 4) fails.push('expected 4 alignment demos, found ' + m.length);
 
   console.log('1 the page rail');
-  eq('logo on the page rail', m[0].logo, m[0].guides[0]);
+  // The logo is deliberately NOT on the page rail: the owner asked for the bar
+  // further out. --gutter-bar in space.css, and this is what keeps it honest.
+  eq('logo on the bar rail', m[0].logo, m[0].guides[2]);
   eq('section title on the page rail', m[0].title, m[0].guides[0]);
   eq('first card on the page rail', m[0].card, m[0].guides[0]);
 

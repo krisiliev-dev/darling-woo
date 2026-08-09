@@ -303,6 +303,17 @@
 	   and the whole page re-spaces; change a step above and every role moves
 	   with it. */
 	--gutter:        var(--space-xl);   /* the inset inside a full-bleed band  */
+	/* *** A SECOND RAIL, AND IT IS CHOSEN RATHER THAN LEFT OVER. ***
+	   The owner wants the header bar's content further out than the page's, so
+	   the logo sits nearer the edge than the heading beneath it. That is a
+	   different job from --gutter and so it is a different token: a bar is
+	   chrome, and chrome may sit outside the column it frames.
+
+	   What it must never be again is an ACCIDENT. header.css used to reach for
+	   --space-s here with no comment, and nothing said whether 40px of
+	   difference was a decision or a typo. Now it is named, it is one number,
+	   and aligngate.js asserts the logo is on it. */
+	--gutter-bar:    var(--space-l);    /* the inset of a header or toolbar    */
 	--band-y:        var(--space-2xl);  /* vertical air in a hero or newsletter*/
 	--section-y:     var(--space-xl);   /* vertical air around a page section  */
 	--stack:         var(--space-m);    /* between blocks in a column          */
@@ -832,6 +843,11 @@ main{ overflow-x:clip }
    bar that is full-bleed, with a .d-shell inside it that is already padded by
    its parent's own inset. */
 .d-shell--flush{ padding-inline:0 }
+/* Chrome - a header bar, a toolbar - sits on its own rail, further out than the
+   page's, because the owner asked for the logo nearer the edge than the heading
+   under it. Declared, named and gated, which is the only difference between a
+   second rail and a mistake. */
+.d-shell--bar{ padding-inline:var(--gutter-bar) }
 /* Prose is measured by the eye, not by the layout - see --measure-lede in
    space.css. Still centred on the same rail, so a paragraph and the section
    title above it start together. */
@@ -12955,6 +12971,27 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .gl--was > b{color:var(--c-cherry);top:auto;bottom:5px}
 .gl--low > b{top:auto;bottom:5px}
 .gl--right > b{left:auto;right:5px}
+.gl--bar{border-left-color:var(--c-mauve)}
+.gl--bar > b{color:var(--c-mauve)}
+/* horizontal guides. Vertical rhythm is as much alignment as the left rail is,
+   and the section was only drawing one of the two axes. */
+.gh{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--c-mauve);
+  z-index:60;pointer-events:none;transition:opacity 140ms ease}
+.gh > b{position:absolute;right:8px;top:-16px;font:var(--fw-medium) 10px/1.4 var(--font-ui);
+  letter-spacing:.05em;text-transform:uppercase;color:var(--c-mauve);white-space:nowrap;
+  background:var(--surface-page);padding:1px 5px;border-radius:3px}
+.sec:has(#alg-g:not(:checked)) .gh{opacity:0}
+/* *** THE SPACE UNDER A FIELD IS NOT PADDING - IT IS A RESERVED LINE. ***
+   The owner read it as loose padding, which is a fair reading of an empty gap.
+   Tinting it while the guides are on says what it is: room kept for the error
+   message so the page does not grow by 18px per invalid field under a thumb
+   that is already moving. */
+.sec:has(#alg-g:checked) .algn .d-field__error{
+  background:color-mix(in oklab, var(--c-cherry) 9%, transparent);border-radius:3px}
+.sec:has(#alg-g:checked) .algn .d-fieldgrid{
+  background:color-mix(in oklab, var(--g-core) 14%, transparent);border-radius:var(--radius-xs)}
+.sec:has(#alg-g:checked) .algn .d-fieldgrid > *{background:var(--surface-page);border-radius:var(--radius-xs)}
+
 .sec:has(#alg-g:not(:checked)) .gl{opacity:0}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#align">Alignment</a><a href="#next">Still to come</a></nav>
@@ -13925,12 +13962,12 @@ now <em>underlined</em> as well as coloured, because colour alone is the one cue
 colour-blind visitor does not get.</p>
 <div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
 <header class="d-header" style="position:relative">
-  <div class="d-header__inner d-shell">
+  <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">Дарлинг</a>
     <nav class="d-nav"><ul>
       <li><a href="#" aria-current="page">Начало</a></li>
       <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list d-shell">
+        <div class="d-mega"><ul class="d-mega__list d-shell d-shell--bar">
           <li><a class="d-mega__link" href="#">За кухнята</a></li>
           <li><a class="d-mega__link" href="#">За банята</a></li>
           <li><a class="d-mega__link" href="#">За децата</a></li>
@@ -15383,9 +15420,10 @@ its own token.</p>
 <div class="algn"><div class="algn-page">
 <i class="gl gl--low" style="left:var(--gutter)"><b>page rail &mdash; --gutter</b></i>
 <i class="gl" style="left:auto;right:var(--gutter)"></i>
-<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start</b></i>
+<i class="gl gl--bar" style="left:var(--gutter-bar)"><b>bar rail &mdash; --gutter-bar</b></i>
+<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start, by accident</b></i>
 <header class="d-header" style="position:relative;border-radius:var(--radius-m) var(--radius-m) 0 0">
-  <div class="d-header__inner d-shell">
+  <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">&#x414;&#x430;&#x440;&#x43B;&#x438;&#x43D;&#x433;</a>
     <nav class="d-nav"><ul>
       <li><a href="#" aria-current="page">&#x41D;&#x430;&#x447;&#x430;&#x43B;&#x43E;</a></li>
@@ -15396,9 +15434,14 @@ its own token.</p>
 <h2 class="d-section-title" style="margin-block:var(--space-m) var(--space-s)">&#x41D;&#x43E;&#x432;&#x43E; &#x432; &#x43C;&#x430;&#x433;&#x430;&#x437;&#x438;&#x43D;&#x430;</h2>
 <div class="d-grid" style="padding-bottom:var(--space-m)"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p></article><article class="d-card"><div class="d-card__media"><span class="d-card__chip d-finish">Ново</span><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p></article><article class="d-card"><div class="d-card__media"><span class="d-card__chip d-finish">Намаление</span><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Ленена кърпа</a></h3><p class="d-card__price">22,00 лв.</p></article></div>
 </div></div>
-<p class="note">The logo, the heading and the first card&rsquo;s left edge are one
-line. Before <code>.d-shell</code> the logo sat on the cherry dots &mdash; forty
-pixels to the left of everything it sits above.</p>
+<p class="note"><b>Two rails, and only one of them is a decision.</b> The heading
+and the first card sit on the page rail. The logo sits further out, on the bar
+rail, because the owner asked for it there &mdash; a header is chrome, and chrome
+may sit outside the column it frames. The cherry dots are where the logo used to
+be: not chosen, just <code>--space-s</code> typed into <code>header.css</code>
+where five other files had typed <code>--gutter</code>. The difference between
+that and this is that <code>--gutter-bar</code> is named, is one number, and
+<code>aligngate.js</code> fails if the logo ever leaves it.</p>
 
 <p class="lbl">2 &middot; A COLUMN WITH SOMETHING BESIDE IT &mdash; <code>.d-split</code></p>
 <div class="algn"><div class="algn-page">
@@ -15432,6 +15475,14 @@ pixels to the left of everything it sits above.</p>
   </aside>
 </div></div>
 </div></div>
+<p class="note"><b>The vertical axis is alignment too, and the first version of
+this section only drew one of the two.</b> With the guides on, the gold behind
+the field grid is its <code>--space-xs</code> gap and the pink strips are the
+<code>.d-field__error</code> lines. That is the answer to &ldquo;why is there so
+much padding under a field&rdquo;: there is none. Every field keeps a line in
+reserve for its error message, always, so a form cannot grow by 18&nbsp;px per
+invalid field under a thumb that is already moving toward the button. It is the
+one piece of empty space on the page that is doing a job.</p>
 <p class="note">The aside is <code>21rem</code>, not a percentage. A percentage
 column keeps shrinking until the summary&rsquo;s own two-column rows wrap, at
 window sizes nobody opens on a desktop to check. Below <code>62rem</code> it

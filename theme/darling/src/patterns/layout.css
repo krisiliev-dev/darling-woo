@@ -49,6 +49,11 @@
    bar that is full-bleed, with a .d-shell inside it that is already padded by
    its parent's own inset. */
 .d-shell--flush{ padding-inline:0 }
+/* Chrome - a header bar, a toolbar - sits on its own rail, further out than the
+   page's, because the owner asked for the logo nearer the edge than the heading
+   under it. Declared, named and gated, which is the only difference between a
+   second rail and a mistake. */
+.d-shell--bar{ padding-inline:var(--gutter-bar) }
 /* Prose is measured by the eye, not by the layout - see --measure-lede in
    space.css. Still centred on the same rail, so a paragraph and the section
    title above it start together. */
