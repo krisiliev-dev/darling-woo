@@ -166,22 +166,34 @@ html.d-a11y .d-notice--info .d-notice__title::before{ background:var(--notice-in
    *** ANYTHING WHOSE RESTING STATE IS INVISIBLE ONLY BECAUSE AN ANIMATION IS
    MOVING IT MUST BE REMOVED IN THIS MODE, NOT STILLED. ***
 
-   Four so far, and every one of them was reported by the owner as the mode
-   making something LOUDER rather than quieter, which is what this failure looks
-   like from outside:
+   Six so far. The first four were reported by the owner as the mode making
+   something LOUDER rather than quieter, which is what this failure looks like
+   from outside; the last two were found by scripts/frozengate.js, which exists
+   because four was too many:
 
      the notices' star rain      froze mid-fall               (above)
      the cart's streak           painted at full strength     (below)
      the progress bar's sheen    a gradient across the fill   (below)
      the burst                   nine stars, held             (below)
 
-   When a fifth appears it belongs in this list. `animation:none` is not a
-   volume control; it stops the thing that was hiding the paint.
+   When a seventh appears the gate will say so before the owner does.
+   `animation:none` is not a volume control; it stops the thing that was
+   hiding the paint.
    ========================================================================== */
 html.d-a11y .d-icon-btn:has(.d-icon--cart):hover::before,
 html.d-a11y .d-icon-btn:has(.d-icon--cart):focus-visible::before,
 html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
 html.d-a11y .d-progress__bar::after{ content:none !important }
+/* 5. The newsletter's stars. Their `display:none` was inside the
+      prefers-reduced-motion query and nowhere else, so in THIS mode sixteen
+      50px stars stopped mid-flight and stayed scattered across the band. Found
+      by scripts/frozengate.js, not by anybody looking. */
+html.d-a11y .d-news__flow{ display:none !important }
+/* 6. The skeleton's shimmer. skeleton.css is right that the resting tone is the
+      design and the shimmer is a bonus - but the shimmer is a TRANSLATED
+      pseudo-element, so stopping it parks a bright band across part of every
+      skeleton, which reads as content that half-loaded. */
+html.d-a11y .d-skeleton::after{ content:none !important }
 html.d-a11y .d-burst{ display:none !important }
 
 /* Links are underlined, everywhere, including the ones a component deliberately
