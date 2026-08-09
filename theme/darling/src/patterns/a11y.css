@@ -106,21 +106,34 @@ html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
    frozen rain of stars is worse than none: the meaning has gone and the debris
    is still there, which is what the owner saw.
 
-   In the mode each notice gets the state icon the system already owns instead.
-   One mark, still, at the start of the message, in the state colour - which is
-   the plain version of the same sentence. */
+   *** AND THE MARK GOES ON THE TITLE, NOT ON THE NOTICE. ***
+   Two earlier versions positioned it against the BOX - first absolutely at the
+   padding edge, then as a grid item with half a line box of margin - and both
+   were wrong, the second one badly: `.d-notice__dismiss` computes
+   `grid-column: 2`, which is correct for the notice's own two-column grid, so
+   widening that grid to three columns pushed the close button onto a second row.
+   Measured, and it is exactly what he reported.
+
+   `.d-notice__title::before` is free, and an inline mark before the title's text
+   sits on the title's own baseline. No column, no arithmetic, nothing to tune
+   and nothing to re-tune when --fs-meta moves. It also indents with the title,
+   so a wrapped body no longer runs underneath it.
+   ========================================================================== */
 html.d-a11y .d-notice__stars,
+html.d-a11y .d-notice::before,
 html.d-a11y .d-notice::after{ display:none !important; content:none !important }
-html.d-a11y .d-notice{ padding-inline-start:calc(var(--space-xs) + 1.9em) }
-html.d-a11y .d-notice::before{
-	content:"" !important;
-	z-index:2;
-	top:var(--space-2xs);
-	left:var(--space-xs);
-	right:auto;
-	width:1.25em;
-	height:1.25em;
-	clip-path:none !important;
+
+html.d-a11y .d-notice__title::before{
+	content:"";
+	display:inline-block;
+	width:1.15em;
+	height:1.15em;
+	/* On the text's own baseline. -.2em is the optical seat for a square mark
+	   beside uppercase-height Cyrillic; it is the one number here and it does not
+	   change with the type scale, because em does. */
+	vertical-align:-.2em;
+	margin-inline-end:.45em;
+	background:currentColor;
 	-webkit-mask-image:var(--icon-info);
 	        mask-image:var(--icon-info);
 	-webkit-mask-size:contain;
@@ -130,31 +143,45 @@ html.d-a11y .d-notice::before{
 	-webkit-mask-position:center;
 	        mask-position:center;
 }
-html.d-a11y .d-notice--error::before{
+html.d-a11y .d-notice--error .d-notice__title::before{
 	background:var(--notice-error-edge);
 	-webkit-mask-image:var(--icon-error);
 	        mask-image:var(--icon-error);
 }
-html.d-a11y .d-notice--warning::before{
+html.d-a11y .d-notice--warning .d-notice__title::before{
 	background:var(--notice-warning-edge);
 	-webkit-mask-image:var(--icon-warning);
 	        mask-image:var(--icon-warning);
 }
-html.d-a11y .d-notice--success::before{
+html.d-a11y .d-notice--success .d-notice__title::before{
 	background:var(--notice-success-edge);
 	-webkit-mask-image:var(--icon-check);
 	        mask-image:var(--icon-check);
 }
-html.d-a11y .d-notice--info::before{ background:var(--notice-info-edge) }
-/* The bar has no stars to begin with and no room for a mark. */
-html.d-a11y .d-notice--bar{ padding-inline-start:var(--space-xs) }
-html.d-a11y .d-notice--bar::before{ content:none !important }
+html.d-a11y .d-notice--info .d-notice__title::before{ background:var(--notice-info-edge) }
 
-/* The burst, belt as well as braces. darling-ui.js will not fire it in this
-   mode, but the stars are markup that is always present and only invisible
-   because their animation holds them at zero - so if anything ever sets
-   data-pop from somewhere else, this is what stops nine stars appearing and
-   staying. */
+/* =============================================================================
+   AND THE FOUR THINGS THAT MUST BE REMOVED HERE, NOT STILLED
+
+   *** ANYTHING WHOSE RESTING STATE IS INVISIBLE ONLY BECAUSE AN ANIMATION IS
+   MOVING IT MUST BE REMOVED IN THIS MODE, NOT STILLED. ***
+
+   Four so far, and every one of them was reported by the owner as the mode
+   making something LOUDER rather than quieter, which is what this failure looks
+   like from outside:
+
+     the notices' star rain      froze mid-fall               (above)
+     the cart's streak           painted at full strength     (below)
+     the progress bar's sheen    a gradient across the fill   (below)
+     the burst                   nine stars, held             (below)
+
+   When a fifth appears it belongs in this list. `animation:none` is not a
+   volume control; it stops the thing that was hiding the paint.
+   ========================================================================== */
+html.d-a11y .d-icon-btn:has(.d-icon--cart):hover::before,
+html.d-a11y .d-icon-btn:has(.d-icon--cart):focus-visible::before,
+html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
+html.d-a11y .d-progress__bar::after{ content:none !important }
 html.d-a11y .d-burst{ display:none !important }
 
 /* Links are underlined, everywhere, including the ones a component deliberately
@@ -234,3 +261,4 @@ html.d-a11y .d-fab--a11y{
 	color:var(--c-cocoa);
 }
 html.d-a11y .d-fab{ text-decoration:none }
+

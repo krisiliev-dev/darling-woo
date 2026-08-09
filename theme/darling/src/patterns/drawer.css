@@ -325,6 +325,11 @@
 	   Now: bullet | thumbnail | body | remove, with the price inside the body
 	   next to the stepper, because a price that is its own column cannot sit
 	   beside a control that is in a different one. */
+	/* One number for the photograph, read by the image AND by the bullet that
+	   has to line up with it. They were two numbers and the bullet was centred on
+	   the ROW, so a name that wrapped to two lines pushed it out of line with the
+	   picture - which is what the owner saw. */
+	--thumb: 3.25rem;
 	grid-template-columns:auto auto minmax(0, 1fr) auto;
 	align-items:start;
 	gap:var(--space-2xs);
@@ -337,10 +342,13 @@
 	content:"";
 	width:.62rem;
 	height:.62rem;
-	/* aligned to the first line's optical centre. .34em put it on the cap
-	   height rather than the x-height and it read as sitting above the text. */
-	align-self:center;
-	margin-top:0;
+	/* *** CENTRED ON THE PHOTOGRAPH, NOT ON THE ROW. ***
+	   align-self:center centred it on whatever the tallest thing in the row
+	   happened to be, so it moved every time a product name wrapped. Half the
+	   thumbnail minus half the bullet is where it belongs, and both halves come
+	   from --thumb so they cannot drift apart. */
+	align-self:start;
+	margin-top:calc(var(--thumb) / 2 - .31rem);
 	background:var(--g-core);
 	mask-image:var(--icon-star-4);
 	mask-size:contain;
@@ -362,8 +370,8 @@
    gradient underneath so a row whose image has not loaded is a warm tile rather
    than a hole. */
 .d-drawer__line__thumb{
-	width:3.25rem;
-	height:3.25rem;
+	width:var(--thumb);
+	height:var(--thumb);
 	border-radius:var(--radius-s);
 	object-fit:cover;
 	background:var(--placeholder-product, var(--surface-quiet));

@@ -91,3 +91,29 @@
    is what frees the bow to be this quiet and the caption to disappear at 64px:
    the meaning is not in either of them. */
 .d-media-fail__bow{ pointer-events:none }
+
+/* *** THE TEAR IS THE RESTING STATE, AND THE ANIMATION RUNS TOWARDS IT. ***
+   The owner asked to see it tear. The temptation is to animate from torn to
+   torn-further, or to animate the tear IN - both of which make the tear a
+   property of the animation, so with motion off the bow is whole and the state
+   says nothing. Written this way round, the declared position is the torn one
+   and the keyframes start from intact: with `animation:none` the slab simply
+   arrives already torn, which is the message, and with motion on you watch it
+   happen.
+
+   The piece comes away from its own outer edge - transform-box:fill-box makes
+   the origin the flap rather than the whole 24x12 canvas - so it swings off the
+   knot instead of orbiting the middle of the picture. */
+.d-media-fail__torn{
+	transform-box:fill-box;
+	transform-origin:12% 50%;
+	translate:1.5px .62px;
+	rotate:9deg;
+	animation:d-bow-tear 760ms var(--ease-float) 220ms 1 both;
+}
+@keyframes d-bow-tear{
+	0%   { translate:0 0;         rotate:0deg }
+	38%  { translate:.2px .06px;  rotate:1deg }   /* it holds, then it gives */
+	72%  { translate:1.78px .78px; rotate:10.8deg }
+	100% { translate:1.5px .62px;  rotate:9deg }
+}

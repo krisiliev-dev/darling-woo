@@ -85,6 +85,7 @@
 @import url("patterns/page.css") layer(patterns);
 @import url("patterns/media-fail.css") layer(patterns);
 @import url("patterns/checkout.css") layer(patterns);
+@import url("patterns/mappick.css") layer(patterns);
 @import url("patterns/a11y.css") layer(patterns);
 @import url("finish.css")        layer(finish);
 

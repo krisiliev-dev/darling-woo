@@ -39,8 +39,19 @@
    lookalike in page.css - one disclosure in the system, and an author does not
    have to remember a class for it. It takes the quiet family, because a page of
    prose is not the place for the cherry one. */
-.d-panel,
-.d-prose .wp-block-details{
+/* *** THE PAIR IS NAMED ONCE, HERE AND IN EVERY RULE BELOW. ***
+   An authored <details> is not LIKE the panel, it IS the panel, and the only
+   way to keep that true is to stop writing two selector lists. Twice now the
+   colours were extended and the behaviour was not: the prose version had the
+   arrow but never swam, never trailed and opened instantly, because
+   `.d-panel[open]`, `::details-content` and the wake were never widened.
+
+   *** THE :where() IS LOAD-BEARING. *** :is() takes the specificity of its most
+   specific argument, so `:is(.d-panel, .d-prose .wp-block-details)` would be
+   (0,2,0) and the base would start beating its own variants. :where() is always
+   zero, so this resolves to .d-panel's (0,1,0) and every rule in this file keeps
+   exactly the weight it has today. */
+:is(.d-panel, :where(.d-prose .wp-block-details)){
 	/* The three families. A variant sets these five and nothing else. */
 	--panel-surface: var(--tint-grey);
 	--panel-quiet:   var(--tint-grey-quiet);
@@ -76,8 +87,8 @@
 	transition:--swim   var(--dur-panel) var(--ease-float),
 	           --swim-b var(--dur-wake)  var(--ease-wake);
 }
-.d-panel[open]{ --swim:1; --swim-b:1 }
-.d-panel + .d-panel{ margin-top:var(--space-2xs) }
+:is(.d-panel, :where(.d-prose .wp-block-details))[open]{ --swim:1; --swim-b:1 }
+:is(.d-panel, :where(.d-prose .wp-block-details)) + :is(.d-panel, :where(.d-prose .wp-block-details)){ margin-top:var(--space-2xs) }
 
 .d-panel--cherry{
 	--panel-surface: var(--tint-cherry);
@@ -120,8 +131,7 @@
    The right-hand padding keeps a lane free for the arrow, which is positioned
    against the PANEL and not the summary: it has to leave the summary entirely
    on its way down. */
-.d-panel__summary,
-.d-prose .wp-block-details > summary{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary)){
 	display:grid;
 	grid-template-columns:1fr;
 	align-items:center;
@@ -132,13 +142,10 @@
 	list-style:none;
 	transition:background var(--dur-ui) var(--ease-float);
 }
-.d-panel__summary::-webkit-details-marker,
-.d-prose .wp-block-details > summary::-webkit-details-marker{ display:none }
-.d-panel__summary::marker,
-.d-prose .wp-block-details > summary::marker{ content:"" }
-.d-panel__summary:hover,
-.d-prose .wp-block-details > summary:hover{ background:var(--panel-quiet) }
-.d-panel__summary:focus-visible{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::-webkit-details-marker{ display:none }
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::marker{ content:"" }
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary)):hover{ background:var(--panel-quiet) }
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary)):focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:-2px;
 }
@@ -166,13 +173,13 @@
    panel opens instantly and the arrow swims down through content that is
    already there. Still correct, just less pretty. */
 @supports selector(::details-content){
-	.d-panel::details-content{
+	:is(.d-panel, :where(.d-prose .wp-block-details))::details-content{
 		block-size:0;
 		overflow:hidden;
 		transition:block-size var(--dur-panel) var(--ease-float),
 		           content-visibility var(--dur-panel) allow-discrete;
 	}
-	.d-panel[open]::details-content{ block-size:auto }
+	:is(.d-panel, :where(.d-prose .wp-block-details))[open]::details-content{ block-size:auto }
 }
 
 /* -- the swimmer ------------------------------------------------------------
@@ -187,8 +194,7 @@
 
    45deg is a v; 225deg is the same v having turned a full half-circle, which is
    a tumble turn rather than a mirror flip. */
-.d-panel__summary::after,
-.d-prose .wp-block-details > summary::after{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::after{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -201,13 +207,11 @@
 	transform:translateY(-50%) rotate(45deg);
 	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
 }
-.d-panel[open] > .d-panel__summary::after,
-.d-prose .wp-block-details[open] > summary::after{ transform:translateY(-50%) rotate(225deg) }
+:is(.d-panel, :where(.d-prose .wp-block-details))[open] > :is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::after{ transform:translateY(-50%) rotate(225deg) }
 
 /* The chevron is 7px of paint. This is the 40px of TARGET around it, and it is
    the summary's too, so pressing anywhere near the arrow toggles the panel. */
-.d-panel__summary::before,
-.d-prose .wp-block-details > summary::before{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::before{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -244,7 +248,7 @@
    the speckles into the streak and there is nothing left to see; soft-edged
    radial stops keep them as specks.
    ========================================================================== */
-.d-panel::before{
+:is(.d-panel, :where(.d-prose .wp-block-details))::before{
 	--lane: calc(var(--space-xs) + .35em);
 	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
 	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
@@ -292,6 +296,6 @@
    is a transition, so it survives that switch - and it should: a disclosure
    opening is feedback, not atmosphere, and the coupon panel is the one panel
    on the checkout. The TRAIL is atmosphere, and it goes. */
-body.woocommerce-cart .d-panel::before,
-body.woocommerce-checkout .d-panel::before,
-body.woocommerce-order-received .d-panel::before{ opacity:0 }
+body.woocommerce-cart :is(.d-panel, :where(.d-prose .wp-block-details))::before,
+body.woocommerce-checkout :is(.d-panel, :where(.d-prose .wp-block-details))::before,
+body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details))::before{ opacity:0 }

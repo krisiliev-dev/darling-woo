@@ -1,0 +1,213 @@
+/* =============================================================================
+   PATTERN / MAP PICKER
+   Choosing a courier office: a list you can read and a map you can point at.
+
+   *** THE MAP IS AN ENHANCEMENT OVER THE LIST, NEVER A REPLACEMENT. ***
+   The list is what works with no JavaScript, on a slow connection and in a
+   screen reader, and it is what still works when the tile host is down. A map
+   that replaces it takes all three away for a picture. So: the <select> stays
+   underneath, the list is the control, and the map reflects it and can drive
+   it - either way round, neither one required.
+
+   *** THE TILES ARE OpenFreeMap AND THE RENDERER IS MapLibre GL. ***
+   Surveyed 2026-08-09: no API key, no registration, no cookies, no request
+   limit, commercial use explicit, and the whole production setup is open-source
+   so we can host it ourselves the day we want to. What it does not have is an
+   SLA - which is exactly why the paragraph above is a design rule and not a
+   nicety. Stadia's free tier is non-commercial, CARTO's Positron needs an
+   enterprise licence, and osm.org's own tiles forbid this use outright.
+
+   We do not need a geocoder. Speedy and Econt return their offices with their
+   own coordinates; the map is a backdrop and pins we place. What has to be good
+   in Bulgaria is street rendering, and that is ordinary OpenStreetMap.
+
+   NOTHING HERE LOADS ANYTHING. This file styles a frame, a list and a pin. The
+   map goes in when the site's structure does.
+   ========================================================================== */
+
+.d-mappick{
+	display:grid;
+	grid-template-columns:minmax(0, 20rem) minmax(0, 1fr);
+	gap:var(--space-xs);
+	align-items:stretch;
+}
+/* One column under 780px, and the MAP goes second. On a phone the list is the
+   control and the map is confirmation - putting the picture first pushes the
+   thing you have to use below the fold. */
+@media (max-width: 780px){
+	.d-mappick{ grid-template-columns:1fr }
+	.d-mappick__map{ order:2; min-height:14rem }
+}
+
+/* -- the frame ---------------------------------------------------------------
+   A hole for MapLibre, sized and cornered by us so the page does not reflow
+   when the tiles arrive - and so it looks like part of the checkout while they
+   have not. `isolation` keeps the library's own stacking context off ours. */
+.d-mappick__map{
+	position:relative;
+	min-height:22rem;
+	border-radius:var(--radius-l);
+	border:1px solid var(--hairline);
+	background:var(--surface-quiet);
+	overflow:hidden;
+	isolation:isolate;
+}
+/* The state before anything has loaded, and the state if nothing ever does.
+   Both look like a map that is not ready, rather than like a broken box. */
+.d-mappick__map[data-state="loading"]::after,
+.d-mappick__map[data-state="down"]::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:
+		repeating-linear-gradient(90deg, transparent 0 5.5rem,
+			color-mix(in oklab, var(--c-grey-300) 34%, transparent) 5.5rem 5.6rem),
+		repeating-linear-gradient(0deg, transparent 0 4.25rem,
+			color-mix(in oklab, var(--c-grey-300) 34%, transparent) 4.25rem 4.35rem);
+	opacity:.7;
+}
+.d-mappick__note{
+	position:absolute;
+	z-index:2;
+	inset-inline:var(--space-xs);
+	bottom:var(--space-xs);
+	margin:0;
+	padding:var(--space-3xs) var(--space-2xs);
+	border-radius:var(--radius-s);
+	background:color-mix(in oklab, var(--surface-raised) 92%, transparent);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+	text-align:center;
+}
+
+/* -- attribution -------------------------------------------------------------
+   *** THIS IS A LICENCE CONDITION, NOT A CREDIT. *** OpenFreeMap and
+   OpenStreetMap both require it. It lives in the pattern so that removing it
+   means deleting a rule with this comment above it rather than forgetting a
+   line of markup. */
+.d-mappick__attrib{
+	position:absolute;
+	z-index:3;
+	inset-inline-end:0;
+	bottom:0;
+	margin:0;
+	padding:.15em .5em;
+	border-start-start-radius:var(--radius-xs);
+	background:color-mix(in oklab, var(--surface-raised) 86%, transparent);
+	font-size:var(--fs-fine);
+	line-height:1.5;
+	color:var(--ink-quiet);
+}
+.d-mappick__attrib a{ color:inherit }
+
+/* -- the pin -----------------------------------------------------------------
+   Ours, not the library's. A teardrop with the four-point star punched out of
+   it, so the marker on the map is the same mark as the bullet in the list. */
+.d-mappick__pin{
+	position:absolute;
+	z-index:2;
+	width:1.75rem;
+	height:1.75rem;
+	/* the point is the anchor, so the coordinate is at the BOTTOM centre */
+	translate:-50% -100%;
+	color:var(--c-cherry);
+	filter:drop-shadow(0 2px 3px color-mix(in oklab, var(--c-cocoa) 28%, transparent));
+	cursor:pointer;
+	transition:scale var(--dur-ui) var(--ease-float), color var(--dur-ui) var(--ease-float);
+}
+.d-mappick__pin::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:currentColor;
+	-webkit-mask-image:var(--icon-pin);
+	        mask-image:var(--icon-pin);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+.d-mappick__pin:hover{ scale:1.12 }
+/* Selected is BIGGER and GOLD, and it is both on purpose: colour alone is the
+   one cue a colour-blind visitor does not get, and this is the cue that says
+   which office the order is going to. */
+.d-mappick__pin[aria-current="true"]{
+	scale:1.28;
+	color:var(--g-core);
+	z-index:3;
+}
+
+/* -- the list ----------------------------------------------------------------
+   .d-scrollframe carries the rail; this only decides how tall it gets. */
+.d-mappick__list{ max-height:22rem }
+.d-mappick__office{
+	display:grid;
+	grid-template-columns:auto minmax(0, 1fr) auto;
+	gap:var(--space-3xs) var(--space-2xs);
+	width:100%;
+	padding:var(--space-2xs);
+	border:0;
+	border-radius:var(--radius-m);
+	background:none;
+	font:var(--type-ui);
+	color:var(--ink);
+	text-align:start;
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-mappick__office + .d-mappick__office{ margin-top:2px }
+.d-mappick__office:hover{ background:var(--tint-gold-quiet) }
+.d-mappick__office:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+/* The same pair of cues as the pin: a tint AND a mark, never colour alone. */
+.d-mappick__office[aria-current="true"]{
+	background:var(--tint-gold);
+	box-shadow:inset 0 0 0 1px var(--tint-gold-edge);
+}
+.d-mappick__office::before{
+	content:"";
+	grid-row:1 / span 2;
+	align-self:start;
+	width:.85rem;
+	height:.85rem;
+	margin-top:.2em;
+	background:var(--c-grey-400);
+	-webkit-mask-image:var(--icon-pin);
+	        mask-image:var(--icon-pin);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+.d-mappick__office[aria-current="true"]::before{ background:var(--g-core) }
+.d-mappick__name{ font-weight:var(--fw-medium) }
+.d-mappick__addr{
+	grid-column:2;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+/* Tabular so a column of distances lines up on the decimal point. */
+.d-mappick__dist{
+	grid-column:3;
+	grid-row:1;
+	font-size:var(--fs-fine);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink-quiet);
+	white-space:nowrap;
+}
+.d-mappick__hours{
+	grid-column:2;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-mappick__hours[data-open="false"]{ color:var(--notice-error-edge) }
+
+/* -- the money path and the plain mode ---------------------------------------
+   The picker lives on the checkout, where motion.css already kills everything.
+   The pin's scale is a TRANSITION rather than an animation on purpose: it is
+   feedback about what you just chose, not atmosphere - but it goes there too,
+   and the size difference remains because it is set, not animated. */
+html.d-a11y .d-mappick__pin,
+html.d-a11y .d-mappick__office{ transition:none }

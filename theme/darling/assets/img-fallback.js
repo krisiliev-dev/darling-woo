@@ -31,7 +31,13 @@
 	   mark because there is only one mark: change the path and both halves
 	   change with it. tokens/icon.css records what happened the last time I
 	   drew a plausible bow instead of the real one. */
-	var BOW = '<svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>';
+	/* *** THE SAME BOW, TORN - AND THE TEAR IS A LIGHTNING LINE THROUGH THE
+	   RIGHT FLAP. *** The identical path is drawn twice and each copy is
+	   clipped to one side of the same jagged line, so the tear cannot drift
+	   away from the mark: change the path and both halves change with it.
+	   tokens/icon.css records what happened the last two times I drew a
+	   plausible bow instead of the real one. */
+	var BOW = '<svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-keep"><path d="M0 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H0 Z"/></clipPath><clipPath id="d-bow-torn"><path d="M24 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-keep)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g class="d-media-fail__torn" clip-path="url(#d-bow-torn)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>';
 
 	var MEDIA_SEL = [
 		'.darling-grid li',

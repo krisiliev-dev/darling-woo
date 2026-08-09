@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -1624,7 +1624,7 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
 <div class="d-band" style="--surface-band:var(--c-claret)">
   <div class="d-news">
-    <span class="d-news__flow" aria-hidden="true"><i style="--from:-52vw;--y:18%;--s:1.30;--d:0.00s"></i><i style="--from:52vw;--y:74%;--s:1.05;--d:0.20s"></i><i style="--from:-44vw;--y:62%;--s:0.85;--d:0.40s"></i><i style="--from:46vw;--y:26%;--s:1.40;--d:0.60s"></i><i style="--from:-38vw;--y:88%;--s:1.10;--d:0.80s"></i><i style="--from:42vw;--y:46%;--s:0.90;--d:1.00s"></i><i style="--from:-50vw;--y:38%;--s:1.20;--d:1.20s"></i><i style="--from:38vw;--y:8%;--s:0.75;--d:1.40s"></i><i style="--from:-42vw;--y:54%;--s:1.35;--d:1.60s"></i><i style="--from:50vw;--y:92%;--s:0.95;--d:1.80s"></i><i style="--from:-46vw;--y:6%;--s:1.00;--d:2.00s"></i><i style="--from:44vw;--y:66%;--s:1.15;--d:2.20s"></i><i style="--from:-40vw;--y:30%;--s:0.80;--d:2.40s"></i></span>
+    <span class="d-news__flow" aria-hidden="true"><i style="--a:-42deg;--s:1.30;--d:0.00s"></i><i style="--a:152deg;--s:0.95;--d:0.18s"></i><i style="--a:17deg;--s:1.10;--d:0.36s"></i><i style="--a:186deg;--s:1.40;--d:0.54s"></i><i style="--a:-18deg;--s:0.80;--d:0.72s"></i><i style="--a:209deg;--s:1.15;--d:0.90s"></i><i style="--a:40deg;--s:1.25;--d:1.08s"></i><i style="--a:163deg;--s:0.75;--d:1.26s"></i><i style="--a:-7deg;--s:1.45;--d:1.44s"></i><i style="--a:197deg;--s:1.00;--d:1.62s"></i><i style="--a:29deg;--s:0.85;--d:1.80s"></i><i style="--a:140deg;--s:1.35;--d:1.98s"></i><i style="--a:-30deg;--s:1.05;--d:2.16s"></i><i style="--a:220deg;--s:0.90;--d:2.34s"></i><i style="--a:5deg;--s:1.20;--d:2.52s"></i><i style="--a:174deg;--s:0.70;--d:2.70s"></i></span>
     <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
     <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
     дома. Без спам, обещаваме.</p>
@@ -1964,7 +1964,11 @@ MEDIA_FAIL_NAME = u'\u041a\u0435\u0440\u0430\u043c\u0438\u0447\u043d\u0430 \u043
 # either side of one jag, which is how a tear stays a tear of THIS mark.
 # Kept in step with assets/img-fallback.js by rev11cgate.js, which compares
 # the path data in both files rather than trusting this comment.
-MEDIA_FAIL_BOW = ('<svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>')
+# The torn bow: the SAME path as BOW above, drawn twice and clipped to
+# either side of one lightning line through the right flap. Kept in step
+# with assets/img-fallback.js by scripts/bowgate.js, which compares the
+# path data everywhere it appears rather than trusting this comment.
+MEDIA_FAIL_BOW = ('<svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-keep"><path d="M0 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H0 Z"/></clipPath><clipPath id="d-bow-torn"><path d="M24 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-keep)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g class="d-media-fail__torn" clip-path="url(#d-bow-torn)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>')
 
 A('''<section class="sec" id="media"><h2>Pattern</h2><h3>Failed image</h3>
 <p class="note"><b>This is an error state, not a placeholder.</b> The panel
@@ -2076,6 +2080,111 @@ inside.</p>
   </div>
 </div>
 </section>''' %(dict(cap=MEDIA_FAIL_CAP, bow=MEDIA_FAIL_BOW, name=MEDIA_FAIL_NAME)))
+
+A('''<section class="sec" id="mappick"><h2>Pattern</h2><h3>Office and locker picker</h3>
+<p class="note"><b>The map is an enhancement over the list, never a replacement.</b>
+The list is what works with no JavaScript, on a slow connection and in a screen
+reader &mdash; and it is what still works when the tile host is down. A map that
+replaces it takes all three away for a picture. So the real
+<code>&lt;select&gt;</code> stays underneath, the list is the control, and the map
+reflects it and can drive it: either way round, neither one required.</p>
+<p class="note"><b>Tiles: OpenFreeMap. Renderer: MapLibre GL.</b> Surveyed today
+&mdash; no API key, no registration, no cookies, no request limit, commercial use
+explicit, and the whole production stack is open-source so we can host it
+ourselves when we want to. What it has not got is an SLA, which is exactly why
+the paragraph above is a rule rather than a nicety. Stadia&rsquo;s free tier is
+non-commercial, CARTO&rsquo;s Positron wants an enterprise licence, and
+openstreetmap.org&rsquo;s own tiles forbid this use outright.</p>
+<p class="note"><b>We do not need a geocoder.</b> Speedy and Econt return their
+offices with their own coordinates &mdash; that is what
+<code>office-picker.js</code> already fetches. The map is a backdrop and pins we
+place, so the only thing that has to be good in Bulgaria is street rendering,
+which is ordinary OpenStreetMap. That is most of my &ldquo;patchy coverage&rdquo;
+worry answered: it was aimed at a layer we are not using.</p>
+<p class="note"><b>Nothing here loads anything.</b> The frame is a sized, styled
+hole for MapLibre to mount into, filled by the pattern&rsquo;s own hatching. A
+review document that quietly pings a third party every time it is opened has
+opinions about privacy nobody agreed to.</p>
+
+<div class="d-mappick">
+  <div class="d-scrollframe d-mappick__list">
+    <div class="d-scroll">
+      <button type="button" class="d-mappick__office" aria-current="true">
+        <span class="d-mappick__name">Офис Свищов Център</span>
+        <span class="d-mappick__dist">0,4 км</span>
+        <span class="d-mappick__addr">ул. „Цар Освободител“ 12</span>
+        <span class="d-mappick__hours" data-open="true">09:00 – 18:00</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Офис Свищов Изток</span>
+        <span class="d-mappick__dist">1,8 км</span>
+        <span class="d-mappick__addr">ул. „Патриарх Евтимий“ 3</span>
+        <span class="d-mappick__hours" data-open="true">09:00 – 17:30</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Автомат Билла Свищов</span>
+        <span class="d-mappick__dist">2,1 км</span>
+        <span class="d-mappick__addr">бул. „Дунав“ 44</span>
+        <span class="d-mappick__hours" data-open="true">00:00 – 24:00</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Офис Свищов Запад</span>
+        <span class="d-mappick__dist">3,6 км</span>
+        <span class="d-mappick__addr">ул. „Кирил и Методий“ 9</span>
+        <span class="d-mappick__hours" data-open="false">затворен днес</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Автомат Кауфланд</span>
+        <span class="d-mappick__dist">4,2 км</span>
+        <span class="d-mappick__addr">ул. „Хан Аспарух“ 1</span>
+        <span class="d-mappick__hours" data-open="true">00:00 – 24:00</span>
+      </button>
+    </div>
+    <div class="d-scrollframe__rail"><div class="d-scrollframe__wake"></div><div class="d-scrollframe__thumb"></div></div>
+  </div>
+  <div class="d-mappick__map" data-state="loading">
+      <span class="d-mappick__pin" style="left:31%;top:44%" aria-current="true" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:58%;top:30%" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:46%;top:68%" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:72%;top:57%" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:22%;top:71%" aria-hidden="true"></span>
+    <p class="d-mappick__note">Картата се зарежда&hellip;</p>
+    <p class="d-mappick__attrib">&copy; <a href="https://openfreemap.org/">OpenFreeMap</a>
+    &middot; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></p>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:22px">And the two states a picker spends most of its life in</p>
+<div class="grid" style="grid-template-columns:1fr 1fr">
+  <div>
+    <p class="note">Nothing near this address.</p>
+    <div class="d-mappick__map" data-state="down" style="min-height:11rem">
+      <p class="d-mappick__note">Няма офиси в този град. Най-близкият е в Плевен, на 14 км.</p>
+      <p class="d-mappick__attrib">&copy; OpenFreeMap &middot; OpenStreetMap</p>
+    </div>
+  </div>
+  <div>
+    <p class="note">The tile host is unreachable &mdash; and the order still goes through.</p>
+    <div class="d-mappick__map" data-state="down" style="min-height:11rem">
+      <p class="d-mappick__note">Картата не можа да се зареди. Изберете офис от списъка.</p>
+      <p class="d-mappick__attrib">&copy; OpenFreeMap &middot; OpenStreetMap</p>
+    </div>
+  </div>
+</div>
+
+<div class="todo"><b>The pin is our mark, not the library&rsquo;s.</b> A teardrop
+with the four-point star punched out of it, so the marker on the map and the
+bullet in the list are the same shape. Selected is bigger <em>and</em> gold:
+colour alone is the one cue a colour-blind visitor does not get, and this is the
+cue that says where the order is going.<br><br>
+<b>Attribution is a licence condition, not a credit.</b> It is in the pattern, so
+removing it means deleting a rule with a comment above it saying that.<br><br>
+<b>Still to decide before the map itself is built:</b> whether we ship
+MapLibre&rsquo;s ~200&nbsp;KB on the checkout for every visitor or load it only
+when the office option is chosen (the second, almost certainly), and whether the
+pins cluster &mdash; Sofia has over two hundred offices and Speedy returns them
+all.</div>
+</section>''')
 
 A('''<section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>

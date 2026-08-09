@@ -457,6 +457,9 @@ otate are separate
 	   redrawn - it is the mark people already recognise on that button, and it
 	   is used in exactly one place, which is precisely what this set is for. */
 	--icon-a11y: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle fill='%23000' cx='12' cy='4.4' r='2.2'/%3E%3Cpath fill='%23000' d='M12 8.1c-2.9 0-5.6-.4-7.9-1.1l-.5 1.9c1.8.5 3.7.9 5.8 1.1v2.7l-2.4 7.4 1.9.6 2.3-7h1.6l2.3 7 1.9-.6-2.4-7.4V10c2.1-.2 4-.6 5.8-1.1l-.5-1.9c-2.3.7-5 1.1-7.9 1.1Z'/%3E%3C/svg%3E");
+	/* A teardrop with the four-point star punched out of it, so the marker
+	   on a map is the same mark as the bullet in the list beside it. */
+	--icon-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 23s8-8.2 8-13.6A8 8 0 0 0 4 9.4C4 14.8 12 23 12 23Zm0-16.2 1.05 3.05L16 10.9l-2.95 1.05L12 15l-1.05-3.05L8 10.9l2.95-1.05Z'/%3E%3C/svg%3E");
 	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Cpath fill='%23000' d='M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z'/%3E%3Ccircle fill='%23000' cx='12' cy='6' r='2.4'/%3E%3C/svg%3E");
 	/* The lens on its own, so the search mark can hold something inside it. */
 	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
@@ -918,8 +921,8 @@ main{ overflow-x:clip }
 
    WHAT MOVES, AND WHY THAT ONE:
      spinner   always      it IS the event; a still spinner is a bug
-     cart      on hover + on add   the hover invites the click; the add
-                          confirms it. Owner's call, 2026-08-09.
+     cart      on hover    tilt AND streak together, and nothing on click -
+                          a button should react while somebody is deciding
      user      on hover    a bow, because the account is the personal corner
      search    on hover    invites the click; the lens is otherwise dead weight
      heart     on check    a state change the person just made
@@ -1069,12 +1072,23 @@ main{ overflow-x:clip }
 	-webkit-mask-repeat:no-repeat;
 }
 [data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
-[data-added] .d-icon--cart::after{  animation:d-icon-roll 820ms var(--ease-float) }
+
 /* *** ON HOVER, AT THE OWNER'S REQUEST - AND THE TABLE ABOVE CHANGES WITH IT. ***
    It read "cart  on add  the only moment the basket changes", which is a good
    argument and not the one he wants: the mark is on a BUTTON, and a button that
    only ever moves after you have committed cannot invite the commit. The add
    still fires it, so nothing is lost - this adds the earlier moment. */
+/* *** ONE GESTURE, ON HOVER, AND CLICK DOES NOTHING. ***
+   The owner: "The cart tilting on hover needs to also have the trail animation
+   coupled with it. And clicking it should not have those 2 animations."
+
+   The tilt and the streak were on two different triggers - hover for one, the
+   add-to-cart attribute for the other - so they were two half-gestures that
+   never met. They are one now, and it fires where a button should react: when
+   somebody is deciding, not after they have committed.
+
+   The add-to-cart moment is not left unmarked. The count changes and, on the
+   real storefront, the drawer opens - both of which say more than a tilt. */
 .d-icon-btn:hover .d-icon--cart,
 .d-icon-btn:focus-visible .d-icon--cart{ animation:d-icon-wheelie 820ms var(--ease-float) }
 .d-icon-btn:hover .d-icon--cart::after,
@@ -1094,7 +1108,8 @@ main{ overflow-x:clip }
 /* The streak. It is on the BUTTON and not on the icon because the icon's two
    pseudo-elements are the body and the wheel, and there is no third. Same
    gradient as every other trail in the system. */
-.d-icon-btn[data-added]::before{
+.d-icon-btn:has(.d-icon--cart):hover::before,
+.d-icon-btn:has(.d-icon--cart):focus-visible::before{
 	content:"";
 	position:absolute;
 	top:58%;
@@ -1999,6 +2014,11 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	   Now: bullet | thumbnail | body | remove, with the price inside the body
 	   next to the stepper, because a price that is its own column cannot sit
 	   beside a control that is in a different one. */
+	/* One number for the photograph, read by the image AND by the bullet that
+	   has to line up with it. They were two numbers and the bullet was centred on
+	   the ROW, so a name that wrapped to two lines pushed it out of line with the
+	   picture - which is what the owner saw. */
+	--thumb: 3.25rem;
 	grid-template-columns:auto auto minmax(0, 1fr) auto;
 	align-items:start;
 	gap:var(--space-2xs);
@@ -2011,10 +2031,13 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	content:"";
 	width:.62rem;
 	height:.62rem;
-	/* aligned to the first line's optical centre. .34em put it on the cap
-	   height rather than the x-height and it read as sitting above the text. */
-	align-self:center;
-	margin-top:0;
+	/* *** CENTRED ON THE PHOTOGRAPH, NOT ON THE ROW. ***
+	   align-self:center centred it on whatever the tallest thing in the row
+	   happened to be, so it moved every time a product name wrapped. Half the
+	   thumbnail minus half the bullet is where it belongs, and both halves come
+	   from --thumb so they cannot drift apart. */
+	align-self:start;
+	margin-top:calc(var(--thumb) / 2 - .31rem);
 	background:var(--g-core);
 	mask-image:var(--icon-star-4);
 	mask-size:contain;
@@ -2036,8 +2059,8 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
    gradient underneath so a row whose image has not loaded is a warm tile rather
    than a hole. */
 .d-drawer__line__thumb{
-	width:3.25rem;
-	height:3.25rem;
+	width:var(--thumb);
+	height:var(--thumb);
 	border-radius:var(--radius-s);
 	object-fit:cover;
 	background:var(--placeholder-product, var(--surface-quiet));
@@ -5628,8 +5651,19 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
    lookalike in page.css - one disclosure in the system, and an author does not
    have to remember a class for it. It takes the quiet family, because a page of
    prose is not the place for the cherry one. */
-.d-panel,
-.d-prose .wp-block-details{
+/* *** THE PAIR IS NAMED ONCE, HERE AND IN EVERY RULE BELOW. ***
+   An authored <details> is not LIKE the panel, it IS the panel, and the only
+   way to keep that true is to stop writing two selector lists. Twice now the
+   colours were extended and the behaviour was not: the prose version had the
+   arrow but never swam, never trailed and opened instantly, because
+   `.d-panel[open]`, `::details-content` and the wake were never widened.
+
+   *** THE :where() IS LOAD-BEARING. *** :is() takes the specificity of its most
+   specific argument, so `:is(.d-panel, .d-prose .wp-block-details)` would be
+   (0,2,0) and the base would start beating its own variants. :where() is always
+   zero, so this resolves to .d-panel's (0,1,0) and every rule in this file keeps
+   exactly the weight it has today. */
+:is(.d-panel, :where(.d-prose .wp-block-details)){
 	/* The three families. A variant sets these five and nothing else. */
 	--panel-surface: var(--tint-grey);
 	--panel-quiet:   var(--tint-grey-quiet);
@@ -5665,8 +5699,8 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	transition:--swim   var(--dur-panel) var(--ease-float),
 	           --swim-b var(--dur-wake)  var(--ease-wake);
 }
-.d-panel[open]{ --swim:1; --swim-b:1 }
-.d-panel + .d-panel{ margin-top:var(--space-2xs) }
+:is(.d-panel, :where(.d-prose .wp-block-details))[open]{ --swim:1; --swim-b:1 }
+:is(.d-panel, :where(.d-prose .wp-block-details)) + :is(.d-panel, :where(.d-prose .wp-block-details)){ margin-top:var(--space-2xs) }
 
 .d-panel--cherry{
 	--panel-surface: var(--tint-cherry);
@@ -5709,8 +5743,7 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
    The right-hand padding keeps a lane free for the arrow, which is positioned
    against the PANEL and not the summary: it has to leave the summary entirely
    on its way down. */
-.d-panel__summary,
-.d-prose .wp-block-details > summary{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary)){
 	display:grid;
 	grid-template-columns:1fr;
 	align-items:center;
@@ -5721,13 +5754,10 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	list-style:none;
 	transition:background var(--dur-ui) var(--ease-float);
 }
-.d-panel__summary::-webkit-details-marker,
-.d-prose .wp-block-details > summary::-webkit-details-marker{ display:none }
-.d-panel__summary::marker,
-.d-prose .wp-block-details > summary::marker{ content:"" }
-.d-panel__summary:hover,
-.d-prose .wp-block-details > summary:hover{ background:var(--panel-quiet) }
-.d-panel__summary:focus-visible{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::-webkit-details-marker{ display:none }
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::marker{ content:"" }
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary)):hover{ background:var(--panel-quiet) }
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary)):focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:-2px;
 }
@@ -5755,13 +5785,13 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
    panel opens instantly and the arrow swims down through content that is
    already there. Still correct, just less pretty. */
 @supports selector(::details-content){
-	.d-panel::details-content{
+	:is(.d-panel, :where(.d-prose .wp-block-details))::details-content{
 		block-size:0;
 		overflow:hidden;
 		transition:block-size var(--dur-panel) var(--ease-float),
 		           content-visibility var(--dur-panel) allow-discrete;
 	}
-	.d-panel[open]::details-content{ block-size:auto }
+	:is(.d-panel, :where(.d-prose .wp-block-details))[open]::details-content{ block-size:auto }
 }
 
 /* -- the swimmer ------------------------------------------------------------
@@ -5776,8 +5806,7 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 
    45deg is a v; 225deg is the same v having turned a full half-circle, which is
    a tumble turn rather than a mirror flip. */
-.d-panel__summary::after,
-.d-prose .wp-block-details > summary::after{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::after{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -5790,13 +5819,11 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	transform:translateY(-50%) rotate(45deg);
 	transition:transform var(--dur-turn) var(--ease-float) var(--delay-turn);
 }
-.d-panel[open] > .d-panel__summary::after,
-.d-prose .wp-block-details[open] > summary::after{ transform:translateY(-50%) rotate(225deg) }
+:is(.d-panel, :where(.d-prose .wp-block-details))[open] > :is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::after{ transform:translateY(-50%) rotate(225deg) }
 
 /* The chevron is 7px of paint. This is the 40px of TARGET around it, and it is
    the summary's too, so pressing anywhere near the arrow toggles the panel. */
-.d-panel__summary::before,
-.d-prose .wp-block-details > summary::before{
+:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::before{
 	content:"";
 	position:absolute;
 	z-index:2;
@@ -5833,7 +5860,7 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
    the speckles into the streak and there is nothing left to see; soft-edged
    radial stops keep them as specks.
    ========================================================================== */
-.d-panel::before{
+:is(.d-panel, :where(.d-prose .wp-block-details))::before{
 	--lane: calc(var(--space-xs) + .35em);
 	--pos-a: calc(var(--panel-head) + var(--swim)   * (100% - 2 * var(--panel-head)));
 	--pos-b: calc(var(--panel-head) + var(--swim-b) * (100% - 2 * var(--panel-head)));
@@ -5881,9 +5908,9 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
    is a transition, so it survives that switch - and it should: a disclosure
    opening is feedback, not atmosphere, and the coupon panel is the one panel
    on the checkout. The TRAIL is atmosphere, and it goes. */
-body.woocommerce-cart .d-panel::before,
-body.woocommerce-checkout .d-panel::before,
-body.woocommerce-order-received .d-panel::before{ opacity:0 }
+body.woocommerce-cart :is(.d-panel, :where(.d-prose .wp-block-details))::before,
+body.woocommerce-checkout :is(.d-panel, :where(.d-prose .wp-block-details))::before,
+body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details))::before{ opacity:0 }
 }
 
 /* ==== patterns/badge.css ==== */
@@ -7158,6 +7185,30 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
    *** clip AND NOT hidden, FOR THE USUAL REASON. *** overflow:hidden would make
    the band a scroll container, and a scroll container is the containing block
    for position:sticky - so the header would start sticking to the newsletter. */
+/* *** ONE VANISHING POINT, AND THEY DO NOT FADE. ***
+   The owner: "their direction needs to be towards 1 point in the centre of the
+   strip and they can come from a circular shape from outside the strip", and
+   "I just want them to get small and disappear out of existence once they get
+   small enough not to notice."
+
+   So each star sits on a RAY. It starts on a circle of --r0, well outside the
+   band, and travels inward along that ray to --r1, shrinking the whole way.
+   Convergence on a single point is what reads as perspective; drift along
+   parallel lines does not, however far it goes.
+
+   *** IT STOPS BEFORE THE WORDS, NOT ON THEM. *** --r1 is 21rem, and the copy
+   column is max-width:40rem centred, so the stars halt a rem short of where the
+   text can begin. Nothing has to be layered behind anything.
+
+   *** NO OPACITY IN THE KEYFRAMES. *** The old version faded out, which reads
+   as a light going off. Scale alone reads as distance, and at .05 of 2.4rem
+   there is nothing left to see - about a pixel and a half. The star leaves by
+   going away rather than by being switched off.
+
+   *** THE TRAVEL IS transform, NOT translate. *** The individual `translate`,
+   `rotate` and `scale` properties apply in that FIXED order, so a translate can
+   never happen along a rotated axis. The shorthand can: rotate to the ray,
+   translate out along it, rotate back so the star itself stays upright. */
 .d-news__flow{
 	position:absolute;
 	inset:-1.5rem 0;
@@ -7165,14 +7216,14 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	pointer-events:none;
 }
 .d-band:has(> .d-news){ overflow:clip }
+
 .d-news__flow i{
 	position:absolute;
-	top:var(--y, 50%);
+	top:50%;
 	left:50%;
-	/* Three times what it was, at the owner's request. At .8rem they read as
-	   dust at the edge of a band this wide; the point is to be followed. */
 	width:calc(2.4rem * var(--s, 1));
 	height:calc(2.4rem * var(--s, 1));
+	margin:calc(-1.2rem * var(--s, 1)) 0 0 calc(-1.2rem * var(--s, 1));
 	background:var(--g-hi);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
@@ -7180,18 +7231,20 @@ body.woocommerce-order-received .d-panel::before{ opacity:0 }
 	        mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	        mask-repeat:no-repeat;
-	opacity:0;
-	animation:d-news-drift 2.6s linear infinite;
+	/* One speed, many start times - that is what makes it a current rather than
+	   sixteen animations. */
+	animation:d-news-converge 2.9s linear infinite;
 	animation-delay:var(--d, 0s);
 }
-/* Shrinking to a quarter rather than to nothing: a star that vanishes at full
-   size reads as switched off, and one that shrinks to zero reads as falling
-   into the field, which is the sentence this is trying to say. */
-@keyframes d-news-drift{
-	0%   { translate:var(--from, 0px) 0; scale:1;    opacity:0 }
-	14%  { opacity:.95 }
-	78%  { opacity:.55 }
-	100% { translate:0 0;           scale:.22;  opacity:0 }
+@keyframes d-news-converge{
+	from{
+		transform:rotate(var(--a, 0deg)) translateX(var(--r0, 54vw))
+		          rotate(calc(-1 * var(--a, 0deg))) scale(1);
+	}
+	to{
+		transform:rotate(var(--a, 0deg)) translateX(var(--r1, 21rem))
+		          rotate(calc(-1 * var(--a, 0deg))) scale(.05);
+	}
 }
 @media (prefers-reduced-motion: reduce){
 	.d-news__flow{ display:none }
@@ -7536,6 +7589,32 @@ main .entry-content{
    the meaning is not in either of them. */
 .d-media-fail__bow{ pointer-events:none }
 
+/* *** THE TEAR IS THE RESTING STATE, AND THE ANIMATION RUNS TOWARDS IT. ***
+   The owner asked to see it tear. The temptation is to animate from torn to
+   torn-further, or to animate the tear IN - both of which make the tear a
+   property of the animation, so with motion off the bow is whole and the state
+   says nothing. Written this way round, the declared position is the torn one
+   and the keyframes start from intact: with `animation:none` the slab simply
+   arrives already torn, which is the message, and with motion on you watch it
+   happen.
+
+   The piece comes away from its own outer edge - transform-box:fill-box makes
+   the origin the flap rather than the whole 24x12 canvas - so it swings off the
+   knot instead of orbiting the middle of the picture. */
+.d-media-fail__torn{
+	transform-box:fill-box;
+	transform-origin:12% 50%;
+	translate:1.5px .62px;
+	rotate:9deg;
+	animation:d-bow-tear 760ms var(--ease-float) 220ms 1 both;
+}
+@keyframes d-bow-tear{
+	0%   { translate:0 0;         rotate:0deg }
+	38%  { translate:.2px .06px;  rotate:1deg }   /* it holds, then it gives */
+	72%  { translate:1.78px .78px; rotate:10.8deg }
+	100% { translate:1.5px .62px;  rotate:9deg }
+}
+
 }
 
 /* ==== patterns/checkout.css ==== */
@@ -7650,6 +7729,224 @@ button.d-blocked[disabled],
 
 }
 
+/* ==== patterns/mappick.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / MAP PICKER
+   Choosing a courier office: a list you can read and a map you can point at.
+
+   *** THE MAP IS AN ENHANCEMENT OVER THE LIST, NEVER A REPLACEMENT. ***
+   The list is what works with no JavaScript, on a slow connection and in a
+   screen reader, and it is what still works when the tile host is down. A map
+   that replaces it takes all three away for a picture. So: the <select> stays
+   underneath, the list is the control, and the map reflects it and can drive
+   it - either way round, neither one required.
+
+   *** THE TILES ARE OpenFreeMap AND THE RENDERER IS MapLibre GL. ***
+   Surveyed 2026-08-09: no API key, no registration, no cookies, no request
+   limit, commercial use explicit, and the whole production setup is open-source
+   so we can host it ourselves the day we want to. What it does not have is an
+   SLA - which is exactly why the paragraph above is a design rule and not a
+   nicety. Stadia's free tier is non-commercial, CARTO's Positron needs an
+   enterprise licence, and osm.org's own tiles forbid this use outright.
+
+   We do not need a geocoder. Speedy and Econt return their offices with their
+   own coordinates; the map is a backdrop and pins we place. What has to be good
+   in Bulgaria is street rendering, and that is ordinary OpenStreetMap.
+
+   NOTHING HERE LOADS ANYTHING. This file styles a frame, a list and a pin. The
+   map goes in when the site's structure does.
+   ========================================================================== */
+
+.d-mappick{
+	display:grid;
+	grid-template-columns:minmax(0, 20rem) minmax(0, 1fr);
+	gap:var(--space-xs);
+	align-items:stretch;
+}
+/* One column under 780px, and the MAP goes second. On a phone the list is the
+   control and the map is confirmation - putting the picture first pushes the
+   thing you have to use below the fold. */
+@media (max-width: 780px){
+	.d-mappick{ grid-template-columns:1fr }
+	.d-mappick__map{ order:2; min-height:14rem }
+}
+
+/* -- the frame ---------------------------------------------------------------
+   A hole for MapLibre, sized and cornered by us so the page does not reflow
+   when the tiles arrive - and so it looks like part of the checkout while they
+   have not. `isolation` keeps the library's own stacking context off ours. */
+.d-mappick__map{
+	position:relative;
+	min-height:22rem;
+	border-radius:var(--radius-l);
+	border:1px solid var(--hairline);
+	background:var(--surface-quiet);
+	overflow:hidden;
+	isolation:isolate;
+}
+/* The state before anything has loaded, and the state if nothing ever does.
+   Both look like a map that is not ready, rather than like a broken box. */
+.d-mappick__map[data-state="loading"]::after,
+.d-mappick__map[data-state="down"]::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:
+		repeating-linear-gradient(90deg, transparent 0 5.5rem,
+			color-mix(in oklab, var(--c-grey-300) 34%, transparent) 5.5rem 5.6rem),
+		repeating-linear-gradient(0deg, transparent 0 4.25rem,
+			color-mix(in oklab, var(--c-grey-300) 34%, transparent) 4.25rem 4.35rem);
+	opacity:.7;
+}
+.d-mappick__note{
+	position:absolute;
+	z-index:2;
+	inset-inline:var(--space-xs);
+	bottom:var(--space-xs);
+	margin:0;
+	padding:var(--space-3xs) var(--space-2xs);
+	border-radius:var(--radius-s);
+	background:color-mix(in oklab, var(--surface-raised) 92%, transparent);
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+	text-align:center;
+}
+
+/* -- attribution -------------------------------------------------------------
+   *** THIS IS A LICENCE CONDITION, NOT A CREDIT. *** OpenFreeMap and
+   OpenStreetMap both require it. It lives in the pattern so that removing it
+   means deleting a rule with this comment above it rather than forgetting a
+   line of markup. */
+.d-mappick__attrib{
+	position:absolute;
+	z-index:3;
+	inset-inline-end:0;
+	bottom:0;
+	margin:0;
+	padding:.15em .5em;
+	border-start-start-radius:var(--radius-xs);
+	background:color-mix(in oklab, var(--surface-raised) 86%, transparent);
+	font-size:var(--fs-fine);
+	line-height:1.5;
+	color:var(--ink-quiet);
+}
+.d-mappick__attrib a{ color:inherit }
+
+/* -- the pin -----------------------------------------------------------------
+   Ours, not the library's. A teardrop with the four-point star punched out of
+   it, so the marker on the map is the same mark as the bullet in the list. */
+.d-mappick__pin{
+	position:absolute;
+	z-index:2;
+	width:1.75rem;
+	height:1.75rem;
+	/* the point is the anchor, so the coordinate is at the BOTTOM centre */
+	translate:-50% -100%;
+	color:var(--c-cherry);
+	filter:drop-shadow(0 2px 3px color-mix(in oklab, var(--c-cocoa) 28%, transparent));
+	cursor:pointer;
+	transition:scale var(--dur-ui) var(--ease-float), color var(--dur-ui) var(--ease-float);
+}
+.d-mappick__pin::before{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:currentColor;
+	-webkit-mask-image:var(--icon-pin);
+	        mask-image:var(--icon-pin);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+.d-mappick__pin:hover{ scale:1.12 }
+/* Selected is BIGGER and GOLD, and it is both on purpose: colour alone is the
+   one cue a colour-blind visitor does not get, and this is the cue that says
+   which office the order is going to. */
+.d-mappick__pin[aria-current="true"]{
+	scale:1.28;
+	color:var(--g-core);
+	z-index:3;
+}
+
+/* -- the list ----------------------------------------------------------------
+   .d-scrollframe carries the rail; this only decides how tall it gets. */
+.d-mappick__list{ max-height:22rem }
+.d-mappick__office{
+	display:grid;
+	grid-template-columns:auto minmax(0, 1fr) auto;
+	gap:var(--space-3xs) var(--space-2xs);
+	width:100%;
+	padding:var(--space-2xs);
+	border:0;
+	border-radius:var(--radius-m);
+	background:none;
+	font:var(--type-ui);
+	color:var(--ink);
+	text-align:start;
+	cursor:pointer;
+	transition:background var(--dur-ui) var(--ease-float);
+}
+.d-mappick__office + .d-mappick__office{ margin-top:2px }
+.d-mappick__office:hover{ background:var(--tint-gold-quiet) }
+.d-mappick__office:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
+}
+/* The same pair of cues as the pin: a tint AND a mark, never colour alone. */
+.d-mappick__office[aria-current="true"]{
+	background:var(--tint-gold);
+	box-shadow:inset 0 0 0 1px var(--tint-gold-edge);
+}
+.d-mappick__office::before{
+	content:"";
+	grid-row:1 / span 2;
+	align-self:start;
+	width:.85rem;
+	height:.85rem;
+	margin-top:.2em;
+	background:var(--c-grey-400);
+	-webkit-mask-image:var(--icon-pin);
+	        mask-image:var(--icon-pin);
+	-webkit-mask-size:contain;
+	        mask-size:contain;
+	-webkit-mask-repeat:no-repeat;
+	        mask-repeat:no-repeat;
+}
+.d-mappick__office[aria-current="true"]::before{ background:var(--g-core) }
+.d-mappick__name{ font-weight:var(--fw-medium) }
+.d-mappick__addr{
+	grid-column:2;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+/* Tabular so a column of distances lines up on the decimal point. */
+.d-mappick__dist{
+	grid-column:3;
+	grid-row:1;
+	font-size:var(--fs-fine);
+	font-variant-numeric:tabular-nums;
+	color:var(--ink-quiet);
+	white-space:nowrap;
+}
+.d-mappick__hours{
+	grid-column:2;
+	font-size:var(--fs-fine);
+	color:var(--ink-quiet);
+}
+.d-mappick__hours[data-open="false"]{ color:var(--notice-error-edge) }
+
+/* -- the money path and the plain mode ---------------------------------------
+   The picker lives on the checkout, where motion.css already kills everything.
+   The pin's scale is a TRANSITION rather than an animation on purpose: it is
+   feedback about what you just chose, not atmosphere - but it goes there too,
+   and the size difference remains because it is set, not animated. */
+html.d-a11y .d-mappick__pin,
+html.d-a11y .d-mappick__office{ transition:none }
+
+}
+
 /* ==== patterns/a11y.css ==== */
 @layer patterns{
 /* =============================================================================
@@ -7760,21 +8057,34 @@ html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
    frozen rain of stars is worse than none: the meaning has gone and the debris
    is still there, which is what the owner saw.
 
-   In the mode each notice gets the state icon the system already owns instead.
-   One mark, still, at the start of the message, in the state colour - which is
-   the plain version of the same sentence. */
+   *** AND THE MARK GOES ON THE TITLE, NOT ON THE NOTICE. ***
+   Two earlier versions positioned it against the BOX - first absolutely at the
+   padding edge, then as a grid item with half a line box of margin - and both
+   were wrong, the second one badly: `.d-notice__dismiss` computes
+   `grid-column: 2`, which is correct for the notice's own two-column grid, so
+   widening that grid to three columns pushed the close button onto a second row.
+   Measured, and it is exactly what he reported.
+
+   `.d-notice__title::before` is free, and an inline mark before the title's text
+   sits on the title's own baseline. No column, no arithmetic, nothing to tune
+   and nothing to re-tune when --fs-meta moves. It also indents with the title,
+   so a wrapped body no longer runs underneath it.
+   ========================================================================== */
 html.d-a11y .d-notice__stars,
+html.d-a11y .d-notice::before,
 html.d-a11y .d-notice::after{ display:none !important; content:none !important }
-html.d-a11y .d-notice{ padding-inline-start:calc(var(--space-xs) + 1.9em) }
-html.d-a11y .d-notice::before{
-	content:"" !important;
-	z-index:2;
-	top:var(--space-2xs);
-	left:var(--space-xs);
-	right:auto;
-	width:1.25em;
-	height:1.25em;
-	clip-path:none !important;
+
+html.d-a11y .d-notice__title::before{
+	content:"";
+	display:inline-block;
+	width:1.15em;
+	height:1.15em;
+	/* On the text's own baseline. -.2em is the optical seat for a square mark
+	   beside uppercase-height Cyrillic; it is the one number here and it does not
+	   change with the type scale, because em does. */
+	vertical-align:-.2em;
+	margin-inline-end:.45em;
+	background:currentColor;
 	-webkit-mask-image:var(--icon-info);
 	        mask-image:var(--icon-info);
 	-webkit-mask-size:contain;
@@ -7784,31 +8094,45 @@ html.d-a11y .d-notice::before{
 	-webkit-mask-position:center;
 	        mask-position:center;
 }
-html.d-a11y .d-notice--error::before{
+html.d-a11y .d-notice--error .d-notice__title::before{
 	background:var(--notice-error-edge);
 	-webkit-mask-image:var(--icon-error);
 	        mask-image:var(--icon-error);
 }
-html.d-a11y .d-notice--warning::before{
+html.d-a11y .d-notice--warning .d-notice__title::before{
 	background:var(--notice-warning-edge);
 	-webkit-mask-image:var(--icon-warning);
 	        mask-image:var(--icon-warning);
 }
-html.d-a11y .d-notice--success::before{
+html.d-a11y .d-notice--success .d-notice__title::before{
 	background:var(--notice-success-edge);
 	-webkit-mask-image:var(--icon-check);
 	        mask-image:var(--icon-check);
 }
-html.d-a11y .d-notice--info::before{ background:var(--notice-info-edge) }
-/* The bar has no stars to begin with and no room for a mark. */
-html.d-a11y .d-notice--bar{ padding-inline-start:var(--space-xs) }
-html.d-a11y .d-notice--bar::before{ content:none !important }
+html.d-a11y .d-notice--info .d-notice__title::before{ background:var(--notice-info-edge) }
 
-/* The burst, belt as well as braces. darling-ui.js will not fire it in this
-   mode, but the stars are markup that is always present and only invisible
-   because their animation holds them at zero - so if anything ever sets
-   data-pop from somewhere else, this is what stops nine stars appearing and
-   staying. */
+/* =============================================================================
+   AND THE FOUR THINGS THAT MUST BE REMOVED HERE, NOT STILLED
+
+   *** ANYTHING WHOSE RESTING STATE IS INVISIBLE ONLY BECAUSE AN ANIMATION IS
+   MOVING IT MUST BE REMOVED IN THIS MODE, NOT STILLED. ***
+
+   Four so far, and every one of them was reported by the owner as the mode
+   making something LOUDER rather than quieter, which is what this failure looks
+   like from outside:
+
+     the notices' star rain      froze mid-fall               (above)
+     the cart's streak           painted at full strength     (below)
+     the progress bar's sheen    a gradient across the fill   (below)
+     the burst                   nine stars, held             (below)
+
+   When a fifth appears it belongs in this list. `animation:none` is not a
+   volume control; it stops the thing that was hiding the paint.
+   ========================================================================== */
+html.d-a11y .d-icon-btn:has(.d-icon--cart):hover::before,
+html.d-a11y .d-icon-btn:has(.d-icon--cart):focus-visible::before,
+html.d-a11y .d-icon-btn[data-added]::before{ content:none !important }
+html.d-a11y .d-progress__bar::after{ content:none !important }
 html.d-a11y .d-burst{ display:none !important }
 
 /* Links are underlined, everywhere, including the ones a component deliberately
@@ -7888,6 +8212,7 @@ html.d-a11y .d-fab--a11y{
 	color:var(--c-cocoa);
 }
 html.d-a11y .d-fab{ text-decoration:none }
+
 
 }
 
@@ -10994,7 +11319,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
@@ -12574,7 +12899,7 @@ report says <code>.d-metal</code> is missing, and it is not &mdash; it is
 
 <div class="d-band" style="--surface-band:var(--c-claret)">
   <div class="d-news">
-    <span class="d-news__flow" aria-hidden="true"><i style="--from:-52vw;--y:18%;--s:1.30;--d:0.00s"></i><i style="--from:52vw;--y:74%;--s:1.05;--d:0.20s"></i><i style="--from:-44vw;--y:62%;--s:0.85;--d:0.40s"></i><i style="--from:46vw;--y:26%;--s:1.40;--d:0.60s"></i><i style="--from:-38vw;--y:88%;--s:1.10;--d:0.80s"></i><i style="--from:42vw;--y:46%;--s:0.90;--d:1.00s"></i><i style="--from:-50vw;--y:38%;--s:1.20;--d:1.20s"></i><i style="--from:38vw;--y:8%;--s:0.75;--d:1.40s"></i><i style="--from:-42vw;--y:54%;--s:1.35;--d:1.60s"></i><i style="--from:50vw;--y:92%;--s:0.95;--d:1.80s"></i><i style="--from:-46vw;--y:6%;--s:1.00;--d:2.00s"></i><i style="--from:44vw;--y:66%;--s:1.15;--d:2.20s"></i><i style="--from:-40vw;--y:30%;--s:0.80;--d:2.40s"></i></span>
+    <span class="d-news__flow" aria-hidden="true"><i style="--a:-42deg;--s:1.30;--d:0.00s"></i><i style="--a:152deg;--s:0.95;--d:0.18s"></i><i style="--a:17deg;--s:1.10;--d:0.36s"></i><i style="--a:186deg;--s:1.40;--d:0.54s"></i><i style="--a:-18deg;--s:0.80;--d:0.72s"></i><i style="--a:209deg;--s:1.15;--d:0.90s"></i><i style="--a:40deg;--s:1.25;--d:1.08s"></i><i style="--a:163deg;--s:0.75;--d:1.26s"></i><i style="--a:-7deg;--s:1.45;--d:1.44s"></i><i style="--a:197deg;--s:1.00;--d:1.62s"></i><i style="--a:29deg;--s:0.85;--d:1.80s"></i><i style="--a:140deg;--s:1.35;--d:1.98s"></i><i style="--a:-30deg;--s:1.05;--d:2.16s"></i><i style="--a:220deg;--s:0.90;--d:2.34s"></i><i style="--a:5deg;--s:1.20;--d:2.52s"></i><i style="--a:174deg;--s:0.70;--d:2.70s"></i></span>
     <h2 class="d-news__title">Писма от <em>Дарлинг</em></h2>
     <p>Веднъж месечно: какво е пристигнало, какво си отива и по някой съвет за
     дома. Без спам, обещаваме.</p>
@@ -12904,7 +13229,7 @@ accessible name sits on the container, so nothing is lost when it goes.</p>
   <div>
     <p class="note">In a product card.</p>
     <article class="d-card"><div class="d-card__media">
-      <div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
+      <div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-keep"><path d="M0 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H0 Z"/></clipPath><clipPath id="d-bow-torn"><path d="M24 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-keep)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g class="d-media-fail__torn" clip-path="url(#d-bow-torn)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
         <p class="d-media-fail__cap" aria-hidden="true">Снимката не може да бъде заредена</p></div>
     </div>
     <h3 class="d-card__title"><a href="#">Керамична купа</a></h3>
@@ -12912,13 +13237,13 @@ accessible name sits on the container, so nothing is lost when it goes.</p>
   </div>
   <div>
     <p class="note">Bare, and square.</p>
-    <div style="max-width:240px"><div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
+    <div style="max-width:240px"><div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-keep"><path d="M0 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H0 Z"/></clipPath><clipPath id="d-bow-torn"><path d="M24 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-keep)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g class="d-media-fail__torn" clip-path="url(#d-bow-torn)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
       <p class="d-media-fail__cap" aria-hidden="true">Снимката не може да бъде заредена</p></div></div>
   </div>
   <div>
     <p class="note">At 64px, in the cart drawer. Same element.</p>
     <ul class="d-drawer__list" style="max-width:300px"><li class="d-drawer__line">
-      <div class="d-drawer__line__thumb"><div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-tear-l"><path d="M0 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H0 Z"/></clipPath><clipPath id="d-bow-tear-r"><path d="M24 0 H12.6 L11.5 2.2 L12.9 4.1 L11.2 6.0 L12.8 7.9 L11.4 10.0 L12.5 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-tear-l)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g clip-path="url(#d-bow-tear-r)" transform="translate(.9 .45) rotate(6 18 6)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
+      <div class="d-drawer__line__thumb"><div class="d-media-fail" role="img" aria-label="Снимката не може да бъде заредена"><svg class="d-media-fail__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><defs><clipPath id="d-bow-keep"><path d="M0 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H0 Z"/></clipPath><clipPath id="d-bow-torn"><path d="M24 0 H23.2 L18.4 3.5 L20.8 4.3 L14.9 6.4 L17.3 7.4 L13.6 12 H24 Z"/></clipPath></defs><g clip-path="url(#d-bow-keep)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g><g class="d-media-fail__torn" clip-path="url(#d-bow-torn)"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></g></svg>
         <p class="d-media-fail__cap" aria-hidden="true">Снимката не може да бъде заредена</p></div></div>
       <div class="d-drawer__line__body">
         <span class="d-drawer__line__name">Керамична купа</span>
@@ -12996,6 +13321,109 @@ inside.</p>
     </div>
   </div>
 </div>
+</section><section class="sec" id="mappick"><h2>Pattern</h2><h3>Office and locker picker</h3>
+<p class="note"><b>The map is an enhancement over the list, never a replacement.</b>
+The list is what works with no JavaScript, on a slow connection and in a screen
+reader &mdash; and it is what still works when the tile host is down. A map that
+replaces it takes all three away for a picture. So the real
+<code>&lt;select&gt;</code> stays underneath, the list is the control, and the map
+reflects it and can drive it: either way round, neither one required.</p>
+<p class="note"><b>Tiles: OpenFreeMap. Renderer: MapLibre GL.</b> Surveyed today
+&mdash; no API key, no registration, no cookies, no request limit, commercial use
+explicit, and the whole production stack is open-source so we can host it
+ourselves when we want to. What it has not got is an SLA, which is exactly why
+the paragraph above is a rule rather than a nicety. Stadia&rsquo;s free tier is
+non-commercial, CARTO&rsquo;s Positron wants an enterprise licence, and
+openstreetmap.org&rsquo;s own tiles forbid this use outright.</p>
+<p class="note"><b>We do not need a geocoder.</b> Speedy and Econt return their
+offices with their own coordinates &mdash; that is what
+<code>office-picker.js</code> already fetches. The map is a backdrop and pins we
+place, so the only thing that has to be good in Bulgaria is street rendering,
+which is ordinary OpenStreetMap. That is most of my &ldquo;patchy coverage&rdquo;
+worry answered: it was aimed at a layer we are not using.</p>
+<p class="note"><b>Nothing here loads anything.</b> The frame is a sized, styled
+hole for MapLibre to mount into, filled by the pattern&rsquo;s own hatching. A
+review document that quietly pings a third party every time it is opened has
+opinions about privacy nobody agreed to.</p>
+
+<div class="d-mappick">
+  <div class="d-scrollframe d-mappick__list">
+    <div class="d-scroll">
+      <button type="button" class="d-mappick__office" aria-current="true">
+        <span class="d-mappick__name">Офис Свищов Център</span>
+        <span class="d-mappick__dist">0,4 км</span>
+        <span class="d-mappick__addr">ул. „Цар Освободител“ 12</span>
+        <span class="d-mappick__hours" data-open="true">09:00 – 18:00</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Офис Свищов Изток</span>
+        <span class="d-mappick__dist">1,8 км</span>
+        <span class="d-mappick__addr">ул. „Патриарх Евтимий“ 3</span>
+        <span class="d-mappick__hours" data-open="true">09:00 – 17:30</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Автомат Билла Свищов</span>
+        <span class="d-mappick__dist">2,1 км</span>
+        <span class="d-mappick__addr">бул. „Дунав“ 44</span>
+        <span class="d-mappick__hours" data-open="true">00:00 – 24:00</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Офис Свищов Запад</span>
+        <span class="d-mappick__dist">3,6 км</span>
+        <span class="d-mappick__addr">ул. „Кирил и Методий“ 9</span>
+        <span class="d-mappick__hours" data-open="false">затворен днес</span>
+      </button>
+      <button type="button" class="d-mappick__office">
+        <span class="d-mappick__name">Автомат Кауфланд</span>
+        <span class="d-mappick__dist">4,2 км</span>
+        <span class="d-mappick__addr">ул. „Хан Аспарух“ 1</span>
+        <span class="d-mappick__hours" data-open="true">00:00 – 24:00</span>
+      </button>
+    </div>
+    <div class="d-scrollframe__rail"><div class="d-scrollframe__wake"></div><div class="d-scrollframe__thumb"></div></div>
+  </div>
+  <div class="d-mappick__map" data-state="loading">
+      <span class="d-mappick__pin" style="left:31%;top:44%" aria-current="true" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:58%;top:30%" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:46%;top:68%" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:72%;top:57%" aria-hidden="true"></span>
+      <span class="d-mappick__pin" style="left:22%;top:71%" aria-hidden="true"></span>
+    <p class="d-mappick__note">Картата се зарежда&hellip;</p>
+    <p class="d-mappick__attrib">&copy; <a href="https://openfreemap.org/">OpenFreeMap</a>
+    &middot; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></p>
+  </div>
+</div>
+
+<p class="lbl" style="margin-top:22px">And the two states a picker spends most of its life in</p>
+<div class="grid" style="grid-template-columns:1fr 1fr">
+  <div>
+    <p class="note">Nothing near this address.</p>
+    <div class="d-mappick__map" data-state="down" style="min-height:11rem">
+      <p class="d-mappick__note">Няма офиси в този град. Най-близкият е в Плевен, на 14 км.</p>
+      <p class="d-mappick__attrib">&copy; OpenFreeMap &middot; OpenStreetMap</p>
+    </div>
+  </div>
+  <div>
+    <p class="note">The tile host is unreachable &mdash; and the order still goes through.</p>
+    <div class="d-mappick__map" data-state="down" style="min-height:11rem">
+      <p class="d-mappick__note">Картата не можа да се зареди. Изберете офис от списъка.</p>
+      <p class="d-mappick__attrib">&copy; OpenFreeMap &middot; OpenStreetMap</p>
+    </div>
+  </div>
+</div>
+
+<div class="todo"><b>The pin is our mark, not the library&rsquo;s.</b> A teardrop
+with the four-point star punched out of it, so the marker on the map and the
+bullet in the list are the same shape. Selected is bigger <em>and</em> gold:
+colour alone is the one cue a colour-blind visitor does not get, and this is the
+cue that says where the order is going.<br><br>
+<b>Attribution is a licence condition, not a credit.</b> It is in the pattern, so
+removing it means deleting a rule with a comment above it saying that.<br><br>
+<b>Still to decide before the map itself is built:</b> whether we ship
+MapLibre&rsquo;s ~200&nbsp;KB on the checkout for every visitor or load it only
+when the office option is chosen (the second, almost certainly), and whether the
+pins cluster &mdash; Sofia has over two hundred offices and Speedy returns them
+all.</div>
 </section><section class="sec" id="next"><h2>Status</h2>
 <h3>All twelve patterns are written</h3>
 <p class="note">card, button, band, notice, rating, field, table, quantity, badge,

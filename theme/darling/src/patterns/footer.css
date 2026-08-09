@@ -376,6 +376,30 @@
    *** clip AND NOT hidden, FOR THE USUAL REASON. *** overflow:hidden would make
    the band a scroll container, and a scroll container is the containing block
    for position:sticky - so the header would start sticking to the newsletter. */
+/* *** ONE VANISHING POINT, AND THEY DO NOT FADE. ***
+   The owner: "their direction needs to be towards 1 point in the centre of the
+   strip and they can come from a circular shape from outside the strip", and
+   "I just want them to get small and disappear out of existence once they get
+   small enough not to notice."
+
+   So each star sits on a RAY. It starts on a circle of --r0, well outside the
+   band, and travels inward along that ray to --r1, shrinking the whole way.
+   Convergence on a single point is what reads as perspective; drift along
+   parallel lines does not, however far it goes.
+
+   *** IT STOPS BEFORE THE WORDS, NOT ON THEM. *** --r1 is 21rem, and the copy
+   column is max-width:40rem centred, so the stars halt a rem short of where the
+   text can begin. Nothing has to be layered behind anything.
+
+   *** NO OPACITY IN THE KEYFRAMES. *** The old version faded out, which reads
+   as a light going off. Scale alone reads as distance, and at .05 of 2.4rem
+   there is nothing left to see - about a pixel and a half. The star leaves by
+   going away rather than by being switched off.
+
+   *** THE TRAVEL IS transform, NOT translate. *** The individual `translate`,
+   `rotate` and `scale` properties apply in that FIXED order, so a translate can
+   never happen along a rotated axis. The shorthand can: rotate to the ray,
+   translate out along it, rotate back so the star itself stays upright. */
 .d-news__flow{
 	position:absolute;
 	inset:-1.5rem 0;
@@ -383,14 +407,14 @@
 	pointer-events:none;
 }
 .d-band:has(> .d-news){ overflow:clip }
+
 .d-news__flow i{
 	position:absolute;
-	top:var(--y, 50%);
+	top:50%;
 	left:50%;
-	/* Three times what it was, at the owner's request. At .8rem they read as
-	   dust at the edge of a band this wide; the point is to be followed. */
 	width:calc(2.4rem * var(--s, 1));
 	height:calc(2.4rem * var(--s, 1));
+	margin:calc(-1.2rem * var(--s, 1)) 0 0 calc(-1.2rem * var(--s, 1));
 	background:var(--g-hi);
 	-webkit-mask-image:var(--icon-star-4);
 	        mask-image:var(--icon-star-4);
@@ -398,18 +422,20 @@
 	        mask-size:contain;
 	-webkit-mask-repeat:no-repeat;
 	        mask-repeat:no-repeat;
-	opacity:0;
-	animation:d-news-drift 2.6s linear infinite;
+	/* One speed, many start times - that is what makes it a current rather than
+	   sixteen animations. */
+	animation:d-news-converge 2.9s linear infinite;
 	animation-delay:var(--d, 0s);
 }
-/* Shrinking to a quarter rather than to nothing: a star that vanishes at full
-   size reads as switched off, and one that shrinks to zero reads as falling
-   into the field, which is the sentence this is trying to say. */
-@keyframes d-news-drift{
-	0%   { translate:var(--from, 0px) 0; scale:1;    opacity:0 }
-	14%  { opacity:.95 }
-	78%  { opacity:.55 }
-	100% { translate:0 0;           scale:.22;  opacity:0 }
+@keyframes d-news-converge{
+	from{
+		transform:rotate(var(--a, 0deg)) translateX(var(--r0, 54vw))
+		          rotate(calc(-1 * var(--a, 0deg))) scale(1);
+	}
+	to{
+		transform:rotate(var(--a, 0deg)) translateX(var(--r1, 21rem))
+		          rotate(calc(-1 * var(--a, 0deg))) scale(.05);
+	}
 }
 @media (prefers-reduced-motion: reduce){
 	.d-news__flow{ display:none }
