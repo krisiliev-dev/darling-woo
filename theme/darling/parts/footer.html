@@ -1,12 +1,12 @@
 <!-- wp:html -->
-<!-- Structure conforms to the PORTED darling.css contract (grid 1fr auto 1fr on
-     .darling-footer expects exactly these three children; .df-* / .dff-* are the
-     live site's own footer classes — feed them, don't fight them). -->
-<div class="darling-footer">
+<!-- Three children, and the grid is 1fr auto 1fr: help, the flair, information.
+     The classes are the system's now (.d-footer__* / .d-footflair__*); the
+     structure is unchanged, because the structure was never the problem. -->
+<footer class="d-footer">
 
 	<nav aria-label="Помощ и информация">
-		<h2 class="df-head">Помощ и информация</h2>
-		<div class="df-links">
+		<h2 class="d-footer__head">Помощ и информация</h2>
+		<div class="d-footer__links">
 			<a href="/shop/">Продукти</a>
 			<a href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a>
 			<a href="/za-nas/">За нас</a>
@@ -15,80 +15,87 @@
 		</div>
 	</nav>
 
-	<div class="darling-foot-flair">
-		<span class="dff-rule" aria-hidden="true"></span>
-		<div class="dff-mark" aria-hidden="true">
-			<i class="dff-s s1">✦</i><i class="dff-s s2">✧</i><i class="dff-s s3">✦</i>
-			<svg class="dff-bow" viewBox="0 0 24 12" fill="currentColor">
-				<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>
-				<circle cx="12" cy="6" r="2.4"/>
-			</svg>
-		</div>
-		<p class="dff-word">Darling</p>
-		<p class="dff-tag">Тайната на една домакиня.</p>
-		<div class="dff-social" aria-label="Социални мрежи">
-			<a href="https://facebook.com/darling7sv" target="_blank" rel="noopener" aria-label="Facebook">
-				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.2 0-1-.1-1.9-.1-2 0-3.4 1.2-3.4 3.5V11H8.6v3h2.5v7Z"/></svg>
-			</a>
-			<a href="https://instagram.com/darling7.sv" target="_blank" rel="noopener" aria-label="Instagram">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.6" cy="7.4" r="1" fill="currentColor" stroke="none"/></svg>
-			</a>
-			<a href="https://tiktok.com/@darling7.sv" target="_blank" rel="noopener" aria-label="TikTok">
-				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 4c.3 1.8 1.4 3 3.4 3.2v2.4c-1.3 0-2.4-.4-3.4-1.1v5.1a5.3 5.3 0 1 1-5.3-5.3c.3 0 .6 0 .9.1v2.5a2.8 2.8 0 1 0 1.9 2.7V4Z"/></svg>
-			</a>
-			<a href="mailto:orders@darlinghome.bg" aria-label="Имейл">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>
-			</a>
-		</div>
+	<div class="d-footflair">
+		<span class="d-finish d-footflair__rule" aria-hidden="true"></span>
+		<span class="d-footflair__mark">
+			<!-- A masked span reading --icon-bow, not a fourth inline copy of the
+			     brand bow. One mark, one path, and scripts/bowgate.js has one fewer
+			     place to police. -->
+			<span class="d-footflair__bow" aria-hidden="true"></span>
+			<!-- Empty on purpose. These held a TYPED star, and U+2726 is missing
+			     from plenty of system fonts and falls back to a tofu box - the same
+			     reason notice.css draws its stars with clip-path. Placement is
+			     :nth-of-type, so they need no s1/s2/s3 either. -->
+			<i class="d-footflair__s" aria-hidden="true"></i>
+			<i class="d-footflair__s" aria-hidden="true"></i>
+			<i class="d-footflair__s" aria-hidden="true"></i>
+		</span>
+		<p class="d-footflair__word">Darling</p>
+		<p class="d-footflair__tag">Тайната на една домакиня.</p>
+		<ul class="d-footflair__social" aria-label="Социални мрежи">
+			<li><a href="https://facebook.com/darling7sv" target="_blank" rel="noopener" aria-label="Facebook">
+				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.2 0-1-.1-1.9-.1-2 0-3.4 1.2-3.4 3.5V11H8.6v3h2.5v7Z"/></svg></a></li>
+			<li><a href="https://instagram.com/darling7.sv" target="_blank" rel="noopener" aria-label="Instagram">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.6" cy="7.4" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+			<li><a href="https://tiktok.com/@darling7.sv" target="_blank" rel="noopener" aria-label="TikTok">
+				<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 4c.3 1.8 1.4 3 3.4 3.2v2.4c-1.3 0-2.4-.4-3.4-1.1v5.1a5.3 5.3 0 1 1-5.3-5.3c.3 0 .6 0 .9.1v2.5a2.8 2.8 0 1 0 1.9 2.7V4Z"/></svg></a></li>
+			<!-- The three above are BRAND marks and stay as they are drawn: a
+			     Facebook f redrawn to our grid is not a Facebook f. Mail is ours. -->
+			<li><a href="mailto:orders@darlinghome.bg" aria-label="Имейл">
+				<span class="d-icon d-icon--mail" aria-hidden="true"></span></a></li>
+		</ul>
 	</div>
 
 	<div>
-		<h2 class="df-head">Информация</h2>
-		<p class="df-pledge">
+		<h2 class="d-footer__head">Информация</h2>
+		<p class="d-footer__pledge">
 			„Дарлинг 7“ ООД<br>
 			ЕИК 206094211<br>
 			гр. Свищов, ул. „Хан Аспарух“ 1<br>
 			<a href="tel:+359893361670">тел. 089 336 1670</a><br>
 			<a href="mailto:orders@darlinghome.bg">orders@darlinghome.bg</a>
 		</p>
-		<p class="df-map">
+		<p class="d-footer__map">
 			<a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%94%D0%B0%D1%80%D0%BB%D0%B8%D0%BD%D0%B3%207%20%D0%A1%D0%B2%D0%B8%D1%89%D0%BE%D0%B2%20%D1%83%D0%BB.%20%D0%A5%D0%B0%D0%BD%20%D0%90%D1%81%D0%BF%D0%B0%D1%80%D1%83%D1%85%201"
 			   target="_blank" rel="noopener">Виж ни в Google Maps</a>
 		</p>
 		<!-- A list of links is not a paragraph. It was a <p> with <br>, which made
 		     four navigation targets 17px tall and un-paddable without wrecking the
-		     line box. Same .df-policies class, so the ported stylesheet's size and
-		     opacity still apply — the contract is the CLASS, not the tag. -->
-		<nav class="df-policies" aria-label="Условия и политики">
+		     line box. The contract is the CLASS, not the tag. -->
+		<nav class="d-footer__policies" aria-label="Условия и политики">
 			<a href="/obshti-usloviya/">Общи условия</a>
 			<a href="/vrashtane/">Политика за връщане</a>
 			<a href="/dostavka/">Доставка</a>
 			<a href="/poveritelnost/">Поверителност</a>
 		</nav>
 	</div>
-</div>
+</footer>
 
-<div class="df-legal">
-	<p>&copy; 2026 Darling · „Дарлинг 7“ ООД. Всички права запазени.</p>
-	<p><a href="/obshti-usloviya/">Правила и условия</a></p>
+<div class="d-footer__legal">
+	<p>&copy; 2026 Darling &middot; „Дарлинг 7“ ООД. Всички права запазени.</p>
 	<!-- Required alongside the euro transition: the fixed rate must be stated
-	     wherever prices are shown in both currencies. -->
-	<p class="darling-footer__rate">1 EUR = 1.95583 лв.</p>
+	     wherever prices are shown in both currencies. It had a class of its own,
+	     .darling-footer__rate, which set nothing the strip does not already set -
+	     so it is a paragraph in the strip like the line above it. -->
+	<p>1 EUR = 1.95583 лв.</p>
 </div>
 
 <!-- Cookie consent: lightweight, no plugin. HIDDEN in the served HTML and shown
-     by JS only when no choice-cookie exists — pages come from a 60s micro-cache,
+     by JS only when no choice-cookie exists - pages come from a 60s micro-cache,
      so visibility must never be baked server-side. The choice is a first-party
      cookie (darling_consent=all|essential, 180 days) for future analytics tags
-     to key on; nothing tracking-related loads at all yet, so there is nothing
-     to block pre-consent — the banner records the choice honestly for when
-     there is. -->
-<div class="darling-consent" data-darling-consent hidden role="region" aria-label="Бисквитки">
-	<p class="dc-text">Използваме бисквитки, за да работи количката ти и за да
-	правим магазина по-добър. <a href="/poveritelnost/">Научи повече</a></p>
-	<div class="dc-actions">
-		<button type="button" class="d-btn d-btn--primary" data-darling-consent-accept>Приемам</button>
-		<button type="button" class="dc-min" data-darling-consent-essential>Само необходимите</button>
+     to key on; nothing tracking-related loads at all yet, so there is nothing to
+     block pre-consent - the banner records the choice honestly for when there
+     is. -->
+<div class="d-consent" data-darling-consent hidden role="region" aria-label="Бисквитки">
+	<p>Използваме бисквитки, за да работи количката ти и за да правим магазина
+	по-добър. <a href="/poveritelnost/">Научи повече</a></p>
+	<div class="d-consent__actions">
+		<button type="button" class="d-btn" data-darling-consent-accept>Приемам</button>
+		<!-- The second choice on a card is the quiet button. This was a bespoke
+		     class on an unstyled <button>, which is the whole reason --quiet
+		     exists. -->
+		<button type="button" class="d-btn d-btn--quiet" data-darling-consent-essential>Само необходимите</button>
 	</div>
 </div>
 <script>
@@ -105,26 +112,30 @@
 })();
 </script>
 
-<!-- Accessibility mode toggle — the live site's own darling-a11y-btn component
-     (vocabulary from the ported darling.css: html.darling-a11y = bigger text,
-     full-contrast headings, underlined links, no animations, no ambient).
-     The saved choice is applied early in the header part; this is the switch. -->
-<button type="button" class="darling-a11y-btn" data-darling-a11y title="Достъпност"
+<!-- The accessibility switch. Bottom-left, and that is not arbitrary:
+     bottom-RIGHT is where every chat widget, cookie nag and back-to-top button
+     goes, and this is the control somebody needs when all of those are in the
+     way. The saved choice is applied early in the header part; this is the
+     switch. -->
+<button type="button" class="d-fab d-fab--a11y" data-darling-a11y
         aria-pressed="false"
         aria-label="Режим за достъпност: по-голям текст, висок контраст, без анимации">
-	<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-		<circle cx="12" cy="4.4" r="2.2"/>
-		<path d="M12 8.1c-2.9 0-5.6-.4-7.9-1.1l-.5 1.9c1.8.5 3.7.9 5.8 1.1v2.7l-2.4 7.4 1.9.6 2.3-7h1.6l2.3 7 1.9-.6-2.4-7.4V10c2.1-.2 4-.6 5.8-1.1l-.5-1.9c-2.3.7-5 1.1-7.9 1.1Z"/>
-	</svg>
+	<span class="d-icon d-icon--a11y" aria-hidden="true"></span>
 </button>
 <script>
 (function () {
 	var btn = document.querySelector('[data-darling-a11y]');
 	if (!btn) { return; }
 	var root = document.documentElement;
-	btn.setAttribute('aria-pressed', root.classList.contains('darling-a11y') ? 'true' : 'false');
+	/* *** d-a11y, NOT darling-a11y. ***
+	   This script and the reader in the header part both wrote the old name, so
+	   they agreed with each other and neither agreed with patterns/a11y.css,
+	   which has keyed every rule off html.d-a11y since the day it was written.
+	   The switch was toggling a class nothing listened to. Three files, one
+	   contract, no compiler - which is why scripts/a11ygate.js now greps. */
+	btn.setAttribute('aria-pressed', root.classList.contains('d-a11y') ? 'true' : 'false');
 	btn.addEventListener('click', function () {
-		var on = root.classList.toggle('darling-a11y');
+		var on = root.classList.toggle('d-a11y');
 		btn.setAttribute('aria-pressed', on ? 'true' : 'false');
 		try {
 			document.cookie = 'darling_a11y=' + (on ? '1' : '0') + ';path=/;max-age=31536000;SameSite=Lax;Secure';

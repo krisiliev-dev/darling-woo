@@ -95,8 +95,15 @@
 }
 .d-hero--red .d-hero__copy{ max-width:44rem }
 
+/* *** THE ACCESSIBILITY TOGGLE'S HOOK - AND IT WAS THE WRONG NAME. ***
+   This said `html.darling-a11y`, the legacy class, so it matched nothing from
+   the day patterns/a11y.css was written against `html.d-a11y`. A selector that
+   matches nothing does not error, survives every build and passes the token
+   check; the only symptom is a heading on a photograph that stays hard to read
+   for the one person who asked for it not to be. scripts/a11ygate.js now bans
+   the old name outside the two sheets the cutover deletes. */
 /* *** THE ACCESSIBILITY TOGGLE'S HOOK, KEPT DELIBERATELY. ***
-   The site has a high-contrast switch that sets html.darling-a11y, and the old
+   The site has a high-contrast switch that sets html.d-a11y, and the old
    rule forced this title to pure white under it. That is not decoration: gold
    on claret is the lowest-contrast pair in the whole design, and this is the
    escape hatch for anyone who cannot read it. Ported with the class renamed,

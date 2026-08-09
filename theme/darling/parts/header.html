@@ -1,87 +1,93 @@
 <!-- wp:html -->
-<!-- Accessibility mode: apply the saved choice BEFORE the page paints below
-     this point, so returning a11y users never see a flash of the decorated
-     view. Class only — the toggle button itself lives in the footer part. -->
-<script>(function(){try{if(/(?:^|;\s*)darling_a11y=1/.test(document.cookie)){document.documentElement.classList.add('darling-a11y');}}catch(e){}})();</script>
-<div class="darling-header darling-header--v2" role="banner">
-	<div class="darling-header__inner">
-
-		<button class="darling-header__burger" type="button"
-		        aria-label="Меню" aria-expanded="false" aria-controls="darling-menu-drawer">
-			<span></span><span></span><span></span>
-		</button>
+<!-- Accessibility mode: apply the saved choice BEFORE the page paints below this
+     point, so returning a11y users never see a flash of the decorated view.
+     *** THE CLASS IS d-a11y AND patterns/a11y.css KEYS EVERY RULE OFF IT. ***
+     This script and that file are one contract with no compiler between them:
+     if they ever disagree the mode silently stops existing, and the people who
+     would notice are the ones least likely to report it. Class only - the
+     toggle button lives in the footer part. -->
+<script>(function(){try{if(/(?:^|;\s*)darling_a11y=1/.test(document.cookie)){document.documentElement.classList.add('d-a11y');}}catch(e){}})();</script>
+<header class="d-header" role="banner">
+	<div class="d-header__inner">
 
 		<!-- Serif wordmark, exactly as the live site: Latin "Darling" in Playfair.
 		     The old Cyrillic logo + bow moved out per the slice-4 parity sweep. -->
-		<a class="darling-header__logo darling-wordmark" href="/" aria-label="Darling — начало">Darling</a>
+		<a class="d-header__logo" href="/" aria-label="Darling &mdash; начало">Darling</a>
 
-		<nav class="darling-nav darling-nav--pages" aria-label="Основна навигация">
+		<nav class="d-nav" aria-label="Основна навигация">
 			<ul>
-				<li class="darling-nav__mega">
-					<a class="mega-menu__link" href="/shop/" aria-haspopup="true" aria-expanded="false">Продукти</a>
-					<div class="darling-mega" role="menu" aria-label="Категории">
-						<a class="mega-menu__link" href="/product-category/za-kuhnyata/">За кухнята</a>
-						<a class="mega-menu__link" href="/product-category/za-banyata/">За банята</a>
-						<a class="mega-menu__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a>
-						<a class="mega-menu__link" href="/product-category/za-gradinata/">За градината</a>
-						<a class="mega-menu__link" href="/product-category/pochistvane/">Почистване</a>
-						<a class="mega-menu__link" href="/product-category/parti/">Парти и празници</a>
-						<a class="mega-menu__link" href="/product-category/za-decata/">За децата</a>
-						<a class="mega-menu__link" href="/product-category/podaraci/">Подаръци</a>
-						<a class="mega-menu__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a>
-						<a class="mega-menu__link" href="/product-category/promocii/">Промоции</a>
+				<li class="d-nav__mega">
+					<!-- *** A BUTTON, NOT A LINK WITH aria-haspopup. ***
+					     The panel used to open on :hover and :focus-within only, which
+					     leaves out every touch visitor. The link to /shop/ is not lost:
+					     it is the first item inside the panel. -->
+					<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
+					<div class="d-mega">
+						<ul class="d-mega__list">
+							<li><a class="d-mega__link" href="/shop/">Всички продукти</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-kuhnyata/">За кухнята</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-banyata/">За банята</a></li>
+							<li><a class="d-mega__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-gradinata/">За градината</a></li>
+							<li><a class="d-mega__link" href="/product-category/pochistvane/">Почистване</a></li>
+							<li><a class="d-mega__link" href="/product-category/parti/">Парти и празници</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-decata/">За децата</a></li>
+							<li><a class="d-mega__link" href="/product-category/podaraci/">Подаръци</a></li>
+							<li><a class="d-mega__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
+							<li><a class="d-mega__link" href="/product-category/promocii/">Промоции</a></li>
+						</ul>
 					</div>
 				</li>
-				<li><a class="mega-menu__link" href="/za-nas/">За нас</a></li>
-				<li><a class="mega-menu__link" href="/pomosht/">Помощ</a></li>
-				<li><a class="mega-menu__link" href="/kontakti/">Контакти</a></li>
+				<li><a href="/za-nas/">За нас</a></li>
+				<li><a href="/pomosht/">Помощ</a></li>
+				<li><a href="/kontakti/">Контакти</a></li>
 			</ul>
 		</nav>
 
 		<!-- The always-visible search bar from the live header. GET keeps it
-		     cache-safe and crawlable; post_type pins product results. -->
-		<form class="darling-search" role="search" action="/" method="get">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-				<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
-			</svg>
-			<input type="search" name="s" placeholder="Какво търсиш, darling?" aria-label="Търсене" autocomplete="off">
+		     cache-safe and crawlable; post_type pins product results. .d-wipe adds
+		     the clear button and its sweep - darling-ui.js wires any .d-wipe. -->
+		<form class="d-search d-wipe" role="search" action="/" method="get">
+			<span class="d-icon d-icon--search" aria-hidden="true"></span>
+			<input class="d-wipe__input" type="search" name="s" placeholder="Какво търсиш, darling?" aria-label="Търсене" autocomplete="off">
+			<button class="d-wipe__clear" type="button" aria-label="Изчисти">
+				<span class="d-icon d-icon--close" aria-hidden="true"></span></button>
 			<input type="hidden" name="post_type" value="product">
 		</form>
 
-		<div class="darling-header__actions">
-			<a class="darling-header__icon darling-header__icon--search-sm" href="/?s=&post_type=product" aria-label="Търсене">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-					<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
-				</svg>
+		<div class="d-header__actions">
+			<a class="d-icon-btn d-header__search-sm" href="/?s=&amp;post_type=product" aria-label="Търсене">
+				<span class="d-icon d-icon--search" aria-hidden="true"></span>
 			</a>
-			<a class="darling-header__icon" href="/my-account/" aria-label="Профил">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-					<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
-				</svg>
+			<a class="d-icon-btn" href="/my-account/" aria-label="Профил">
+				<span class="d-icon d-icon--user" aria-hidden="true"></span>
 			</a>
-			<!-- The count is filled in by header-cart.js from the Store API, so a
-			     cached page never ships a stale number baked into the HTML. -->
-			<a class="darling-header__icon darling-header__cart" href="/cart/" aria-label="Количка"
+			<!-- The count is filled in by header.js from the Store API, so a cached
+			     page never ships a stale number baked into the HTML. It hides itself
+			     at data-count="0" - icon.css owns that, not the JS. -->
+			<a class="d-icon-btn" href="/cart/" aria-label="Количка" data-cart-button
 			   data-darling-cart-open aria-haspopup="dialog">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-					<path d="M4 6h16l-1.6 10.5a2 2 0 0 1-2 1.7H7.6a2 2 0 0 1-2-1.7Z"/>
-					<path d="M9 6a3 3 0 0 1 6 0"/>
-				</svg>
-				<span class="darling-cart-count" data-darling-cart-count hidden>0</span>
+				<span class="d-icon d-icon--cart" aria-hidden="true"></span>
+				<span class="d-icon-btn__count" data-darling-cart-count data-count="0">0</span>
 			</a>
+			<button class="d-icon-btn d-header__burger" type="button"
+			        aria-label="Меню" aria-expanded="false" aria-controls="darling-menu-drawer">
+				<span class="d-icon d-icon--menu" aria-hidden="true"></span>
+			</button>
 		</div>
 	</div>
-</div>
+</header>
 
 <!-- Mobile navigation drawer. A <dialog> rather than a div: the browser gives us
      focus trapping, Escape-to-close and inertness of the page behind for free, and
      hand-rolled versions of those are where accessibility bugs live. -->
-<dialog id="darling-menu-drawer" class="darling-drawer darling-drawer--menu" aria-label="Меню">
-	<div class="darling-drawer__head">
-		<span class="darling-wordmark">Darling</span>
-		<button type="button" class="darling-drawer__close" aria-label="Затвори">✕</button>
+<dialog id="darling-menu-drawer" class="d-drawer" aria-label="Меню">
+	<div class="d-drawer__head">
+		<span class="d-header__logo">Darling</span>
+		<button type="button" class="d-drawer__close" aria-label="Затвори">
+			<span class="d-icon d-icon--close" aria-hidden="true"></span></button>
 	</div>
-	<nav class="darling-drawer__nav" aria-label="Мобилна навигация">
+	<nav class="d-drawer__nav" aria-label="Мобилна навигация">
 		<ul>
 			<li><a href="/shop/">Продукти</a></li>
 			<li><a href="/product-category/za-kuhnyata/">За кухнята</a></li>
@@ -96,7 +102,7 @@
 			<li><a href="/product-category/promocii/">Промоции</a></li>
 		</ul>
 		<hr>
-		<ul class="darling-drawer__secondary">
+		<ul class="d-drawer__secondary">
 			<li><a href="/za-nas/">За нас</a></li>
 			<li><a href="/pomosht/">Помощ</a></li>
 			<li><a href="/kontakti/">Контакти</a></li>
@@ -106,31 +112,36 @@
 
 <!-- Cart drawer. Opened from the header; the link still points at /cart/ so it
      works with JS disabled and stays a real link for middle-click and crawlers.
-     Contents are fetched per visitor — never rendered server-side — because pages
-     come from a 60s micro-cache and a baked-in cart would leak between visitors. -->
-<dialog id="darling-cart-drawer" class="darling-drawer darling-drawer--cart" aria-label="Количка">
-	<div class="darling-drawer__head">
+     Contents are fetched per visitor - never rendered server-side - because pages
+     come from a 60s micro-cache and a baked-in cart would leak between visitors.
+     --end because it arrives from the side the cart button is on. -->
+<dialog id="darling-cart-drawer" class="d-drawer d-drawer--end" aria-label="Количка">
+	<div class="d-drawer__head">
 		<span>Количка</span>
-		<button type="button" class="darling-drawer__close" data-darling-cart-close aria-label="Затвори">✕</button>
+		<button type="button" class="d-drawer__close" data-darling-cart-close aria-label="Затвори">
+			<span class="d-icon d-icon--close" aria-hidden="true"></span></button>
 	</div>
-	<!-- Free-shipping progress. Card + shimmer come from the ported darling.css
-	     (.darling-shipbar / .dsb-track); the math is painted by header.js from the
-	     live cart, threshold €77 — same free_over the checkout charges by. -->
-	<div class="darling-shipbar" data-darling-shipbar hidden>
-		<p data-darling-shipbar-msg></p>
-		<div class="dsb-track"><i data-darling-shipbar-fill></i></div>
-	</div>
-	<div class="darling-cart__body" data-darling-cart-body>
-		<p class="darling-cart__loading">Зареждане…</p>
-	</div>
-	<div class="darling-cart__foot" data-darling-cart-foot hidden>
-		<div class="darling-cart__total">
-			<span>Обща сума</span>
-			<strong data-darling-cart-total></strong>
+	<!-- Free-shipping progress. The bar is .d-progress, driven by a single --pr;
+	     the maths is painted by header.js from the live cart, threshold &euro;77 -
+	     the same free_over the checkout charges by. The bar is display, the rates
+	     are the truth. -->
+	<div class="d-shipbar" data-darling-shipbar hidden>
+		<div class="d-progress" style="--pr:0" data-darling-shipbar-bar>
+			<p class="d-progress__label" data-darling-shipbar-msg></p>
+			<div class="d-progress__track"><div class="d-progress__bar"></div></div>
 		</div>
-		<p class="darling-cart__note">С включено ДДС. Доставката се изчислява при плащане.</p>
-		<a class="d-btn d-btn--primary darling-cart__cta" href="/checkout/">Преминаване към плащане</a>
-		<a class="darling-cart__link" href="/cart/">Виж количката</a>
+	</div>
+	<div class="d-drawer__body" data-darling-cart-body>
+		<p class="d-drawer__empty">Зареждане&hellip;</p>
+	</div>
+	<div class="d-drawer__foot" data-darling-cart-foot hidden>
+		<div class="d-drawer__total">
+			<span>Обща сума</span>
+			<b data-darling-cart-total></b>
+		</div>
+		<p class="d-drawer__note">С включено ДДС. Доставката се изчислява при плащане.</p>
+		<a class="d-btn d-finish" href="/checkout/">Преминаване към плащане</a>
+		<a class="d-btn d-btn--text" href="/cart/">Виж количката</a>
 	</div>
 </dialog>
 

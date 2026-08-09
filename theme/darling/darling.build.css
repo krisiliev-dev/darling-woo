@@ -451,6 +451,10 @@
 	   states - two triangular loops and a round knot, 24 by 12, no tails. The
 	   one I drew before was a plausible bow and the wrong one, which is worse
 	   than no bow: the mark people recognise is this shape. */
+	/* The universal-access figure. Moved out of parts/footer.html rather than
+	   redrawn - it is the mark people already recognise on that button, and it
+	   is used in exactly one place, which is precisely what this set is for. */
+	--icon-a11y: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle fill='%23000' cx='12' cy='4.4' r='2.2'/%3E%3Cpath fill='%23000' d='M12 8.1c-2.9 0-5.6-.4-7.9-1.1l-.5 1.9c1.8.5 3.7.9 5.8 1.1v2.7l-2.4 7.4 1.9.6 2.3-7h1.6l2.3 7 1.9-.6-2.4-7.4V10c2.1-.2 4-.6 5.8-1.1l-.5-1.9c-2.3.7-5 1.1-7.9 1.1Z'/%3E%3C/svg%3E");
 	--icon-bow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Cpath fill='%23000' d='M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z'/%3E%3Ccircle fill='%23000' cx='12' cy='6' r='2.4'/%3E%3C/svg%3E");
 	/* The lens on its own, so the search mark can hold something inside it. */
 	--icon-lens: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.6'/%3E%3Cpath d='M15.8 15.8L21 21'/%3E%3C/svg%3E");
@@ -877,6 +881,7 @@ main{ overflow-x:clip }
 .d-icon--search{ --icon:var(--icon-search) }
 .d-icon--cart{ --icon:var(--icon-cart) }
 .d-icon--user{ --icon:var(--icon-user) }
+.d-icon--a11y{ --icon:var(--icon-a11y) }
 .d-icon--heart{ --icon:var(--icon-heart) }
 .d-icon--menu{ --icon:var(--icon-menu) }
 .d-icon--plus{ --icon:var(--icon-plus) }
@@ -2281,8 +2286,15 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 }
 .d-hero--red .d-hero__copy{ max-width:44rem }
 
+/* *** THE ACCESSIBILITY TOGGLE'S HOOK - AND IT WAS THE WRONG NAME. ***
+   This said `html.darling-a11y`, the legacy class, so it matched nothing from
+   the day patterns/a11y.css was written against `html.d-a11y`. A selector that
+   matches nothing does not error, survives every build and passes the token
+   check; the only symptom is a heading on a photograph that stays hard to read
+   for the one person who asked for it not to be. scripts/a11ygate.js now bans
+   the old name outside the two sheets the cutover deletes. */
 /* *** THE ACCESSIBILITY TOGGLE'S HOOK, KEPT DELIBERATELY. ***
-   The site has a high-contrast switch that sets html.darling-a11y, and the old
+   The site has a high-contrast switch that sets html.d-a11y, and the old
    rule forced this title to pure white under it. That is not decoration: gold
    on claret is the lowest-contrast pair in the whole design, and this is the
    escape hatch for anyone who cannot read it. Ported with the class renamed,

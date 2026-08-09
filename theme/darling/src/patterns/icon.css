@@ -114,6 +114,7 @@
 .d-icon--search{ --icon:var(--icon-search) }
 .d-icon--cart{ --icon:var(--icon-cart) }
 .d-icon--user{ --icon:var(--icon-user) }
+.d-icon--a11y{ --icon:var(--icon-a11y) }
 .d-icon--heart{ --icon:var(--icon-heart) }
 .d-icon--menu{ --icon:var(--icon-menu) }
 .d-icon--plus{ --icon:var(--icon-plus) }
