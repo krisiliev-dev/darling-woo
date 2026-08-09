@@ -7589,10 +7589,22 @@ main .entry-content{
 	color:inherit;
 }
 
+/* *** `.d-media-fail{padding:12%}` USED TO SIT IN HERE AND DID NOTHING. ***
+   A container query styles the container's DESCENDANTS. The slab IS the
+   container, so it cannot be reached by its own query - the rule read as if it
+   tightened the padding on a thumbnail and never once applied.
+
+   *** AND THE OLD CLASS NAMES ARE HERE ON PURPOSE - DELETE THEM AFTER THE
+   DEPLOY. *** The theme in the box emits d-media-fail__cap; the img-fallback.js
+   DEPLOYED to the live site still emits the old dmf-cap, so on the live
+   checkout today the caption prints across a 52px thumbnail. Matching both
+   means the failed image looks right before the theme ships as well as after.
+   One line to remove, and the comment says which. */
 @container (max-width: 119px){
-	.d-media-fail{ padding:12% }
-	.d-media-fail__cap{ display:none }
-	.d-media-fail__bow{ width:52% }
+	.d-media-fail__cap,
+	.dmf-cap{ display:none }
+	.d-media-fail__bow,
+	.dmf-bow{ width:52% }
 }
 
 /* The accessible name lives on the container (role="img" + aria-label), which
@@ -9265,7 +9277,7 @@ li.product .wp-block-button__link{
 
 /* *** THE SELECTOR SHAPE HERE IS LOAD-BEARING. MEASURED. ***
    Being unlayered is necessary and not sufficient. Woo's rule is
-     .wc-block-components-form .wc-block-components-text-input input[type=email]
+     :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input input[type=email]
    which is (0,3,1). Ours was
      .wc-block-components-text-input input[type=text]
    which is (0,2,1) - so with both sides unlayered, specificity decided and we
@@ -9279,11 +9291,11 @@ li.product .wp-block-button__link{
 
    Note also what currently holds the live site together: style.css does this
    with !important at (0,8,4). That is the thing being replaced. */
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="password"]{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="password"]{
 	width:100%;
 	min-height:3.2em;
 	padding:1.35em .9em .5em;   /* room for the floated label above the value */
@@ -9296,13 +9308,13 @@ li.product .wp-block-button__link{
 	transition:border-color var(--dur-ui) var(--ease-float),
 	           box-shadow var(--dur-ui) var(--ease-float);
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus{
 	outline:none;
 	border-color:var(--focus-ring);
 	box-shadow:0 0 0 3px var(--focus-halo);
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input label{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input label{
 	position:absolute;
 	left:.95em;
 	top:1em;
@@ -9316,24 +9328,24 @@ li.product .wp-block-button__link{
 /* Float on focus OR when filled. :not(:placeholder-shown) is what covers
    "filled" without a class and without script - Woo sets a placeholder of a
    single space precisely so this works. */
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus + label,
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:not(:placeholder-shown) + label,
-.wc-block-components-form .wc-block-components-text-input.is-active label{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus + label,
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:not(:placeholder-shown) + label,
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.is-active label{
 	transform:translateY(-.62em) scale(.78);
 	color:var(--ink-quiet);
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus + label{ color:var(--action) }
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus + label{ color:var(--action) }
 
 /* invalid. aria-invalid is the ONLY reliable signal here - Woo toggles it on
    the input itself, and the has-error class is not always applied to the same
    ancestor between the checkout and the my-account form. */
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"],
-.wc-block-components-form .wc-block-components-text-input.has-error input{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.has-error input{
 	border-width:2px;
 	border-color:var(--notice-error-edge);
 	background:color-mix(in oklab, var(--notice-error-edge) 5%, var(--surface-raised));
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"]:focus{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"]:focus{
 	box-shadow:0 0 0 3px color-mix(in oklab, var(--notice-error-edge) 26%, transparent);
 }
 
@@ -9442,6 +9454,15 @@ li.product .wp-block-button__link{
 	pointer-events:none;
 }
 
+/* *** THE COUPON'S FIELD IS A TEXT-INPUT OUTSIDE .wc-block-components-form. ***
+   Every rule above was scoped to that ancestor, and WooCommerce's coupon lives
+   in its own <form class="wc-block-components-totals-coupon__form"> - so the
+   one field in the order summary rendered as the browser's own box with a black
+   border while every other field on the page wore ours. :is() rather than a
+   second selector list, because both arms are (0,1,0) and the weights above
+   were chosen against Woo's: widening the scope must not change them.
+
+*/
 /* -- checkbox. The tick is an SVG Woo renders; we colour the box and the mark,
    we do not try to replace it. */
 .wc-block-components-checkbox{ margin:0 0 var(--space-2xs) }
@@ -9455,11 +9476,20 @@ li.product .wp-block-button__link{
 	line-height:var(--lh-body);
 	position:relative;
 }
+/* *** IT MEASURED 20 x 16: A RECTANGLE, NOT A BOX. ***
+   1.2em of a 14px font is 16.8px, and the grid column was handing the input
+   20px of width - which it took, because a replaced element with a width
+   declared in em still stretches to its grid area unless it is told not to.
+   justify-self keeps it square, and the size is a rem so it does not change
+   with the label's font. */
 .wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type="checkbox"]{
 	appearance:none;
 	grid-column:1;
-	width:1.2em;
-	height:1.2em;
+	justify-self:start;
+	flex:none;
+	width:1.15rem;
+	height:1.15rem;
+	min-width:1.15rem;
 	margin:.16em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -9480,8 +9510,9 @@ li.product .wp-block-button__link{
 	grid-column:1;
 	grid-row:1;
 	align-self:start;
-	width:1.2em;
-	height:1.2em;
+	justify-self:start;
+	width:1.15rem;
+	height:1.15rem;
 	margin-top:.16em;
 	fill:var(--action-ink);
 	pointer-events:none;
@@ -9491,6 +9522,12 @@ li.product .wp-block-button__link{
 /* -- radio, and the payment accordion --------------------------------------
    The option is a LABEL, and each payment method is an accordion option with
    its own content panel that expands when checked. */
+/* *** ONE NUMBER FOR THE CONTROL, USED IN BOTH PLACES. ***
+   The description under a payment method was indented by arithmetic -
+   `space-xs + 1.18em + inline` - and 1.18em is 16.5px at this font size while
+   the control measures 20px. So the description started 5px left of the label
+   it belongs under. A token cannot drift from itself. */
+.wc-block-components-radio-control{ --radio: 1.25rem }
 .wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
 	grid-template-columns:auto 1fr;
@@ -9545,8 +9582,9 @@ li.product .wp-block-button__link{
 
 .wc-block-components-radio-control__input{
 	appearance:none;
-	width:1.18em;
-	height:1.18em;
+	flex:none;
+	width:var(--radio, 1.25rem);
+	height:var(--radio, 1.25rem);
 	margin:0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-circle);
@@ -9575,7 +9613,8 @@ li.product .wp-block-button__link{
 }
 .wc-block-components-radio-control__label{ font-weight:var(--fw-medium) }
 .wc-block-components-radio-control-accordion-content{
-	padding:0 var(--space-xs) var(--space-2xs) calc(var(--space-xs) + 1.18em + var(--inline));
+	padding:0 var(--space-xs) var(--space-2xs)
+	        calc(var(--space-xs) + var(--radio, 1.25rem) + var(--inline));
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }
@@ -9721,11 +9760,22 @@ li.product .wp-block-button__link{
 
 /* -- ADOPTED: WooCommerce's notices -----------------------------------------
    *** THESE GET THE TINT AND THE SHAPE, NOT THE STARS. ***
-   Woo emits its own SVG inside the block banners and we cannot remove it, so
-   our stars would be a second icon in the same box; and its markup has no span
-   for us to hang the other three on. The classic notices get one static star.
-   When these handles are dequeued and we own the markup, they move to .d-notice
-   and inherit the whole treatment. */
+   The block banners have no span for us to hang the other three stars on, so
+   they get one mark and the tint. When these handles are dequeued and we own
+   the markup, they move to .d-notice and inherit the whole treatment.
+
+   *** WOO'S OWN SVG IS HIDDEN NOW, AND THAT IS A CORRECTION. ***
+   This file used to say we could not remove it, so it was kept and dressed. We
+   cannot remove it from the DOM; we can decline to draw it - and we should
+   have, because it was never ours. Left in, it measured 24 x 45 on a phone: an
+   SVG with no intrinsic height stretched to the height of its grid row, which
+   is the distortion the owner spotted. It is also the one green thing on the
+   whole storefront.
+
+   The mark below is the same clip-path star the classic notices already use, so
+   there is one shape for "notice" across both families rather than a tick from
+   WooCommerce on one and a star from us on the other. */
+.wc-block-components-notice-banner > svg{ display:none }
 .wc-block-components-notice-banner,
 .woocommerce-message,
 .woocommerce-error,
@@ -9758,6 +9808,7 @@ li.product .wp-block-button__link{
 	background:color-mix(in oklab, var(--g-core) 13%, var(--surface-raised));
 	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--g-core) 30%, transparent);
 }
+.wc-block-components-notice-banner::before,
 .woocommerce-message::before,
 .woocommerce-error::before,
 .woocommerce-info::before{
@@ -9770,8 +9821,11 @@ li.product .wp-block-button__link{
 	background:var(--notice-info-edge);
 	clip-path:polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
 }
-.woocommerce-error::before{ background:var(--notice-error-edge) }
-.woocommerce-message::before{ background:var(--g-core) }
+.woocommerce-error::before,
+.wc-block-components-notice-banner.is-error::before{ background:var(--notice-error-edge) }
+.wc-block-components-notice-banner.is-warning::before{ background:var(--notice-warning-edge) }
+.woocommerce-message::before,
+.wc-block-components-notice-banner.is-success::before{ background:var(--g-core) }
 
 .woocommerce-store-notice,
 .demo_store{
@@ -11782,13 +11836,19 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 .wc-block-components-sidebar-layout .wc-block-components-sidebar{
 	width:auto;
 	max-width:none;
-	padding-inline:0;
 	min-width:0;
 }
+/* *** AND THE RESET TOOK THE CARD'S PADDING WITH IT. ***
+   padding-inline:0 was here to kill Woo's percentage gutter, and it also killed
+   the summary card's own - so every hairline ran to the rounded edge and the
+   rows read as if they were outside the box. The main column is the one that
+   needed the gutter gone; the sidebar keeps its padding, below. */
+.wc-block-components-sidebar-layout .wc-block-components-main{ padding-inline:0 }
 
 /* *** THE SUMMARY STICKS, AND THAT IS THE POINT OF PUTTING IT IN A COLUMN. ***
    On a long checkout the total is the number you keep glancing back at. Top
    offset clears the sticky header. */
+.wc-block-components-sidebar-layout .wc-block-components-sidebar,
 .wc-block-components-sidebar,
 .wc-block-checkout__sidebar{
 	position:sticky;
@@ -11851,6 +11911,21 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 }
 .wc-block-components-checkout-step.wc-block-components-checkout-step:last-of-type{
 	border-bottom-style:none;
+}
+
+/* *** AND ON A PHONE THE HEADING NEEDS MORE AIR THAN THE RULE GIVES IT. ***
+   Stacked, with nothing beside them, the hairline above a title is the only
+   thing separating two subjects - and 24px of it read as though the heading
+   belonged to the section it had just left.
+
+   This sits HERE, after the rule it overrides, and not up in the layout media
+   query where I first put it. Same specificity, earlier in the file: it lost,
+   silently, and the measurement said 24px when it should have said 32. Source
+   order decides ties, and a media query does not change that. */
+@media (max-width: 900px){
+	.wc-block-components-checkout-step + .wc-block-components-checkout-step{
+		padding-top:var(--space-l);
+	}
 }
 
 .wc-block-components-checkout-step__heading-container{ margin:0 0 var(--space-xs) }
@@ -11988,6 +12063,28 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 }
 .wc-block-components-payment-method-label{ font-weight:var(--fw-medium) }
 
+/* -- the company invoice, which is ours -----------------------------------
+   *** SEVEN FIELDS FOR A COMPANY INVOICE, SHOWN TO EVERYONE WHO IS NOT ASKING
+   FOR ONE. *** They belong to the tick above them, and until now nothing hid
+   them - the checkout asked every private customer for an EIK and a VAT number
+   before it asked them to pay.
+
+   :has() rather than a class, because there is no class to wait for: the state
+   lives on the input, and a stylesheet can read it directly. If the plugin ever
+   grows its own toggle this rule becomes a no-op rather than a fight. */
+.wc-block-components-address-form:has(
+	.wc-block-components-address-form__darling-invoice-wanted input:not(:checked)
+) :is(
+	.wc-block-components-address-form__darling-invoice-company,
+	.wc-block-components-address-form__darling-invoice-eik,
+	.wc-block-components-address-form__darling-invoice-vat,
+	.wc-block-components-address-form__darling-invoice-mol,
+	.wc-block-components-address-form__darling-invoice-city,
+	.wc-block-components-address-form__darling-invoice-address
+){
+	display:none;
+}
+
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
@@ -12065,6 +12162,60 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:contents;
 }
 
+/* -- the coupon, which is a field and not a disclosure ---------------------
+   *** ONE FIELD BEHIND A BUTTON IS A DISCLOSURE FOR NOTHING. ***
+   Woo ships it as a panel because it builds the input only when the panel
+   opens - the closed markup is a heading and a chevron and nothing else, so
+   CSS alone cannot show a field that does not exist. darling-ui.js opens it
+   once, by pressing THEIR button, and this hides the button that is now
+   pointless. Same rule as the filter overlay: their control, their runtime.
+
+   If the script does not run, the panel is still a working disclosure. That is
+   the right failure. */
+.wc-block-components-totals-coupon[data-d-coupon-open] .wc-block-components-panel__button{
+	display:none;
+}
+.wc-block-components-totals-coupon[data-d-coupon-open] .wc-block-components-panel__content{
+	padding:0;
+}
+.wc-block-components-totals-coupon__form{
+	display:grid;
+	grid-template-columns:minmax(0,1fr) auto;
+	gap:var(--space-2xs);
+	align-items:center;
+}
+.wc-block-components-totals-coupon__input{ margin:0 }
+/* *** A SECOND CHERRY PILL IN THE SIDEBAR COMPETES WITH THE ONE THAT TAKES THE
+   MONEY. *** Woo ships this as `contained`, the same treatment as Поръчай.
+   Applying a discount is a small, optional act next to placing the order, so it
+   gets the quiet button and the outline. */
+.wc-block-components-button.wc-block-components-totals-coupon__button{
+	padding:.62em 1.05em;
+	border:0;
+	border-radius:var(--radius-pill);
+	background-color:transparent;
+	background-image:none;
+	box-shadow:inset 0 0 0 1px var(--edge-field);
+	color:var(--ink);
+	font:var(--type-ui);
+	font-size:var(--fs-meta);
+	font-weight:var(--fw-medium);
+	white-space:nowrap;
+	cursor:pointer;
+	transition:background-color var(--dur-ui) var(--ease-float);
+}
+.wc-block-components-button.wc-block-components-totals-coupon__button:hover{
+	background-color:var(--surface-quiet);
+}
+.wc-block-components-button.wc-block-components-totals-coupon__button:disabled{
+	opacity:.5;
+	cursor:not-allowed;
+}
+.wc-block-components-button.wc-block-components-totals-coupon__button:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:2px;
+}
+
 /* -- the sidebar --------------------------------------------------------------
    The title row is a heading, a total and a chevron. On a desktop the chevron
    does nothing and the summary is always open; under the breakpoint the whole
@@ -12104,6 +12255,10 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    whether or not its contents do - so a border on the wrapper draws lines
    across nothing. The rule is on the wrapper that HAS something in it. */
 .wc-block-components-totals-wrapper{ padding-block:var(--space-xs) }
+/* Woo renders a wrapper whether or not its contents do - three of the seven on
+   this page are empty - and an empty one still took its padding, so the card
+   had gaps in it with nothing to show for them. */
+.wc-block-components-totals-wrapper:empty{ padding-block:0 }
 .wc-block-components-totals-wrapper:empty{ display:none }
 .wc-block-components-totals-wrapper + .wc-block-components-totals-wrapper:not(:empty){
 	border-top:1px solid var(--hairline);
@@ -12120,7 +12275,14 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	color:var(--ink);
 }
 .wc-block-components-totals-item__label{ color:var(--ink-quiet) }
-.wc-block-components-totals-item__value{ font-weight:var(--fw-medium) }
+.wc-block-components-totals-item__value{
+	font-weight:var(--fw-medium);
+	/* Woo renders one of these as a span and the next as a div. A div is a block
+	   and takes the rest of the row, so its number sat at the START of a
+	   full-width box while the span's sat at its own right edge - the same
+	   €13.50 landing in two different places down one column. */
+	text-align:end;
+}
 .wc-block-components-totals-item__description{
 	flex:1 0 100%;
 	font-size:var(--fs-fine);
@@ -13110,6 +13272,42 @@ that is the next component.</div>
 		});
 	}
 
+	/* 6. THE COUPON IS A FIELD, NOT A DISCLOSURE.
+	      One input behind a chevron, in a sidebar with room for it. The owner is
+	      right that it should just be there - but CSS alone cannot do it, because
+	      the closed markup is a heading and an icon and NOTHING ELSE. WooCommerce
+	      builds the input when the panel opens, so there is no field to reveal.
+
+	      *** SO WE PRESS THEIR BUTTON, ONCE, AND THEN HIDE IT. *** Same rule as
+	      the filter overlay: their control, their runtime, their state. If this
+	      script never runs, the coupon is still a working disclosure - which is
+	      the right way for it to fail.
+
+	      Focus goes back where it was. Their handler focuses the input it has
+	      just created, and nobody asked to be typing a discount code the moment
+	      the page loaded. */
+	function couponOpen(panel) {
+		var btn = panel.querySelector('.wc-block-components-panel__button');
+		if (!btn) { return; }
+		/* *** THE GUARD IS ON THE ELEMENT, NOT ON THIS MODULE. *** A one-shot
+		   flag opened it once and then let WooCommerce's next re-render put the
+		   chevron back - measured: open at 1240px, closed again after a resize
+		   re-rendered the sidebar. A replaced node arrives without the
+		   attribute and gets opened again, and an already-open one only has the
+		   attribute re-set, so there is no loop. */
+		if (btn.getAttribute('aria-expanded') !== 'true') {
+			var was = document.activeElement;
+			btn.click();
+			if (was && was.focus && was !== document.body) { was.focus(); }
+			else if (document.activeElement && document.activeElement.blur) {
+				document.activeElement.blur();
+			}
+		}
+		/* The attribute is what the stylesheet waits for, so the button only
+		   disappears once it has actually been pressed. */
+		panel.setAttribute('data-d-coupon-open', '');
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -13124,6 +13322,7 @@ that is the next component.</div>
 		(root || document).querySelectorAll('.wc-block-product-filters').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
+		(root || document).querySelectorAll('.wc-block-components-totals-coupon').forEach(couponOpen);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
 		});

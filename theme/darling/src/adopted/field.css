@@ -35,7 +35,7 @@
 
 /* *** THE SELECTOR SHAPE HERE IS LOAD-BEARING. MEASURED. ***
    Being unlayered is necessary and not sufficient. Woo's rule is
-     .wc-block-components-form .wc-block-components-text-input input[type=email]
+     :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input input[type=email]
    which is (0,3,1). Ours was
      .wc-block-components-text-input input[type=text]
    which is (0,2,1) - so with both sides unlayered, specificity decided and we
@@ -49,11 +49,11 @@
 
    Note also what currently holds the live site together: style.css does this
    with !important at (0,8,4). That is the thing being replaced. */
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[type="password"]{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="password"]{
 	width:100%;
 	min-height:3.2em;
 	padding:1.35em .9em .5em;   /* room for the floated label above the value */
@@ -66,13 +66,13 @@
 	transition:border-color var(--dur-ui) var(--ease-float),
 	           box-shadow var(--dur-ui) var(--ease-float);
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus{
 	outline:none;
 	border-color:var(--focus-ring);
 	box-shadow:0 0 0 3px var(--focus-halo);
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input label{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input label{
 	position:absolute;
 	left:.95em;
 	top:1em;
@@ -86,24 +86,24 @@
 /* Float on focus OR when filled. :not(:placeholder-shown) is what covers
    "filled" without a class and without script - Woo sets a placeholder of a
    single space precisely so this works. */
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus + label,
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:not(:placeholder-shown) + label,
-.wc-block-components-form .wc-block-components-text-input.is-active label{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus + label,
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:not(:placeholder-shown) + label,
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.is-active label{
 	transform:translateY(-.62em) scale(.78);
 	color:var(--ink-quiet);
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input:focus + label{ color:var(--action) }
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus + label{ color:var(--action) }
 
 /* invalid. aria-invalid is the ONLY reliable signal here - Woo toggles it on
    the input itself, and the has-error class is not always applied to the same
    ancestor between the checkout and the my-account form. */
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"],
-.wc-block-components-form .wc-block-components-text-input.has-error input{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.has-error input{
 	border-width:2px;
 	border-color:var(--notice-error-edge);
 	background:color-mix(in oklab, var(--notice-error-edge) 5%, var(--surface-raised));
 }
-.wc-block-components-form .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"]:focus{
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[aria-invalid="true"]:focus{
 	box-shadow:0 0 0 3px color-mix(in oklab, var(--notice-error-edge) 26%, transparent);
 }
 
@@ -212,6 +212,15 @@
 	pointer-events:none;
 }
 
+/* *** THE COUPON'S FIELD IS A TEXT-INPUT OUTSIDE .wc-block-components-form. ***
+   Every rule above was scoped to that ancestor, and WooCommerce's coupon lives
+   in its own <form class="wc-block-components-totals-coupon__form"> - so the
+   one field in the order summary rendered as the browser's own box with a black
+   border while every other field on the page wore ours. :is() rather than a
+   second selector list, because both arms are (0,1,0) and the weights above
+   were chosen against Woo's: widening the scope must not change them.
+
+*/
 /* -- checkbox. The tick is an SVG Woo renders; we colour the box and the mark,
    we do not try to replace it. */
 .wc-block-components-checkbox{ margin:0 0 var(--space-2xs) }
@@ -225,11 +234,20 @@
 	line-height:var(--lh-body);
 	position:relative;
 }
+/* *** IT MEASURED 20 x 16: A RECTANGLE, NOT A BOX. ***
+   1.2em of a 14px font is 16.8px, and the grid column was handing the input
+   20px of width - which it took, because a replaced element with a width
+   declared in em still stretches to its grid area unless it is told not to.
+   justify-self keeps it square, and the size is a rem so it does not change
+   with the label's font. */
 .wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type="checkbox"]{
 	appearance:none;
 	grid-column:1;
-	width:1.2em;
-	height:1.2em;
+	justify-self:start;
+	flex:none;
+	width:1.15rem;
+	height:1.15rem;
+	min-width:1.15rem;
 	margin:.16em 0 0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-xs);
@@ -250,8 +268,9 @@
 	grid-column:1;
 	grid-row:1;
 	align-self:start;
-	width:1.2em;
-	height:1.2em;
+	justify-self:start;
+	width:1.15rem;
+	height:1.15rem;
 	margin-top:.16em;
 	fill:var(--action-ink);
 	pointer-events:none;
@@ -261,6 +280,12 @@
 /* -- radio, and the payment accordion --------------------------------------
    The option is a LABEL, and each payment method is an accordion option with
    its own content panel that expands when checked. */
+/* *** ONE NUMBER FOR THE CONTROL, USED IN BOTH PLACES. ***
+   The description under a payment method was indented by arithmetic -
+   `space-xs + 1.18em + inline` - and 1.18em is 16.5px at this font size while
+   the control measures 20px. So the description started 5px left of the label
+   it belongs under. A token cannot drift from itself. */
+.wc-block-components-radio-control{ --radio: 1.25rem }
 .wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
 	grid-template-columns:auto 1fr;
@@ -315,8 +340,9 @@
 
 .wc-block-components-radio-control__input{
 	appearance:none;
-	width:1.18em;
-	height:1.18em;
+	flex:none;
+	width:var(--radio, 1.25rem);
+	height:var(--radio, 1.25rem);
 	margin:0;
 	border:1px solid var(--edge-field);
 	border-radius:var(--radius-circle);
@@ -345,7 +371,8 @@
 }
 .wc-block-components-radio-control__label{ font-weight:var(--fw-medium) }
 .wc-block-components-radio-control-accordion-content{
-	padding:0 var(--space-xs) var(--space-2xs) calc(var(--space-xs) + 1.18em + var(--inline));
+	padding:0 var(--space-xs) var(--space-2xs)
+	        calc(var(--space-xs) + var(--radio, 1.25rem) + var(--inline));
 	font-size:var(--fs-fine);
 	color:var(--ink-quiet);
 }

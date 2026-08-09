@@ -364,6 +364,42 @@
 		});
 	}
 
+	/* 6. THE COUPON IS A FIELD, NOT A DISCLOSURE.
+	      One input behind a chevron, in a sidebar with room for it. The owner is
+	      right that it should just be there - but CSS alone cannot do it, because
+	      the closed markup is a heading and an icon and NOTHING ELSE. WooCommerce
+	      builds the input when the panel opens, so there is no field to reveal.
+
+	      *** SO WE PRESS THEIR BUTTON, ONCE, AND THEN HIDE IT. *** Same rule as
+	      the filter overlay: their control, their runtime, their state. If this
+	      script never runs, the coupon is still a working disclosure - which is
+	      the right way for it to fail.
+
+	      Focus goes back where it was. Their handler focuses the input it has
+	      just created, and nobody asked to be typing a discount code the moment
+	      the page loaded. */
+	function couponOpen(panel) {
+		var btn = panel.querySelector('.wc-block-components-panel__button');
+		if (!btn) { return; }
+		/* *** THE GUARD IS ON THE ELEMENT, NOT ON THIS MODULE. *** A one-shot
+		   flag opened it once and then let WooCommerce's next re-render put the
+		   chevron back - measured: open at 1240px, closed again after a resize
+		   re-rendered the sidebar. A replaced node arrives without the
+		   attribute and gets opened again, and an already-open one only has the
+		   attribute re-set, so there is no loop. */
+		if (btn.getAttribute('aria-expanded') !== 'true') {
+			var was = document.activeElement;
+			btn.click();
+			if (was && was.focus && was !== document.body) { was.focus(); }
+			else if (document.activeElement && document.activeElement.blur) {
+				document.activeElement.blur();
+			}
+		}
+		/* The attribute is what the stylesheet waits for, so the button only
+		   disappears once it has actually been pressed. */
+		panel.setAttribute('data-d-coupon-open', '');
+	}
+
 	function init(root) {
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
@@ -378,6 +414,7 @@
 		(root || document).querySelectorAll('.wc-block-product-filters').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; filterDismiss(el); }
 		});
+		(root || document).querySelectorAll('.wc-block-components-totals-coupon').forEach(couponOpen);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
 		});

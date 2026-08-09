@@ -81,10 +81,22 @@
 	color:inherit;
 }
 
+/* *** `.d-media-fail{padding:12%}` USED TO SIT IN HERE AND DID NOTHING. ***
+   A container query styles the container's DESCENDANTS. The slab IS the
+   container, so it cannot be reached by its own query - the rule read as if it
+   tightened the padding on a thumbnail and never once applied.
+
+   *** AND THE OLD CLASS NAMES ARE HERE ON PURPOSE - DELETE THEM AFTER THE
+   DEPLOY. *** The theme in the box emits d-media-fail__cap; the img-fallback.js
+   DEPLOYED to the live site still emits the old dmf-cap, so on the live
+   checkout today the caption prints across a 52px thumbnail. Matching both
+   means the failed image looks right before the theme ships as well as after.
+   One line to remove, and the comment says which. */
 @container (max-width: 119px){
-	.d-media-fail{ padding:12% }
-	.d-media-fail__cap{ display:none }
-	.d-media-fail__bow{ width:52% }
+	.d-media-fail__cap,
+	.dmf-cap{ display:none }
+	.d-media-fail__bow,
+	.dmf-bow{ width:52% }
 }
 
 /* The accessible name lives on the container (role="img" + aria-label), which
