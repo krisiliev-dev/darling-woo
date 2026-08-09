@@ -100,28 +100,27 @@
 		max-height:none;
 		overflow:visible;
 	}
-	/* *** THE SPLIT THE OWNER ASKED FOR IS NOT IN HERE, AND HERE IS WHY. ***
-	   He wants the itemisation at the top of a phone and the promo code and
-	   totals down beside the button. WooCommerce ships them as ONE block,
-	   because on a desktop they are one column, so splitting them means making
-	   their two halves siblings of the form - and the only CSS that can do that
-	   is a chain of display:contents down every wrapper between the layout and
-	   the blocks.
+	/* *** THE SPLIT WORKS AND IS SWITCHED OFF, AND THE REASON IS THE BUTTON. ***
+	   Owner: itemisation at the top, promo code and totals beside the button.
+	   The mechanism is here and it works - darling-ui.js walks the real tree and
+	   marks every wrapper between the layout and the summary blocks, this
+	   dissolves them, and `order` reaches the two halves. Measured: the money
+	   card landed exactly where he asked, after the form and before the terms.
 
-	   I built that chain and it took three goes to find the links: the sidebar,
-	   the summary block, the <form>, and then an UNCLASSED <div> that React puts
-	   between the sidebar and the summary - measured as a 600px-tall grid item
-	   with no class at all. Even with all four dissolved the money half stayed
-	   at the top, so there is at least one more wrapper, and a chain of
-	   display:contents is only as long as its shortest link. Enumerating
-	   anonymous React wrappers from a stylesheet is not a thing that stays true
-	   across a plugin update.
+	   *** AND IT PUT Поръчай AT THE TOP OF THE PAGE. *** Measured on the phone
+	   capture: the order button rendered above the summary title. The rule that
+	   should have held it - `.wc-block-checkout__form > .wc-block-checkout__actions`
+	   - did not match, so the actions is not the child of the form I assumed it
+	   was, and I do not yet know what it is a child of.
 
-	   So it is NOT shipped as a half-working chain. The two honest ways to do
-	   it are a small JS move scoped to phone width and re-applied on re-render,
-	   or accepting the whole summary at the top - and that is the owner's call,
-	   not a thing to guess at 3am. What ships today is the whole summary at the
-	   top, which is where he asked the itemisation to be, and no duplicate. */
+	   Everything else on this page can be wrong for a screenshot. The button
+	   that takes the money cannot, so the marking call is commented out in
+	   darling-ui.js and this block is inert until the actions element has been
+	   measured rather than assumed. That measurement is one probe; it is not
+	   one to do at the end of a long night.
+
+	   *** AND DEQUEUING WOULD NOT HAVE HELPED. *** The owner asked. Dequeuing
+	   removes WooCommerce's stylesheet; what is in the way here is their DOM. */
 
 	/* *** AND ON A PHONE THE TWO COLUMNS ARE ONE, SUMMARY FIRST. ***
 	   Stacked in source order the total lands AFTER the order button - measured
@@ -831,10 +830,14 @@
 	flex:none;
 	color:var(--ink-quiet);
 }
-@media (max-width: 900px){
-	.wc-block-components-checkout-order-summary__title{ cursor:pointer }
-	.wc-block-components-checkout-order-summary__title-icon{ display:inline-flex }
-}
+/* *** THIS USED TO PUT THE CHEVRON BACK ON A PHONE, AND IT WON. ***
+   It was written when the summary was going to be a disclosure on mobile, and
+   it is later in the file than the rule that hides the icon, so the arrow
+   returned - visible in the phone capture, pointing at a state that cannot
+   change because the summary is always open. Two rules, one file, opposite
+   intentions, and the newer one lost because it was written higher up.
+   The disclosure is still a fair idea; it is a behaviour decision and it is
+   not made by leaving its arrow on. */
 
 /* Woo wraps every block of the summary in a totals-wrapper and gives each one a
    border. Three of the seven on this page are EMPTY - the wrapper renders

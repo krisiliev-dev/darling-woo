@@ -12592,28 +12592,27 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 		max-height:none;
 		overflow:visible;
 	}
-	/* *** THE SPLIT THE OWNER ASKED FOR IS NOT IN HERE, AND HERE IS WHY. ***
-	   He wants the itemisation at the top of a phone and the promo code and
-	   totals down beside the button. WooCommerce ships them as ONE block,
-	   because on a desktop they are one column, so splitting them means making
-	   their two halves siblings of the form - and the only CSS that can do that
-	   is a chain of display:contents down every wrapper between the layout and
-	   the blocks.
+	/* *** THE SPLIT WORKS AND IS SWITCHED OFF, AND THE REASON IS THE BUTTON. ***
+	   Owner: itemisation at the top, promo code and totals beside the button.
+	   The mechanism is here and it works - darling-ui.js walks the real tree and
+	   marks every wrapper between the layout and the summary blocks, this
+	   dissolves them, and `order` reaches the two halves. Measured: the money
+	   card landed exactly where he asked, after the form and before the terms.
 
-	   I built that chain and it took three goes to find the links: the sidebar,
-	   the summary block, the <form>, and then an UNCLASSED <div> that React puts
-	   between the sidebar and the summary - measured as a 600px-tall grid item
-	   with no class at all. Even with all four dissolved the money half stayed
-	   at the top, so there is at least one more wrapper, and a chain of
-	   display:contents is only as long as its shortest link. Enumerating
-	   anonymous React wrappers from a stylesheet is not a thing that stays true
-	   across a plugin update.
+	   *** AND IT PUT Поръчай AT THE TOP OF THE PAGE. *** Measured on the phone
+	   capture: the order button rendered above the summary title. The rule that
+	   should have held it - `.wc-block-checkout__form > .wc-block-checkout__actions`
+	   - did not match, so the actions is not the child of the form I assumed it
+	   was, and I do not yet know what it is a child of.
 
-	   So it is NOT shipped as a half-working chain. The two honest ways to do
-	   it are a small JS move scoped to phone width and re-applied on re-render,
-	   or accepting the whole summary at the top - and that is the owner's call,
-	   not a thing to guess at 3am. What ships today is the whole summary at the
-	   top, which is where he asked the itemisation to be, and no duplicate. */
+	   Everything else on this page can be wrong for a screenshot. The button
+	   that takes the money cannot, so the marking call is commented out in
+	   darling-ui.js and this block is inert until the actions element has been
+	   measured rather than assumed. That measurement is one probe; it is not
+	   one to do at the end of a long night.
+
+	   *** AND DEQUEUING WOULD NOT HAVE HELPED. *** The owner asked. Dequeuing
+	   removes WooCommerce's stylesheet; what is in the way here is their DOM. */
 
 	/* *** AND ON A PHONE THE TWO COLUMNS ARE ONE, SUMMARY FIRST. ***
 	   Stacked in source order the total lands AFTER the order button - measured
@@ -13323,10 +13322,14 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	flex:none;
 	color:var(--ink-quiet);
 }
-@media (max-width: 900px){
-	.wc-block-components-checkout-order-summary__title{ cursor:pointer }
-	.wc-block-components-checkout-order-summary__title-icon{ display:inline-flex }
-}
+/* *** THIS USED TO PUT THE CHEVRON BACK ON A PHONE, AND IT WON. ***
+   It was written when the summary was going to be a disclosure on mobile, and
+   it is later in the file than the rule that hides the icon, so the arrow
+   returned - visible in the phone capture, pointing at a state that cannot
+   change because the summary is always open. Two rules, one file, opposite
+   intentions, and the newer one lost because it was written higher up.
+   The disclosure is still a fair idea; it is a behaviour decision and it is
+   not made by leaving its arrow on. */
 
 /* Woo wraps every block of the summary in a totals-wrapper and gives each one a
    border. Three of the seven on this page are EMPTY - the wrapper renders
@@ -14688,6 +14691,12 @@ that is the next component.</div>
 		   row it is actually watching rather than on the region it was found in. */
 		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(expressState);
 		(root || document).querySelectorAll('.wc-block-components-shipping-rates-control__package').forEach(rateGrid);
+		/* OFF until the actions element is measured - see the long note in
+		   adopted/checkout.css. The function is correct and the layout it
+		   produces is the one the owner asked for; what is not established is
+		   where the order button lives, and it ended up at the top of the page.
+		   Not a thing to leave running on a guess. */
+		/* summarySplit(); */
 		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
@@ -14866,6 +14875,54 @@ that is the next component.</div>
 				if (!found) { add('gap', '', i + 2, j + 2); }
 			}
 		}
+	}
+
+
+	/* 10. THE SUMMARY, SPLIT IN TWO ON A PHONE.
+	       Owner: the itemisation at the top, the promo code and the totals down
+	       beside the button. WooCommerce ships them as one block because on a
+	       desktop they are one column, so the two halves have to become
+	       siblings of the form before `order` can reach them.
+
+	       *** DEQUEUING DOES NOT HELP WITH THIS, AND IT IS WORTH BEING CLEAR
+	       WHY. *** Dequeuing removes their STYLESHEET. What is in the way is
+	       their DOM: a chain of wrappers between the layout and the summary
+	       blocks, one of which is an unclassed <div> React inserts. No amount
+	       of removing their CSS moves a node.
+
+	       display:contents dissolves those wrappers - but a stylesheet cannot
+	       name a wrapper that has no class, and I spent three passes guessing
+	       at how many there are. So the WALK is done here, where the real tree
+	       is, and the styling stays in CSS: this marks every element between
+	       the layout and each summary block with data-d-dissolve, and
+	       checkout.css does the rest inside its media query.
+
+	       *** NOTHING IS MOVED. *** An attribute is set on nodes that already
+	       exist. A re-render drops the attributes and init puts them back,
+	       which is the same contract as the rate grid. */
+	function summarySplit() {
+		var layout = document.querySelector('.wc-block-components-sidebar-layout');
+		if (!layout) { return; }
+		var marks = layout.querySelectorAll('[data-d-dissolve]');
+		var i;
+		for (i = 0; i < marks.length; i++) { marks[i].removeAttribute('data-d-dissolve'); }
+
+		var walkUp = function (el) {
+			for (var n = el.parentElement; n && n !== layout; n = n.parentElement) {
+				n.setAttribute('data-d-dissolve', '');
+			}
+		};
+		/* The two halves of the summary, and the form's own blocks. Only the
+		   TOP-LEVEL summary blocks - walking up from a totals row would dissolve
+		   the row's own wrapper and take the layout of the row with it. */
+		var blocks = layout.querySelectorAll(
+			'[class*="wp-block-woocommerce-checkout-order-summary-"][class*="-block"]');
+		for (i = 0; i < blocks.length; i++) {
+			if (blocks[i].closest('[class*="wp-block-woocommerce-checkout-order-summary-"][class*="-block"]') !== blocks[i]) { continue; }
+			walkUp(blocks[i]);
+		}
+		var fields = layout.querySelectorAll('.wc-block-checkout__form > *');
+		for (i = 0; i < fields.length; i++) { walkUp(fields[i]); }
 	}
 
 	cartEvents();

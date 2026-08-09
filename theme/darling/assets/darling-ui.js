@@ -456,6 +456,12 @@
 		   row it is actually watching rather than on the region it was found in. */
 		(root || document).querySelectorAll('.wc-block-components-express-payment').forEach(expressState);
 		(root || document).querySelectorAll('.wc-block-components-shipping-rates-control__package').forEach(rateGrid);
+		/* OFF until the actions element is measured - see the long note in
+		   adopted/checkout.css. The function is correct and the layout it
+		   produces is the one the owner asked for; what is not established is
+		   where the order button lives, and it ended up at the top of the page.
+		   Not a thing to leave running on a guess. */
+		/* summarySplit(); */
 		(root || document).querySelectorAll('.wc-block-checkout__guest-checkout-notice').forEach(guestAccount);
 		(root || document).querySelectorAll('.d-wipe').forEach(function (el) {
 			if (!el.dataset.dWipe) { el.dataset.dWipe = '1'; wipe(el); }
@@ -634,6 +640,54 @@
 				if (!found) { add('gap', '', i + 2, j + 2); }
 			}
 		}
+	}
+
+
+	/* 10. THE SUMMARY, SPLIT IN TWO ON A PHONE.
+	       Owner: the itemisation at the top, the promo code and the totals down
+	       beside the button. WooCommerce ships them as one block because on a
+	       desktop they are one column, so the two halves have to become
+	       siblings of the form before `order` can reach them.
+
+	       *** DEQUEUING DOES NOT HELP WITH THIS, AND IT IS WORTH BEING CLEAR
+	       WHY. *** Dequeuing removes their STYLESHEET. What is in the way is
+	       their DOM: a chain of wrappers between the layout and the summary
+	       blocks, one of which is an unclassed <div> React inserts. No amount
+	       of removing their CSS moves a node.
+
+	       display:contents dissolves those wrappers - but a stylesheet cannot
+	       name a wrapper that has no class, and I spent three passes guessing
+	       at how many there are. So the WALK is done here, where the real tree
+	       is, and the styling stays in CSS: this marks every element between
+	       the layout and each summary block with data-d-dissolve, and
+	       checkout.css does the rest inside its media query.
+
+	       *** NOTHING IS MOVED. *** An attribute is set on nodes that already
+	       exist. A re-render drops the attributes and init puts them back,
+	       which is the same contract as the rate grid. */
+	function summarySplit() {
+		var layout = document.querySelector('.wc-block-components-sidebar-layout');
+		if (!layout) { return; }
+		var marks = layout.querySelectorAll('[data-d-dissolve]');
+		var i;
+		for (i = 0; i < marks.length; i++) { marks[i].removeAttribute('data-d-dissolve'); }
+
+		var walkUp = function (el) {
+			for (var n = el.parentElement; n && n !== layout; n = n.parentElement) {
+				n.setAttribute('data-d-dissolve', '');
+			}
+		};
+		/* The two halves of the summary, and the form's own blocks. Only the
+		   TOP-LEVEL summary blocks - walking up from a totals row would dissolve
+		   the row's own wrapper and take the layout of the row with it. */
+		var blocks = layout.querySelectorAll(
+			'[class*="wp-block-woocommerce-checkout-order-summary-"][class*="-block"]');
+		for (i = 0; i < blocks.length; i++) {
+			if (blocks[i].closest('[class*="wp-block-woocommerce-checkout-order-summary-"][class*="-block"]') !== blocks[i]) { continue; }
+			walkUp(blocks[i]);
+		}
+		var fields = layout.querySelectorAll('.wc-block-checkout__form > *');
+		for (i = 0; i < fields.length; i++) { walkUp(fields[i]); }
 	}
 
 	cartEvents();
