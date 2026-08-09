@@ -357,6 +357,17 @@
 			var(--trail-gold) 52%,
 			transparent 100%);
 	background-repeat:no-repeat;
+	/* *** THE ZERO AT THE END OF THE KEYFRAMES IS NOT THE ELEMENT'S ZERO. ***
+	   d-icon-streak finishes at opacity:0, but when it finishes it also STOPS
+	   BEING IN CHARGE, and what takes over is whatever the rule declares. The
+	   rule declared no opacity, so the trail came back at full strength and
+	   stayed for as long as the pointer did - a cart parked with its handbrake
+	   off rather than one doing a wheelie. The trail has to live and die with
+	   the tilt, so the base agrees with where the keyframes land.
+	   a11y.css already knew: "THE CART STREAK IS PAINTED, NOT ANIMATED". It was
+	   filed as an accessibility-mode problem and never read as a statement about
+	   the component. */
+	opacity:0;
 	animation:d-icon-streak 820ms var(--ease-float);
 }
 @keyframes d-icon-streak{
