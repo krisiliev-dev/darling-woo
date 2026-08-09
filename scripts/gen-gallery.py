@@ -107,7 +107,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
   padding-left:12px;margin-top:14px}
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a>
-<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#next">Still to come</a></nav>
+<a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge, panel</a><a href="#last">Pagination, skeleton</a><a href="#icon">Icons</a><a href="#chrome">Header, drawer</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#next">Still to come</a></nav>
 ''')
 
 # --------------------------------------------------------------------- card ---
@@ -2184,6 +2184,108 @@ MapLibre&rsquo;s ~200&nbsp;KB on the checkout for every visitor or load it only
 when the office option is chosen (the second, almost certainly), and whether the
 pins cluster &mdash; Sofia has over two hundred offices and Speedy returns them
 all.</div>
+</section>''')
+
+A('''<section class="sec" id="filters"><h2>Adopted</h2><h3>Catalogue filters</h3>
+<p class="note"><b>It is a trigger and a dialog, not a sidebar.</b> Read off the
+live archive rather than assumed &mdash; which matters, because most of this
+batch turns out to be composition: the trigger is
+<code>.d-btn--quiet</code> and the panel is <code>.d-drawer</code>, and we own
+both. The markup below is WooCommerce&rsquo;s, class for class, down to the
+<code>data-wp-on--click</code> attributes.</p>
+<p class="note"><b>The open state is <code>.is-overlay-opened</code> on the block
+root</b>, set at runtime by the Interactivity API and therefore nowhere in the
+served HTML. I know it because I read
+<code>blocks/woocommerce/product-filters-style.css</code> &mdash; a 5&nbsp;KB
+per-block sheet WordPress <em>inlines</em> rather than links, which is why it
+never appeared in any stylesheet list we have taken and why the first surface
+inventory did not know it existed. Here it is added by hand, because a static
+page has no runtime.</p>
+<p class="note"><b>Two modes, one markup.</b> A dialog under 900px and a sidebar
+above it &mdash; the archive already has a sticky 250px column and the filters
+belong in it. Same breakpoint as the header&rsquo;s, so the page changes shape
+once rather than twice. Both are below.</p>
+
+<p class="note"><b>The dialog cannot be shown in a box, and that is not a gallery problem.</b> The overlay is <code>position: fixed</code>, so it escapes every ancestor by definition &mdash; and the mode is chosen by a <em>viewport</em> media query, which a container cannot fake. At this window width the component is correctly inline, so a &ldquo;phone&rdquo; frame here would be showing the sidebar version pretending. It is reviewed at 430px instead, in the screenshot alongside this file. The alternative was a force-open hook in the shipped stylesheet whose only reader is a review document, and this system has a name for that.</p>
+<p class="lbl">Inline in the sidebar, which is what this width gets</p>
+<div class="d-archive__body" style="display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px">
+  <div class="d-archive__side" style="position:static;max-height:none">
+    <div class="wc-block-product-filters">
+  <button class="wc-block-product-filters__open-overlay" data-wp-on--click="actions.openOverlay">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 17.5H14V16H10V17.5ZM6 6V7.5H18V6H6ZM8 12.5H16V11H8V12.5Z" fill="currentColor"/></svg><span>Филтриране на продукти</span></button>
+  <div class="wc-block-product-filters__overlay">
+    <div class="wc-block-product-filters__overlay-wrapper">
+      <div class="wc-block-product-filters__overlay-dialog" role="dialog" aria-label="Филтри">
+        <header class="wc-block-product-filters__overlay-header">
+          <button class="wc-block-product-filters__close-overlay" data-wp-on--click="actions.closeOverlay">
+            <span>Затваряне</span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 13.06 15.71 16.77 16.77 15.71 13.06 12 16.77 8.29 15.71 7.23 12 10.94 8.29 7.23 7.23 8.29 10.94 12 7.23 15.71 8.29 16.77 12 13.06Z" fill="currentColor"/></svg></button>
+        </header>
+        <div class="wc-block-product-filters__overlay-content">
+            <div class="wp-block-woocommerce-product-filter">
+              <h3 class="wp-block-heading">Цена</h3>
+              <div class="wc-block-product-filter-price-content" style="display:flex;gap:.5rem;align-items:center">
+                <input type="text" value="12" aria-label="От"> <span>&ndash;</span>
+                <input type="text" value="240" aria-label="До">
+              </div>
+            </div>
+            <div class="wp-block-woocommerce-product-filter">
+              <h3 class="wp-block-heading">Материал</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+                <button class="wc-block-product-filter-chips__item" aria-checked="true">Керамика</button>
+                <button class="wc-block-product-filter-chips__item" aria-checked="false">Стъкло</button>
+                <button class="wc-block-product-filter-chips__item" aria-checked="false">Дърво</button>
+                <button class="wc-block-product-filter-chips__item" aria-checked="false">Меламин</button>
+              </div>
+              <button class="wc-block-product-filter__show-more">Още 6</button>
+            </div>
+            <div class="wp-block-woocommerce-product-filter">
+              <h3 class="wp-block-heading">Наличност</h3>
+              <label class="d-check"><input type="checkbox" checked><span>В наличност</span></label>
+              <label class="d-check"><input type="checkbox"><span>По заявка</span></label>
+            </div>
+        </div>
+        <footer class="wc-block-product-filters__overlay-footer">
+          <button class="wc-block-product-filters__apply wp-element-button"><span>Прилагане</span></button>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+  <div>
+    <div class="d-toolbar">
+      <p class="d-toolbar__count">24 артикула</p>
+      <span class="d-toolbar__spacer"></span>
+      <select class="orderby" aria-label="Подреждане">
+        <option>Подреждане по подразбиране</option>
+        <option>Първо най-новите</option>
+        <option>Първо най-евтините</option>
+      </select>
+    </div>
+    <div class="d-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="d-skeleton d-skeleton--media"></div>
+      <div class="d-skeleton d-skeleton--media"></div>
+      <div class="d-skeleton d-skeleton--media"></div>
+    </div>
+  </div>
+</div>
+
+<div class="todo"><b>Everything below the shell is a floor, not a finish, and it
+is marked as one in the stylesheet.</b> The price filter renders EMPTY on the
+live archive &mdash; one product in the catalogue, so there is no range &mdash;
+and the attribute, stock, rating and chip blocks are not in the template at all.
+Their rules are written against WooCommerce&rsquo;s stylesheet rather than
+against captured markup, which is exactly the method that made
+<code>field.css</code> wrong twice: Woo puts the label AFTER the input and floats
+it, and no amount of reading the stylesheet tells you that. Re-verify against
+the real DOM the day the catalogue lands.<br><br>
+<b>The price pair wants to become <code>.d-slider--pair</code>.</b> We already
+own the two-handle slider; what is here is two number inputs wearing our field,
+because there is no live range to build the slider against yet.<br><br>
+<b><code>select.orderby</code> was the last bare select on the catalogue.</b> It
+has no <code>.d-field</code> around it, so the field pattern&rsquo;s selector
+list never reached it and it has been rendering as the browser&rsquo;s own
+control this whole time.</div>
 </section>''')
 
 A('''<section class="sec" id="next"><h2>Status</h2>
