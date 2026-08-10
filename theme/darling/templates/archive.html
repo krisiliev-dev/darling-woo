@@ -1,0 +1,64 @@
+<!--
+	Category, tag, author and date archives. query-title carries whichever of
+	those it is, so there is one template rather than four.
+	
+	AUTHORED 2026-08-10, when the theme stopped being a child of Twenty Twenty-Five.
+	
+	Until today this file did not exist and WordPress fell through to the parent
+	theme for it. That was not free: being a child means WordPress MERGES the two
+	theme.json files and prints the result as global-styles-inline-css, UNLAYERED -
+	so the parent owned our body weight (300), our tracking (-0.1px), every heading
+	size, and `a:where(:not(.wp-element-button)){color:currentColor}`, which made the
+	seasonal band call to action cream on cream. Unlayered beats every cascade layer,
+	and almost all of src/ is layered, so none of it could be argued with from CSS.
+	
+	The owner: "The single source of truth that should be available is everything we
+	have been doing in src/, so anything else should be removed and deleted/archived
+	so nothing touches it and can never revert back to it."
+	
+	*** DO NOT SET A CONSTRAINED LAYOUT ON post-content OR ON main. *** B1 measured
+	what that costs: WordPress emits the constrained rule at RENDER time, capping
+	children at theme.json contentSize, and it rendered the search grid at 374px
+	instead of 714px. No stylesheet grep can find it. The frame is d-shell, in the
+	markup, where a human put it.
+-->
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"d-archive d-shell","layout":{"type":"default"}} -->
+<main class="wp-block-group d-archive d-shell">
+
+	<!-- wp:query-title {"type":"archive","level":1,"className":"d-archive__title"} /-->
+
+	<!-- wp:term-description {"className":"d-archive__desc"} /-->
+
+	<!-- wp:query {"query":{"perPage":10,"inherit":true},"className":"d-postlist"} -->
+	<div class="wp-block-query d-postlist">
+		<!-- wp:post-template -->
+			<!-- wp:group {"tagName":"article","className":"d-post"} -->
+			<article class="wp-block-group d-post">
+				<!-- wp:post-title {"level":2,"isLink":true} /-->
+				<!-- wp:post-date {"className":"d-post__date"} /-->
+				<!-- wp:post-excerpt {"className":"d-post__excerpt"} /-->
+			</article>
+			<!-- /wp:group -->
+		<!-- /wp:post-template -->
+
+		<!-- wp:query-pagination {"className":"d-pagination"} -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:query-no-results -->
+					<!-- wp:paragraph {"className":"d-empty"} -->
+					<p class="d-empty">Още няма публикации — съвсем скоро ще споделим първите
+					съвети и новини. Дотогава разгледай <a href="/shop/">магазина</a>, darling.</p>
+					<!-- /wp:paragraph -->
+				<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
