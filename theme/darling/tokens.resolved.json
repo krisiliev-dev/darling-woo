@@ -1,5 +1,5 @@
 {
- "_built_sha256": "f5a6288cdf737eabe0a564a91440a2aa917dda7f65e9f25ed7e731663e0a2018",
+ "_built_sha256": "4f298b0e4080da15b6aaa03f9f68f9c8c59c3812d9fc2edf197a362ae0d517ca",
  "--action": {
   "raw": "#D42A3C",
   "type": "colour",
@@ -314,10 +314,10 @@
   "hex": "#f5bd5c"
  },
  "--g-shadow": {
-  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(38% + -2 * 1%))",
+  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(34% + -2 * 1%))",
   "type": "colour",
-  "computed": "rgb(178, 83, 6)",
-  "hex": "#b25306"
+  "computed": "rgb(158, 74, 5)",
+  "hex": "#9e4a05"
  },
  "--g-vanilla": {
   "raw": "hsl(calc(36 +  9)  calc((88 +  8) * 1%)  calc(93% + -2 * 1%))",
@@ -614,10 +614,10 @@
   "hex": "#f0960f"
  },
  "--notice-warning-edge": {
-  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(38% + -2 * 1%))",
+  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(34% + -2 * 1%))",
   "type": "colour",
-  "computed": "rgb(178, 83, 6)",
-  "hex": "#b25306"
+  "computed": "rgb(158, 74, 5)",
+  "hex": "#9e4a05"
  },
  "--page-max": {
   "raw": "1120px",
@@ -822,10 +822,10 @@
   "hex": "#f3b778"
  },
  "--tint-gold-mark": {
-  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(38% + -2 * 1%))",
+  "raw": "hsl(calc(36 -  9)  calc((88 +  6) * 1%)  calc(34% + -2 * 1%))",
   "type": "colour",
-  "computed": "rgb(178, 83, 6)",
-  "hex": "#b25306"
+  "computed": "rgb(158, 74, 5)",
+  "hex": "#9e4a05"
  },
  "--tint-gold-quiet": {
   "raw": "color-mix(in oklab, hsl(     36        calc( 88        * 1%)  calc(52% + -2 * 1%)) 40%, #F1F1F6)",
