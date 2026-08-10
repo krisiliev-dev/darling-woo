@@ -181,7 +181,17 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 	           background var(--dur-ui) var(--ease-float);
 }
 .d-view button:hover{ color:var(--ink); background:var(--tint-gold) }
-.d-view button[aria-pressed="true"]{
+/* *** THE ON STATE HAD TO BE WRITTEN TWICE, AND THAT IS THE POINT. ***
+   This component was reviewed against the gallery specimen, which emits
+   `<button aria-pressed="true"><span class="d-icon">`. The template that ships,
+   templates/archive-product.html, emits `<button class="is-active"><svg>`. Two
+   different controls wearing the same class name. Measured on live: neither
+   button showed an icon and neither showed which view was on.
+   The template is being brought back to aria-pressed in the same commit, because
+   a screen reader needs it. `.is-active` stays here because the click handler
+   sets it and a component should not depend on one page's JS being loaded. */
+.d-view button[aria-pressed="true"],
+.d-view button.is-active{
 	border-color:var(--tint-gold-mark);
 	color:var(--tint-gold-mark);
 	background:var(--tint-gold);
@@ -190,7 +200,11 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }
-.d-view .d-icon{ width:1.05rem; height:1.05rem }
+/* An inline <svg> with a viewBox and no width/height attribute has NO intrinsic
+   size. As a grid item under place-items:center it was measured at 0 x 14 px on
+   live - present, visible, painted, and zero pixels wide. Size both shapes. */
+.d-view .d-icon,
+.d-view button > svg{ width:1.05rem; height:1.05rem; display:block }
 
 /* =============================================================================
    PATTERN / CAROUSEL

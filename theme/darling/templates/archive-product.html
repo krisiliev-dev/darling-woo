@@ -63,10 +63,10 @@
 					<!-- wp:woocommerce/catalog-sorting /-->
 					<!-- wp:html -->
 					<div class="d-view" role="group" aria-label="Изглед">
-						<button type="button" class="is-active" data-darling-view="grid" aria-label="Мрежа">
+						<button type="button" class="is-active" aria-pressed="true" data-darling-view="grid" aria-label="Мрежа">
 							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
 						</button>
-						<button type="button" data-darling-view="list" aria-label="Списък">
+						<button type="button" aria-pressed="false" data-darling-view="list" aria-label="Списък">
 							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="5" width="16" height="3" rx="1.5"/><rect x="4" y="10.5" width="16" height="3" rx="1.5"/><rect x="4" y="16" width="16" height="3" rx="1.5"/></svg>
 						</button>
 					</div>
@@ -79,7 +79,14 @@
 								var g = document.querySelector('.darling-archive .darling-grid');
 								if (!g) { return; }
 								g.classList.toggle('darling-grid--list', b.dataset.darlingView === 'list');
-								document.querySelectorAll('[data-darling-view]').forEach(function (x) { x.classList.toggle('is-active', x === b); });
+								document.querySelectorAll('[data-darling-view]').forEach(function (x) {
+								// BOTH: .is-active is what the stylesheet reads, aria-pressed is what a
+								// screen reader reads. Shipping only the class meant the control had
+								// no on state for either of them - the CSS was written against the
+								// gallery specimen, which uses aria-pressed.
+								x.classList.toggle('is-active', x === b);
+								x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+							});
 							});
 						});
 					})();

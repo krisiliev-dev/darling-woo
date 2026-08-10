@@ -91,10 +91,21 @@ table[class*="woocommerce-"] {
 /* A container that announces itself by name. Woo is consistent enough that a
    thing called notice, __panel or __card is a box, and a box with no edge is
    the failure this file exists for. Narrow on purpose. */
-[class*="wc-block-"][class*="notice"],
-[class*="woocommerce-"][class*="notice"],
-[class*="wc-block-"][class*="__panel"],
-[class*="wc-block-"][class*="__card"] {
+/* *** A WRAPPER IS NOT A NOTICE, AND AN EMPTY BOX IS NOT A HOLE. ***
+   Measured on live the day the sheet went up: `.woocommerce-notices-wrapper` is
+   printed on EVERY WooCommerce page whether or not there is a notice in it, and
+   it matches both halves of the pattern below. So the net painted a 1008x20
+   surface - fill, inset hairline and padding - above the account cards, above
+   the cart heading and at the top of checkout: three empty pills the customer
+   has no way to read. The net exists so nothing is ever raw; a container with
+   no content in it was never raw in the first place.
+   `:empty` is exact here - the wrapper's innerHTML is "" with no whitespace -
+   and the name exclusion covers the case where a plugin prints a newline into
+   it, because a thing called *-wrapper is a container by its own admission. */
+[class*="wc-block-"][class*="notice"]:not(:empty):not([class*="wrapper"]),
+[class*="woocommerce-"][class*="notice"]:not(:empty):not([class*="wrapper"]),
+[class*="wc-block-"][class*="__panel"]:not(:empty),
+[class*="wc-block-"][class*="__card"]:not(:empty) {
 	padding: var(--space-2xs) var(--space-xs);
 	border-radius: var(--radius-m);
 	background: var(--surface-raised);

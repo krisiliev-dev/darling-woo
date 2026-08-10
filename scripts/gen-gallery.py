@@ -1214,9 +1214,14 @@ reported at build time instead of rendering an empty claret box.</p>
   <label class="d-field" style="margin:0"><select class="d-field__select">
     <option>Подредба по подразбиране</option><option>Най-нови</option>
     <option>Цена: ниска към висока</option></select></label>
+  <!-- The markup here is COPIED FROM templates/archive-product.html, svg and
+       all. It used to be a d-icon span with aria-pressed, which the template
+       never emitted - so the gallery showed a working control and the live
+       toolbar showed two empty pills. A specimen that does not match the
+       template is not a review surface, it is a second implementation. -->
   <div class="d-view">
-    <button aria-pressed="true" aria-label="Мрежа"><span class="d-icon d-icon--menu"></span></button>
-    <button aria-pressed="false" aria-label="Списък"><span class="d-icon d-icon--menu"></span></button>
+    <button class="is-active" aria-pressed="true" aria-label="Мрежа"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></button>
+    <button aria-pressed="false" aria-label="Списък"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="5" width="16" height="3" rx="1.5"/><rect x="4" y="10.5" width="16" height="3" rx="1.5"/><rect x="4" y="16" width="16" height="3" rx="1.5"/></svg></button>
   </div>
 </div>
 
