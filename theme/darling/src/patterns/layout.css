@@ -137,6 +137,54 @@
 
    --stack is a token, and it is overridable per instance, so a tight group asks
    for less without a new class per size. */
+/* -- a section: a title and the thing it names, as ONE child of the page ------
+   *** THE GAP MODEL MADE THIS NECESSARY, AND IT IS A GOOD KIND OF NECESSARY. ***
+   patterns/flow.css gives <main> a row-gap so the space between sections belongs
+   to the page rather than to either neighbour. That only works if a section IS
+   one child. Today front-page.html puts `.d-section-title` and `.d-carousel`
+   side by side as siblings of main, so the page rhythm would open 60px between a
+   heading and the thing it is the heading OF.
+
+   The fix is not a smaller gap or an exception - it is saying out loud that a
+   title and its content are one thing. Wrap them:
+
+     <section class="d-section">
+       <h2 class="d-section-title d-shell">Категории</h2>
+       <div class="d-carousel d-shell">...</div>
+     </section>
+
+   --space-s inside, which is the 19.8px the live page already has between a
+   section title and its grid, so wrapping changes nothing about how it looks.
+
+   NOT YET IN THE TEMPLATES. front-page.html needs the wrapper added around four
+   sections, and those are Gutenberg blocks - scripts/blockcheck.php has to agree
+   the templates still round-trip before that lands. */
+.d-section{
+	display:grid;
+	/* *** THE TRACK IS EXPLICIT FOR THE SAME REASON main's IS. *** Without it the
+	   single implicit column sizes to its content, and the product grid inside
+	   collapsed to one centred column of cards. minmax(0,1fr) is "the full width
+	   of the container, and you may not overflow it". */
+	grid-template-columns:minmax(0, 1fr);
+	row-gap:var(--space-s);
+}
+/* The same line the page rhythm needs, one level down, and for the same reason:
+   a grid child's own margin ADDS to the gap rather than being absorbed by it.
+   .d-section-title carries a margin-block-end of its own, so without this the
+   title sat 40px above its grid instead of 20 - the doubling the whole model is
+   built to prevent, reappearing inside the container that prevents it. */
+.d-section > *{ margin-block:0; width:100% }   /* see flow.css on auto margins */
+/* *** AND IT HAS TO BE NAMED, BECAUSE layout.css IS IMPORTED FIRST. ***
+   `.d-section > *` is (0,1,0) and so is `.d-section-title` in page.css, which is
+   imported later and therefore wins - the reset above silently did nothing and
+   the title stayed 40px from its grid. This file is deliberately first ("layout
+   first: it is the frame every pattern under it sits inside"), which means any
+   reset in it loses every tie. Naming the child makes it (0,2,0).
+   It is scoped to INSIDE a .d-section on purpose: .d-section-title is still used
+   unwrapped in the templates today and must keep its own margin there until they
+   are wrapped. */
+.d-section > .d-section-title{ margin-block:0 }
+
 .d-stack{
 	--gap: var(--stack);
 	display:grid;

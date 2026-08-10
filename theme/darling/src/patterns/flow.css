@@ -45,47 +45,95 @@
    about how wide a page is.
    ========================================================================== */
 
-/* -- between the top-level sections of a page --------------------------------
-   WordPress gives every child of .wp-site-blocks a flat 24px. A page whose hero,
-   category band, product grid and newsletter are all 24px apart reads as one
-   long list rather than as sections, which is exactly the complaint that
-   started this. --section-y is 48->60px and is what band.css and hero.css
-   already use for their own vertical air. */
-.wp-site-blocks > *{
-	margin-block-start:var(--section-y);
-	margin-block-end:0;
+/* -- THE RHYTHM BETWEEN SECTIONS, AND WHY IT IS A GAP -------------------------
+   The owner asked the right question: "if we add both an above padding and
+   below padding to each of our sections, then it doubles... if we add padding
+   just to the top or bottom, then it is fine, but then if a section below or
+   above is left without padding for some reason, they will have no gap. So what
+   is the best way? It needs to be a rule for the dashes (-) between those."
+
+   The dashes are the point, and only one mechanism actually models a dash.
+
+     BOTH SIDES on the section   doubles, exactly as he says
+     ONE SIDE on the section     no doubling, but every section must remember to
+                                 declare it, and the first or last one leaks its
+                                 margin out of the page
+     THE OWL, `> * + *`          correct arithmetic, wrong owner - see below
+     GAP ON THE CONTAINER        the dash is a property of the space, not of
+                                 either neighbour
+
+   A gap cannot double, because there is only one of it. It cannot go missing,
+   because a section that has no opinion still sits in a container that does.
+   And it has NO first- or last-child case at all: a gap exists only BETWEEN
+   items, so the leading hero is flush against the header for free - the `:has()`
+   exception this file carried for one commit is deleted, because with a gap
+   there was never anything to except.
+
+   *** AND THE OWL IS NOT A STYLE PREFERENCE, IT IS A MEASURED BUG. ***
+   layout.css already fought this and wrote it down: `> * + * { margin-block-
+   start: var(--gap) }` puts the declaration in a rule that matches the CHILD,
+   so a child that defines its own --gap answers the parent's question with its
+   own number. Measured in the composition matrix: a cluster inside a stack was
+   spaced 10px instead of 30, a switcher 15px instead of 30. A gap on the parent
+   is resolved where it is written and cannot be hijacked.
+
+   THE MODEL, in three lines:
+     - a SECTION owns no outer margin, ever
+     - a CONTAINER owns the gaps between its children
+     - a SURFACE owns its own padding, because that padding is inside its
+       background and is not a gap at all - the footer and the claret band are
+       surfaces, which is why neither needs a margin above it
+
+   The cost of a gap is that children become grid items: no margin collapsing,
+   and `float` stops working on them. Neither matters here - main's children are
+   full-bleed bands and shells, and the only floats in the system are
+   `.alignleft`/`.alignright` INSIDE a constrained container, which is not this
+   container and keeps normal flow below. */
+.wp-site-blocks > main{
+	display:grid;
+	grid-template-columns:minmax(0, 1fr);   /* one column, and it may not overflow */
+	row-gap:var(--section-y);
 }
-.wp-site-blocks > :first-child{ margin-block-start:0 }
-.wp-site-blocks > :last-child{ margin-block-end:0 }
+/* *** THE ONE PLACE THE TWO MECHANISMS COULD DOUBLE. *** main is itself often
+   `.is-layout-constrained`, so without this its children would take the gap AND
+   the child margin below - which is precisely the doubling the model exists to
+   prevent. The container has already spoken; the section says nothing. */
+.wp-site-blocks > main > *{ margin-block:0; width:100% }
+/* *** AND A GRID ITEM WITH `margin-inline:auto` SHRINKS TO FIT. ***
+   .d-shell is `max-width:--page-max; margin-inline:auto`, which in normal flow
+   means "as wide as the container, up to the cap, centred". As a GRID ITEM an
+   auto margin overrides the default stretch, so it sized to its content instead:
+   measured 350px inside a 1084px section, and the product grid collapsed to one
+   centred column. `width:100%` restores the intent - the auto margins then
+   resolve to zero and the cap still applies at wide viewports.
+   This is the price of the gap model and it is worth paying once, here, rather
+   than discovering it per component. */
 
-/* *** A HERO GOES UNDER THE HEADER, NOT BELOW A GAP. ***
-   The owner: "The hero banner should be at the top just below the header with no
-   gap between them." He is right, and it is not an exception to the rhythm - it
-   is what a full-bleed band IS. --section-y is air between things that sit ON
-   the page; a band that bleeds to both edges is a continuation of the chrome
-   above it, and 60px of page showing between the header and a claret band reads
-   as a mistake.
+/* Header, main and footer TOUCH. Any air between them belongs to whichever of
+   them owns a background - the footer's own padding-block - rather than to a
+   gap. This is what lets a full-bleed hero sit directly under the header with
+   no exception written anywhere. */
+.wp-site-blocks{ display:block }
+.wp-site-blocks > *{ margin-block:0 }
 
-   :has() rather than a class on <main>, because the condition is a fact about
-   the page's first block and not a decision anybody should have to remember to
-   declare in a template. If the hero is not first, the gap comes back on its
-   own. */
-.wp-site-blocks > main:has(> .d-hero-band:first-child),
-.wp-site-blocks > main:has(> .d-hero:first-child){
-	margin-block-start:0;
-}
+/* -- between blocks INSIDE a section -----------------------------------------
+   This is the gap between the blocks of one section, not between sections, and
+   here the child margin stays rather than becoming a gap. Two reasons, and both
+   are constraints rather than taste:
 
-/* -- between blocks inside a flow or constrained container -------------------
-   Nested containers are a different rhythm from the page: this is the gap
-   between the blocks of one section, not between sections. --stack is 24->30px,
-   so at the small end it lands on the same 24px WordPress used - which is worth
-   saying plainly, because it means claiming this rule is not a redesign. It
-   moves nothing at 390 and adds up to 6px at 1240. The point is ownership, not
-   change.
+     - WordPress's constrained layout floats `.alignleft`/`.alignright`, and a
+       float inside a grid container is not a float. Turning these into grids
+       would silently break an alignment the block editor offers.
+     - this markup is emitted by the editor, so the container is whatever a
+       content author made it; the sections above are ours.
+
+   The hijack risk that killed the owl in layout.css does not apply: the value
+   is `var(--stack)`, a global token, not a `--gap` that a child might redefine.
+   --stack is 24->30px, so at the small end it lands on the same 24px WordPress
+   used - claiming this rule is ownership, not a redesign.
 
    The first- and last-child collapse is kept, and for WordPress's reason: a
-   container's own padding should decide the space at its ends, not the rhythm
-   of its children. */
+   container's own padding should decide the space at its ends. */
 :is(.is-layout-flow, .is-layout-constrained) > *{
 	margin-block-start:var(--stack);
 	margin-block-end:0;

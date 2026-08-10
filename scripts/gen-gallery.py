@@ -212,7 +212,9 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    demonstrating shows nothing, which is why .alignwide and .alignfull looked
    identical in the first version */
 .flowfull{ background:var(--surface-page,#efecea); padding-block:var(--space-s) }
-.flowpage main{ display:block }
+/* NO `.flowpage main{display:block}` HERE. It was, and it overrode the very
+   rule the specimen exists to show - main is a grid now, and the furniture
+   was quietly turning it back into a block. */
 </style></head><body><div class="wrap">
 <!--GNAV-->
 ''')
@@ -311,22 +313,30 @@ A('''<main>
     <p class="d-hero__actions"><a class="d-btn d-finish" href="#">Разгледай всичко</a></p></div>
     <div class="d-hero__visual"><span class="d-hero__glow"></span>''' + BOW + '''</div>
   </div></div>
-  <p class="d-hero__eyebrow d-shell">Подбрано за вас</p>
+  <section class="d-section">
   <h2 class="d-section-title d-shell">Изборът на Lady D</h2>
   <div class="d-shell"><div class="d-grid">''')
 for name, price, was, badge in PRODUCTS:
     A(FLOW_CARD(name, price, was, badge))
-A('''</div></div>
+A('''</div></div></section>
   <section class="d-band"><h2 class="d-band__title">Подаръци, които се помнят</h2></section>
 </main>''')
 A(FOOTER_SPECIMEN)
 A('</div>')
-A('''<p class="note"><b>The hero is flush and the footer is not.</b> A full-bleed
-band as the first block is a continuation of the chrome above it, so the gap under
-the header collapses to zero &mdash; <code>:has(&gt; .d-hero-band:first-child)</code>,
-which is a fact about the page rather than a class somebody has to remember. Put
-anything else first and <code>--section-y</code> comes back on its own. Above the
-footer it stays, at 48&rarr;60px against WordPress&rsquo;s flat 24px.</p>
+A('''<p class="note"><b>The rhythm is a gap on the container, not padding on the
+sections.</b> <code>main</code> is a grid with <code>row-gap:--section-y</code>, so
+the space belongs to the page rather than to either neighbour. It cannot double,
+because there is only one of it; it cannot go missing, because a section with no
+opinion still sits in a container that has one; and it has no first- or last-child
+case at all &mdash; a gap exists only BETWEEN items, which is why the hero is
+flush under the header for free. The <code>:has()</code> exception this carried
+for one commit is deleted: with a gap there was never anything to except.</p>
+<p class="note"><b>Three lines:</b> a section owns no outer margin, ever; a
+container owns the gaps between its children; a surface owns its own padding,
+because that padding is inside its background and is not a gap. The footer and
+the claret band are surfaces, which is why neither needs a margin above it.</p>
+<p class="note"><b>Measured here:</b> header&rarr;page&rarr;footer 0 and 0;
+between sections 59px; title&rarr;grid 20px inside <code>.d-section</code>.</p>
 <p class="note"><b>The footer links were 44px tall and are now 28px &mdash; on a
 mouse only.</b> That 44px is a deliberate tap target, not padding: a column of
 13px links at their natural line height is a stack of 18px targets, and the

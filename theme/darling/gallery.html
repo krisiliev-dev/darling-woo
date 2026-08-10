@@ -1114,6 +1114,54 @@ svg{ max-width:100% }
 
    --stack is a token, and it is overridable per instance, so a tight group asks
    for less without a new class per size. */
+/* -- a section: a title and the thing it names, as ONE child of the page ------
+   *** THE GAP MODEL MADE THIS NECESSARY, AND IT IS A GOOD KIND OF NECESSARY. ***
+   patterns/flow.css gives <main> a row-gap so the space between sections belongs
+   to the page rather than to either neighbour. That only works if a section IS
+   one child. Today front-page.html puts `.d-section-title` and `.d-carousel`
+   side by side as siblings of main, so the page rhythm would open 60px between a
+   heading and the thing it is the heading OF.
+
+   The fix is not a smaller gap or an exception - it is saying out loud that a
+   title and its content are one thing. Wrap them:
+
+     <section class="d-section">
+       <h2 class="d-section-title d-shell">Категории</h2>
+       <div class="d-carousel d-shell">...</div>
+     </section>
+
+   --space-s inside, which is the 19.8px the live page already has between a
+   section title and its grid, so wrapping changes nothing about how it looks.
+
+   NOT YET IN THE TEMPLATES. front-page.html needs the wrapper added around four
+   sections, and those are Gutenberg blocks - scripts/blockcheck.php has to agree
+   the templates still round-trip before that lands. */
+.d-section{
+	display:grid;
+	/* *** THE TRACK IS EXPLICIT FOR THE SAME REASON main's IS. *** Without it the
+	   single implicit column sizes to its content, and the product grid inside
+	   collapsed to one centred column of cards. minmax(0,1fr) is "the full width
+	   of the container, and you may not overflow it". */
+	grid-template-columns:minmax(0, 1fr);
+	row-gap:var(--space-s);
+}
+/* The same line the page rhythm needs, one level down, and for the same reason:
+   a grid child's own margin ADDS to the gap rather than being absorbed by it.
+   .d-section-title carries a margin-block-end of its own, so without this the
+   title sat 40px above its grid instead of 20 - the doubling the whole model is
+   built to prevent, reappearing inside the container that prevents it. */
+.d-section > *{ margin-block:0; width:100% }   /* see flow.css on auto margins */
+/* *** AND IT HAS TO BE NAMED, BECAUSE layout.css IS IMPORTED FIRST. ***
+   `.d-section > *` is (0,1,0) and so is `.d-section-title` in page.css, which is
+   imported later and therefore wins - the reset above silently did nothing and
+   the title stayed 40px from its grid. This file is deliberately first ("layout
+   first: it is the frame every pattern under it sits inside"), which means any
+   reset in it loses every tie. Naming the child makes it (0,2,0).
+   It is scoped to INSIDE a .d-section on purpose: .d-section-title is still used
+   unwrapped in the templates today and must keep its own margin there until they
+   are wrapped. */
+.d-section > .d-section-title{ margin-block:0 }
+
 .d-stack{
 	--gap: var(--stack);
 	display:grid;
@@ -1355,47 +1403,95 @@ svg{ max-width:100% }
    about how wide a page is.
    ========================================================================== */
 
-/* -- between the top-level sections of a page --------------------------------
-   WordPress gives every child of .wp-site-blocks a flat 24px. A page whose hero,
-   category band, product grid and newsletter are all 24px apart reads as one
-   long list rather than as sections, which is exactly the complaint that
-   started this. --section-y is 48->60px and is what band.css and hero.css
-   already use for their own vertical air. */
-.wp-site-blocks > *{
-	margin-block-start:var(--section-y);
-	margin-block-end:0;
+/* -- THE RHYTHM BETWEEN SECTIONS, AND WHY IT IS A GAP -------------------------
+   The owner asked the right question: "if we add both an above padding and
+   below padding to each of our sections, then it doubles... if we add padding
+   just to the top or bottom, then it is fine, but then if a section below or
+   above is left without padding for some reason, they will have no gap. So what
+   is the best way? It needs to be a rule for the dashes (-) between those."
+
+   The dashes are the point, and only one mechanism actually models a dash.
+
+     BOTH SIDES on the section   doubles, exactly as he says
+     ONE SIDE on the section     no doubling, but every section must remember to
+                                 declare it, and the first or last one leaks its
+                                 margin out of the page
+     THE OWL, `> * + *`          correct arithmetic, wrong owner - see below
+     GAP ON THE CONTAINER        the dash is a property of the space, not of
+                                 either neighbour
+
+   A gap cannot double, because there is only one of it. It cannot go missing,
+   because a section that has no opinion still sits in a container that does.
+   And it has NO first- or last-child case at all: a gap exists only BETWEEN
+   items, so the leading hero is flush against the header for free - the `:has()`
+   exception this file carried for one commit is deleted, because with a gap
+   there was never anything to except.
+
+   *** AND THE OWL IS NOT A STYLE PREFERENCE, IT IS A MEASURED BUG. ***
+   layout.css already fought this and wrote it down: `> * + * { margin-block-
+   start: var(--gap) }` puts the declaration in a rule that matches the CHILD,
+   so a child that defines its own --gap answers the parent's question with its
+   own number. Measured in the composition matrix: a cluster inside a stack was
+   spaced 10px instead of 30, a switcher 15px instead of 30. A gap on the parent
+   is resolved where it is written and cannot be hijacked.
+
+   THE MODEL, in three lines:
+     - a SECTION owns no outer margin, ever
+     - a CONTAINER owns the gaps between its children
+     - a SURFACE owns its own padding, because that padding is inside its
+       background and is not a gap at all - the footer and the claret band are
+       surfaces, which is why neither needs a margin above it
+
+   The cost of a gap is that children become grid items: no margin collapsing,
+   and `float` stops working on them. Neither matters here - main's children are
+   full-bleed bands and shells, and the only floats in the system are
+   `.alignleft`/`.alignright` INSIDE a constrained container, which is not this
+   container and keeps normal flow below. */
+.wp-site-blocks > main{
+	display:grid;
+	grid-template-columns:minmax(0, 1fr);   /* one column, and it may not overflow */
+	row-gap:var(--section-y);
 }
-.wp-site-blocks > :first-child{ margin-block-start:0 }
-.wp-site-blocks > :last-child{ margin-block-end:0 }
+/* *** THE ONE PLACE THE TWO MECHANISMS COULD DOUBLE. *** main is itself often
+   `.is-layout-constrained`, so without this its children would take the gap AND
+   the child margin below - which is precisely the doubling the model exists to
+   prevent. The container has already spoken; the section says nothing. */
+.wp-site-blocks > main > *{ margin-block:0; width:100% }
+/* *** AND A GRID ITEM WITH `margin-inline:auto` SHRINKS TO FIT. ***
+   .d-shell is `max-width:--page-max; margin-inline:auto`, which in normal flow
+   means "as wide as the container, up to the cap, centred". As a GRID ITEM an
+   auto margin overrides the default stretch, so it sized to its content instead:
+   measured 350px inside a 1084px section, and the product grid collapsed to one
+   centred column. `width:100%` restores the intent - the auto margins then
+   resolve to zero and the cap still applies at wide viewports.
+   This is the price of the gap model and it is worth paying once, here, rather
+   than discovering it per component. */
 
-/* *** A HERO GOES UNDER THE HEADER, NOT BELOW A GAP. ***
-   The owner: "The hero banner should be at the top just below the header with no
-   gap between them." He is right, and it is not an exception to the rhythm - it
-   is what a full-bleed band IS. --section-y is air between things that sit ON
-   the page; a band that bleeds to both edges is a continuation of the chrome
-   above it, and 60px of page showing between the header and a claret band reads
-   as a mistake.
+/* Header, main and footer TOUCH. Any air between them belongs to whichever of
+   them owns a background - the footer's own padding-block - rather than to a
+   gap. This is what lets a full-bleed hero sit directly under the header with
+   no exception written anywhere. */
+.wp-site-blocks{ display:block }
+.wp-site-blocks > *{ margin-block:0 }
 
-   :has() rather than a class on <main>, because the condition is a fact about
-   the page's first block and not a decision anybody should have to remember to
-   declare in a template. If the hero is not first, the gap comes back on its
-   own. */
-.wp-site-blocks > main:has(> .d-hero-band:first-child),
-.wp-site-blocks > main:has(> .d-hero:first-child){
-	margin-block-start:0;
-}
+/* -- between blocks INSIDE a section -----------------------------------------
+   This is the gap between the blocks of one section, not between sections, and
+   here the child margin stays rather than becoming a gap. Two reasons, and both
+   are constraints rather than taste:
 
-/* -- between blocks inside a flow or constrained container -------------------
-   Nested containers are a different rhythm from the page: this is the gap
-   between the blocks of one section, not between sections. --stack is 24->30px,
-   so at the small end it lands on the same 24px WordPress used - which is worth
-   saying plainly, because it means claiming this rule is not a redesign. It
-   moves nothing at 390 and adds up to 6px at 1240. The point is ownership, not
-   change.
+     - WordPress's constrained layout floats `.alignleft`/`.alignright`, and a
+       float inside a grid container is not a float. Turning these into grids
+       would silently break an alignment the block editor offers.
+     - this markup is emitted by the editor, so the container is whatever a
+       content author made it; the sections above are ours.
+
+   The hijack risk that killed the owl in layout.css does not apply: the value
+   is `var(--stack)`, a global token, not a `--gap` that a child might redefine.
+   --stack is 24->30px, so at the small end it lands on the same 24px WordPress
+   used - claiming this rule is ownership, not a redesign.
 
    The first- and last-child collapse is kept, and for WordPress's reason: a
-   container's own padding should decide the space at its ends, not the rhythm
-   of its children. */
+   container's own padding should decide the space at its ends. */
 :is(.is-layout-flow, .is-layout-constrained) > *{
 	margin-block-start:var(--stack);
 	margin-block-end:0;
@@ -14942,7 +15038,9 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    demonstrating shows nothing, which is why .alignwide and .alignfull looked
    identical in the first version */
 .flowfull{ background:var(--surface-page,#efecea); padding-block:var(--space-s) }
-.flowpage main{ display:block }
+/* NO `.flowpage main{display:block}` HERE. It was, and it overrode the very
+   rule the specimen exists to show - main is a grid now, and the furniture
+   was quietly turning it back into a block. */
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#flow">Page rhythm</a><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="flow" style="max-width:none;padding-inline:0"><div class="wrap"><h2>Dequeue tranche 1</h2><h3>Page rhythm &mdash; the gaps between real things</h3><p class="note"><b>Every box below is a real component.</b> The first version of
@@ -14996,9 +15094,9 @@ ours is smaller than I said, and more structural.</p>
     <p class="d-hero__actions"><a class="d-btn d-finish" href="#">Разгледай всичко</a></p></div>
     <div class="d-hero__visual"><span class="d-hero__glow"></span><svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg></div>
   </div></div>
-  <p class="d-hero__eyebrow d-shell">Подбрано за вас</p>
+  <section class="d-section">
   <h2 class="d-section-title d-shell">Изборът на Lady D</h2>
-  <div class="d-shell"><div class="d-grid"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Ново</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Намаление</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Ленена кърпа</a></h3><p class="d-card__price">22,00 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Стъклена кана</a></h3><p class="d-card__price">42,00 лв.</p><button class="d-card__cta">Добави</button></article></div></div>
+  <div class="d-shell"><div class="d-grid"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Ново</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Намаление</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Ленена кърпа</a></h3><p class="d-card__price">22,00 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Стъклена кана</a></h3><p class="d-card__price">42,00 лв.</p><button class="d-card__cta">Добави</button></article></div></div></section>
   <section class="d-band"><h2 class="d-band__title">Подаръци, които се помнят</h2></section>
 </main><footer class="d-footer">
   <div>
@@ -15033,12 +15131,20 @@ ours is smaller than I said, and more structural.</p>
     </div>
     <p class="d-footer__map"><a href="#">ул. Пример 12, София 1000</a></p>
   </div>
-</footer></div><p class="note"><b>The hero is flush and the footer is not.</b> A full-bleed
-band as the first block is a continuation of the chrome above it, so the gap under
-the header collapses to zero &mdash; <code>:has(&gt; .d-hero-band:first-child)</code>,
-which is a fact about the page rather than a class somebody has to remember. Put
-anything else first and <code>--section-y</code> comes back on its own. Above the
-footer it stays, at 48&rarr;60px against WordPress&rsquo;s flat 24px.</p>
+</footer></div><p class="note"><b>The rhythm is a gap on the container, not padding on the
+sections.</b> <code>main</code> is a grid with <code>row-gap:--section-y</code>, so
+the space belongs to the page rather than to either neighbour. It cannot double,
+because there is only one of it; it cannot go missing, because a section with no
+opinion still sits in a container that has one; and it has no first- or last-child
+case at all &mdash; a gap exists only BETWEEN items, which is why the hero is
+flush under the header for free. The <code>:has()</code> exception this carried
+for one commit is deleted: with a gap there was never anything to except.</p>
+<p class="note"><b>Three lines:</b> a section owns no outer margin, ever; a
+container owns the gaps between its children; a surface owns its own padding,
+because that padding is inside its background and is not a gap. The footer and
+the claret band are surfaces, which is why neither needs a margin above it.</p>
+<p class="note"><b>Measured here:</b> header&rarr;page&rarr;footer 0 and 0;
+between sections 59px; title&rarr;grid 20px inside <code>.d-section</code>.</p>
 <p class="note"><b>The footer links were 44px tall and are now 28px &mdash; on a
 mouse only.</b> That 44px is a deliberate tap target, not padding: a column of
 13px links at their natural line height is a stack of 18px targets, and the
