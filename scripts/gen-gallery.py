@@ -215,6 +215,15 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 /* two whole pages side by side, so the edge rule is visible rather than asserted */
 .edgepair{ display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:var(--space-m) }
 .edgepair .d-section-title{ font-size:var(--fs-h4,1rem) }
+/* gallery furniture: a frame for text that is invisible on purpose, and the
+   switch that neutralises the utility so it can be seen at all */
+.vhdemo{ background:var(--surface-raised,#fff); border-radius:var(--radius-m);
+  padding:var(--space-s); box-shadow:inset 0 0 0 1px var(--hairline,#0002) }
+.vhdemo--reveal .screen-reader-text{
+  position:static; width:auto; height:auto; margin:0; clip-path:none;
+  overflow:visible; white-space:normal;
+  outline:1px dashed var(--c-cherry,#d42a3c); outline-offset:2px;
+}
 /* NO `.flowpage main{display:block}` HERE. It was, and it overrode the very
    rule the specimen exists to show - main is a grid now, and the furniture
    was quietly turning it back into a block. */
@@ -398,6 +407,57 @@ measure belongs on running text, never on a grid or a cart.
 <code>--measure-hero</code> is the same token <code>gen-theme-json.js</code> feeds
 to theme.json&rsquo;s <code>contentSize</code>, so the two cannot drift.</p>
 </div></section>''')
+
+# ------------------------------------------------------------------- hidden ---
+# TRANCHE 2. The hard part of a specimen for visually-hidden text is that there
+# is, by design, nothing to look at. So it is shown twice: as it ships, and with
+# the utility neutralised by a gallery-only class, so the owner can see WHAT is
+# hidden and WHERE it sits in the component.
+A('<section class="sec" id="hidden"><h2>Dequeue tranche 2</h2>'
+  '<h3>Visually hidden text</h3>')
+A('<p class="note"><b>Three sheets we are about to remove set '
+  '<code>.screen-reader-text</code>, and we set nothing.</b> wc-blocks.css, '
+  'woocommerce.css and wp-block-library. Four distinct nodes wear the class on '
+  'this site and two of them are words a customer would read &mdash; a stray '
+  '&ldquo;количество за&nbsp;&hellip;&rdquo; '
+  'label beside the quantity control, and '
+  '&ldquo;Задължително&rdquo; beside every '
+  'required field on /my-account/. Hidden text going visible is the loudest '
+  'dequeue regression and the easiest to miss, because it does not look like a '
+  'CSS bug &mdash; it looks like somebody added stray text.</p>')
+A('<p class="note"><b>It may not be <code>display:none</code>.</b> That removes '
+  'the element from the accessibility tree, which is the opposite of the job '
+  '&mdash; this text exists <em>for</em> a screen reader. It stays rendered and '
+  'becomes impossible to see: a 1px box, clipped, its 1px pulled back out of the '
+  'flow by a negative margin.</p>')
+
+VH_ROWS = ('<p class="d-shell">Количество '
+           '<span class="screen-reader-text">количество '
+           'за Керамична купа</span></p>'
+           '<p class="d-shell">Имейл '
+           '<span class="screen-reader-text">Задължително</span></p>')
+
+A('<p class="lbl">As it ships &mdash; the hidden text is present, and invisible</p>')
+A('<div class="vhdemo">' + VH_ROWS + '</div>')
+A('<p class="lbl">The same markup with the utility switched off &mdash; this is '
+  'what the dequeue would put on the page</p>')
+A('<div class="vhdemo vhdemo--reveal">' + VH_ROWS + '</div>')
+A('<p class="lbl">Focusable &mdash; the skip link. Tab into the box below.</p>')
+A('<div class="vhdemo" style="min-height:5.5rem">'
+  '<a class="screen-reader-text" href="#hidden">Към '
+  'съдържанието</a>'
+  '<p class="d-shell"><small>The link above is invisible until it takes focus, '
+  'then it becomes a real control. <code>:focus</code> and not '
+  '<code>:focus-visible</code>: the element is only reachable by keyboard anyway, '
+  'and <code>:focus-visible</code> would leave a programmatic <code>focus()</code> '
+  'silent.</small></p></div>')
+A('<p class="note"><b>And the recipe now has a name.</b> The same seven '
+  'declarations were typed out by hand in <code>field.css</code>, '
+  '<code>table.css</code>, <code>patterns/table.css</code> and '
+  '<code>checkout.css</code> twice &mdash; seven copies, none of them named. '
+  '<code>.d-vh</code> is the name; folding the five existing copies into it is a '
+  'sweep, not this commit.</p>')
+A('</section>')
 
 # --------------------------------------------------------------------- card ---
 
