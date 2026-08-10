@@ -84,7 +84,13 @@
 	display:grid;
 	grid-template-columns:repeat(4, 1fr);
 	gap:var(--space-s);
-	margin:var(--section-y) 0;
+	/* *** THE PROMISE BAND SITS ON THE NEWSLETTER, WITH NOTHING BETWEEN. ***
+	   The owner: "Our promise band should be right above the newsletter, no
+	   padding between them." This was `margin:var(--section-y) 0`, and a
+	   two-value margin is vertical | horizontal - so the BOTTOM was section-y
+	   too, which is the gap. margin-block also stops the shorthand cancelling
+	   margin-inline:auto if this band is ever put inside a shell. */
+	margin-block:var(--section-y) 0;
 	padding:var(--space-m) var(--gutter);
 	background:var(--surface-quiet);
 	list-style:none;

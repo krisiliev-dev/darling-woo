@@ -45,9 +45,9 @@
 	     400px on a desktop - not the 160/210 the box measures. Feed it the box
 	     width and a retina desktop picks the 440w file for a slot that needs 800w,
 	     and the tiles go soft. Measured: jpg set 792 KB -> 440w webp 160 KB. -->
-	<p class="d-hero__eyebrow">За целия дом</p>
+	<p class="d-hero__eyebrow d-shell">За целия дом</p>
 	<h2 class="d-section-title d-shell">Категории</h2>
-	<div class="d-carousel" aria-label="Категории">
+	<div class="d-carousel d-shell" aria-label="Категории">
 		<div class="d-carousel__row">
 			<a class="d-carousel__tile" href="/product-category/za-kuhnyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-kuhnyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-kuhnyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За кухнята</span></a>
 			<a class="d-carousel__tile" href="/product-category/za-banyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-banyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-banyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-banyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За банята</span></a>
@@ -61,8 +61,8 @@
 	</div>
 <!-- /wp:html -->
 
-<!-- wp:paragraph {"className":"d-hero__eyebrow"} -->
-<p class="d-hero__eyebrow">Лично избрано</p>
+<!-- wp:paragraph {"className":"d-hero__eyebrow d-shell"} -->
+<p class="d-hero__eyebrow d-shell">Лично избрано</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2,"className":"d-section-title d-shell"} -->
@@ -88,6 +88,7 @@
 <!-- wp:html -->
 <!-- The season band drifts its gradient slowly across itself. Copy is seasonal
      and meant to be edited. -->
+<div class="d-shell">
 <div class="d-season">
 	<div>
 		<p class="d-season__eyebrow">Сезонно, darling</p>
@@ -96,10 +97,11 @@
 	</div>
 	<a class="d-season__cta" href="/product-category/za-gradinata/">Към градината</a>
 </div>
+</div>
 <!-- /wp:html -->
 
-<!-- wp:paragraph {"className":"d-hero__eyebrow"} -->
-<p class="d-hero__eyebrow">Току-що пристигна</p>
+<!-- wp:paragraph {"className":"d-hero__eyebrow d-shell"} -->
+<p class="d-hero__eyebrow d-shell">Току-що пристигна</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2,"className":"d-section-title d-shell"} -->
@@ -128,7 +130,7 @@
 <!-- Four promises. The star in front of each one is b::before, drawn with
      clip-path - it was a typed ✦, and an error message is the worst place to
      find out a font has no U+2726. -->
-<p class="d-hero__eyebrow">Обещанието ни</p>
+<p class="d-hero__eyebrow d-shell">Обещанието ни</p>
 <ul class="d-trustbar" aria-label="Защо Darling">
 	<li><b>Еконт и Спиди</b><span>До адрес или до офис — ти избираш.</span></li>
 	<li><b>Наложен платеж</b><span>Плати при получаване или с карта.</span></li>

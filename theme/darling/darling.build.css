@@ -2809,7 +2809,14 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 .d-hero > *{ min-width:0 }   /* grid children default to min-content, not 0 */
 
 .d-hero__eyebrow{
-	margin:0 0 var(--space-3xs);
+	/* *** margin-block, NOT a four-value margin. *** page.css says this out
+	   loud about .d-section-title - "A shorthand here would quietly re-set the
+	   inline margin to 0 and knock the heading off centre" - and this file kept
+	   the shorthand. It cost exactly that: putting d-shell on the four standalone
+	   eyebrows in front-page.html left them at content x=60 instead of the page
+	   rail at 220, because `margin:0 0 X` overwrote the shell's margin-inline:auto.
+	   b1shell.js caught it before it deployed. */
+	margin-block:0 var(--space-3xs);
 	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
 	letter-spacing:.2em;
 	text-transform:uppercase;
@@ -7492,7 +7499,13 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	display:grid;
 	grid-template-columns:repeat(4, 1fr);
 	gap:var(--space-s);
-	margin:var(--section-y) 0;
+	/* *** THE PROMISE BAND SITS ON THE NEWSLETTER, WITH NOTHING BETWEEN. ***
+	   The owner: "Our promise band should be right above the newsletter, no
+	   padding between them." This was `margin:var(--section-y) 0`, and a
+	   two-value margin is vertical | horizontal - so the BOTTOM was section-y
+	   too, which is the gap. margin-block also stops the shorthand cancelling
+	   margin-inline:auto if this band is ever put inside a shell. */
+	margin-block:var(--section-y) 0;
 	padding:var(--space-m) var(--gutter);
 	background:var(--surface-quiet);
 	list-style:none;
