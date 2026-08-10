@@ -43,6 +43,21 @@ const type = tokens(read('tokens/type.css'));
 const space = tokens(read('tokens/space.css'));
 const radius = tokens(read('tokens/radius.css'));
 
+/* --measure-page is authored as `calc(--measure-hero + (--page-max - --measure-hero) * 2/3)`
+ * so the relationship survives a change to either end. theme.json has no calc(),
+ * so the two ends are read and the arithmetic is done once, here. If either
+ * token stops being a plain px value this throws rather than emitting nonsense. */
+const px = (name, map) => {
+  const v = (map.get(name) || '').trim();
+  const m = /^(\d+(?:\.\d+)?)px$/.exec(v);
+  if (!m) throw new Error('gen-theme-json: ' + name + ' is not a plain px value: "' + v + '"');
+  return parseFloat(m[1]);
+};
+const MEASURE_PAGE = (() => {
+  const lo = px('--measure-hero', type), hi = px('--page-max', space);
+  return Math.round((lo + (hi - lo) * 2 / 3) * 100) / 100 + 'px';
+})();
+
 // ---- palette ---------------------------------------------------------------
 // The --c-* primitives and nothing else. Primitives name the VALUE, semantics
 // name the ROLE, and an editor swatch called "surface-page" would be a role
@@ -157,7 +172,11 @@ const theme = {
       fontFamilies: families
     },
     layout: {
-      contentSize: type.get('--measure-hero') || '660px',
+      // contentSize follows --measure-page, the constrained default in
+      // patterns/flow.css, so the block editor and the front end cannot disagree
+      // about how wide a page column is. It is a calc() in the token file; the
+      // resolved value is written here because theme.json cannot hold one.
+      contentSize: MEASURE_PAGE,
       wideSize: space.get('--page-max') || '1120px'
     },
     spacing: {

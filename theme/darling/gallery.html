@@ -349,6 +349,14 @@ table[class*="woocommerce-"] {
 
 	/* -- measure: the reason prose is readable ------------------------------- */
 	--measure-hero:660px;
+	/* *** THE PAGE COLUMN, AND IT IS WRITTEN AS THE RELATIONSHIP RATHER THAN AS
+	   A NUMBER. *** The owner, reviewing the three constrained widths: "the first
+	   one is fine for prose like our About Me page, but we need one 2/3rds of the
+	   way from the first one to the second one, closer to the edge." That is this,
+	   and it resolves to 966.67px today. Written as the arithmetic so that moving
+	   either end moves it with them - a literal 967px here would be a third
+	   number to keep in step with two others by hand. */
+	--measure-page: calc(var(--measure-hero) + (var(--page-max) - var(--measure-hero)) * 2 / 3);
 	--measure-lede:44ch;
 
 	/* -- roles --------------------------------------------------------------- */
@@ -1313,10 +1321,19 @@ svg{ max-width:100% }
      .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull))
                                          { max-width; margin-inline: auto }  x12
 
-   The vertical rhythm of every page on this site, and the width of the column
-   it runs down, have never been ours. We spent weeks looking for the section
-   with the wrong padding. The gaps BETWEEN sections were never ours to begin
-   with, and neither was the frame around them.
+   *** AND MEASURING IT AGAINST THE REAL PAGE NARROWED THE CLAIM. ***
+   The first version of this file said the vertical rhythm of every page had
+   never been ours. Too broad, and worth correcting in place rather than
+   quietly. `.wp-site-blocks` has exactly THREE children - header, main, footer -
+   so WordPress's 24px there is the air UNDER THE HEADER and ABOVE THE FOOTER.
+   The home page's own section rhythm is already ours, set by .d-section-title
+   and .d-carousel. What was never ours is smaller than that and more structural:
+
+     - the gap under the header and above the footer, every page
+     - the page title and .entry-content on cart and checkout
+     - two gaps inside the product page's buy column, above the price and above
+       the add-to-cart form
+     - the width of the constrained column, every page
 
    *** THIS FILE IS LAYERED, AND THAT IS DELIBERATE. ***
    It cannot win today: WordPress prints those rules unlayered in
@@ -1328,13 +1345,14 @@ svg{ max-width:100% }
    gallery.html, which loads no WordPress CSS at all and is therefore already
    the post-dequeue page; it goes live the moment global-styles is stripped.
 
-   *** THE NUMBERS ARE NOT NEW ONES. ***
-   --section-y and --stack already exist and already describe this; nothing here
-   invents a length. The one that looks new, --measure-hero, is the token
-   gen-theme-json.js already feeds to theme.json's `contentSize`, so the
-   constrained column and the block editor cannot disagree about how wide a
-   column of prose is. It was in the build's "declared but unused" list until
-   now, which is what a token feeding a generator and nothing else looks like.
+   *** ONE NEW NUMBER, AND IT IS WRITTEN AS A RELATIONSHIP. ***
+   --section-y and --stack already existed. --measure-page is new, added at the
+   owner's request for a page column two thirds of the way from the prose measure
+   to the page rail, and it is authored in tokens/type.css as that arithmetic
+   rather than as 967px so it cannot drift from either end.
+   gen-theme-json.js resolves it once and writes it to theme.json's contentSize -
+   theme.json cannot hold a calc() - so the block editor and the front end agree
+   about how wide a page is.
    ========================================================================== */
 
 /* -- between the top-level sections of a page --------------------------------
@@ -1349,6 +1367,23 @@ svg{ max-width:100% }
 }
 .wp-site-blocks > :first-child{ margin-block-start:0 }
 .wp-site-blocks > :last-child{ margin-block-end:0 }
+
+/* *** A HERO GOES UNDER THE HEADER, NOT BELOW A GAP. ***
+   The owner: "The hero banner should be at the top just below the header with no
+   gap between them." He is right, and it is not an exception to the rhythm - it
+   is what a full-bleed band IS. --section-y is air between things that sit ON
+   the page; a band that bleeds to both edges is a continuation of the chrome
+   above it, and 60px of page showing between the header and a claret band reads
+   as a mistake.
+
+   :has() rather than a class on <main>, because the condition is a fact about
+   the page's first block and not a decision anybody should have to remember to
+   declare in a template. If the hero is not first, the gap comes back on its
+   own. */
+.wp-site-blocks > main:has(> .d-hero-band:first-child),
+.wp-site-blocks > main:has(> .d-hero:first-child){
+	margin-block-start:0;
+}
 
 /* -- between blocks inside a flow or constrained container -------------------
    Nested containers are a different rhythm from the page: this is the gap
@@ -1380,8 +1415,27 @@ svg{ max-width:100% }
    it lands on a grid, a table or a cart it is not a measure, it is a narrow
    page. Nothing here changes that trap, and the fix for it remains the one B1
    applied: do not put a constrained layout on a template that holds a grid. */
+/* *** FOUR WIDTHS, NOT THREE, AND THE DEFAULT IS NOT THE PROSE MEASURE. ***
+   The owner, reviewing the first specimen: "the first one is fine for prose like
+   our About Me page, but we need one 2/3rds of the way from the first one to the
+   second one, closer to the edge."
+
+   So the constrained DEFAULT is --measure-page (966.67px), which is that
+   two-thirds point, and the prose measure stops being the default for every
+   page and goes back to being what it is: a property of running text, applied
+   by .d-prose, which already carries its own and already wins here.
+
+     .d-prose            --measure-lede   44ch      running text
+     default             --measure-page   966.67px  a page that is not prose
+     .alignwide          --page-max       1120px    the page rail
+     .alignfull          none                       edge to edge
+
+   He also said the last two looked identical, and they did - not because they
+   are, but because the specimen's container was 1044px wide, narrower than the
+   1120px cap it was demonstrating. A demo narrower than the thing it measures
+   shows nothing. The gallery now gives that row the full width. */
 .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){
-	max-width:var(--measure-hero);
+	max-width:var(--measure-page);
 	margin-inline:auto;
 }
 .is-layout-constrained > .alignwide{ max-width:var(--page-max) }
@@ -7735,7 +7789,7 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	grid-template-columns:1fr auto 1fr;
 	gap:var(--space-l);
 	align-items:start;
-	padding:var(--space-xl) var(--gutter) var(--space-m);
+	padding:var(--space-l) var(--gutter) var(--space-m);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
@@ -7780,6 +7834,25 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	font-size:var(--fs-meta);
 	text-decoration:none;
 	transition:color var(--dur-ui) var(--ease-float);
+}
+/* *** THE OWNER ASKED FOR HALF THE VERTICAL SPACE, AND 44px IS WHY IT IS THERE. ***
+   Every one of these links is 44px tall on purpose - a column of 13px links at
+   their natural line height is a stack of 18px targets, and the footer is where
+   the policy links live, the ones somebody reaches for on a phone when they are
+   already annoyed. Halving it outright would trade an accessibility decision for
+   a visual one and never say so.
+
+   So it is halved WHERE THE FINGER IS NOT. `pointer: fine` is true when the
+   primary input is a mouse or trackpad and false on a phone, so a touch device
+   keeps the full 44px (WCAG 2.5.5 Enhanced) and a desktop drops to 28px - still
+   comfortably over the 24px of WCAG 2.5.8 Target Size (Minimum), which applies
+   whatever the input. Measured before/after in gallery.html, and the footer's
+   height is now set by the flair block rather than by the link columns. */
+@media (pointer: fine){
+	.d-footer__links a,
+	.d-footer__policies a,
+	.d-footer__map a,
+	.d-footer__legal a{ min-height:28px }
 }
 .d-footer__links a:hover,
 .d-footer__policies a:hover,
@@ -14865,6 +14938,10 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .flowdemo{ background:var(--surface-quiet,#f4f2ef); padding:var(--space-s); border-radius:var(--radius-m) }
 .flowdemo--wide{ max-width:none }
 .flowpage{ background:var(--surface-page,#efecea); border-radius:var(--radius-m); overflow:hidden }
+/* the width row breaks OUT of .wrap: a demo narrower than the cap it is
+   demonstrating shows nothing, which is why .alignwide and .alignfull looked
+   identical in the first version */
+.flowfull{ background:var(--surface-page,#efecea); padding-block:var(--space-s) }
 .flowpage main{ display:block }
 </style></head><body><div class="wrap">
 <nav class="gnav"><a href="#flow">Page rhythm</a><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
@@ -14912,8 +14989,16 @@ ours is smaller than I said, and more structural.</p>
     </div>
   </div>
 </header><main>
+  <div class="d-hero-band"><div class="d-hero d-hero--red d-shell">
+    <div class="d-hero__copy"><p class="d-hero__eyebrow">Сезонна селекция</p>
+    <h2 class="d-hero__title">Подаръци, които <em>се помнят</em></h2>
+    <p class="d-hero__sub">Всяко нещо в Дарлинг е избрано на ръка.</p>
+    <p class="d-hero__actions"><a class="d-btn d-finish" href="#">Разгледай всичко</a></p></div>
+    <div class="d-hero__visual"><span class="d-hero__glow"></span><svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg></div>
+  </div></div>
   <p class="d-hero__eyebrow d-shell">Подбрано за вас</p>
   <h2 class="d-section-title d-shell">Изборът на Lady D</h2>
+  <div class="d-shell"><div class="d-grid"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Ново</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Намаление</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Ленена кърпа</a></h3><p class="d-card__price">22,00 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Стъклена кана</a></h3><p class="d-card__price">42,00 лв.</p><button class="d-card__cta">Добави</button></article></div></div>
   <section class="d-band"><h2 class="d-band__title">Подаръци, които се помнят</h2></section>
 </main><footer class="d-footer">
   <div>
@@ -14948,11 +15033,19 @@ ours is smaller than I said, and more structural.</p>
     </div>
     <p class="d-footer__map"><a href="#">ул. Пример 12, София 1000</a></p>
   </div>
-</footer></div><p class="note">The gap above and below the page is <code>--section-y</code>.
-<b>This is the one number to look at</b>, because 48&rarr;60px under a sticky header
-is a real change from WordPress&rsquo;s flat 24px and it is the whole page that
-moves. If it reads as too much air, the alternative is <code>--stack</code>
-(24&rarr;30px), which keeps today&rsquo;s spacing and still takes ownership.</p>
+</footer></div><p class="note"><b>The hero is flush and the footer is not.</b> A full-bleed
+band as the first block is a continuation of the chrome above it, so the gap under
+the header collapses to zero &mdash; <code>:has(&gt; .d-hero-band:first-child)</code>,
+which is a fact about the page rather than a class somebody has to remember. Put
+anything else first and <code>--section-y</code> comes back on its own. Above the
+footer it stays, at 48&rarr;60px against WordPress&rsquo;s flat 24px.</p>
+<p class="note"><b>The footer links were 44px tall and are now 28px &mdash; on a
+mouse only.</b> That 44px is a deliberate tap target, not padding: a column of
+13px links at their natural line height is a stack of 18px targets, and the
+footer is where the policy links live. Halving it outright would have traded an
+accessibility decision for a visual one without saying so, so it is halved behind
+<code>@media (pointer: fine)</code>. A phone keeps 44px (WCAG 2.5.5); a desktop
+gets 28px, still over the 24px minimum of WCAG 2.5.8.</p>
 
 <p class="lbl">.is-layout-flow &gt; * &mdash; the product page&rsquo;s buy column</p><div class="flowdemo"><div class="is-layout-flow" style="max-width:23rem">
   <h1 class="d-product__title">Керамична купа</h1>
@@ -14967,13 +15060,14 @@ moves. If it reads as too much air, the alternative is <code>--stack</code>
 own completely. Here they are <code>--stack</code>, which is the same 24px at the
 small end. Ownership, not a redesign.</p>
 
-<p class="lbl">.is-layout-constrained &mdash; the three widths</p><div class="flowdemo flowdemo--wide"><div class="is-layout-constrained">
-  <div class="d-box d-box--quiet">default &mdash; <code>--measure-hero</code>, the
-  prose measure. (A <code>.d-prose</code> here would show its OWN narrower measure
-  winning, which is correct behaviour and a confusing specimen.)</div>
-  <div class="alignwide"><div class="d-box d-box--quiet">.alignwide &mdash; <code>--page-max</code></div></div>
-  <div class="alignfull"><div class="d-box d-box--quiet">.alignfull &mdash; no cap</div></div>
-</div></div>
+<p class="lbl">.is-layout-constrained &mdash; four widths, each with a job</p></div><div class="flowfull"><div class="is-layout-constrained">
+  <div class="d-prose"><p>.d-prose &mdash; <code>--measure-lede</code>, 44ch. Running
+  text, and the About&nbsp;Me page. Керамика, стъкло и дърво, подбрани на ръка.</p></div>
+  <div class="d-box d-box--quiet">default &mdash; <code>--measure-page</code>, 966.67px.
+  Two thirds of the way from the prose measure to the page rail.</div>
+  <div class="alignwide"><div class="d-box d-box--quiet">.alignwide &mdash; <code>--page-max</code>, 1120px</div></div>
+  <div class="alignfull"><div class="d-box d-box--quiet">.alignfull &mdash; no cap, edge to edge</div></div>
+</div></div><div class="wrap">
 <p class="note"><b>The 660px cap is a measure and it has bitten us once.</b> B1
 found a constrained layout on three templates capping their children at the prose
 measure &mdash; the search results grid rendered at 374px instead of 714px. A

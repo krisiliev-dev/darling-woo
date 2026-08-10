@@ -104,6 +104,12 @@ FOOTER_SPECIMEN = '''<footer class="d-footer">
   </div>
 </footer>'''
 
+# hoisted beside CUTOUT: the flow specimen needs it too, and it was defined
+# a thousand lines below its first use once the flow section moved to the top.
+BOW = ('<svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true">'
+       '<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>'
+       '<circle cx="12" cy="6" r="2.4"/></svg>')
+
 P = []
 A = P.append
 
@@ -202,6 +208,10 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .flowdemo{ background:var(--surface-quiet,#f4f2ef); padding:var(--space-s); border-radius:var(--radius-m) }
 .flowdemo--wide{ max-width:none }
 .flowpage{ background:var(--surface-page,#efecea); border-radius:var(--radius-m); overflow:hidden }
+/* the width row breaks OUT of .wrap: a demo narrower than the cap it is
+   demonstrating shows nothing, which is why .alignwide and .alignfull looked
+   identical in the first version */
+.flowfull{ background:var(--surface-page,#efecea); padding-block:var(--space-s) }
 .flowpage main{ display:block }
 </style></head><body><div class="wrap">
 <!--GNAV-->
@@ -245,6 +255,28 @@ HEADER_SPECIMEN = '''<header class="d-header" style="position:relative">
   </div>
 </header>'''
 
+PRODUCTS = [
+    ('Керамична купа', '26,40', None, None),
+    ('Дървена дъска за рязане с дръжка', '31,90', None, 'Ново'),
+    ('Ленена кърпа', '22,00', '18,50', 'Намаление'),
+    ('Стъклена кана', '42,00', None, None),
+]
+
+def FLOW_CARD(name, price, was, badge):
+    """The catalogue card, as one function. The owner asked to see the cards in
+    the page flow so the rhythm around them could be judged; writing the markup
+    a second time is how the four non-existent classes got into the first
+    specimen, so it is written once and called twice."""
+    return ('<article class="d-card">'
+            '<div class="d-card__media"><img src="%s" alt="">%s</div>'
+            '<div class="d-card__accent d-finish"></div>'
+            '<h3 class="d-card__title"><a href="#">%s</a></h3>'
+            '<p class="d-card__price">%s</p>'
+            '<button class="d-card__cta">\u0414\u043e\u0431\u0430\u0432\u0438</button></article>'
+            % (CUTOUT,
+               ('<span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">%s</span>' % badge) if badge else '',
+               name, price + ' \u043b\u0432.'))
+
 # --------------------------------------------------------------------- flow ---
 # TRANCHE 1 OF THE DEQUEUE. These specimens carry WORDPRESS's markup, not ours -
 # .wp-site-blocks, .is-layout-flow, .is-layout-constrained - because the thing
@@ -272,17 +304,36 @@ ours is smaller than I said, and more structural.</p>
 # was demonstrating nothing and the measurement came back with an empty list.
 A('<div class="flowpage wp-site-blocks">' + HEADER_SPECIMEN)
 A('''<main>
+  <div class="d-hero-band"><div class="d-hero d-hero--red d-shell">
+    <div class="d-hero__copy"><p class="d-hero__eyebrow">Сезонна селекция</p>
+    <h2 class="d-hero__title">Подаръци, които <em>се помнят</em></h2>
+    <p class="d-hero__sub">Всяко нещо в Дарлинг е избрано на ръка.</p>
+    <p class="d-hero__actions"><a class="d-btn d-finish" href="#">Разгледай всичко</a></p></div>
+    <div class="d-hero__visual"><span class="d-hero__glow"></span>''' + BOW + '''</div>
+  </div></div>
   <p class="d-hero__eyebrow d-shell">Подбрано за вас</p>
   <h2 class="d-section-title d-shell">Изборът на Lady D</h2>
+  <div class="d-shell"><div class="d-grid">''')
+for name, price, was, badge in PRODUCTS:
+    A(FLOW_CARD(name, price, was, badge))
+A('''</div></div>
   <section class="d-band"><h2 class="d-band__title">Подаръци, които се помнят</h2></section>
 </main>''')
 A(FOOTER_SPECIMEN)
 A('</div>')
-A('''<p class="note">The gap above and below the page is <code>--section-y</code>.
-<b>This is the one number to look at</b>, because 48&rarr;60px under a sticky header
-is a real change from WordPress&rsquo;s flat 24px and it is the whole page that
-moves. If it reads as too much air, the alternative is <code>--stack</code>
-(24&rarr;30px), which keeps today&rsquo;s spacing and still takes ownership.</p>
+A('''<p class="note"><b>The hero is flush and the footer is not.</b> A full-bleed
+band as the first block is a continuation of the chrome above it, so the gap under
+the header collapses to zero &mdash; <code>:has(&gt; .d-hero-band:first-child)</code>,
+which is a fact about the page rather than a class somebody has to remember. Put
+anything else first and <code>--section-y</code> comes back on its own. Above the
+footer it stays, at 48&rarr;60px against WordPress&rsquo;s flat 24px.</p>
+<p class="note"><b>The footer links were 44px tall and are now 28px &mdash; on a
+mouse only.</b> That 44px is a deliberate tap target, not padding: a column of
+13px links at their natural line height is a stack of 18px targets, and the
+footer is where the policy links live. Halving it outright would have traded an
+accessibility decision for a visual one without saying so, so it is halved behind
+<code>@media (pointer: fine)</code>. A phone keeps 44px (WCAG 2.5.5); a desktop
+gets 28px, still over the 24px minimum of WCAG 2.5.8.</p>
 
 <p class="lbl">.is-layout-flow &gt; * &mdash; the product page&rsquo;s buy column</p>''')
 A('''<div class="flowdemo"><div class="is-layout-flow" style="max-width:23rem">
@@ -298,14 +349,15 @@ A('''<div class="flowdemo"><div class="is-layout-flow" style="max-width:23rem">
 own completely. Here they are <code>--stack</code>, which is the same 24px at the
 small end. Ownership, not a redesign.</p>
 
-<p class="lbl">.is-layout-constrained &mdash; the three widths</p>''')
-A('''<div class="flowdemo flowdemo--wide"><div class="is-layout-constrained">
-  <div class="d-box d-box--quiet">default &mdash; <code>--measure-hero</code>, the
-  prose measure. (A <code>.d-prose</code> here would show its OWN narrower measure
-  winning, which is correct behaviour and a confusing specimen.)</div>
-  <div class="alignwide"><div class="d-box d-box--quiet">.alignwide &mdash; <code>--page-max</code></div></div>
-  <div class="alignfull"><div class="d-box d-box--quiet">.alignfull &mdash; no cap</div></div>
-</div></div>
+<p class="lbl">.is-layout-constrained &mdash; four widths, each with a job</p>''')
+A('''</div><div class="flowfull"><div class="is-layout-constrained">
+  <div class="d-prose"><p>.d-prose &mdash; <code>--measure-lede</code>, 44ch. Running
+  text, and the About&nbsp;Me page. Керамика, стъкло и дърво, подбрани на ръка.</p></div>
+  <div class="d-box d-box--quiet">default &mdash; <code>--measure-page</code>, 966.67px.
+  Two thirds of the way from the prose measure to the page rail.</div>
+  <div class="alignwide"><div class="d-box d-box--quiet">.alignwide &mdash; <code>--page-max</code>, 1120px</div></div>
+  <div class="alignfull"><div class="d-box d-box--quiet">.alignfull &mdash; no cap, edge to edge</div></div>
+</div></div><div class="wrap">
 <p class="note"><b>The 660px cap is a measure and it has bitten us once.</b> B1
 found a constrained layout on three templates capping their children at the prose
 measure &mdash; the search results grid rendered at 374px instead of 714px. A
@@ -315,12 +367,8 @@ to theme.json&rsquo;s <code>contentSize</code>, so the two cannot drift.</p>
 </div></section>''')
 
 # --------------------------------------------------------------------- card ---
-PRODUCTS = [
-    ('Керамична купа', '26,40', None, None),
-    ('Дървена дъска за рязане с дръжка', '31,90', None, 'Ново'),
-    ('Ленена кърпа', '22,00', '18,50', 'Намаление'),
-    ('Стъклена кана', '42,00', None, None),
-]
+
+
 
 A('<section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3>')
 A('''<p class="note"><b>Hover a card.</b> The whole card is the target, not the
@@ -1234,9 +1282,6 @@ delivery-intake and courier-picker field groups.</div>
 </section>''')
 
 # --------------------------------------------------------------------- hero ---
-BOW = ('<svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true">'
-       '<path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/>'
-       '<circle cx="12" cy="6" r="2.4"/></svg>')
 A('''<section class="sec" id="hero"><h2>Patterns</h2><h3>Hero, season, empty, collection</h3>
 <p class="note"><b>Forty lines deleted rather than ported.</b> The old hero CTA
 carried a <em>full copy</em> of the metal treatment &mdash; drift, grain, glow,

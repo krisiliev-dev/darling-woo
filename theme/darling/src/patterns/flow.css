@@ -11,10 +11,19 @@
      .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull))
                                          { max-width; margin-inline: auto }  x12
 
-   The vertical rhythm of every page on this site, and the width of the column
-   it runs down, have never been ours. We spent weeks looking for the section
-   with the wrong padding. The gaps BETWEEN sections were never ours to begin
-   with, and neither was the frame around them.
+   *** AND MEASURING IT AGAINST THE REAL PAGE NARROWED THE CLAIM. ***
+   The first version of this file said the vertical rhythm of every page had
+   never been ours. Too broad, and worth correcting in place rather than
+   quietly. `.wp-site-blocks` has exactly THREE children - header, main, footer -
+   so WordPress's 24px there is the air UNDER THE HEADER and ABOVE THE FOOTER.
+   The home page's own section rhythm is already ours, set by .d-section-title
+   and .d-carousel. What was never ours is smaller than that and more structural:
+
+     - the gap under the header and above the footer, every page
+     - the page title and .entry-content on cart and checkout
+     - two gaps inside the product page's buy column, above the price and above
+       the add-to-cart form
+     - the width of the constrained column, every page
 
    *** THIS FILE IS LAYERED, AND THAT IS DELIBERATE. ***
    It cannot win today: WordPress prints those rules unlayered in
@@ -26,13 +35,14 @@
    gallery.html, which loads no WordPress CSS at all and is therefore already
    the post-dequeue page; it goes live the moment global-styles is stripped.
 
-   *** THE NUMBERS ARE NOT NEW ONES. ***
-   --section-y and --stack already exist and already describe this; nothing here
-   invents a length. The one that looks new, --measure-hero, is the token
-   gen-theme-json.js already feeds to theme.json's `contentSize`, so the
-   constrained column and the block editor cannot disagree about how wide a
-   column of prose is. It was in the build's "declared but unused" list until
-   now, which is what a token feeding a generator and nothing else looks like.
+   *** ONE NEW NUMBER, AND IT IS WRITTEN AS A RELATIONSHIP. ***
+   --section-y and --stack already existed. --measure-page is new, added at the
+   owner's request for a page column two thirds of the way from the prose measure
+   to the page rail, and it is authored in tokens/type.css as that arithmetic
+   rather than as 967px so it cannot drift from either end.
+   gen-theme-json.js resolves it once and writes it to theme.json's contentSize -
+   theme.json cannot hold a calc() - so the block editor and the front end agree
+   about how wide a page is.
    ========================================================================== */
 
 /* -- between the top-level sections of a page --------------------------------
@@ -47,6 +57,23 @@
 }
 .wp-site-blocks > :first-child{ margin-block-start:0 }
 .wp-site-blocks > :last-child{ margin-block-end:0 }
+
+/* *** A HERO GOES UNDER THE HEADER, NOT BELOW A GAP. ***
+   The owner: "The hero banner should be at the top just below the header with no
+   gap between them." He is right, and it is not an exception to the rhythm - it
+   is what a full-bleed band IS. --section-y is air between things that sit ON
+   the page; a band that bleeds to both edges is a continuation of the chrome
+   above it, and 60px of page showing between the header and a claret band reads
+   as a mistake.
+
+   :has() rather than a class on <main>, because the condition is a fact about
+   the page's first block and not a decision anybody should have to remember to
+   declare in a template. If the hero is not first, the gap comes back on its
+   own. */
+.wp-site-blocks > main:has(> .d-hero-band:first-child),
+.wp-site-blocks > main:has(> .d-hero:first-child){
+	margin-block-start:0;
+}
 
 /* -- between blocks inside a flow or constrained container -------------------
    Nested containers are a different rhythm from the page: this is the gap
@@ -78,8 +105,27 @@
    it lands on a grid, a table or a cart it is not a measure, it is a narrow
    page. Nothing here changes that trap, and the fix for it remains the one B1
    applied: do not put a constrained layout on a template that holds a grid. */
+/* *** FOUR WIDTHS, NOT THREE, AND THE DEFAULT IS NOT THE PROSE MEASURE. ***
+   The owner, reviewing the first specimen: "the first one is fine for prose like
+   our About Me page, but we need one 2/3rds of the way from the first one to the
+   second one, closer to the edge."
+
+   So the constrained DEFAULT is --measure-page (966.67px), which is that
+   two-thirds point, and the prose measure stops being the default for every
+   page and goes back to being what it is: a property of running text, applied
+   by .d-prose, which already carries its own and already wins here.
+
+     .d-prose            --measure-lede   44ch      running text
+     default             --measure-page   966.67px  a page that is not prose
+     .alignwide          --page-max       1120px    the page rail
+     .alignfull          none                       edge to edge
+
+   He also said the last two looked identical, and they did - not because they
+   are, but because the specimen's container was 1044px wide, narrower than the
+   1120px cap it was demonstrating. A demo narrower than the thing it measures
+   shows nothing. The gallery now gives that row the full width. */
 .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){
-	max-width:var(--measure-hero);
+	max-width:var(--measure-page);
 	margin-inline:auto;
 }
 .is-layout-constrained > .alignwide{ max-width:var(--page-max) }

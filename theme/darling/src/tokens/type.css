@@ -45,6 +45,14 @@
 
 	/* -- measure: the reason prose is readable ------------------------------- */
 	--measure-hero:660px;
+	/* *** THE PAGE COLUMN, AND IT IS WRITTEN AS THE RELATIONSHIP RATHER THAN AS
+	   A NUMBER. *** The owner, reviewing the three constrained widths: "the first
+	   one is fine for prose like our About Me page, but we need one 2/3rds of the
+	   way from the first one to the second one, closer to the edge." That is this,
+	   and it resolves to 966.67px today. Written as the arithmetic so that moving
+	   either end moves it with them - a literal 967px here would be a third
+	   number to keep in step with two others by hand. */
+	--measure-page: calc(var(--measure-hero) + (var(--page-max) - var(--measure-hero)) * 2 / 3);
 	--measure-lede:44ch;
 
 	/* -- roles --------------------------------------------------------------- */

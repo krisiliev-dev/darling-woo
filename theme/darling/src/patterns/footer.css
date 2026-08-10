@@ -38,7 +38,7 @@
 	grid-template-columns:1fr auto 1fr;
 	gap:var(--space-l);
 	align-items:start;
-	padding:var(--space-xl) var(--gutter) var(--space-m);
+	padding:var(--space-l) var(--gutter) var(--space-m);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
@@ -83,6 +83,25 @@
 	font-size:var(--fs-meta);
 	text-decoration:none;
 	transition:color var(--dur-ui) var(--ease-float);
+}
+/* *** THE OWNER ASKED FOR HALF THE VERTICAL SPACE, AND 44px IS WHY IT IS THERE. ***
+   Every one of these links is 44px tall on purpose - a column of 13px links at
+   their natural line height is a stack of 18px targets, and the footer is where
+   the policy links live, the ones somebody reaches for on a phone when they are
+   already annoyed. Halving it outright would trade an accessibility decision for
+   a visual one and never say so.
+
+   So it is halved WHERE THE FINGER IS NOT. `pointer: fine` is true when the
+   primary input is a mouse or trackpad and false on a phone, so a touch device
+   keeps the full 44px (WCAG 2.5.5 Enhanced) and a desktop drops to 28px - still
+   comfortably over the 24px of WCAG 2.5.8 Target Size (Minimum), which applies
+   whatever the input. Measured before/after in gallery.html, and the footer's
+   height is now set by the flair block rather than by the link columns. */
+@media (pointer: fine){
+	.d-footer__links a,
+	.d-footer__policies a,
+	.d-footer__map a,
+	.d-footer__legal a{ min-height:28px }
 }
 .d-footer__links a:hover,
 .d-footer__policies a:hover,
