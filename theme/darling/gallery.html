@@ -4014,6 +4014,240 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 }
 }
 
+/* ==== patterns/grid.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / THE PRODUCT GRIDS — TRANCHE 4 OF THE DEQUEUE
+
+   The biggest tranche left: 24 selectors, 90 declarations, reach 474. Measured
+   by disabling the five sheets that own them and reading the grid back, which
+   turned 90 declarations into four things that actually move.
+
+   *** THERE ARE TWO PRODUCT GRIDS ON THIS SITE AND THEY SHARE NOTHING. ***
+   That is the fact the tranche is really about, and neither adopted/card.css nor
+   patterns/catalogue.css knew it:
+
+     home, shop, 404   ul.wp-block-post-template.d-grid > li.wp-block-post.product
+     cart, checkout    ul.wc-block-grid__products > li.wc-block-grid__product
+
+   adopted/card.css dresses `li.product`, which only exists in the first. The
+   second - Woo's older block grid, used by the "you may also like" strip - was
+   wearing WooCommerce's clothes end to end and nothing of ours.
+
+   *** BOTH GRIDS ARE <ul>, AND THAT IS THE LOUDEST THING IN THE TRANCHE. ***
+   Measured with the sheets off, at 1240:
+
+     ul.wp-block-post-template   list-style none -> DISC, padding-left 0 -> 40px
+     .wc-block-grid__products    display flex -> block, padding-left 0 -> 40px
+     .wc-block-grid__product     list-style none -> DISC, width 284 -> 1080
+
+   A product grid with bullets down the left and a 40px indent. Not a subtle
+   regression: the shop stops being a grid and becomes a bulleted list. The
+   reset is WordPress's and WooCommerce's today, and neither of them is staying.
+   ========================================================================== */
+
+/* -- a grid that is also a list ---------------------------------------------
+   The list semantics are correct and stay - a screen reader saying "list, 12
+   items" is how somebody knows how many products are there. Only the MARKER and
+   the indent go, because they are the browser's default styling of a list and
+   not a decision anybody made. */
+ul.wp-block-post-template,
+ul.wc-block-grid__products{
+	list-style:none;
+	margin:0;
+	padding:0;
+	max-width:none;
+}
+li.wp-block-post,
+li.wc-block-grid__product{
+	list-style:none;
+}
+
+/* -- the cart's grid, which we had never touched -----------------------------
+   Woo lays this out as flex with `margin:0 -8px` on the row and a transparent
+   16px/8px BORDER on each card standing in for the gap - the pre-`gap` idiom.
+   It is replaced rather than reproduced: the same auto-fill arithmetic as
+   .d-grid, so the two product grids on this site finally agree about how wide a
+   product is and how far apart they sit. */
+ul.wc-block-grid__products{
+	display:grid;
+	grid-template-columns:repeat(auto-fill, minmax(15rem, 1fr));
+	gap:var(--grid-gap);
+}
+/* Woo's four-column idiom is `flex-basis:25%; max-width:25%` on the product: a
+   quarter of the ROW in a flex container, a quarter of the TRACK in a grid one.
+   Both are reset so the grid decides the width.
+
+   *** THIS FILE WAS WRITTEN IN adopted/ FIRST, AND THAT WAS THE WHOLE MISTAKE. ***
+   Unlayered means it applies TODAY, alongside the sheet it is meant to replace -
+   so it fought Woo, lost a specificity argument to
+   `.wc-block-grid.has-4-columns .wc-block-grid__product` (0,2,0), and briefly
+   shipped 66px-wide products to the live cart. The owner asked the right
+   question: "Are we not dequeueing it anyway? Why are we fighting Woo again?"
+
+   We are, and there was no reason. Nothing about these grids is broken today;
+   the sheets that style them are on the dequeue list. So the replacement is
+   LAYERED, like patterns/flow.css: it changes nothing now, it costs no
+   specificity arithmetic, and it takes over the moment the sheet goes.
+
+   THE RULE, for the tranches after this one:
+     the sheet is going and today is fine   -> layer it, do not fight
+     it is broken today and we want it now  -> adopted/, and count THEIR
+                                               specificity before writing yours */
+ul.wc-block-grid__products > li.wc-block-grid__product{
+	width:auto;
+	max-width:none;
+	flex-basis:auto;
+	border:0;          /* the transparent border that used to be the gutter */
+	padding:0;
+	margin:0;
+}
+
+/* -- the image, in both grids ------------------------------------------------
+   Woo's own radius here is a hard 10px. Ours is --radius-s, the same token
+   .d-card__media uses, so a product in the cart's strip and a product in the
+   shop grid are cut to the same corner. `display:block` because an inline <a>
+   wrapping a block image leaves a descender gap under every card. */
+.wc-block-components-product-image a{
+	display:block;
+	border-radius:var(--radius-s);
+	overflow:hidden;
+}
+.wc-block-grid__products .wc-block-grid__product-image{
+	border:0;
+	border-radius:var(--radius-s);
+	overflow:hidden;
+}
+
+/* -- the add-to-cart column --------------------------------------------------
+   Woo stacks the button and its "view cart" link with flex-direction:column and
+   a 12px gap. Kept as a column - the two are a stack, not a row - at our
+   spacing. adopted/card.css already places this in the card's grid; this is the
+   inside of it, which nothing of ours had claimed. */
+.wp-block-button.wc-block-components-product-button{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+.wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	text-align:center;
+	word-break:normal;
+}
+
+}
+
+/* ==== patterns/social.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / NEXTEND SOCIAL LOGIN — TRANCHE 3 OF THE DEQUEUE
+
+   41 declarations across 12 selectors, all from one inline <style> the plugin
+   prints with no id, all on /my-account/. The biggest tranche by declaration
+   count after the product grid, and the one where we deliberately do the LEAST.
+
+   *** THE BRAND COLOURS WERE NEVER OURS TO TAKE. ***
+   The plugin writes them on the element itself:
+
+     <div class="nsl-button nsl-button-facebook" style="background-color:#1877F2">
+     <div class="nsl-button nsl-button-google"   style="background-color:#fff">
+
+   An inline style attribute beats every author rule that is not !important, so
+   those two fills are already immovable, and that is the correct outcome rather
+   than an obstacle. A "Continue with Google" button is Google's mark on our
+   page: its colour, its logo and its wording are governed by their brand terms,
+   not by our tokens. Restyling it into a Darling button would be the one place
+   in this system where imposing our design is the wrong call. So this file takes
+   the LAYOUT and leaves the BRAND alone.
+
+   What we take: how the two buttons stack, how wide they are, how they sit in
+   the login card's rhythm, and the type inside them.
+   What we do not touch: the fills, the logos, the light/dark skins.
+
+   *** THE ONE THING THAT MUST BE REPLACED RATHER THAN DROPPED. ***
+   The Google button is #fff on a card that is also near-white. The plugin gives
+   it its edge with `box-shadow: 0 0 0 1px rgb(116,119,117)`. Dequeue without
+   replacing that and the button does not look unstyled - it disappears. It is
+   reproduced below at our hairline strength.
+
+   *** LAYERED, AND NOT FOR LACK OF SPECIFICITY. *** The plugin's rules are
+   unlayered and run to (0,3,2), so nothing layered can beat them today - and
+   nothing layered needs to. The buttons are not broken; the plugin's sheet is on
+   the dequeue list. A layered replacement changes nothing now and takes over
+   when the sheet goes. The one exception is in adopted/social.css: a focus ring,
+   which fixes a defect that exists TODAY.
+   ========================================================================== */
+
+/* -- the pair, as a stack in the login card ---------------------------------- */
+.nsl-container{ clear:none }
+.nsl-container[data-align="left"]{ text-align:start }
+
+.nsl-container.nsl-container-block .nsl-container-buttons{
+	display:grid;
+	gap:var(--space-2xs);
+	padding-block:0;
+	margin-block-start:var(--space-s);
+}
+.nsl-container.nsl-container-block .nsl-container-buttons > a{
+	display:block;
+	width:100%;
+	margin-block:0;
+	text-decoration:none;
+}
+
+/* -- one button -------------------------------------------------------------
+   Height and radius are ours because neither is brand-governed; the fill, the
+   logo and the wording are not touched. --radius-m rather than --radius-pill:
+   these sit directly under the form's fields, and a pill beside a field with
+   --radius-m reads as a different family of control. */
+.nsl-container .nsl-button{
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+	min-height:var(--tap);
+	border-radius:var(--radius-m);
+	vertical-align:top;
+	overflow:hidden;
+}
+.nsl-container .nsl-button-svg-container{
+	display:flex;
+	flex-shrink:0;
+	align-items:center;
+	padding:var(--space-2xs);
+}
+.nsl-container svg{ vertical-align:top }
+
+/* The label takes our type. The plugin hard-codes Helvetica for Facebook and
+   "Roboto Medium" for Google - neither of which this site loads, so both were
+   rendering in a system fallback anyway. */
+.nsl-container .nsl-button .nsl-button-label-container{
+	margin-inline:0;
+	padding-block:var(--space-2xs);
+	padding-inline-end:var(--space-xs);
+	font:var(--type-ui);
+	font-weight:var(--fw-medium);
+	line-height:1.2;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+
+/* -- the white one, which is invisible without an edge ----------------------- */
+.nsl-container .nsl-button-google[data-skin="light"]{
+	box-shadow:inset 0 0 0 1px var(--hairline);
+	color:var(--ink);
+}
+.nsl-container .nsl-button-default{ color:#fff }
+.nsl-container .nsl-button-google[data-skin="light"] .nsl-button-label-container{
+	color:var(--ink);
+}
+
+
+}
+
 /* ==== generated/category-banners.css ==== */
 @layer patterns{
 /* GENERATED by scripts/gen-category-banners.js - DO NOT EDIT.
@@ -10509,104 +10743,15 @@ html.d-a11y .d-fab{ text-decoration:none }
 
 /* ==== adopted/social.css ==== */
 /* =============================================================================
-   ADOPTED / NEXTEND SOCIAL LOGIN — TRANCHE 3 OF THE DEQUEUE
+   ADOPTED / SOCIAL LOGIN, THE ONE PART THAT CANNOT WAIT
 
-   41 declarations across 12 selectors, all from one inline <style> the plugin
-   prints with no id, all on /my-account/. The biggest tranche by declaration
-   count after the product grid, and the one where we deliberately do the LEAST.
-
-   *** THE BRAND COLOURS WERE NEVER OURS TO TAKE. ***
-   The plugin writes them on the element itself:
-
-     <div class="nsl-button nsl-button-facebook" style="background-color:#1877F2">
-     <div class="nsl-button nsl-button-google"   style="background-color:#fff">
-
-   An inline style attribute beats every author rule that is not !important, so
-   those two fills are already immovable, and that is the correct outcome rather
-   than an obstacle. A "Continue with Google" button is Google's mark on our
-   page: its colour, its logo and its wording are governed by their brand terms,
-   not by our tokens. Restyling it into a Darling button would be the one place
-   in this system where imposing our design is the wrong call. So this file takes
-   the LAYOUT and leaves the BRAND alone.
-
-   What we take: how the two buttons stack, how wide they are, how they sit in
-   the login card's rhythm, and the type inside them.
-   What we do not touch: the fills, the logos, the light/dark skins.
-
-   *** THE ONE THING THAT MUST BE REPLACED RATHER THAN DROPPED. ***
-   The Google button is #fff on a card that is also near-white. The plugin gives
-   it its edge with `box-shadow: 0 0 0 1px rgb(116,119,117)`. Dequeue without
-   replacing that and the button does not look unstyled - it disappears. It is
-   reproduced below at our hairline strength.
-
-   Unlayered, like everything in adopted/: the plugin's rules are unlayered and
-   run to `div.nsl-container .nsl-button-default div.nsl-button-label-container`,
-   which is (0,3,2). Nothing layered can reach that.
+   patterns/social.css holds the tranche-3 replacement and is layered, because
+   the plugin's sheet is on the dequeue list and nothing about those buttons is
+   broken today. This is the exception: measured, the plugin has NO :focus or
+   :focus-visible rule anywhere in its inline sheet, so a keyboard user tabbing
+   through the login card gets no indication of where they are. That is a defect
+   NOW, not after the dequeue, so it is unlayered and lands immediately.
    ========================================================================== */
-
-/* -- the pair, as a stack in the login card ---------------------------------- */
-.nsl-container{ clear:none }
-.nsl-container[data-align="left"]{ text-align:start }
-
-.nsl-container.nsl-container-block .nsl-container-buttons{
-	display:grid;
-	gap:var(--space-2xs);
-	padding-block:0;
-	margin-block-start:var(--space-s);
-}
-.nsl-container.nsl-container-block .nsl-container-buttons > a{
-	display:block;
-	width:100%;
-	margin-block:0;
-	text-decoration:none;
-}
-
-/* -- one button -------------------------------------------------------------
-   Height and radius are ours because neither is brand-governed; the fill, the
-   logo and the wording are not touched. --radius-m rather than --radius-pill:
-   these sit directly under the form's fields, and a pill beside a field with
-   --radius-m reads as a different family of control. */
-.nsl-container .nsl-button{
-	display:flex;
-	align-items:center;
-	gap:var(--space-2xs);
-	min-height:var(--tap);
-	border-radius:var(--radius-m);
-	vertical-align:top;
-	overflow:hidden;
-}
-.nsl-container .nsl-button-svg-container{
-	display:flex;
-	flex-shrink:0;
-	align-items:center;
-	padding:var(--space-2xs);
-}
-.nsl-container svg{ vertical-align:top }
-
-/* The label takes our type. The plugin hard-codes Helvetica for Facebook and
-   "Roboto Medium" for Google - neither of which this site loads, so both were
-   rendering in a system fallback anyway. */
-.nsl-container .nsl-button .nsl-button-label-container{
-	margin-inline:0;
-	padding-block:var(--space-2xs);
-	padding-inline-end:var(--space-xs);
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
-	line-height:1.2;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
-}
-
-/* -- the white one, which is invisible without an edge ----------------------- */
-.nsl-container .nsl-button-google[data-skin="light"]{
-	box-shadow:inset 0 0 0 1px var(--hairline);
-	color:var(--ink);
-}
-.nsl-container .nsl-button-default{ color:#fff }
-.nsl-container .nsl-button-google[data-skin="light"] .nsl-button-label-container{
-	color:var(--ink);
-}
 
 /* -- focus, which the plugin never draws at all ------------------------------
    Measured: no :focus or :focus-visible rule anywhere in its inline sheet. A

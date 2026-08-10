@@ -1,0 +1,121 @@
+/* =============================================================================
+   PATTERN / THE PRODUCT GRIDS — TRANCHE 4 OF THE DEQUEUE
+
+   The biggest tranche left: 24 selectors, 90 declarations, reach 474. Measured
+   by disabling the five sheets that own them and reading the grid back, which
+   turned 90 declarations into four things that actually move.
+
+   *** THERE ARE TWO PRODUCT GRIDS ON THIS SITE AND THEY SHARE NOTHING. ***
+   That is the fact the tranche is really about, and neither adopted/card.css nor
+   patterns/catalogue.css knew it:
+
+     home, shop, 404   ul.wp-block-post-template.d-grid > li.wp-block-post.product
+     cart, checkout    ul.wc-block-grid__products > li.wc-block-grid__product
+
+   adopted/card.css dresses `li.product`, which only exists in the first. The
+   second - Woo's older block grid, used by the "you may also like" strip - was
+   wearing WooCommerce's clothes end to end and nothing of ours.
+
+   *** BOTH GRIDS ARE <ul>, AND THAT IS THE LOUDEST THING IN THE TRANCHE. ***
+   Measured with the sheets off, at 1240:
+
+     ul.wp-block-post-template   list-style none -> DISC, padding-left 0 -> 40px
+     .wc-block-grid__products    display flex -> block, padding-left 0 -> 40px
+     .wc-block-grid__product     list-style none -> DISC, width 284 -> 1080
+
+   A product grid with bullets down the left and a 40px indent. Not a subtle
+   regression: the shop stops being a grid and becomes a bulleted list. The
+   reset is WordPress's and WooCommerce's today, and neither of them is staying.
+   ========================================================================== */
+
+/* -- a grid that is also a list ---------------------------------------------
+   The list semantics are correct and stay - a screen reader saying "list, 12
+   items" is how somebody knows how many products are there. Only the MARKER and
+   the indent go, because they are the browser's default styling of a list and
+   not a decision anybody made. */
+ul.wp-block-post-template,
+ul.wc-block-grid__products{
+	list-style:none;
+	margin:0;
+	padding:0;
+	max-width:none;
+}
+li.wp-block-post,
+li.wc-block-grid__product{
+	list-style:none;
+}
+
+/* -- the cart's grid, which we had never touched -----------------------------
+   Woo lays this out as flex with `margin:0 -8px` on the row and a transparent
+   16px/8px BORDER on each card standing in for the gap - the pre-`gap` idiom.
+   It is replaced rather than reproduced: the same auto-fill arithmetic as
+   .d-grid, so the two product grids on this site finally agree about how wide a
+   product is and how far apart they sit. */
+ul.wc-block-grid__products{
+	display:grid;
+	grid-template-columns:repeat(auto-fill, minmax(15rem, 1fr));
+	gap:var(--grid-gap);
+}
+/* Woo's four-column idiom is `flex-basis:25%; max-width:25%` on the product: a
+   quarter of the ROW in a flex container, a quarter of the TRACK in a grid one.
+   Both are reset so the grid decides the width.
+
+   *** THIS FILE WAS WRITTEN IN adopted/ FIRST, AND THAT WAS THE WHOLE MISTAKE. ***
+   Unlayered means it applies TODAY, alongside the sheet it is meant to replace -
+   so it fought Woo, lost a specificity argument to
+   `.wc-block-grid.has-4-columns .wc-block-grid__product` (0,2,0), and briefly
+   shipped 66px-wide products to the live cart. The owner asked the right
+   question: "Are we not dequeueing it anyway? Why are we fighting Woo again?"
+
+   We are, and there was no reason. Nothing about these grids is broken today;
+   the sheets that style them are on the dequeue list. So the replacement is
+   LAYERED, like patterns/flow.css: it changes nothing now, it costs no
+   specificity arithmetic, and it takes over the moment the sheet goes.
+
+   THE RULE, for the tranches after this one:
+     the sheet is going and today is fine   -> layer it, do not fight
+     it is broken today and we want it now  -> adopted/, and count THEIR
+                                               specificity before writing yours */
+ul.wc-block-grid__products > li.wc-block-grid__product{
+	width:auto;
+	max-width:none;
+	flex-basis:auto;
+	border:0;          /* the transparent border that used to be the gutter */
+	padding:0;
+	margin:0;
+}
+
+/* -- the image, in both grids ------------------------------------------------
+   Woo's own radius here is a hard 10px. Ours is --radius-s, the same token
+   .d-card__media uses, so a product in the cart's strip and a product in the
+   shop grid are cut to the same corner. `display:block` because an inline <a>
+   wrapping a block image leaves a descender gap under every card. */
+.wc-block-components-product-image a{
+	display:block;
+	border-radius:var(--radius-s);
+	overflow:hidden;
+}
+.wc-block-grid__products .wc-block-grid__product-image{
+	border:0;
+	border-radius:var(--radius-s);
+	overflow:hidden;
+}
+
+/* -- the add-to-cart column --------------------------------------------------
+   Woo stacks the button and its "view cart" link with flex-direction:column and
+   a 12px gap. Kept as a column - the two are a stack, not a row - at our
+   spacing. adopted/card.css already places this in the card's grid; this is the
+   inside of it, which nothing of ours had claimed. */
+.wp-block-button.wc-block-components-product-button{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+.wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	text-align:center;
+	word-break:normal;
+}

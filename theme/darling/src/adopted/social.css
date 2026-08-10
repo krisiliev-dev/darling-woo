@@ -1,102 +1,13 @@
 /* =============================================================================
-   ADOPTED / NEXTEND SOCIAL LOGIN — TRANCHE 3 OF THE DEQUEUE
+   ADOPTED / SOCIAL LOGIN, THE ONE PART THAT CANNOT WAIT
 
-   41 declarations across 12 selectors, all from one inline <style> the plugin
-   prints with no id, all on /my-account/. The biggest tranche by declaration
-   count after the product grid, and the one where we deliberately do the LEAST.
-
-   *** THE BRAND COLOURS WERE NEVER OURS TO TAKE. ***
-   The plugin writes them on the element itself:
-
-     <div class="nsl-button nsl-button-facebook" style="background-color:#1877F2">
-     <div class="nsl-button nsl-button-google"   style="background-color:#fff">
-
-   An inline style attribute beats every author rule that is not !important, so
-   those two fills are already immovable, and that is the correct outcome rather
-   than an obstacle. A "Continue with Google" button is Google's mark on our
-   page: its colour, its logo and its wording are governed by their brand terms,
-   not by our tokens. Restyling it into a Darling button would be the one place
-   in this system where imposing our design is the wrong call. So this file takes
-   the LAYOUT and leaves the BRAND alone.
-
-   What we take: how the two buttons stack, how wide they are, how they sit in
-   the login card's rhythm, and the type inside them.
-   What we do not touch: the fills, the logos, the light/dark skins.
-
-   *** THE ONE THING THAT MUST BE REPLACED RATHER THAN DROPPED. ***
-   The Google button is #fff on a card that is also near-white. The plugin gives
-   it its edge with `box-shadow: 0 0 0 1px rgb(116,119,117)`. Dequeue without
-   replacing that and the button does not look unstyled - it disappears. It is
-   reproduced below at our hairline strength.
-
-   Unlayered, like everything in adopted/: the plugin's rules are unlayered and
-   run to `div.nsl-container .nsl-button-default div.nsl-button-label-container`,
-   which is (0,3,2). Nothing layered can reach that.
+   patterns/social.css holds the tranche-3 replacement and is layered, because
+   the plugin's sheet is on the dequeue list and nothing about those buttons is
+   broken today. This is the exception: measured, the plugin has NO :focus or
+   :focus-visible rule anywhere in its inline sheet, so a keyboard user tabbing
+   through the login card gets no indication of where they are. That is a defect
+   NOW, not after the dequeue, so it is unlayered and lands immediately.
    ========================================================================== */
-
-/* -- the pair, as a stack in the login card ---------------------------------- */
-.nsl-container{ clear:none }
-.nsl-container[data-align="left"]{ text-align:start }
-
-.nsl-container.nsl-container-block .nsl-container-buttons{
-	display:grid;
-	gap:var(--space-2xs);
-	padding-block:0;
-	margin-block-start:var(--space-s);
-}
-.nsl-container.nsl-container-block .nsl-container-buttons > a{
-	display:block;
-	width:100%;
-	margin-block:0;
-	text-decoration:none;
-}
-
-/* -- one button -------------------------------------------------------------
-   Height and radius are ours because neither is brand-governed; the fill, the
-   logo and the wording are not touched. --radius-m rather than --radius-pill:
-   these sit directly under the form's fields, and a pill beside a field with
-   --radius-m reads as a different family of control. */
-.nsl-container .nsl-button{
-	display:flex;
-	align-items:center;
-	gap:var(--space-2xs);
-	min-height:var(--tap);
-	border-radius:var(--radius-m);
-	vertical-align:top;
-	overflow:hidden;
-}
-.nsl-container .nsl-button-svg-container{
-	display:flex;
-	flex-shrink:0;
-	align-items:center;
-	padding:var(--space-2xs);
-}
-.nsl-container svg{ vertical-align:top }
-
-/* The label takes our type. The plugin hard-codes Helvetica for Facebook and
-   "Roboto Medium" for Google - neither of which this site loads, so both were
-   rendering in a system fallback anyway. */
-.nsl-container .nsl-button .nsl-button-label-container{
-	margin-inline:0;
-	padding-block:var(--space-2xs);
-	padding-inline-end:var(--space-xs);
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
-	line-height:1.2;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
-}
-
-/* -- the white one, which is invisible without an edge ----------------------- */
-.nsl-container .nsl-button-google[data-skin="light"]{
-	box-shadow:inset 0 0 0 1px var(--hairline);
-	color:var(--ink);
-}
-.nsl-container .nsl-button-default{ color:#fff }
-.nsl-container .nsl-button-google[data-skin="light"] .nsl-button-label-container{
-	color:var(--ink);
-}
 
 /* -- focus, which the plugin never draws at all ------------------------------
    Measured: no :focus or :focus-visible rule anywhere in its inline sheet. A

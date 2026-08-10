@@ -83,6 +83,8 @@
 @import url("patterns/hero.css")    layer(patterns);
 @import url("patterns/burst.css")   layer(patterns);
 @import url("patterns/catalogue.css") layer(patterns);
+@import url("patterns/grid.css")   layer(patterns);
+@import url("patterns/social.css") layer(patterns);
 @import url("generated/category-banners.css") layer(patterns);
 @import url("patterns/progress.css") layer(patterns);
 @import url("patterns/wipe.css")     layer(patterns);
