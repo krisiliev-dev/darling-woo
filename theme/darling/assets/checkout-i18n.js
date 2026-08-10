@@ -17,7 +17,11 @@
 		//   p.wc-block-components-totals-footer-item-shipping  427x20
 		//   div.wc-block-components-button__text  173x28  the primary cart CTA
 		// The cart block renders these client-side, so only the JS hook reaches them.
-		'Estimated total': 'Приблизително общо',
+		// *** NOT "приблизително". *** Owner: there is already a line under this
+		// saying the delivery is worked out at checkout, so the number above it
+		// is not an estimate of anything - it is the total of the products, and
+		// hedging a price the customer can add up themselves reads as evasive.
+		'Estimated total': 'Общо',
 		'Shipping will be calculated at checkout': 'Доставката се изчислява при поръчката',
 		'Proceed to Checkout': 'Продължи към поръчката',
 		'Place Order': 'Поръчай',
