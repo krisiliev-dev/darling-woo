@@ -1,0 +1,51 @@
+{
+  "_readme": [
+    "Every exception is named individually, with a reason, and nothing here is a count.",
+    "A threshold lets a NEW failure hide behind a fixed one; a named list makes each",
+    "exception something a person decided and can be asked about later.",
+    "Delete an entry to make the check bite again.",
+    "",
+    "*** WHAT IS NOT IN HERE IS THE POINT. *** The contrast and target failures this",
+    "suite reports today are REAL and are deliberately left failing. Do not silence",
+    "them here; fix them in src/, or bring a reason and add them with it."
+  ],
+
+  "allowedFailedRenders": 9,
+  "_allowedFailedRendersWhy": "Firefox times out loading the mirrored product, cart and checkout pages at every viewport - 9 of 81. The pages carry the WooCommerce blocks bundle and a Store API fetch that can never resolve offline. Not a site defect and not a Firefox defect; an artefact of mirroring. Lower this to 0 the day the mirror stubs the Store API.",
+
+  "overflow": [],
+
+  "parity": [],
+
+  "contrast": [
+    { "id": "rgb(255, 255, 255) on rgb(24,119,242)", "why": "The social-login plugin's own Facebook button. Their brand colour, their markup, their 4.23:1. Not ours to fix in src/ - raise it with the plugin or replace the button." }
+  ],
+
+  "targets": [
+    { "id": "a.skip-link", "why": "1x1 by design until focused - the standard visually-hidden skip link. WCAG 2.2 target size does not apply to a control that is not visible; when it IS focused it is full size." },
+    { "id": "iframe.", "why": "Tracking and payment iframes rendered 1px tall. Not interactive targets." },
+    { "id": "a.woocommerce-privacy-policy-link", "why": "An inline link inside a sentence of body text - explicitly exempt under WCAG 2.2 SC 2.5.8 (inline in a block of text)." }
+  ],
+
+  "runtimeVars": [
+    "--dur", "--peak", "--s", "--d", "--a", "--r0", "--r1",
+    "--burst-x", "--burst-y", "--burst-colour", "--burst-alt"
+  ],
+  "_runtimeVarsWhy": "Set per element from JS or an inline style attribute, never in a stylesheet. ambient.js writes --dur and --peak on every star it spawns; the newsletter and notice sparks carry --a/--s/--d inline. Declaring them in :root would give every element a wrong default rather than no value.",
+
+  "budget": {
+    "cssRawKB": 300,
+    "cssGzipKB": 55,
+    "cssBrotliKB": 45,
+    "ruleBlocks": 2000,
+    "important": 32
+  },
+  "_budgetWhy": [
+    "Set from what the system measures TODAY plus a little headroom, not from an aspiration:",
+    "  raw 274 KB -> budget 300      gzip 47 KB -> budget 55",
+    "  brotli 36 KB -> budget 45     rules 1845 -> budget 2000     !important 29 -> budget 32",
+    "The gzip number is the one that matters: it is what crosses a Bulgarian mobile network.",
+    "Raise a budget only with a reason in the commit message. A budget quietly raised to make",
+    "a build pass is not a budget."
+  ]
+}

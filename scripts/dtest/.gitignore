@@ -1,0 +1,5 @@
+# Build artefacts, not source. The mirror is 9 MB of somebody else's HTML, the
+# capture is a 900 KB JSON of one moment, and the shots are regenerated on every
+# run. The BASELINES are not here on purpose: those are the specification and
+# they belong in git.
+.work/
