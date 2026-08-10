@@ -797,6 +797,38 @@ hr{
    Same reason the band pattern is a grid rather than a negative margin. */
 main{ overflow-x:clip }
 
+/* =============================================================================
+   THE FLOOR UNDER AN UNSIZED <svg>
+   *** MEASURED: NINETEEN SVGs AT 1240 x 1240 ON THE CART. ***
+   The owner saw a screenshot with a cocoa ring about 800px across and thought
+   the image was broken. It was a magnifying glass. An inline
+   `<svg viewBox="0 0 24 24">` with no width and no height attribute, and no CSS
+   telling it a size, stretches to its container's inline size and then squares
+   itself off the viewBox ratio - so a 24px search icon became the width of the
+   page, and its lens became the ring.
+
+   Every one of the nineteen belonged to markup our stylesheet does not name:
+   `darling-header__icon`, `darling-search`, `dff-bow` - the LEGACY classes,
+   styled today by the style.css that the capture disables and the cutover
+   deletes. Which is the point: after the cutover, any SVG that arrives from a
+   plugin or from the block editor with no size on it does exactly this, and
+   nothing in the system was stopping it.
+
+   1em, because an icon is the only thing an unsized SVG is ever likely to be,
+   and an icon should be the size of the text it sits beside. Element
+   specificity (0,0,1), so every component that sizes its own SVG still wins -
+   .d-icon, .d-frame > svg, the notice mark, all of them are at least (0,1,0).
+
+   *** THIS IS A FLOOR, NOT A STYLE. *** If it ever shows up in a review, the
+   answer is not to change this rule; it is that something is emitting an SVG
+   nobody has sized, and that is the bug it is here to make visible instead of
+   catastrophic. */
+svg:not([width]):not([height]){
+	width:1em;
+	height:1em;
+}
+svg{ max-width:100% }
+
 }
 
 /* ==== patterns/layout.css ==== */
@@ -13279,6 +13311,29 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
    So: two classes, and background-COLOR rather than the background shorthand -
    a shorthand with var() in it is unreadable through the CSSOM and unhelpful
    when the next person asks the page who set this. */
+/* *** THE CART'S SUBMIT IS AN <a>, AND AN INLINE <a> CANNOT BE A BUTTON. ***
+   Found while chasing the owner's "broken image": a cherry pill on the cart
+   that had come apart into two half-circles, one at the end of each line.
+   Measured: `a.wc-block-cart__submit-button`, 312 x 108, background cherry,
+   border-radius 999px - and `display:inline`. An inline box that wraps is TWO
+   boxes, and a 999px radius rounds the outside end of each of them.
+
+   The place-order button below is a real <button> and never had this. Nothing
+   in this file had ever named the cart's, because the cart is a surface we have
+   not reached yet - so it took the page's own button styling from nowhere and
+   the radius from the element rule.
+
+   inline-flex, which is what every other button in this system is. Placed here
+   with the checkout's because the family is shared; it moves to the cart's own
+   adopted file the day that file exists. */
+.wc-block-components-button.wc-block-cart__submit-button,
+a.wc-block-components-button{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	text-align:center;
+	text-decoration:none;
+}
 .wc-block-components-button.wc-block-components-checkout-place-order-button{
 	display:inline-flex;
 	align-items:center;

@@ -87,3 +87,35 @@ hr{
    it is not inside. `clip` cuts the overflow without creating that container.
    Same reason the band pattern is a grid rather than a negative margin. */
 main{ overflow-x:clip }
+
+/* =============================================================================
+   THE FLOOR UNDER AN UNSIZED <svg>
+   *** MEASURED: NINETEEN SVGs AT 1240 x 1240 ON THE CART. ***
+   The owner saw a screenshot with a cocoa ring about 800px across and thought
+   the image was broken. It was a magnifying glass. An inline
+   `<svg viewBox="0 0 24 24">` with no width and no height attribute, and no CSS
+   telling it a size, stretches to its container's inline size and then squares
+   itself off the viewBox ratio - so a 24px search icon became the width of the
+   page, and its lens became the ring.
+
+   Every one of the nineteen belonged to markup our stylesheet does not name:
+   `darling-header__icon`, `darling-search`, `dff-bow` - the LEGACY classes,
+   styled today by the style.css that the capture disables and the cutover
+   deletes. Which is the point: after the cutover, any SVG that arrives from a
+   plugin or from the block editor with no size on it does exactly this, and
+   nothing in the system was stopping it.
+
+   1em, because an icon is the only thing an unsized SVG is ever likely to be,
+   and an icon should be the size of the text it sits beside. Element
+   specificity (0,0,1), so every component that sizes its own SVG still wins -
+   .d-icon, .d-frame > svg, the notice mark, all of them are at least (0,1,0).
+
+   *** THIS IS A FLOOR, NOT A STYLE. *** If it ever shows up in a review, the
+   answer is not to change this rule; it is that something is emitting an SVG
+   nobody has sized, and that is the bug it is here to make visible instead of
+   catastrophic. */
+svg:not([width]):not([height]){
+	width:1em;
+	height:1em;
+}
+svg{ max-width:100% }
