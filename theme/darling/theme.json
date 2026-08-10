@@ -314,6 +314,26 @@
 			"lineHeight": "1.6",
 			"fontWeight": "400",
 			"letterSpacing": "normal"
+		},
+		"elements": {
+			"button": {
+				"color": {
+					"background": "var(--wp--preset--color--cherry)",
+					"text": "var(--wp--preset--color--cream)"
+				},
+				"border": {
+					"radius": "999px"
+				},
+				"typography": {
+					"fontWeight": "600"
+				},
+				":hover": {
+					"color": {
+						"background": "var(--wp--preset--color--claret)",
+						"text": "var(--wp--preset--color--cream)"
+					}
+				}
+			}
 		}
 	}
 }

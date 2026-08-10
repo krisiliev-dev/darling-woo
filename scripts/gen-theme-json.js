@@ -41,6 +41,7 @@ function tokens(css) {
 const colour = tokens(read('tokens/colour.css'));
 const type = tokens(read('tokens/type.css'));
 const space = tokens(read('tokens/space.css'));
+const radius = tokens(read('tokens/radius.css'));
 
 // ---- palette ---------------------------------------------------------------
 // The --c-* primitives and nothing else. Primitives name the VALUE, semantics
@@ -213,6 +214,36 @@ const theme = {
       // src/ declares no letter-spacing token at any size, so the system's
       // answer is `normal`. Stated rather than omitted, for the reason above.
       letterSpacing: 'normal'
+    },
+    // *** AND WHEN THE PARENT LEFT, WORDPRESS CORE TOOK THE BUTTON. ***
+    // Dropping Twenty Twenty-Five closed four leaks and opened one: core's own
+    // theme.json also declares .wp-element-button, and with nobody overriding it
+    // the account form's submit buttons went from gold to #32373c on white -
+    // measured rgb(50,55,60) on /my-account/ minutes after the switch.
+    //
+    // Same lesson as the typography block directly above, one origin further
+    // out: what this file omits is not left to base/elements.css, it is left to
+    // whoever declares it next. There is no longer a parent theme; there is
+    // still core.
+    //
+    // These are OUR tokens through our own presets, so the editor's button and
+    // the stylesheet's .d-btn cannot drift: --action is var(--c-cherry) and
+    // --action-ink is var(--c-cream) in tokens/colour.css.
+    elements: {
+      button: {
+        color: {
+          background: 'var(--wp--preset--color--cherry)',
+          text: 'var(--wp--preset--color--cream)'
+        },
+        border: { radius: radius.get('--radius-pill') || '999px' },
+        typography: { fontWeight: type.get('--fw-medium') || '600' },
+        ':hover': {
+          color: {
+            background: 'var(--wp--preset--color--claret)',
+            text: 'var(--wp--preset--color--cream)'
+          }
+        }
+      }
     }
   }
 };
