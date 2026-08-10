@@ -50,7 +50,15 @@
 @property --glow-hover{   syntax:"<number>"; inherits:false; initial-value:1 }
 
 :root{
-	--grain-src: url("../assets/ply-grain.webp");
+	/* ABSOLUTE, like every other url() in src/. This was `../assets/â€¦`, which is
+	   correct relative to THIS file and wrong relative to the built sheet: the
+	   build concatenates src/*.css into theme/darling/darling.build.css, one
+	   directory up, so `../assets/` resolved to /wp-content/themes/assets/ and
+	   404ed 101 times on the first page load after the enqueue went live. It had
+	   been wrong for as long as the file existed and could not show, because
+	   nothing loaded the built sheet until today. build-css.js now refuses a
+	   relative url() outright. */
+	--grain-src: url("/wp-content/themes/darling/assets/ply-grain.webp");
 	--grain-mask: radial-gradient(64% 190% at 50% 50%, transparent 0 26%, #000 86%);
 
 	/* How far the swarm spreads past the edge. In em, so it tracks the

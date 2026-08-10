@@ -64,6 +64,35 @@ for (const im of imports) {
   const [o, c] = braces(strip(fs.readFileSync(p, 'utf8')));
   if (o !== c) unbalanced.push('  ' + im.file + '   ' + o + ' open, ' + c + ' close');
 }
+/* *** RELATIVE url() IS A LIE IN THE BUILT SHEET. ***
+   Authoring happens in theme/darling/src/; the build lands one directory up, at
+   theme/darling/darling.build.css. So `url("../assets/x.webp")` - correct while
+   you are reading the source file - resolves against the OUTPUT once built, to
+   /wp-content/themes/assets/x.webp, a directory that holds every theme on the
+   box and not our asset.
+   It cost nothing for months because nothing loaded the built sheet. The first
+   page load after the enqueue went live requested a missing grain texture 101
+   times on the home page alone, and the only symptom was a console the size of
+   a phone book. Every other url() in src/ is already absolute; this makes the
+   convention a rule instead of a habit. */
+const badUrl = [];
+for (const im of imports) {
+  const p = path.join(SRC, im.file);
+  if (!fs.existsSync(p)) continue;
+  const body = strip(fs.readFileSync(p, 'utf8'));
+  for (const m of body.matchAll(/url\(\s*(["']?)([^"')]+)\1\s*\)/g)) {
+    const u = m[2].trim();
+    if (/^(data:|https?:|\/|#)/.test(u)) continue;
+    badUrl.push('  ' + im.file + '   url(' + u + ')');
+  }
+}
+if (badUrl.length) {
+  console.error('\nRELATIVE url() IN src/ - these resolve from the BUILT sheet, one directory\n'
+    + 'up, not from the file you wrote them in:\n' + badUrl.join('\n')
+    + '\n\nWrite them absolute: url("/wp-content/themes/darling/assets/...").\n'
+    + 'Nothing was written; the previous build is still on disk.\n');
+  process.exit(1);
+}
 const [bo, bc] = braces(strip(out));
 if (bo !== bc) unbalanced.push('  (built output)   ' + bo + ' open, ' + bc + ' close');
 if (unbalanced.length) {
