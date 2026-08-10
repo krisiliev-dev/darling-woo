@@ -15,9 +15,21 @@ const serve = require(path.join(R, 'dtest', 'serve'));
     await p.goto('http://127.0.0.1:' + port + '/' + pg + '.html', { waitUntil: 'load' });
     await p.waitForTimeout(600);
     const r = await p.evaluate(() => {
+      /* *** THE TEST IS "IS ANYTHING PAINTED", NOT "IS THE BOX 1x1". ***
+       * An absolutely positioned <caption> measures 1x10 in Chrome however the
+       * height is specified - the table wrapper wins - and it is still
+       * completely invisible, because clip-path:inset(50%) paints nothing at
+       * any size. Asserting 1x1 would have failed a node that is perfectly
+       * hidden. Asserting "clipped, one pixel wide, and still in the
+       * accessibility tree" is the actual requirement, and it keeps its teeth:
+       * delete our rule and clip-path goes to none, which fails. */
       const probe = () => [...document.querySelectorAll('.screen-reader-text')].map((e) => {
         const b = e.getBoundingClientRect();
-        return { t: (e.textContent || '').trim().slice(0, 30), w: Math.round(b.width), h: Math.round(b.height) };
+        const c = getComputedStyle(e);
+        return { t: (e.textContent || '').trim().slice(0, 30),
+                 w: Math.round(b.width), h: Math.round(b.height),
+                 clipped: c.clipPath !== 'none',
+                 announced: c.display !== 'none' && c.visibility !== 'hidden' };
       });
       const before = probe();
       const off = [];
@@ -30,8 +42,9 @@ const serve = require(path.join(R, 'dtest', 'serve'));
     console.log(pg + '   disabled: ' + r.off.join(', '));
     r.after.forEach((a, i) => {
       const bf = r.before[i];
-      const ok = a.w <= 1 && a.h <= 1 ? 'OK  ' : 'LEAK';
-      if (ok === 'LEAK') leaks++;
+      const hidden = a.clipped && a.w <= 1;
+      const ok = hidden && a.announced ? 'OK  ' : (a.announced ? 'LEAK' : 'MUTE');
+      if (ok !== 'OK  ') leaks++;   // MUTE is a failure too: hidden from the screen reader as well
       console.log('   ' + ok + '  ' + (bf.w + 'x' + bf.h).padEnd(10) + '-> ' + (a.w + 'x' + a.h).padEnd(10) + '"' + a.t + '"');
     });
   }

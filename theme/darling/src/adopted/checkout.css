@@ -677,16 +677,7 @@
 
    *** THIS IS A STOPGAP AND SHOULD DIE. *** The plugin must consume our picker.
    Hidden, not removed, so nothing silently stops being sent to Barsy. */
-.wc-block-components-address-form__darling-office-id{
-	position:absolute;
-	width:1px;
-	height:1px;
-	padding:0;
-	margin:-1px;
-	overflow:hidden;
-	clip-path:inset(50%);
-	white-space:nowrap;
-}
+/* the office-id field is visually hidden - recipe in adopted/vh.css */
 
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
@@ -1113,14 +1104,7 @@ a.wc-block-components-button{
 /* *** THE INPUT IS HIDDEN, NOT REMOVED, AND NOT display:none. *** It is still
    what is focused, what arrow keys move between and what the form submits; a
    display:none radio is none of those things. */
-.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input{
-	position:absolute;
-	width:1px;
-	height:1px;
-	margin:-1px;
-	overflow:hidden;
-	clip-path:inset(50%);
-}
+/* the rate-grid radio is visually hidden - recipe in adopted/vh.css */
 /* The courier name is now the column head, so the cell keeps only the price. */
 .wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__label{
 	display:none;

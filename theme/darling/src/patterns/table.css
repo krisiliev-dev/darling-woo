@@ -126,12 +126,8 @@
 /* -- stacked, for our own markup -------------------------------------------
    Each cell carries data-title and becomes a labelled line. */
 @media (max-width: 600px){
-	.d-table--stack thead{
-		position:absolute;
-		width:1px; height:1px;
-		overflow:hidden;
-		clip-path:inset(50%);
-	}
+	/* thead is visually hidden at this width - see adopted/vh.css, which owns
+	   the recipe for all three stacking tables at once. */
 	/* *** THIS IS WHY THE STRIPE EARNS ITS KEEP. ***
 	   At this width every cell is its own line, so a horizontal hairline between
 	   ROWS would be indistinguishable from one between cells. The alternating

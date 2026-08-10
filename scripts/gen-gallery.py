@@ -675,23 +675,30 @@ FIELDS = [
     ('Имейл адрес', 'email', 'mariya@', '', 'Това не изглежда като валиден имейл.'),
     ('Телефон', 'tel', '', '', ''),
 ]
-for label, typ, val, hint, err in FIELDS:
+# *** THE LABEL HAD NO `for` AND DID NOT WRAP THE INPUT, SO IT NAMED NOTHING. ***
+# axe, run over this gallery: 10 x `label` [critical]. A <label> that is neither
+# associated by `for` nor wrapping its control is decoration - a sighted person
+# reads it and a screen reader announces the field as "edit text, blank". The
+# pattern's markup contract is `for`/`id`, and the gallery has to show that or it
+# teaches the broken shape to whoever copies from it.
+for fi, (label, typ, val, hint, err) in enumerate(FIELDS):
     cls = 'd-field d-field--invalid' if err else 'd-field'
-    A('<div class="%s"><label class="d-field__label">%s</label>'
-      '<input class="d-field__control" type="%s" value="%s" placeholder=" ">'
-      % (cls, html.escape(label), typ, html.escape(val)))
+    fid = 'gf-%d' % fi
+    A('<div class="%s"><label class="d-field__label" for="%s">%s</label>'
+      '<input class="d-field__control" id="%s" type="%s" value="%s" placeholder=" ">'
+      % (cls, fid, html.escape(label), fid, typ, html.escape(val)))
     if hint:
         A('<p class="d-field__hint">%s</p>' % html.escape(hint))
     A('<p class="d-field__error">%s</p></div>' % html.escape(err))
 
-A('''<div class="d-field"><label class="d-field__label">Област</label>
-<select class="d-field__control"><option>Изберете област</option><option>София</option>
+A('''<div class="d-field"><label class="d-field__label" for="gf-region">Област</label>
+<select class="d-field__control" id="gf-region"><option>Изберете област</option><option>София</option>
 <option>Пловдив</option></select><p class="d-field__error"></p></div>
-<div class="d-field"><label class="d-field__label">Бележка към поръчката</label>
-<textarea class="d-field__control" placeholder="По избор"></textarea>
+<div class="d-field"><label class="d-field__label" for="gf-note">Бележка към поръчката</label>
+<textarea class="d-field__control" id="gf-note" placeholder="По избор"></textarea>
 <p class="d-field__error"></p></div>
-<div class="d-field d-field--disabled"><label class="d-field__label">ЕИК</label>
-<input class="d-field__control" type="text" value="206094211" disabled>
+<div class="d-field d-field--disabled"><label class="d-field__label" for="gf-eik">ЕИК</label>
+<input class="d-field__control" id="gf-eik" type="text" value="206094211" disabled>
 <p class="d-field__error"></p></div>
 </div>
 <p class="lbl" style="margin-top:18px">Checkbox and radio &mdash; drawn, not native,
@@ -1123,10 +1130,10 @@ A('''</div>
 <span style="color:var(--g-shadow);font-size:24px"><span class="d-icon d-icon--star"></span></span>
 <span style="color:var(--ink-quiet);font-size:24px"><span class="d-icon d-icon--truck"></span></span>
 <a class="d-btn d-finish" href="#"><span class="d-icon d-icon--cart"></span>&nbsp; В количката</a>
-<button class="d-icon-btn"><span class="d-icon d-icon--search"></span></button>
-<button class="d-icon-btn"><span class="d-icon d-icon--cart"></span>
+<button class="d-icon-btn" aria-label="Търсене"><span class="d-icon d-icon--search"></span></button>
+<button class="d-icon-btn" aria-label="Количка"><span class="d-icon d-icon--cart"></span>
   <span class="d-icon-btn__count">3</span></button>
-<button class="d-icon-btn"><span class="d-icon d-icon--user"></span></button>
+<button class="d-icon-btn" aria-label="Профил"><span class="d-icon d-icon--user"></span></button>
 <span style="font-size:24px;color:var(--c-cocoa)"><span class="d-icon d-icon--spinner d-icon--spin"></span></span>
 </div>
 <div class="todo"><b>The glyph table</b>, so the next person can check the work
@@ -1274,22 +1281,22 @@ lives on the <em>button</em> rather than on the icon.</p>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
   <span style="font-size:26px;color:var(--c-cocoa)"><span class="d-icon d-icon--spinner"></span></span>always</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <button class="d-icon-btn" data-cart-button onclick="this.setAttribute('data-added','');setTimeout(()=>this.removeAttribute('data-added'),900)">
+  <button class="d-icon-btn" aria-label="Количка" data-cart-button onclick="this.setAttribute('data-added','');setTimeout(()=>this.removeAttribute('data-added'),900)">
   <span class="d-icon d-icon--cart"></span></button>press me</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <button class="d-icon-btn"><span class="d-icon d-icon--user"></span></button>hover</span>
+  <button class="d-icon-btn" aria-label="Профил"><span class="d-icon d-icon--user"></span></button>hover</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <button class="d-icon-btn"><span class="d-icon d-icon--search"></span></button>hover</span>
+  <button class="d-icon-btn" aria-label="Търсене"><span class="d-icon d-icon--search"></span></button>hover</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
   <input type="checkbox" class="d-heart" aria-label="Любими">tick me</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <button class="d-icon-btn"><span class="d-icon d-icon--close"></span></button>hover</span>
+  <button class="d-icon-btn" aria-label="Затвори"><span class="d-icon d-icon--close"></span></button>hover</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <a class="d-icon-btn" href="#"><span class="d-icon d-icon--download"></span></a>hover</span>
+  <a class="d-icon-btn" href="#" aria-label="Изтегли"><span class="d-icon d-icon--download"></span></a>hover</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <a class="d-icon-btn" href="#"><span class="d-icon d-icon--return"></span></a>hover</span>
+  <a class="d-icon-btn" href="#" aria-label="Върни"><span class="d-icon d-icon--return"></span></a>hover</span>
 <span style="display:grid;justify-items:center;gap:6px;font-size:var(--fs-fine);color:var(--ink-quiet)">
-  <a class="d-icon-btn" href="#"><span class="d-icon d-icon--chevron-right"></span></a>hover</span>
+  <a class="d-icon-btn" href="#" aria-label="Напред"><span class="d-icon d-icon--chevron-right"></span></a>hover</span>
 </div>
 <div class="todo"><b>Deliberately still:</b> mail, phone, info, warning, error,
 the stars inside a rating, plus and minus. The notices those sit on already
@@ -1469,7 +1476,7 @@ reported at build time instead of rendering an empty claret box.</p>
 <div class="d-toolbar">
   <p class="d-toolbar__count">Показани 1&ndash;12 от 48</p>
   <span class="d-toolbar__spacer"></span>
-  <label class="d-field" style="margin:0"><select class="d-field__select">
+  <label class="d-field" style="margin:0"><span class="d-vh">Подредба</span><select class="d-field__select" aria-label="Подредба">
     <option>Подредба по подразбиране</option><option>Най-нови</option>
     <option>Цена: ниска към висока</option></select></label>
   <!-- The markup here is COPIED FROM templates/archive-product.html, svg and
@@ -1641,7 +1648,7 @@ fixture. Re-check them the day a photographed product with a review exists.</p>
     <a href="#" class="woocommerce-product-gallery__trigger" aria-label="Уголеми">zoom<span aria-hidden="true"></span></a>
     <div class="flex-viewport">
       <div class="woocommerce-product-gallery__wrapper">
-        <div class="woocommerce-product-gallery__image"><a href="#"><img src="''' + CUTOUT + '''" alt=""></a></div>
+        <div class="woocommerce-product-gallery__image"><a href="#" aria-label="Уголеми снимката"><img src="''' + CUTOUT + '''" alt=""></a></div>
       </div>
     </div>
     <ol class="flex-control-nav flex-control-thumbs">''')
@@ -2849,11 +2856,11 @@ that and this is that <code>--gutter-bar</code> is named, is one number, and
     <h3 style="font:var(--type-section);margin:0">&#x410;&#x434;&#x440;&#x435;&#x441; &#x437;&#x430; &#x434;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</h3>
     <div class="d-fieldgrid" style="margin-top:0">
       <div class="d-field"><label class="d-field__label">&#x418;&#x43C;&#x435;</label>
-        <input class="d-field__control" type="text" value="&#x41C;&#x430;&#x440;&#x438;&#x44F;" placeholder=" "><p class="d-field__error"></p></div>
+        <input class="d-field__control" type="text" value="&#x41C;&#x430;&#x440;&#x438;&#x44F;" placeholder=" " aria-label="&#x418;&#x43C;&#x435;"><p class="d-field__error"></p></div>
       <div class="d-field"><label class="d-field__label">&#x424;&#x430;&#x43C;&#x438;&#x43B;&#x438;&#x44F;</label>
-        <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+        <input class="d-field__control" type="text" placeholder=" " aria-label="Пример"><p class="d-field__error"></p></div>
       <div class="d-field d-field--wide"><label class="d-field__label">&#x410;&#x434;&#x440;&#x435;&#x441;</label>
-        <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+        <input class="d-field__control" type="text" placeholder=" " aria-label="Пример"><p class="d-field__error"></p></div>
     </div>
     <label class="d-check"><input type="checkbox" checked><span>&#x418;&#x437;&#x43F;&#x43E;&#x43B;&#x437;&#x432;&#x430;&#x439; &#x441;&#x44A;&#x449;&#x438;&#x44F; &#x430;&#x434;&#x440;&#x435;&#x441; &#x438; &#x437;&#x430; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x438;&#x440;&#x430;&#x43D;&#x435;</span></label>
     <button class="d-btn d-finish" style="width:100%">&#x41F;&#x43E;&#x440;&#x44A;&#x447;&#x430;&#x439;</button>
@@ -3109,7 +3116,7 @@ A(u'''</div>
 <table class="d-table" style="max-width:640px"><tbody>
 <tr><td style="width:50%"><div class="d-box d-box--outline">
   <div class="d-field"><label class="d-field__label">\u041a\u043e\u0434</label>
-  <input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>
+  <input class="d-field__control" type="text" placeholder=" " aria-label="Пример"><p class="d-field__error"></p></div>
 </div></td>
 <td><div class="d-box d-box--outline"><div class="wc-block-components-form">
   <div class="wc-block-components-text-input"><input type="text" placeholder=" " id="mx-wc"><label for="mx-wc">\u041a\u043e\u0434</label></div>
@@ -3128,7 +3135,7 @@ MX_ALONE = [
     (u'd-badge', u'<span class="d-badge">\u041d\u043e\u0432\u043e</span>'),
     (u'd-check', u'<label class="d-check"><input type="checkbox" checked><span>\u0421 \u043a\u0443\u0442\u0438\u044f</span></label>'),
     (u'd-field', u'<div class="d-field"><label class="d-field__label">\u0418\u043c\u0435</label>'
-                 u'<input class="d-field__control" type="text" placeholder=" "><p class="d-field__error"></p></div>'),
+                 u'<input class="d-field__control" type="text" placeholder=" " aria-label="Пример"><p class="d-field__error"></p></div>'),
     (u'd-notice', u'<div class="d-notice d-notice--info"><span class="d-notice__stars"></span>'
                   u'<span class="d-notice__stars"></span><span class="d-notice__stars"></span>'
                   u'<div class="d-notice__body">\u0411\u0435\u0437\u043f\u043b\u0430\u0442\u043d\u0430 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430</div></div>'),

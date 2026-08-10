@@ -5511,16 +5511,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	           background var(--dur-ui) var(--ease-float),
 	           box-shadow var(--dur-ui) var(--ease-float);
 }
-.d-choice input{
-	position:absolute;
-	width:1px;
-	height:1px;
-	margin:-1px;
-	padding:0;
-	overflow:hidden;
-	clip-path:inset(50%);
-	white-space:nowrap;
-}
+/* .d-choice input is visually hidden - the recipe lives once, in
+   patterns/a11y.css beside .d-vh. */
 .d-choice__price{
 	font:var(--fw-medium) var(--fs-meta)/1.1 var(--font-ui);
 	font-variant-numeric:tabular-nums;
@@ -5690,12 +5682,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 /* -- stacked, for our own markup -------------------------------------------
    Each cell carries data-title and becomes a labelled line. */
 @media (max-width: 600px){
-	.d-table--stack thead{
-		position:absolute;
-		width:1px; height:1px;
-		overflow:hidden;
-		clip-path:inset(50%);
-	}
+	/* thead is visually hidden at this width - see adopted/vh.css, which owns
+	   the recipe for all three stacking tables at once. */
 	/* *** THIS IS WHY THE STRIPE EARNS ITS KEEP. ***
 	   At this width every cell is its own line, so a horizontal hairline between
 	   ROWS would be indistinguishable from one between cells. The alternating
@@ -9472,7 +9460,11 @@ html.d-a11y .d-fab{ text-decoration:none }
    into it.
    ========================================================================== */
 .d-vh,
-.screen-reader-text{
+.screen-reader-text,
+/* A radio or checkbox that is drawn by its own label - .d-choice paints the box,
+   so the real control must be unseeable and still focusable, checkable and
+   announced. Listed here rather than repeating the recipe in field.css. */
+.d-choice input{
 	position:absolute;
 	width:1px;
 	height:1px;
@@ -10430,6 +10422,75 @@ html.d-a11y .d-fab{ text-decoration:none }
    but not `*::after`. Harmless today because ::after carries only the static
    grain, but the next animated ::after on a checkout page will run. Fix belongs
    in motion.css. */
+}
+
+
+/* ==== adopted/vh.css ==== */
+/* =============================================================================
+   ADOPTED / VISUALLY HIDDEN, THE UNLAYERED HALF
+
+   *** WHY THE RECIPE EXISTS TWICE AND WHY THAT IS NOT THE THING IT WAS. ***
+   patterns/a11y.css owns `.d-vh` and `.screen-reader-text`, layered. These four
+   selectors could not join it: they dress WooCommerce's own markup and have to
+   beat WooCommerce's own rules, and a layered declaration loses to an unlayered
+   one whatever its specificity. So the recipe is written twice - once per
+   ORIGIN, which is a cascade fact, rather than six times in six components,
+   which was carelessness.
+
+   Before this there were SIX copies, in field.css, patterns/table.css,
+   adopted/table.css (twice) and adopted/checkout.css (twice). THREE OF THEM WERE
+   WRONG: the `thead` copies set only position/width/height/overflow/clip-path
+   and left out `margin:-1px`, `padding:0`, `border:0` and `white-space:nowrap`,
+   so each left a real 1px box sitting in the flow with its content able to wrap
+   one character per line. Nothing looked broken, which is exactly how six copies
+   of a recipe stay wrong.
+
+   The day the WooCommerce sheets are dequeued, this file merges into
+   patterns/a11y.css and the duplication goes with it.
+   ========================================================================== */
+
+/* -- controls drawn by something else ---------------------------------------
+   The real input must be unseeable and still focusable, checkable and announced;
+   what the customer sees is the label or the row that we paint instead. */
+.wc-block-components-address-form__darling-office-id,
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input{
+	position:absolute;
+	width:1px;
+	height:1px;
+	margin:-1px;
+	padding:0;
+	border:0;
+	overflow:hidden;
+	clip-path:inset(50%);
+	white-space:nowrap;
+	overflow-wrap:normal;
+	word-break:normal;
+}
+
+/* -- a table that stops being a table ---------------------------------------
+   Below 600px every cell becomes its own line, so the column heads have nothing
+   left to head. They are hidden rather than removed because they are still what
+   a screen reader uses to say which value it is reading - `display:none` here
+   would take the row's meaning with it.
+
+   All three stacking tables in one rule: our own .d-table--stack, the block
+   cart, and the classic responsive/orders tables. They were three copies of the
+   same idea in two files. */
+@media (max-width: 600px){
+	.d-table--stack thead,
+	.wc-block-cart-items.wc-block-cart-items thead,
+	.woocommerce table.shop_table_responsive thead,
+	.woocommerce-orders-table thead{
+		position:absolute;
+		width:1px;
+		height:1px;
+		margin:-1px;
+		padding:0;
+		border:0;
+		overflow:hidden;
+		clip-path:inset(50%);
+		white-space:nowrap;
+	}
 }
 
 
@@ -11957,12 +12018,7 @@ main .entry-content > .woocommerce {
    both lines, product and total stacked on the right - which needs no help from
    the markup at all. */
 @media (max-width: 600px){
-	.wc-block-cart-items.wc-block-cart-items thead{
-		position:absolute;
-		width:1px; height:1px;
-		overflow:hidden;
-		clip-path:inset(50%);
-	}
+	/* thead visually hidden at this width - recipe in adopted/vh.css */
 	.wc-block-cart-items.wc-block-cart-items tr{
 		display:grid;
 		grid-template-columns:4.5em 1fr;
@@ -12086,13 +12142,7 @@ main .entry-content > .woocommerce {
 .woocommerce table.shop_attributes tr:last-child td{ border-bottom:0 }
 
 @media (max-width: 600px){
-	.woocommerce table.shop_table_responsive thead,
-	.woocommerce-orders-table thead{
-		position:absolute;
-		width:1px; height:1px;
-		overflow:hidden;
-		clip-path:inset(50%);
-	}
+	/* thead visually hidden at this width - recipe in adopted/vh.css */
 	.woocommerce table.shop_table_responsive tr,
 	.woocommerce-orders-table tr{
 		display:block;
@@ -14450,16 +14500,7 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 
    *** THIS IS A STOPGAP AND SHOULD DIE. *** The plugin must consume our picker.
    Hidden, not removed, so nothing silently stops being sent to Barsy. */
-.wc-block-components-address-form__darling-office-id{
-	position:absolute;
-	width:1px;
-	height:1px;
-	padding:0;
-	margin:-1px;
-	overflow:hidden;
-	clip-path:inset(50%);
-	white-space:nowrap;
-}
+/* the office-id field is visually hidden - recipe in adopted/vh.css */
 
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
@@ -14886,14 +14927,7 @@ a.wc-block-components-button{
 /* *** THE INPUT IS HIDDEN, NOT REMOVED, AND NOT display:none. *** It is still
    what is focused, what arrow keys move between and what the form submits; a
    display:none radio is none of those things. */
-.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input{
-	position:absolute;
-	width:1px;
-	height:1px;
-	margin:-1px;
-	overflow:hidden;
-	clip-path:inset(50%);
-}
+/* the rate-grid radio is visually hidden - recipe in adopted/vh.css */
 /* The courier name is now the column head, so the cell keeps only the price. */
 .wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__label{
 	display:none;

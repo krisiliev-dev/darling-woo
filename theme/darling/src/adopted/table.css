@@ -81,12 +81,7 @@
    both lines, product and total stacked on the right - which needs no help from
    the markup at all. */
 @media (max-width: 600px){
-	.wc-block-cart-items.wc-block-cart-items thead{
-		position:absolute;
-		width:1px; height:1px;
-		overflow:hidden;
-		clip-path:inset(50%);
-	}
+	/* thead visually hidden at this width - recipe in adopted/vh.css */
 	.wc-block-cart-items.wc-block-cart-items tr{
 		display:grid;
 		grid-template-columns:4.5em 1fr;
@@ -210,13 +205,7 @@
 .woocommerce table.shop_attributes tr:last-child td{ border-bottom:0 }
 
 @media (max-width: 600px){
-	.woocommerce table.shop_table_responsive thead,
-	.woocommerce-orders-table thead{
-		position:absolute;
-		width:1px; height:1px;
-		overflow:hidden;
-		clip-path:inset(50%);
-	}
+	/* thead visually hidden at this width - recipe in adopted/vh.css */
 	.woocommerce table.shop_table_responsive tr,
 	.woocommerce-orders-table tr{
 		display:block;

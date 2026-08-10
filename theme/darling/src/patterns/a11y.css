@@ -311,7 +311,11 @@ html.d-a11y .d-fab{ text-decoration:none }
    into it.
    ========================================================================== */
 .d-vh,
-.screen-reader-text{
+.screen-reader-text,
+/* A radio or checkbox that is drawn by its own label - .d-choice paints the box,
+   so the real control must be unseeable and still focusable, checkable and
+   announced. Listed here rather than repeating the recipe in field.css. */
+.d-choice input{
 	position:absolute;
 	width:1px;
 	height:1px;
