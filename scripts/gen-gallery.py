@@ -241,16 +241,13 @@ HEADER_SPECIMEN = '''<header class="d-header" style="position:relative">
   <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">Дарлинг</a>
     <nav class="d-nav"><ul>
-      <li><a href="#" aria-current="page">Начало</a></li>
-      <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list d-shell d-shell--bar">
-          <li><a class="d-mega__link" href="#">За кухнята</a></li>
-          <li><a class="d-mega__link" href="#">За банята</a></li>
-          <li><a class="d-mega__link" href="#">За децата</a></li>
-          <li><a class="d-mega__link" href="#">За градината</a></li>
-          <li><a class="d-mega__link" href="#">Декорация за дома</a></li>
-          <li><a class="d-mega__link" href="#">Подаръци</a></li>
-        </ul></div></li>
+					<li class="d-nav__mega">
+						<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
+					</li>
+					<li><a href="#">За нас</a></li>
+					<li><a href="#">Помощ</a></li>
+					<li><a href="#">Контакти</a></li>
+				</ul></div></li>
       <li><a href="#">Промоции</a></li>
       <li><a href="#">За нас</a></li>
     </ul></nav>
@@ -1479,7 +1476,7 @@ A('<div class="d-hero-band"><div class="d-hero d-hero--red">'
   '<span class="d-hero__star"></span><span class="d-hero__star"></span>'
   '<span class="d-hero__star"></span><span class="d-hero__star"></span></div>'
   '</div></div>')
-A('''<div class="wrap"><section class="sec">
+A('''<div class="wrap"><section class="sec" id="season"><h2>Pattern</h2><h3>Season band</h3>
 <p class="lbl" style="margin-top:34px">Season &mdash; a drifting claret gradient,
 gold heading, one cream pill</p>
 <a class="d-season" href="#" style="text-decoration:none">
@@ -3373,7 +3370,11 @@ out = ''.join(P)
 # headings too long to sit in a strip; anything not in it is named after its own
 # <h3>, truncated at the em dash. Add a section, get a link.
 NAV_LABEL = {
-	'chrome':    u'Header',       
+	'chrome':    u'Header, mega, drawer',
+	'flow':      u'Rhythm',
+	'hidden':    u'Hidden text',
+	'social':    u'Social login',
+	'season':    u'Season',
 	'footer':    u'Footer',
 	'hero':      u'Hero',
 	'catalogue': u'Catalogue',

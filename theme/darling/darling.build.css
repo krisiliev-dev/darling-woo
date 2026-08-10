@@ -8194,6 +8194,22 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	width:fit-content;
 	color:inherit;
 	font-size:var(--fs-meta);
+	/* *** A WRAPPED LINK MUST READ AS ONE ITEM. ***
+	   The owner, at a narrow width: "it is not clear which text is wrapped and
+	   which is an actual new line - 'Връщане' and 'и замяна' have pretty much the
+	   same space between them as 'Връщане и замяна' and 'Често задавани въпроси'."
+
+	   Measured, and it was worse than that - the two spaces were the wrong way
+	   round. Between two LINES of one wrapped link: line-height 22.4 minus the
+	   13px text = 9.4px of white. Between two SEPARATE links: min-height 28 minus
+	   line-height 22.4 = 5.6px. The lines inside an item sat FURTHER apart than
+	   the items themselves, so of course the eye grouped them wrongly.
+
+	   1.2 pulls the wrapped lines to 2.6px of white and pushes the gap between
+	   items to 12.4px - roughly five times the difference, in the right
+	   direction. Nothing else changes: the tap target is min-height, not
+	   line-height, so 44px on a finger is untouched. */
+	line-height:1.2;
 	text-decoration:none;
 	transition:color var(--dur-ui) var(--ease-float);
 }

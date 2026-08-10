@@ -8196,6 +8196,22 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	width:fit-content;
 	color:inherit;
 	font-size:var(--fs-meta);
+	/* *** A WRAPPED LINK MUST READ AS ONE ITEM. ***
+	   The owner, at a narrow width: "it is not clear which text is wrapped and
+	   which is an actual new line - 'Връщане' and 'и замяна' have pretty much the
+	   same space between them as 'Връщане и замяна' and 'Често задавани въпроси'."
+
+	   Measured, and it was worse than that - the two spaces were the wrong way
+	   round. Between two LINES of one wrapped link: line-height 22.4 minus the
+	   13px text = 9.4px of white. Between two SEPARATE links: min-height 28 minus
+	   line-height 22.4 = 5.6px. The lines inside an item sat FURTHER apart than
+	   the items themselves, so of course the eye grouped them wrongly.
+
+	   1.2 pulls the wrapped lines to 2.6px of white and pushes the gap between
+	   items to 12.4px - roughly five times the difference, in the right
+	   direction. Nothing else changes: the tap target is min-height, not
+	   line-height, so 44px on a finger is untouched. */
+	line-height:1.2;
 	text-decoration:none;
 	transition:color var(--dur-ui) var(--ease-float);
 }
@@ -15471,7 +15487,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    rule the specimen exists to show - main is a grid now, and the furniture
    was quietly turning it back into a block. */
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#flow">Page rhythm</a><a href="#hidden">Visually hidden text</a><a href="#social">Social login</a><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header</a><a href="#hero">Hero</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
+<nav class="gnav"><a href="#flow">Rhythm</a><a href="#hidden">Hidden text</a><a href="#social">Social login</a><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header, mega, drawer</a><a href="#hero">Hero</a><a href="#season">Season</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="flow" style="max-width:none;padding-inline:0"><div class="wrap"><h2>Dequeue tranche 1</h2><h3>Page rhythm &mdash; the gaps between real things</h3><p class="note"><b>Every box below is a real component.</b> The first version of
 this specimen used dashed placeholders, and the owner was right that it proved
 nothing: a rhythm can only be judged between the things it separates.</p>
@@ -15486,16 +15502,13 @@ ours is smaller than I said, and more structural.</p>
   <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">Дарлинг</a>
     <nav class="d-nav"><ul>
-      <li><a href="#" aria-current="page">Начало</a></li>
-      <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list d-shell d-shell--bar">
-          <li><a class="d-mega__link" href="#">За кухнята</a></li>
-          <li><a class="d-mega__link" href="#">За банята</a></li>
-          <li><a class="d-mega__link" href="#">За децата</a></li>
-          <li><a class="d-mega__link" href="#">За градината</a></li>
-          <li><a class="d-mega__link" href="#">Декорация за дома</a></li>
-          <li><a class="d-mega__link" href="#">Подаръци</a></li>
-        </ul></div></li>
+					<li class="d-nav__mega">
+						<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
+					</li>
+					<li><a href="#">За нас</a></li>
+					<li><a href="#">Помощ</a></li>
+					<li><a href="#">Контакти</a></li>
+				</ul></div></li>
       <li><a href="#">Промоции</a></li>
       <li><a href="#">За нас</a></li>
     </ul></nav>
@@ -17130,7 +17143,7 @@ rule reached out of its wrapper with <code>margin-inline: calc(50% &minus; 50vw)
 which works until the page has a scrollbar &mdash; at that point 100vw is wider
 than the document and the band pushes a horizontal scrollbar at exactly one
 viewport width that nobody tests for.</p>
-<p class="lbl">On the grey page</p><div class="d-hero" style="max-width:none"><div class="d-hero__copy"><p class="d-hero__eyebrow">Ново тази седмица</p><h2 class="d-hero__title">Подаръци, които <em>се помнят</em></h2><p class="d-hero__sub">Всяко нещо в Дарлинг е избрано на ръка. Ако не бихме го подарили на близък човек, не го предлагаме и на вас.</p><p class="d-hero__actions"><a class="d-btn d-finish" href="#">Разгледай всичко</a><a class="d-btn d-btn--quiet" href="#">За нас</a></p></div><div class="d-hero__visual"><span class="d-hero__glow"></span><svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span></div></div><p class="lbl" style="margin-top:26px">The claret band &mdash; full bleed, gold title</p></section></div><div class="d-hero-band"><div class="d-hero d-hero--red"><div class="d-hero__copy"><p class="d-hero__eyebrow">Сезонна селекция</p><h2 class="d-hero__title">Дом, който <em>ти прилича</em></h2><p class="d-hero__sub">Керамика, стъкло и дърво, подбрани на ръка. Безплатна доставка над 77 лв.</p><p class="d-hero__actions"><a class="d-btn d-finish" href="#">Към селекцията</a></p></div><div class="d-hero__visual"><span class="d-hero__glow"></span><svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span></div></div></div><div class="wrap"><section class="sec">
+<p class="lbl">On the grey page</p><div class="d-hero" style="max-width:none"><div class="d-hero__copy"><p class="d-hero__eyebrow">Ново тази седмица</p><h2 class="d-hero__title">Подаръци, които <em>се помнят</em></h2><p class="d-hero__sub">Всяко нещо в Дарлинг е избрано на ръка. Ако не бихме го подарили на близък човек, не го предлагаме и на вас.</p><p class="d-hero__actions"><a class="d-btn d-finish" href="#">Разгледай всичко</a><a class="d-btn d-btn--quiet" href="#">За нас</a></p></div><div class="d-hero__visual"><span class="d-hero__glow"></span><svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span></div></div><p class="lbl" style="margin-top:26px">The claret band &mdash; full bleed, gold title</p></section></div><div class="d-hero-band"><div class="d-hero d-hero--red"><div class="d-hero__copy"><p class="d-hero__eyebrow">Сезонна селекция</p><h2 class="d-hero__title">Дом, който <em>ти прилича</em></h2><p class="d-hero__sub">Керамика, стъкло и дърво, подбрани на ръка. Безплатна доставка над 77 лв.</p><p class="d-hero__actions"><a class="d-btn d-finish" href="#">Към селекцията</a></p></div><div class="d-hero__visual"><span class="d-hero__glow"></span><svg class="d-hero__bow" viewBox="0 0 24 12" fill="currentColor" aria-hidden="true"><path d="M12 6 L3.2 1.4 C1.8.7 1.8 11.3 3.2 10.6 Z M12 6 l8.8-4.6 c1.4-.7 1.4 9.9 0 9.2 Z"/><circle cx="12" cy="6" r="2.4"/></svg><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span><span class="d-hero__star"></span></div></div></div><div class="wrap"><section class="sec" id="season"><h2>Pattern</h2><h3>Season band</h3>
 <p class="lbl" style="margin-top:34px">Season &mdash; a drifting claret gradient,
 gold heading, one cream pill</p>
 <a class="d-season" href="#" style="text-decoration:none">
