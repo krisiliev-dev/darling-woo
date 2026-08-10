@@ -1,15 +1,52 @@
 /*
 Theme Name: Дарлинг
 Theme URI: https://darlinghome.bg
-Description: Дарлинг storefront theme — warm, paper-textured Bulgarian home-goods design. Child of Twenty Twenty-Five.
+Description: Дарлинг storefront theme — warm, paper-textured Bulgarian home-goods design. Standalone block theme, no parent.
 Author: Дарлинг 7 ООД
-Template: twentytwentyfive
-Version: 1.0.0
+Version: 1.1.0
 Text Domain: darling
 Requires at least: 6.7
 Tested up to: 7.0
 License: GPL-2.0-or-later
 */
+
+/* =============================================================================
+   *** NO `Template:` LINE, AND THAT IS THE POINT. ***
+
+   This was a child of Twenty Twenty-Five until 2026-08-10. Being a child is not
+   only about borrowed templates: WordPress MERGES the two theme.json files and
+   prints the result as global-styles-inline-css, with NO cascade layer. Almost
+   all of src/ is layered, and unlayered CSS outranks every layer regardless of
+   specificity - so the parent owned, and we could not take back from CSS:
+
+     body     font-weight 300, letter-spacing -0.1px
+     h1..h6   weight, tracking, line-height, and its OWN font-size scale beside
+              ours - .d-section-title measured 27px in the gallery, 42px on the
+              site
+     a        color: currentColor, which rendered the seasonal band call to
+              action cream on cream - an invisible button on the home page
+     button   background var(--wp--preset--color--contrast)
+
+   There is no value that hands control back: `inherit` and `revert` both make
+   it worse. The choice was to restate every element in our generated theme.json
+   or to remove the merge. The owner chose the second, consistent with the rule
+   he set the same day: "The single source of truth that should be available is
+   everything we have been doing in src/, so anything else should be removed and
+   deleted/archived so nothing touches it and can never revert back to it."
+
+   PRECONDITIONS, ALL MEASURED BEFORE THE SWITCH, NOT AFTER:
+     - index.html, page.html, single.html and archive.html authored (7e5b9e5);
+       those four were the only templates we were taking from the parent.
+     - no page carries a _wp_page_template value, so nothing referenced the
+       parent's page-no-title.html.
+     - no wp_template or wp_template_part posts exist, so no site-editor
+       override was pinned to the parent.
+     - the parent stylesheet was already not being loaded on the live page.
+
+   *** THE DB HOLDS THE PARENT TOO. *** `option get template` returned
+   `twentytwentyfive`. Removing this line is half the switch; `wp theme activate
+   darling` on the box is the other half, and without it WordPress keeps merging.
+   ========================================================================== */
 
 /* =============================================================================
    THIS FILE IS THE THEME HEADER AND NOTHING ELSE, ON PURPOSE.
