@@ -10,13 +10,24 @@ const SHAPE = `(sel) => {
   if (!root) return 'ABSENT';
   const out = [];
   const walk = (e, d) => {
-    if (d > 3 || out.length > 26) return;
+    if (d > 3) return;
+    if (out.length > 400) { out.push('  ...TRUNCATED - raise the cap'); return; }
     const cls = String(e.className || '').split(/\\s+/).filter(c => /^d-/.test(c)).join('.');
     out.push('  '.repeat(d) + e.tagName.toLowerCase() + (cls ? '.' + cls : ''));
     for (const k of e.children) walk(k, d + 1);
   };
   walk(root, 0);
-  return out.join('\\n');
+  // collapse runs of identical siblings: eight identical tiles say nothing that
+  // "a.d-carousel__tile x8" does not, and burying the buttons under them is how
+  // the first version of this probe lied.
+  const rolled = [];
+  for (let i = 0; i < out.length; i++) {
+    let n = 1;
+    while (out[i + n] === out[i]) n++;
+    rolled.push(out[i] + (n > 1 ? '   x' + n : ''));
+    i += n - 1;
+  }
+  return rolled.join('\\n');
 }`;
 
 (async () => {
