@@ -75,6 +75,7 @@
 @import url("base/elements.css")    layer(base);
 /* layout first: it is the frame every pattern under it sits inside. */
 @import url("patterns/layout.css") layer(patterns);
+@import url("patterns/flow.css")   layer(patterns);
 @import url("patterns/icon.css")   layer(patterns);
 @import url("patterns/header.css") layer(patterns);
 @import url("patterns/drawer.css") layer(patterns);
@@ -115,6 +116,7 @@
 /* -- ADOPTED, UNLAYERED --------------------------------------------------
    These have to outrank WooCommerce, and only unlayered CSS can. Last on
    purpose, and no layer() on purpose. */
+@import url("adopted/blocklayout.css");
 @import url("adopted/icon.css");
 @import url("adopted/card.css");
 @import url("adopted/field.css");

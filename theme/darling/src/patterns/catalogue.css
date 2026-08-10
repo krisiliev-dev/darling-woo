@@ -120,9 +120,14 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 	color:var(--ink-quiet);
 }
 .d-archive__body{
+	/* The gap lives in a custom property because adopted/blocklayout.css has to
+	   restate this layout UNLAYERED to beat WordPress, and a number written in
+	   two files is a number that will disagree with itself. Nobody else sets
+	   this property, so the cascade never has to arbitrate it. */
+	--d-archive-gap:var(--space-m);
 	display:grid;
 	grid-template-columns:16rem 1fr;
-	gap:var(--space-m);
+	gap:var(--d-archive-gap);
 	align-items:start;
 }
 .d-archive__body > *{ min-width:0 }
@@ -144,10 +149,11 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 
 /* -- the toolbar ------------------------------------------------------------- */
 .d-toolbar{
+	--d-toolbar-gap:var(--space-xs);   /* see .d-archive__body above */
 	display:flex;
 	flex-wrap:wrap;
 	align-items:center;
-	gap:var(--space-xs);
+	gap:var(--d-toolbar-gap);
 	margin-bottom:var(--space-xs);
 	padding-bottom:var(--space-xs);
 	border-bottom:1px solid var(--hairline);

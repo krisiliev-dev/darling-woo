@@ -196,6 +196,20 @@
 	font-size: var(--fs-h3, 1.25rem);
 }
 /* the forms themselves own no surface — the column is the surface */
+/* *** UNLAYERED WAS NOT ENOUGH, AND THAT IS WORTH SAYING OUT LOUD. ***
+   Being in adopted/ only buys parity of ORIGIN. Once both declarations are
+   unlayered author CSS, the ordinary rules resume and specificity decides —
+   and Woo writes this as `.woocommerce form.login` / `.woocommerce
+   form.register`, which is (0,2,1) against the (0,1,0) this rule used to be.
+   scripts/seams.js measured the result: 36 of the 100 live defeats on the whole
+   site were this ONE mismatch, every property of both boxes — margin, padding
+   and all four borders — still being drawn by woocommerce.css.
+
+   So the selector is written to (0,3,1), which beats theirs outright rather
+   than tying and depending on enqueue order. `.woocommerce-form` is a real
+   class Woo puts on both forms; it is not padding. */
+.woocommerce form.woocommerce-form.woocommerce-form-login,
+.woocommerce form.woocommerce-form.woocommerce-form-register,
 .woocommerce-form-login,
 .woocommerce-form-register {
 	margin: 0;
@@ -203,6 +217,9 @@
 	border: 0;
 	background: none;
 }
+/* Woo: `.woocommerce .woocommerce-form-login .woocommerce-form-login__rememberme`
+   at (0,3,0), so this needs (0,3,1) for the same reason as above. */
+.woocommerce .woocommerce-form-login label.woocommerce-form-login__rememberme,
 .woocommerce-form-login__rememberme {
 	display: inline-flex;
 	align-items: center;

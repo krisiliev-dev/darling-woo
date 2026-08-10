@@ -1,0 +1,65 @@
+/* =============================================================================
+   ADOPTED / RECLAIMING LAYOUT FROM WORDPRESS'S BLOCK SUPPORTS
+
+   *** THREE OF OUR GRID COMPONENTS WERE NOT GRIDS ON THE LIVE SITE. ***
+   Measured by scripts/seams.js on the mirrored shop and product pages:
+   `.d-archive__body`, `.d-product__top` and `.d-toolbar` are all core blocks -
+   two Columns, one Group - and WordPress stamps `is-layout-flex` on them and
+   prints, in the page, UNLAYERED:
+
+     body .is-layout-flex               { display:flex }
+     :root :where(.is-layout-flex)      { gap:24px }
+     .is-layout-flex                    { flex-wrap:wrap; align-items:center }
+     .wp-block-columns                  { align-items:normal !important }
+     :where(.wp-block-columns)          { margin-bottom:1.75em }
+
+   Every one of our declarations for those three lives in `layer(patterns)`, and
+   UNLAYERED AUTHOR CSS OUTRANKS EVERY LAYER whatever the specificity. So the
+   catalogue's 16rem sidebar + 1fr grid was rendering as a wrapping flex row at a
+   24px gap, and the product page's two columns likewise. Not a subtle defeat:
+   it is the layout, on the two most-visited templates.
+
+   THE FIX IS NOT A BIGGER SELECTOR IN patterns/. It cannot be - a layered rule
+   at any specificity still loses. There are exactly three ways to win at a seam:
+   be unlayered, remove theirs, or !important. This file is the first. The one
+   place !important appears is against WordPress's own !important, where nothing
+   else can reach.
+
+   Specificity, so the next person does not have to recount it:
+     body .is-layout-flex          (0,1,1)
+     :root :where(.is-layout-flex) (0,1,0)   - :where() contributes nothing
+     :where(.wp-block-columns)     (0,0,0)
+     ours, below                   (0,2,0)   - beats all three outright
+
+   *** NO NUMBER IS REPEATED HERE. *** The values stay in patterns/, exposed as
+   component-scoped custom properties (--d-archive-gap and friends). Nobody else
+   sets those, so they are never subject to this fight, and the media query that
+   changes the product gap at 900px keeps working through it. If you find
+   yourself typing a length into this file, put it in the pattern instead.
+   ========================================================================== */
+
+/* -- the catalogue: sidebar + results ------------------------------------- */
+.wp-block-columns.d-archive__body{
+	display:grid;
+	gap:var(--d-archive-gap);
+	align-items:start !important;   /* vs .wp-block-columns{align-items:normal !important} */
+}
+
+/* -- the product page: gallery + buy -------------------------------------- */
+.wp-block-columns.d-product__top{
+	display:grid;
+	gap:var(--d-product-top-gap);
+	align-items:start !important;
+	margin-bottom:var(--d-product-top-end);
+}
+
+/* -- the results toolbar ---------------------------------------------------
+   This one IS a flex row, so only the gap is actually wrong today - but the
+   display is restated anyway, because "they happen to agree with us" is not a
+   thing to build on: the day the block's layout attribute changes, a component
+   that never named its own display becomes whatever WordPress says it is. */
+.wp-block-group.d-toolbar{
+	display:flex;
+	gap:var(--d-toolbar-gap);
+	align-items:center;
+}

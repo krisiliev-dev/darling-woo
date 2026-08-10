@@ -66,14 +66,19 @@
    beside the gallery. `align-items:start` keeps the buy column from stretching
    to the height of a tall photograph. */
 .d-product__top{
+	/* gap and the bottom margin in custom properties: adopted/blocklayout.css
+	   restates this layout unlayered to beat WordPress's Columns block, and the
+	   numbers may only exist once. See .d-archive__body in catalogue.css. */
+	--d-product-top-gap:var(--space-l);
+	--d-product-top-end:var(--space-l);
 	display:grid;
 	grid-template-columns:minmax(0, 1.05fr) minmax(0, 1fr);
-	gap:var(--space-l);
+	gap:var(--d-product-top-gap);
 	align-items:start;
-	margin-bottom:var(--space-l);
+	margin-bottom:var(--d-product-top-end);
 }
 @media (max-width: 900px){
-	.d-product__top{ grid-template-columns:1fr; gap:var(--space-m) }
+	.d-product__top{ grid-template-columns:1fr; --d-product-top-gap:var(--space-m) }
 }
 
 /* =============================================================================

@@ -157,9 +157,78 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .sec:has(#alg-g:checked) .algn .d-fieldgrid > *{background:var(--surface-page);border-radius:var(--radius-xs)}
 
 .sec:has(#alg-g:not(:checked)) .gl{opacity:0}
+
+/* gallery furniture for the flow specimens: a dashed edge so the GAP is what
+   you see. Prefixed and scoped so nothing here can be mistaken for a pattern. */
+.flowdemo{ background:var(--surface-quiet,#f4f2ef); padding:var(--space-s); border-radius:var(--radius-m) }
+.flowdemo--wide{ max-width:none }
+.flowdemo .flowbox{
+  border:1px dashed color-mix(in oklab, currentColor 34%, transparent);
+  background:var(--surface-raised,#fff); border-radius:var(--radius-s);
+  padding:var(--space-xs); font-size:var(--fs-meta); text-align:center;
+}
 </style></head><body><div class="wrap">
 <!--GNAV-->
 ''')
+
+# --------------------------------------------------------------------- flow ---
+# TRANCHE 1 OF THE DEQUEUE. These specimens carry WORDPRESS's markup, not ours -
+# .wp-site-blocks, .is-layout-flow, .is-layout-constrained - because the thing
+# under review is whether OUR rules dress somebody else's boxes correctly.
+#
+# *** THE GALLERY IS ALREADY THE POST-DEQUEUE PAGE. *** It loads
+# darling.build.css and nothing else: no global-styles, no WooCommerce. So what
+# these show is not a preview of the fix, it is the fix, rendered under exactly
+# the conditions the live page will have once the sheet is dequeued.
+A('''<section class="sec" id="flow"><h2>Dequeue tranche 1</h2><h3>Page rhythm, and the constrained frame</h3>
+<p class="note"><b>These boxes are WordPress\u2019s, the spacing is ours.</b>
+The vertical rhythm of every page on this site was <code>margin-block-start:24px</code>
+from <code>global-styles-inline-css</code> \u2014 47 elements on nine pages, and never
+once written by us. Sections at a flat 24px read as one long list rather than as
+sections. Top-level sections now take <code>--section-y</code> (48\u219260px); blocks
+inside a section take <code>--stack</code> (24\u219230px), which lands on the same 24px
+at the small end \u2014 claiming that rule is ownership, not a redesign.</p>
+<p class="note">The dashed rules are the gallery marking the gap; they are not
+part of the pattern.</p>
+
+<h4 class="note"><b>Top level</b> &mdash; .wp-site-blocks &gt; * &nbsp;<code>--section-y</code></h4>
+<div class="flowdemo">
+  <div class="wp-site-blocks">
+    <div class="flowbox">Hero</div>
+    <div class="flowbox">\u0421\u0435\u0437\u043e\u043d\u043d\u043e</div>
+    <div class="flowbox">\u041d\u043e\u0432\u043e \u0432 Darling</div>
+    <div class="flowbox">Newsletter</div>
+  </div>
+</div>
+
+<h4 class="note"><b>Inside a section</b> &mdash; .is-layout-flow &gt; * &nbsp;<code>--stack</code></h4>
+<div class="flowdemo">
+  <div class="is-layout-flow">
+    <div class="flowbox">\u0417\u0430\u0433\u043b\u0430\u0432\u0438\u0435</div>
+    <div class="flowbox">\u0422\u0435\u043a\u0441\u0442</div>
+    <div class="flowbox">\u0411\u0443\u0442\u043e\u043d</div>
+  </div>
+</div>
+<p class="note">First and last child collapse to zero, so the container\u2019s own
+padding decides the space at its ends rather than the rhythm of its children.
+That is WordPress\u2019s rule and it is right; it is kept.</p>
+
+<h4 class="note"><b>The constrained frame</b> &mdash; .is-layout-constrained</h4>
+<div class="flowdemo flowdemo--wide">
+  <div class="is-layout-constrained">
+    <div class="flowbox">default \u2014 <code>--measure-hero</code>, the prose measure</div>
+    <div class="flowbox alignwide">.alignwide \u2014 <code>--page-max</code></div>
+    <div class="flowbox alignfull">.alignfull \u2014 no cap</div>
+  </div>
+</div>
+<p class="note"><b>The 660px cap is a measure, and it has bitten us once.</b> B1
+found a constrained layout on three templates capping their children at the prose
+measure \u2014 the search results grid rendered at 374px instead of 714px. Nothing
+here changes that: a measure belongs on running text, never on a grid or a cart.
+<code>--measure-hero</code> is the same token <code>gen-theme-json.js</code> feeds to
+theme.json\u2019s <code>contentSize</code>, so the column and the block editor cannot
+disagree about it.</p>
+</section>''')
 
 # --------------------------------------------------------------------- card ---
 PRODUCTS = [

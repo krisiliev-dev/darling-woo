@@ -1,0 +1,96 @@
+/* =============================================================================
+   PATTERN / THE FLOW — the space BETWEEN things
+
+   *** TRANCHE 1 OF THE DEQUEUE. *** Measured by scripts/unclaimed.js: of the 566
+   declarations on this site that only WordPress sets, the furthest-reaching one
+   is not WooCommerce's and is not decoration. It is this:
+
+     :root :where(.is-layout-flow) > *   { margin-block-start: 24px }   x47
+     :where(.wp-site-blocks) > *         { margin-block-start: 24px }   x36
+     :root :where(.is-layout-flow) > :first-child { margin-block-start: 0 } x14
+     .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull))
+                                         { max-width; margin-inline: auto }  x12
+
+   The vertical rhythm of every page on this site, and the width of the column
+   it runs down, have never been ours. We spent weeks looking for the section
+   with the wrong padding. The gaps BETWEEN sections were never ours to begin
+   with, and neither was the frame around them.
+
+   *** THIS FILE IS LAYERED, AND THAT IS DELIBERATE. ***
+   It cannot win today: WordPress prints those rules unlayered in
+   global-styles-inline-css and unlayered beats every layer. That is correct
+   sequencing rather than a defect - the agreed rule is that replacement CSS
+   lands first, is verified, and only then does the sheet get dequeued. Putting
+   it in adopted/ to win early would buy a few days of correctness and add to
+   exactly the unlayered debt this whole exercise exists to retire. Verify it in
+   gallery.html, which loads no WordPress CSS at all and is therefore already
+   the post-dequeue page; it goes live the moment global-styles is stripped.
+
+   *** THE NUMBERS ARE NOT NEW ONES. ***
+   --section-y and --stack already exist and already describe this; nothing here
+   invents a length. The one that looks new, --measure-hero, is the token
+   gen-theme-json.js already feeds to theme.json's `contentSize`, so the
+   constrained column and the block editor cannot disagree about how wide a
+   column of prose is. It was in the build's "declared but unused" list until
+   now, which is what a token feeding a generator and nothing else looks like.
+   ========================================================================== */
+
+/* -- between the top-level sections of a page --------------------------------
+   WordPress gives every child of .wp-site-blocks a flat 24px. A page whose hero,
+   category band, product grid and newsletter are all 24px apart reads as one
+   long list rather than as sections, which is exactly the complaint that
+   started this. --section-y is 48->60px and is what band.css and hero.css
+   already use for their own vertical air. */
+.wp-site-blocks > *{
+	margin-block-start:var(--section-y);
+	margin-block-end:0;
+}
+.wp-site-blocks > :first-child{ margin-block-start:0 }
+.wp-site-blocks > :last-child{ margin-block-end:0 }
+
+/* -- between blocks inside a flow or constrained container -------------------
+   Nested containers are a different rhythm from the page: this is the gap
+   between the blocks of one section, not between sections. --stack is 24->30px,
+   so at the small end it lands on the same 24px WordPress used - which is worth
+   saying plainly, because it means claiming this rule is not a redesign. It
+   moves nothing at 390 and adds up to 6px at 1240. The point is ownership, not
+   change.
+
+   The first- and last-child collapse is kept, and for WordPress's reason: a
+   container's own padding should decide the space at its ends, not the rhythm
+   of its children. */
+:is(.is-layout-flow, .is-layout-constrained) > *{
+	margin-block-start:var(--stack);
+	margin-block-end:0;
+}
+:is(.is-layout-flow, .is-layout-constrained) > :first-child{ margin-block-start:0 }
+:is(.is-layout-flow, .is-layout-constrained) > :last-child{ margin-block-end:0 }
+
+/* -- the constrained frame ---------------------------------------------------
+   Core's constrained layout is a second .d-shell: a max-width and auto margins,
+   applied by class instead of by name. It stays, because the block editor emits
+   it and the templates use it, but it stops carrying WordPress's numbers.
+
+   *** THE 660px CAP IS A MEASURE AND IT HAS BITTEN US ONCE ALREADY. ***
+   B1 found `"layout":{"type":"constrained"}` on three templates capping their
+   children at theme.json's prose measure - the search results grid rendered at
+   374px instead of 714px. A measure is a property of running text; the moment
+   it lands on a grid, a table or a cart it is not a measure, it is a narrow
+   page. Nothing here changes that trap, and the fix for it remains the one B1
+   applied: do not put a constrained layout on a template that holds a grid. */
+.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){
+	max-width:var(--measure-hero);
+	margin-inline:auto;
+}
+.is-layout-constrained > .alignwide{ max-width:var(--page-max) }
+.is-layout-constrained > .alignfull{ max-width:none }
+.is-layout-constrained > .aligncenter{ margin-inline:auto }
+/* Floated alignments clear their own inline space. --space-l rather than core's
+   2em so a floated figure sits on the same scale as everything beside it. */
+.is-layout-constrained > .alignleft{ float:left;  margin-inline:0 var(--space-l) }
+.is-layout-constrained > .alignright{ float:right; margin-inline:var(--space-l) 0 }
+
+/* A constrained group is a positioning context for anything absolutely placed
+   inside it - core sets this and things inside groups depend on it. Claimed
+   rather than inherited, because after the dequeue nobody else will say it. */
+.wp-block-group.wp-block-group-is-layout-constrained{ position:relative }
