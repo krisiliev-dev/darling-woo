@@ -1,9 +1,18 @@
-name: Deploy infra
+name: Deploy infra, theme and plugin
 
 on:
   push:
     branches: [main]
-    paths: ['infra/**', '.github/workflows/deploy.yml']
+    # deploy.sh syncs the THEME and the PLUGIN as well as infra config, so a
+    # filter of infra/** alone means a theme-only commit deploys nothing. That
+    # is exactly what happened: 43 commits of design system sat on origin/main
+    # while the box served a tree from an older infra push, and the enqueue in
+    # functions.php never arrived. Keep this list matching what deploy.sh copies.
+    paths:
+      - 'infra/**'
+      - 'theme/**'
+      - 'plugin/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 concurrency:
