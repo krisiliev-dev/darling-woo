@@ -12,66 +12,48 @@ defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_enqueue_scripts', function () {
 	/*
-	 * LOAD ORDER (slice 2a, 2026-08-06). The ported Shopify stylesheet prints
-	 * FIRST and style.css prints last, so the theme wins every equal-specificity
-	 * conflict with it. It used to be the exact inverse — 'darling-ported'
-	 * declared 'darling' as its dependency — and every "SLICE n fix" block in
-	 * style.css was a downstream symptom of that one inverted line.
+	 * CUTOVER, PART TWO - THE TWO LEGACY SHEETS ARE GONE FROM THE PAGE.
 	 *
-	 * Both files stay UNLAYERED, deliberately. Slice 2 tried wrapping the ported
-	 * file in `@layer ported` and had to be reverted: unlayered CSS outranks
-	 * every layer, so layering it dropped the vendored file below Twenty
-	 * Twenty-Five's own unlayered stylesheet, which it had been beating by
-	 * source order. Mobile went from 16 to 45 defects with document-level
-	 * overflow. Cascade layers are only safe here once the parent theme's
-	 * contribution is neutralised — that is slice 3's job, not this one.
-	 */
-	$ported = get_stylesheet_directory() . '/assets/darling.css';
-	if ( file_exists( $ported ) ) {
-		wp_enqueue_style(
-			'darling-ported',
-			get_stylesheet_directory_uri() . '/assets/darling.css',
-			array( 'twentytwentyfive-style' ),
-			filemtime( $ported )
-		);
-	}
-
-	$style = get_stylesheet_directory() . '/style.css';
-	wp_enqueue_style(
-		'darling',
-		get_stylesheet_uri(),
-		array( 'darling-ported' ),
-		file_exists( $style ) ? filemtime( $style ) : null // cache-bust on deploy
-	);
-
-	/*
-	 * CUTOVER, PART ONE. The design system joins the page; nothing is deleted.
+	 * What used to be here enqueued 'darling-ported' (assets/darling.css, the
+	 * ported Shopify stylesheet) and 'darling' (style.css, 135 KB of tokens and
+	 * components), both UNLAYERED and both ahead of the design system.
 	 *
-	 * Measured 2026-08-10, after the theme deployed: darling.build.css was ON
-	 * THE BOX and enqueued NOWHERE. 617 KB of stylesheet sitting next to a page
-	 * that never asked for it, which is why a customer still saw the old site
-	 * after a successful deploy. This is the line that was missing.
+	 * That ordering could never work, and part one said so before it was
+	 * measured: unlayered CSS outranks every cascade layer regardless of
+	 * specificity, and almost all of src/ is layered. Measured on the live home
+	 * page afterwards, with darling.build.css loading correctly:
 	 *
-	 * It prints LAST, after style.css, so ours wins equal-specificity fights by
-	 * source order. That is deliberately a small claim: almost everything in the
-	 * build is inside a cascade layer, and unlayered CSS outranks every layer, so
-	 * style.css and assets/darling.css still beat the layered parts regardless of
-	 * order. Only adopted/ - unlayered by design - actually competes today.
+	 *   a { color: var(--d-cherry-deep) }   style.css   UNLAYERED   -> won
+	 *   a { color: inherit }                base layer              -> lost
+	 *   .d-btn { background: var(--btn-bg) }  style.css UNLAYERED   -> won
+	 *   .d-btn { background: var(--action) }  patterns layer        -> lost
 	 *
-	 * So this step should change very little. That is the point of doing it
-	 * before the deletions rather than with them: if something DOES move, it
-	 * moved because of one added file and not because of three removed ones.
+	 * Every link on the site was cherry and the hero call to action was crimson,
+	 * with our rules present, matching, and underneath. The owner reviewing the
+	 * live page read it as "our colours are wrong" - they were not wrong, they
+	 * were not reaching the page.
+	 *
+	 * Slice 2 tried the gentler version of this - wrap the ported sheet in
+	 * `@layer ported` - and reverted it, because layering dropped it below Twenty
+	 * Twenty-Five's own unlayered stylesheet and mobile went from 16 defects to
+	 * 45. That reason has expired: measured 2026-08-10, the parent theme's
+	 * stylesheet is NOT among the sheets the live page loads. There is nothing
+	 * left for a layered legacy sheet to fall below - and the owner asked for the
+	 * files gone rather than demoted, so they are archived outside theme/ where
+	 * the deploy rsync cannot reach them.
+	 *
+	 * style.css still EXISTS, because WordPress reads the theme header out of it.
+	 * It contains that header and an explanation, and nothing enqueues it.
 	 */
 	$build = get_stylesheet_directory() . '/darling.build.css';
 	if ( file_exists( $build ) ) {
 		wp_enqueue_style(
 			'darling-system',
 			get_stylesheet_directory_uri() . '/darling.build.css',
-			array( 'darling' ),
+			array(),
 			filemtime( $build )
 		);
 	}
-
 	$hdr = get_stylesheet_directory() . '/assets/header.js';
 	if ( file_exists( $hdr ) ) {
 		wp_enqueue_script(

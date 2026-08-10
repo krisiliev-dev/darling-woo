@@ -13,7 +13,12 @@ const fs = require('fs');
 const path = require('path');
 
 const BASE = process.env.BASE || 'https://darlinghome.bg';
-const OUT = path.join(path.dirname(__dirname), 'liveshot');
+// --nolegacy previews the cutover WITHOUT deploying it: the two legacy sheets
+// are disabled in the page, leaving src/ (via darling.build.css) as the only
+// Darling CSS - which is what the owner asked the site to be. Woo's sheets stay
+// on, because that is a separate tranche. Captures land in liveshot-nolegacy/.
+const NOLEGACY = process.argv.includes('--nolegacy');
+const OUT = path.join(path.dirname(__dirname), NOLEGACY ? 'liveshot-nolegacy' : 'liveshot');
 fs.mkdirSync(OUT, { recursive: true });
 
 const PAGES = [
@@ -41,6 +46,13 @@ const WIDTHS = [[1240, 'desk'], [390, 'phone']];
 				const r = await page.goto(BASE + url, { waitUntil: 'networkidle', timeout: 60000 });
 				code = r ? r.status() : 0;
 			} catch (e) { code = -1; }
+			if (NOLEGACY) {
+				await page.evaluate(() => {
+					for (const l of document.querySelectorAll('link[rel="stylesheet"]')) {
+						if (/\/themes\/darling\/(style\.css|assets\/darling\.css)/.test(l.href)) l.disabled = true;
+					}
+				});
+			}
 			await page.waitForTimeout(1200);
 			const probe = await page.evaluate(() => {
 				const de = document.documentElement;
