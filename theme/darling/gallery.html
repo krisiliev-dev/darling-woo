@@ -8857,6 +8857,97 @@ html.d-a11y .d-fab{ text-decoration:none }
 
 }
 
+/* ==== patterns/forced.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / HIGH CONTRAST — GIVING BACK THE EDGES THE SYSTEM DRAWS WITH SHADOW
+
+   *** MEASURED, NOT ASSUMED — AND THE FIRST MEASUREMENT SAID THE OPPOSITE. ***
+   `scripts/fcgate.js` renders eleven specimens twice, once normally and once
+   with `forced-colors: active`. Its first version read `outline-width` and
+   reported that every one of them kept an edge. It does not: Chrome returns the
+   SPECIFIED outline width even when `outline-style` is `none`, so a bare
+   `<table>` came back with a 3px outline and the whole system looked safe. Read
+   the style as well and the answer inverts — **9 of 11 lose their only
+   boundary.**
+
+   The cause is the surface language itself. Every raised surface in this system
+   is a `color-mix()` fill plus `inset 0 0 0 1px` standing in for a border, and
+   Windows High Contrast DROPS both: box-shadow and background-image are
+   discarded outright, background-color and color are replaced from the user's
+   palette. So a notice, the password meter, a card, a button and a table all
+   flatten to text on Canvas with nothing round them.
+
+   The fix is not to opt out. `forced-color-adjust: none` would keep our colours
+   and defeat the entire point of the mode — someone who needs high contrast
+   would get our low-contrast palette back. Instead the hairlines become REAL
+   borders, which forced-colors keeps and recolours to the system ink.
+
+   Borders here are 1px and unconditional inside the query, so nothing shifts by
+   a pixel for anyone not in high contrast: the whole file is inert otherwise.
+   ========================================================================== */
+
+@media (forced-colors: active) {
+
+	/* -- surfaces whose only edge was an inset shadow ------------------------ */
+	.d-notice,
+	.d-card,
+	.d-panel,
+	.woocommerce-password-strength,
+	.wc-block-components-notice-banner,
+	.d-drawer,
+	.d-well {
+		border: 1px solid CanvasText;
+	}
+
+	/* -- controls -----------------------------------------------------------
+	   A button with `border:0` and a painted background has no shape at all
+	   once the paint is thrown away. ButtonBorder is the system's own answer. */
+	.d-btn,
+	button,
+	.wc-block-components-button,
+	.show-password-input {
+		border: 1px solid ButtonBorder;
+	}
+
+	/* the reveal eye is drawn from currentColor, which forced-colors keeps */
+	.show-password-input.display-password {
+		background-image: none;
+		outline: 1px solid Highlight;
+	}
+
+	/* -- tables -------------------------------------------------------------
+	   Row separation in this system is a hairline shadow or a tinted stripe,
+	   and a stripe is a background: both go. Cells need real rules. */
+	.d-table,
+	.d-table th,
+	.d-table td {
+		border: 1px solid CanvasText;
+	}
+
+	/* -- selection has to survive too ---------------------------------------
+	   A checked radio or a chosen delivery row is signalled with fill in the
+	   normal palette. Highlight is the one colour the user has agreed means
+	   "this one". */
+	.d-choice input:checked + *,
+	.wc-block-components-radio-control__option-checked,
+	.d-table--choice :checked + * {
+		outline: 2px solid Highlight;
+		outline-offset: -2px;
+	}
+
+	/* -- and never let a decorative layer paint over content ---------------- */
+	.d-notice::before,
+	.d-notice::after,
+	.d-notice__stars,
+	.d-burst,
+	.d-metal {
+		display: none;
+	}
+}
+
+}
+
 /* ==== finish.css ==== */
 /* =============================================================================
    FINISH - the amber ramp, its light, its glow, its fireflies, and the plywood
