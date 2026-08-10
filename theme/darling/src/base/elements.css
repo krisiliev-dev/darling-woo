@@ -117,5 +117,20 @@ main{ overflow-x:clip }
 svg:not([width]):not([height]){
 	width:1em;
 	height:1em;
+	/* *** AND THE CLAMP BELOW HAS TO BE LIFTED, OR THE FLOOR IS ZERO. ***
+	   Measured on the live shop toolbar: the view-switcher SVGs computed
+	   `width: 0px, height: 16.8px` with this floor already in force. The
+	   mechanism is circular and worth reading twice, because it makes a rule
+	   look like it is working when it is being cancelled:
+
+	     the button is display:grid, so its single column is sized to its
+	     content -> an SVG carrying only a viewBox has NO intrinsic width, so
+	     the track resolves to 0px -> `max-width:100%` is 100% OF THAT TRACK,
+	     i.e. 0 -> and max-width beats width, so the 1em never lands.
+
+	   The parent reported gridTemplateColumns: "0px" while the child reported
+	   width 1.05rem in its own rule. Both true. `max-width:none` breaks the
+	   loop, and there is nothing to overflow: the floor is 1em. */
+	max-width:none;
 }
 svg{ max-width:100% }
