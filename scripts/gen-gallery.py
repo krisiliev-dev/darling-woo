@@ -65,6 +65,45 @@ CUTOUT = ('data:image/svg+xml;utf8,'
   + "%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E"
   + "%3C/svg%3E")
 
+# The real footer, hoisted for the same reason as HEADER_SPECIMEN: the flow
+# specimen has to show the footer we ship, not a bulleted list that resembles
+# one. The first attempt hand-wrote it with .d-footer__inner, a class that does
+# not exist in src/ - which is exactly the failure the owner called out.
+FOOTER_SPECIMEN = '''<footer class="d-footer">
+  <div>
+    <h2 class="d-footer__head">Дарлинг</h2>
+    <nav class="d-footer__links">
+      <a href="#">За нас</a><a href="#">Контакти</a><a href="#">Доставка</a>
+      <a href="#">Връщане и замяна</a><a href="#">Често задавани въпроси</a>
+    </nav>
+  </div>
+
+  <div class="d-footflair">
+    <span class="d-finish d-footflair__rule" aria-hidden="true"></span>
+    <span class="d-footflair__mark">
+      <span class="d-footflair__bow" aria-hidden="true"></span>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+    </span>
+    <p class="d-footflair__word">Дарлинг</p>
+    <p class="d-footflair__tag">Неща за дома, подбрани с внимание</p>
+    <ul class="d-footflair__social">
+      <li><a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6A21 21 0 0 0 14.3 3.5c-2.4 0-4 1.46-4 4.14V9.9H7.6V13h2.7v8z"/></svg></a></li>
+      <li><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 7.2A4.8 4.8 0 1 0 16.8 12 4.81 4.81 0 0 0 12 7.2m0 7.92A3.12 3.12 0 1 1 15.12 12 3.12 3.12 0 0 1 12 15.12M18.1 7a1.12 1.12 0 1 1-1.12-1.12A1.12 1.12 0 0 1 18.1 7M16.2 3H7.8A4.8 4.8 0 0 0 3 7.8v8.4A4.8 4.8 0 0 0 7.8 21h8.4a4.8 4.8 0 0 0 4.8-4.8V7.8A4.8 4.8 0 0 0 16.2 3m3 13.2a3 3 0 0 1-3 3H7.8a3 3 0 0 1-3-3V7.8a3 3 0 0 1 3-3h8.4a3 3 0 0 1 3 3Z"/></svg></a></li>
+      <li><a href="#" aria-label="Имейл"><span class="d-icon d-icon--mail"></span></a></li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="d-footer__head">Дарлинг 7 ООД</h2>
+    <div class="d-footer__policies">
+      <a href="#">Общи условия</a><a href="#">Поверителност</a><a href="#">Бисквитки</a>
+    </div>
+    <p class="d-footer__map"><a href="#">ул. Пример 12, София 1000</a></p>
+  </div>
+</footer>'''
+
 P = []
 A = P.append
 
@@ -162,14 +201,49 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    you see. Prefixed and scoped so nothing here can be mistaken for a pattern. */
 .flowdemo{ background:var(--surface-quiet,#f4f2ef); padding:var(--space-s); border-radius:var(--radius-m) }
 .flowdemo--wide{ max-width:none }
-.flowdemo .flowbox{
-  border:1px dashed color-mix(in oklab, currentColor 34%, transparent);
-  background:var(--surface-raised,#fff); border-radius:var(--radius-s);
-  padding:var(--space-xs); font-size:var(--fs-meta); text-align:center;
-}
+.flowpage{ background:var(--surface-page,#efecea); border-radius:var(--radius-m); overflow:hidden }
+.flowpage main{ display:block }
 </style></head><body><div class="wrap">
 <!--GNAV-->
 ''')
+
+# The header markup, hoisted so the flow specimen can show the REAL header
+# rather than a box labelled 'header'. It was already written out twice in this
+# file before this; now it is written once.
+HEADER_SPECIMEN = '''<header class="d-header" style="position:relative">
+  <div class="d-header__inner d-shell d-shell--bar">
+    <a class="d-header__logo" href="#">Дарлинг</a>
+    <nav class="d-nav"><ul>
+      <li><a href="#" aria-current="page">Начало</a></li>
+      <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
+        <div class="d-mega"><ul class="d-mega__list d-shell d-shell--bar">
+          <li><a class="d-mega__link" href="#">За кухнята</a></li>
+          <li><a class="d-mega__link" href="#">За банята</a></li>
+          <li><a class="d-mega__link" href="#">За децата</a></li>
+          <li><a class="d-mega__link" href="#">За градината</a></li>
+          <li><a class="d-mega__link" href="#">Декорация за дома</a></li>
+          <li><a class="d-mega__link" href="#">Подаръци</a></li>
+        </ul></div></li>
+      <li><a href="#">Промоции</a></li>
+      <li><a href="#">За нас</a></li>
+    </ul></nav>
+    <div class="d-search d-wipe">
+      <span class="d-icon d-icon--search"></span>
+      <input class="d-wipe__input" type="text" value="керамична купа"
+             placeholder="Какво търсиш, darling?" aria-label="Търсене">
+      <button class="d-wipe__clear" type="button" aria-label="Изчисти">
+        <span class="d-icon d-icon--close"></span></button>
+    </div>
+    <div class="d-header__actions">
+      <button class="d-icon-btn" aria-label="Профил"><span class="d-icon d-icon--user"></span></button>
+      <input type="checkbox" class="d-heart" aria-label="Добави в любими">
+      <button class="d-icon-btn" aria-label="Количка" data-cart-button><span class="d-icon d-icon--cart"></span>
+        <span class="d-icon-btn__count">2</span></button>
+      <button class="d-icon-btn d-header__search-sm" aria-label="Търсене"><span class="d-icon d-icon--search"></span></button>
+      <button class="d-icon-btn d-header__burger" aria-label="Меню"><span class="d-icon d-icon--menu"></span></button>
+    </div>
+  </div>
+</header>'''
 
 # --------------------------------------------------------------------- flow ---
 # TRANCHE 1 OF THE DEQUEUE. These specimens carry WORDPRESS's markup, not ours -
@@ -180,55 +254,65 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 # darling.build.css and nothing else: no global-styles, no WooCommerce. So what
 # these show is not a preview of the fix, it is the fix, rendered under exactly
 # the conditions the live page will have once the sheet is dequeued.
-A('''<section class="sec" id="flow"><h2>Dequeue tranche 1</h2><h3>Page rhythm, and the constrained frame</h3>
-<p class="note"><b>These boxes are WordPress\u2019s, the spacing is ours.</b>
-The vertical rhythm of every page on this site was <code>margin-block-start:24px</code>
-from <code>global-styles-inline-css</code> \u2014 47 elements on nine pages, and never
-once written by us. Sections at a flat 24px read as one long list rather than as
-sections. Top-level sections now take <code>--section-y</code> (48\u219260px); blocks
-inside a section take <code>--stack</code> (24\u219230px), which lands on the same 24px
-at the small end \u2014 claiming that rule is ownership, not a redesign.</p>
-<p class="note">The dashed rules are the gallery marking the gap; they are not
-part of the pattern.</p>
+A('<section class="sec" id="flow" style="max-width:none;padding-inline:0"><div class="wrap">'
+  '<h2>Dequeue tranche 1</h2><h3>Page rhythm &mdash; the gaps between real things</h3>')
+A('''<p class="note"><b>Every box below is a real component.</b> The first version of
+this specimen used dashed placeholders, and the owner was right that it proved
+nothing: a rhythm can only be judged between the things it separates.</p>
+<p class="note"><b>And measuring it against the real page corrected the claim.</b>
+I said the vertical rhythm of every page had never been ours. That was too broad.
+<code>.wp-site-blocks</code> has exactly THREE children &mdash; header, main, footer
+&mdash; so WordPress&rsquo;s 24px is <em>the air under the header and above the
+footer</em>, on every page. The home page&rsquo;s own section rhythm is already ours,
+set by <code>.d-section-title</code> and <code>.d-carousel</code>. What was never
+ours is smaller than I said, and more structural.</p>
+<p class="lbl">.wp-site-blocks &gt; * &mdash; header, page, footer</p>''')
+# *** IT HAS TO WEAR THE CLASS. *** The first version wrapped this in a plain
+# .flowpage and the rule under review did not apply to it at all - the specimen
+# was demonstrating nothing and the measurement came back with an empty list.
+A('<div class="flowpage wp-site-blocks">' + HEADER_SPECIMEN)
+A('''<main>
+  <p class="d-hero__eyebrow d-shell">Подбрано за вас</p>
+  <h2 class="d-section-title d-shell">Изборът на Lady D</h2>
+  <section class="d-band"><h2 class="d-band__title">Подаръци, които се помнят</h2></section>
+</main>''')
+A(FOOTER_SPECIMEN)
+A('</div>')
+A('''<p class="note">The gap above and below the page is <code>--section-y</code>.
+<b>This is the one number to look at</b>, because 48&rarr;60px under a sticky header
+is a real change from WordPress&rsquo;s flat 24px and it is the whole page that
+moves. If it reads as too much air, the alternative is <code>--stack</code>
+(24&rarr;30px), which keeps today&rsquo;s spacing and still takes ownership.</p>
 
-<h4 class="note"><b>Top level</b> &mdash; .wp-site-blocks &gt; * &nbsp;<code>--section-y</code></h4>
-<div class="flowdemo">
-  <div class="wp-site-blocks">
-    <div class="flowbox">Hero</div>
-    <div class="flowbox">\u0421\u0435\u0437\u043e\u043d\u043d\u043e</div>
-    <div class="flowbox">\u041d\u043e\u0432\u043e \u0432 Darling</div>
-    <div class="flowbox">Newsletter</div>
-  </div>
-</div>
+<p class="lbl">.is-layout-flow &gt; * &mdash; the product page&rsquo;s buy column</p>''')
+A('''<div class="flowdemo"><div class="is-layout-flow" style="max-width:23rem">
+  <h1 class="d-product__title">Керамична купа</h1>
+  <div class="d-product__price">26,40 лв.</div>
+  <div class="d-qty"><button class="d-qty__button" aria-label="По-малко">&minus;</button>
+    <input class="d-qty__input" type="number" value="1" aria-label="Количество">
+    <button class="d-qty__button" aria-label="Повече">+</button></div>
+  <p><a class="d-btn d-finish" href="#">Добави в кошницата</a></p>
+</div></div>
+<p class="note">On the live product page WordPress puts 24px above the price and
+24px above the add-to-cart form &mdash; two gaps inside a component we otherwise
+own completely. Here they are <code>--stack</code>, which is the same 24px at the
+small end. Ownership, not a redesign.</p>
 
-<h4 class="note"><b>Inside a section</b> &mdash; .is-layout-flow &gt; * &nbsp;<code>--stack</code></h4>
-<div class="flowdemo">
-  <div class="is-layout-flow">
-    <div class="flowbox">\u0417\u0430\u0433\u043b\u0430\u0432\u0438\u0435</div>
-    <div class="flowbox">\u0422\u0435\u043a\u0441\u0442</div>
-    <div class="flowbox">\u0411\u0443\u0442\u043e\u043d</div>
-  </div>
-</div>
-<p class="note">First and last child collapse to zero, so the container\u2019s own
-padding decides the space at its ends rather than the rhythm of its children.
-That is WordPress\u2019s rule and it is right; it is kept.</p>
-
-<h4 class="note"><b>The constrained frame</b> &mdash; .is-layout-constrained</h4>
-<div class="flowdemo flowdemo--wide">
-  <div class="is-layout-constrained">
-    <div class="flowbox">default \u2014 <code>--measure-hero</code>, the prose measure</div>
-    <div class="flowbox alignwide">.alignwide \u2014 <code>--page-max</code></div>
-    <div class="flowbox alignfull">.alignfull \u2014 no cap</div>
-  </div>
-</div>
-<p class="note"><b>The 660px cap is a measure, and it has bitten us once.</b> B1
+<p class="lbl">.is-layout-constrained &mdash; the three widths</p>''')
+A('''<div class="flowdemo flowdemo--wide"><div class="is-layout-constrained">
+  <div class="d-box d-box--quiet">default &mdash; <code>--measure-hero</code>, the
+  prose measure. (A <code>.d-prose</code> here would show its OWN narrower measure
+  winning, which is correct behaviour and a confusing specimen.)</div>
+  <div class="alignwide"><div class="d-box d-box--quiet">.alignwide &mdash; <code>--page-max</code></div></div>
+  <div class="alignfull"><div class="d-box d-box--quiet">.alignfull &mdash; no cap</div></div>
+</div></div>
+<p class="note"><b>The 660px cap is a measure and it has bitten us once.</b> B1
 found a constrained layout on three templates capping their children at the prose
-measure \u2014 the search results grid rendered at 374px instead of 714px. Nothing
-here changes that: a measure belongs on running text, never on a grid or a cart.
-<code>--measure-hero</code> is the same token <code>gen-theme-json.js</code> feeds to
-theme.json\u2019s <code>contentSize</code>, so the column and the block editor cannot
-disagree about it.</p>
-</section>''')
+measure &mdash; the search results grid rendered at 374px instead of 714px. A
+measure belongs on running text, never on a grid or a cart.
+<code>--measure-hero</code> is the same token <code>gen-theme-json.js</code> feeds
+to theme.json&rsquo;s <code>contentSize</code>, so the two cannot drift.</p>
+</div></section>''')
 
 # --------------------------------------------------------------------- card ---
 PRODUCTS = [
@@ -934,40 +1018,7 @@ touch screen that does not emulate hover. Both are kept, and a real
 now <em>underlined</em> as well as coloured, because colour alone is the one cue a
 colour-blind visitor does not get.</p>
 <div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
-<header class="d-header" style="position:relative">
-  <div class="d-header__inner d-shell d-shell--bar">
-    <a class="d-header__logo" href="#">Дарлинг</a>
-    <nav class="d-nav"><ul>
-      <li><a href="#" aria-current="page">Начало</a></li>
-      <li class="d-nav__mega"><button class="d-nav__trigger" aria-expanded="false">Категории</button>
-        <div class="d-mega"><ul class="d-mega__list d-shell d-shell--bar">
-          <li><a class="d-mega__link" href="#">За кухнята</a></li>
-          <li><a class="d-mega__link" href="#">За банята</a></li>
-          <li><a class="d-mega__link" href="#">За децата</a></li>
-          <li><a class="d-mega__link" href="#">За градината</a></li>
-          <li><a class="d-mega__link" href="#">Декорация за дома</a></li>
-          <li><a class="d-mega__link" href="#">Подаръци</a></li>
-        </ul></div></li>
-      <li><a href="#">Промоции</a></li>
-      <li><a href="#">За нас</a></li>
-    </ul></nav>
-    <div class="d-search d-wipe">
-      <span class="d-icon d-icon--search"></span>
-      <input class="d-wipe__input" type="text" value="керамична купа"
-             placeholder="Какво търсиш, darling?" aria-label="Търсене">
-      <button class="d-wipe__clear" type="button" aria-label="Изчисти">
-        <span class="d-icon d-icon--close"></span></button>
-    </div>
-    <div class="d-header__actions">
-      <button class="d-icon-btn" aria-label="Профил"><span class="d-icon d-icon--user"></span></button>
-      <input type="checkbox" class="d-heart" aria-label="Добави в любими">
-      <button class="d-icon-btn" aria-label="Количка" data-cart-button><span class="d-icon d-icon--cart"></span>
-        <span class="d-icon-btn__count">2</span></button>
-      <button class="d-icon-btn d-header__search-sm" aria-label="Търсене"><span class="d-icon d-icon--search"></span></button>
-      <button class="d-icon-btn d-header__burger" aria-label="Меню"><span class="d-icon d-icon--menu"></span></button>
-    </div>
-  </div>
-</header>
+' + HEADER_SPECIMEN + '
 <div style="padding:26px;background:var(--surface-page);color:var(--ink-quiet);
   font-size:var(--fs-meta)">Hover <b>Категории</b> to open the mega menu &mdash; the
   two stars on each link are masks, not the <code>&#x2726;</code> and
