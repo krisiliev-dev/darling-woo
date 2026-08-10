@@ -311,7 +311,9 @@
 		"typography": {
 			"fontFamily": "var(--wp--preset--font-family--inter)",
 			"fontSize": "var(--wp--preset--font-size--body)",
-			"lineHeight": "1.6"
+			"lineHeight": "1.6",
+			"fontWeight": "400",
+			"letterSpacing": "normal"
 		}
 	}
 }

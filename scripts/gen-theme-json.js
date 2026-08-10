@@ -187,7 +187,32 @@ const theme = {
     typography: {
       fontFamily: 'var(--wp--preset--font-family--inter)',
       fontSize: 'var(--wp--preset--font-size--body)',
-      lineHeight: '1.6'
+      lineHeight: '1.6',
+      // *** WHATEVER THIS BLOCK OMITS, THE PARENT THEME FILLS IN. ***
+      // The note above says theme.json should declare "only what ONLY it can
+      // declare" and leave the rest to the stylesheet. That reasoning is about
+      // DUPLICATION and it is right; what it misses is INHERITANCE. This is a
+      // child of Twenty Twenty-Five, WordPress MERGES the two theme.json files,
+      // and the parent's styles.typography reads:
+      //
+      //     "fontWeight": "300",  "letterSpacing": "-0.1px"
+      //
+      // Omitting them here does not leave them to base/elements.css. It leaves
+      // them to Manrope's designer. And global styles print UNLAYERED, so they
+      // beat every layer in the build regardless of specificity.
+      //
+      // Measured on the live home page against the gallery, which loads only
+      // darling.build.css: EVERY component differed, both the same two ways -
+      // font-weight 400 in the gallery and 300 on the site, letter-spacing
+      // normal in the gallery and -0.1px on the site. That is what the owner
+      // saw and reported as "the font isn't right", and no grep of src/ could
+      // ever have found it: the losing rule is in the parent theme's JSON.
+      //
+      // --fw-regular, from tokens/type.css, the same token --type-body uses.
+      fontWeight: type.get('--fw-regular') || '400',
+      // src/ declares no letter-spacing token at any size, so the system's
+      // answer is `normal`. Stated rather than omitted, for the reason above.
+      letterSpacing: 'normal'
     }
   }
 };
