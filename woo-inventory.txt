@@ -1,0 +1,130 @@
+walked /  (7 woo sheets, 162 classes in DOM)
+walked /shop/  (8 woo sheets, 183 classes in DOM)
+walked /cart/  (13 woo sheets, 129 classes in DOM)
+walked /checkout/  (13 woo sheets, 129 classes in DOM)
+walked /my-account/  (7 woo sheets, 134 classes in DOM)
+walked /my-account/lost-password/  (7 woo sheets, 104 classes in DOM)
+
+=== PER SHEET: defined / present on a real page / not named by us
+
+  sheet                          rules  defined  present  UNNAMED
+  all-products.css                172       98       17       10
+  cart.css                        394      229       23       15
+  express-checkout.css              3        0        0        0
+  packages-style.css              236      118        8        4
+  product-image.css                22       13        4        3
+  product-results-count.css         1        3        3        2
+  select2.css                     105       30        0        0
+  store-notices.css                40       19        5        4
+  stripe-link.css                   2        2        0        0
+  upe-blocks.css                   35       25        0        0
+  upe-classic.css                  27       21        1        1
+  wc-blocks.css                    76       71       24       17
+  woocommerce-blocktheme.css       76       70       15        4
+  woocommerce-layout.css          115       74       17        8
+  woocommerce-smallscreen.css      39       39       13        6
+  woocommerce.css                 443      242       25       15
+
+TOTAL families defined by Woo, reachable on a real page, and NOT named by our build: 89
+
+--- all-products.css (10)
+    alignfull
+    alignwide
+    has-4-columns
+    wc-block-components-product-image__inner-container
+    wc-block-grid
+    wc-block-grid__product
+    wc-block-grid__products
+    with-scroll-to-top__scroll-point
+    woocommerce-Price-amount
+    wp-block-query
+--- cart.css (15)
+    alignwide
+    price
+    wc-block-cart__empty-cart__title
+    wc-block-components-product-image__inner-container
+    wc-block-grid
+    wc-block-grid__product
+    wc-block-grid__products
+    wc-block-store-notices
+    with-empty-cart-icon
+    with-scroll-to-top__scroll-point
+    woocommerce-Price-amount
+    woocommerce-block-theme-has-button-styles
+    wp-block-query
+    wp-block-woocommerce-cart
+    wp-block-woocommerce-empty-cart-block
+--- packages-style.css (4)
+    alignwide
+    wc-block-components-notice-snackbar-list
+    wc-block-store-notices
+    woocommerce-block-theme-has-button-styles
+--- product-image.css (3)
+    wc-block-components-product-image__inner-container
+    wc-block-grid__product
+    wc-block-grid__products
+--- product-results-count.css (2)
+    wc-block-product-results-count
+    woocommerce-result-count
+--- store-notices.css (4)
+    alignwide
+    wc-block-store-notices
+    woocommerce-block-theme-has-button-styles
+    woocommerce-notices-wrapper
+--- upe-classic.css (1)
+    wp-site-blocks
+--- wc-blocks.css (17)
+    added_to_cart
+    alignfull
+    alignwide
+    price
+    screen-reader-text
+    wc-block-grid
+    wc-block-grid__product
+    wc-block-grid__product-add-to-cart
+    wc-block-grid__product-image
+    wc-block-grid__product-link
+    wc-block-grid__product-price
+    wc-block-grid__product-title
+    wc-block-grid__products
+    wc-block-store-notices
+    woocommerce-Price-amount
+    wp-block-columns
+    wp-block-group
+--- woocommerce-blocktheme.css (4)
+    added_to_cart
+    clear
+    form-row-first
+    price
+--- woocommerce-layout.css (8)
+    col-1
+    col-2
+    col2-set
+    first
+    form-row-first
+    form-row-wide
+    woocommerce-ordering
+    woocommerce-result-count
+--- woocommerce-smallscreen.css (6)
+    col-1
+    col-2
+    col2-set
+    form-row-first
+    login
+    lost_reset_password
+--- woocommerce.css (15)
+    added_to_cart
+    clear
+    col-2
+    form-row-first
+    login
+    price
+    register
+    screen-reader-text
+    woocommerce-block-theme-has-button-styles
+    woocommerce-form-login
+    woocommerce-form-login__rememberme
+    woocommerce-form-login__submit
+    woocommerce-ordering
+    woocommerce-placeholder
+    woocommerce-result-count
