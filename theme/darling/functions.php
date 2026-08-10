@@ -44,6 +44,34 @@ add_action( 'wp_enqueue_scripts', function () {
 		file_exists( $style ) ? filemtime( $style ) : null // cache-bust on deploy
 	);
 
+	/*
+	 * CUTOVER, PART ONE. The design system joins the page; nothing is deleted.
+	 *
+	 * Measured 2026-08-10, after the theme deployed: darling.build.css was ON
+	 * THE BOX and enqueued NOWHERE. 617 KB of stylesheet sitting next to a page
+	 * that never asked for it, which is why a customer still saw the old site
+	 * after a successful deploy. This is the line that was missing.
+	 *
+	 * It prints LAST, after style.css, so ours wins equal-specificity fights by
+	 * source order. That is deliberately a small claim: almost everything in the
+	 * build is inside a cascade layer, and unlayered CSS outranks every layer, so
+	 * style.css and assets/darling.css still beat the layered parts regardless of
+	 * order. Only adopted/ - unlayered by design - actually competes today.
+	 *
+	 * So this step should change very little. That is the point of doing it
+	 * before the deletions rather than with them: if something DOES move, it
+	 * moved because of one added file and not because of three removed ones.
+	 */
+	$build = get_stylesheet_directory() . '/darling.build.css';
+	if ( file_exists( $build ) ) {
+		wp_enqueue_style(
+			'darling-system',
+			get_stylesheet_directory_uri() . '/darling.build.css',
+			array( 'darling' ),
+			filemtime( $build )
+		);
+	}
+
 	$hdr = get_stylesheet_directory() . '/assets/header.js';
 	if ( file_exists( $hdr ) ) {
 		wp_enqueue_script(
