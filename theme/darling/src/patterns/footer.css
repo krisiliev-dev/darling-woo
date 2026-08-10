@@ -77,7 +77,7 @@
 .d-footer__legal a{
 	display:inline-flex;
 	align-items:center;
-	min-height:44px;      /* see the note at the top - this is the important one */
+	min-height:var(--tap);   /* see the note at the top - this is the important one */
 	width:fit-content;
 	color:inherit;
 	font-size:var(--fs-meta);
@@ -101,7 +101,7 @@
 	.d-footer__links a,
 	.d-footer__policies a,
 	.d-footer__map a,
-	.d-footer__legal a{ min-height:28px }
+	.d-footer__legal a{ min-height:var(--tap-min) }
 }
 .d-footer__links a:hover,
 .d-footer__policies a:hover,

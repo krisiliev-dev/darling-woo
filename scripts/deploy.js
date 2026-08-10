@@ -121,6 +121,42 @@ function get(url) {
 		execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build.js')], { cwd: ROOT, stdio: 'inherit' });
 	}
 
+	/* *** THE DESIGN GATES RUN BEFORE THE DEPLOY, NOT AFTER IT. ***
+	 * The owner: "We should add that to our test suite for the design so if it
+	 * fails our deploy will fail too and tell us to fix it."
+	 *
+	 * Each of these is a measurement with a counterfactual - it has been shown to
+	 * FAIL when the thing it protects is broken, which is the only reason to
+	 * trust a green one. They run against the built stylesheet and the generated
+	 * gallery, both of which the build step above has just refreshed.
+	 *
+	 * A gate that needs the dtest mirror is skipped with a LOUD line rather than
+	 * silently, because "no mirror" and "no problems" must never look the same.
+	 */
+	if (!verifyOnly && !flag('--skip-gates')) {
+		step('design gates');
+		const MIRROR = process.env.DARLING_MIRROR || path.join(ROOT, 'scripts', 'mirror');
+		const GATES = [
+			['namegate.js', 'every control, link and image announces itself', false],
+			['srgate.js', 'hidden text stays hidden with the Woo sheets off', true],
+		];
+		for (const [file, what, needsMirror] of GATES) {
+			const g = path.join(ROOT, 'scripts', file);
+			if (!fs.existsSync(g)) { die('missing gate ' + file); }
+			if (needsMirror && !fs.existsSync(MIRROR)) {
+				console.log('   SKIP  ' + file + ' - no mirror at ' + MIRROR +
+					' (set DARLING_MIRROR). NOT a pass: ' + what);
+				continue;
+			}
+			try {
+				execFileSync(process.execPath, [g], { cwd: ROOT, stdio: 'inherit' });
+				ok(what);
+			} catch (e) {
+				die(file + ' failed - ' + what);
+			}
+		}
+	}
+
 	if (!verifyOnly) {
 		const dirty = git(['status', '--porcelain', '--', 'theme', 'plugin', 'infra']).trim();
 		if (dirty) die('uncommitted changes under theme/ plugin/ infra/:\n' + dirty);

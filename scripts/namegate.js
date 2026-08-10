@@ -41,7 +41,19 @@ const RULES = ['button-name', 'link-name', 'image-alt', 'input-image-alt', 'labe
     .then((res) => res.violations.map((v) => ({ id: v.id, impact: v.impact, n: v.nodes.length,
       eg: v.nodes.slice(0, 3).map((n) => n.html.slice(0, 100)),
       sec: [...new Set(v.nodes.map((n) => { try { return (document.querySelector(n.target[0]).closest('section') || {}).id || '?'; } catch (e) { return '?'; } }))].slice(0, 5) }))), RULES);
-  if (!r.length) { console.log('name gate: every control in the gallery announces itself.'); await b.close(); return; }
+  /* *** A NAME CAN EXIST AND STILL BE BROKEN, AND axe CANNOT SEE IT. ***
+   * Nextend Social Login ships aria-label="Продължи с <b>Facebook</b>" - the
+   * markup is inside the attribute, so a screen reader announces the tags. axe
+   * passes it because a name is present. Presence is not quality. */
+  const junk = await p.evaluate(() => [...document.querySelectorAll('[aria-label]')]
+    .map((e) => e.getAttribute('aria-label'))
+    .filter((v) => /[<>]|&[a-z]+;/i.test(v)));
+  if (junk.length) {
+    console.log('  ' + junk.length + '  aria-label contains markup  [critical]');
+    junk.slice(0, 4).forEach((v) => console.log('        ' + JSON.stringify(v)));
+  }
+  if (!r.length && !junk.length) { console.log('name gate: every control in the gallery announces itself.'); await b.close(); return; }
+  if (!r.length) { await b.close(); console.log('\nname gate FAILED: ' + junk.length + ' name(s) containing markup.'); process.exit(1); }
   for (const v of r.sort((a, b) => b.n - a.n)) {
     console.log('  ' + String(v.n).padStart(3) + '  ' + v.id.padEnd(22) + '[' + v.impact + ']  sections: ' + v.sec.join(', '));
     v.eg.forEach((e) => console.log('        ' + e));

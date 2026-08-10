@@ -217,6 +217,9 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .edgepair .d-section-title{ font-size:var(--fs-h4,1rem) }
 /* gallery furniture: a frame for text that is invisible on purpose, and the
    switch that neutralises the utility so it can be seen at all */
+.nsldemo{ max-width:22rem; background:var(--surface-raised,#fff);
+  border-radius:var(--radius-l); padding:var(--space-m);
+  box-shadow:inset 0 0 0 1px color-mix(in oklab, currentColor 12%, transparent) }
 .vhdemo{ background:var(--surface-raised,#fff); border-radius:var(--radius-m);
   padding:var(--space-s); box-shadow:inset 0 0 0 1px var(--hairline,#0002) }
 .vhdemo--reveal .screen-reader-text{
@@ -457,6 +460,65 @@ A('<p class="note"><b>And the recipe now has a name.</b> The same seven '
   '<code>checkout.css</code> twice &mdash; seven copies, none of them named. '
   '<code>.d-vh</code> is the name; folding the five existing copies into it is a '
   'sweep, not this commit.</p>')
+A('</section>')
+
+# -------------------------------------------------------------------- nsl ---
+# TRANCHE 3. The markup is the plugin's, copied from the live /my-account/ - the
+# brand fills come in on the style attribute, exactly as they ship, because an
+# inline style beats every author rule that is not !important and that is the
+# correct outcome here rather than an obstacle.
+NSL_SVG_F = ('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" '
+             'fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 '
+             '1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 '
+             '12 0 0 0 24 12z"/></svg>')
+NSL_SVG_G = ('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" '
+             'aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 '
+             '0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 '
+             '8-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8h-4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" '
+             'd="M5.4 14.3a7.1 7.1 0 0 1 0-4.6v-3.1h-4a12 12 0 0 0 0 10.8l4-3.1z"/><path fill="#EA4335" '
+             'd="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5A12 12 0 0 0 1.4 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg>')
+
+def NSL(provider, skin, bg, svg, label):
+    return ('<a href="#" rel="nofollow" aria-label="Продължи с %s" '
+            'data-plugin="nsl" data-action="connect" data-provider="%s">'
+            '<div class="nsl-button nsl-button-default nsl-button-%s" data-skin="%s" '
+            'style="background-color:%s;">'
+            '<div class="nsl-button-svg-container">%s</div>'
+            '<div class="nsl-button-label-container">Продължи с <b>%s</b></div>'
+            '</div></a>' % (label, provider, provider, skin, bg, svg, label))
+
+A('<section class="sec" id="social"><h2>Dequeue tranche 3</h2>'
+  '<h3>Social login &mdash; the tranche where we do the least</h3>')
+A('<p class="note"><b>41 declarations, 12 selectors, one inline &lt;style&gt; the '
+  'plugin prints with no id.</b> The biggest tranche after the product grid, and '
+  'the one we deliberately leave mostly alone. The brand fills arrive on the '
+  'element itself &mdash; <code>style="background-color:#1877F2"</code> &mdash; so '
+  'they beat every author rule that is not <code>!important</code>. That is the '
+  'right outcome: a &ldquo;Continue with Google&rdquo; button is Google&rsquo;s '
+  'mark on our page, and its colour, logo and wording are governed by their brand '
+  'terms rather than by our tokens.</p>')
+A('<p class="note"><b>So this takes the layout and leaves the brand.</b> How the '
+  'two stack, how wide they are, how they sit in the card&rsquo;s rhythm, the type '
+  'inside them, a 44px tap target (<code>--tap</code>), and a focus ring &mdash; '
+  'which the plugin does not draw at all, so a keyboard user had no idea where '
+  'they were in the login card.</p>')
+A('<p class="note"><b>And one thing must be replaced rather than dropped.</b> The '
+  'Google button is <code>#fff</code> on a card that is also near-white; the '
+  'plugin gives it its edge with a 1px box-shadow. Dequeue without replacing that '
+  'and the button does not look unstyled &mdash; it disappears.</p>')
+A('<p class="lbl">In the login card</p>')
+A('<div class="nsldemo"><div class="nsl-container nsl-container-block" data-align="left">'
+  '<div class="nsl-container-buttons">'
+  + NSL('facebook', 'dark', '#1877F2', NSL_SVG_F, 'Facebook')
+  + NSL('google', 'light', '#fff', NSL_SVG_G, 'Google')
+  + '</div></div></div>')
+A('<p class="note"><b>A defect the plugin ships, found while measuring this.</b> '
+  'On the live page the accessible name is literally '
+  '<code>Продължи с &lt;b&gt;Facebook&lt;/b&gt;</code> '
+  '&mdash; the markup is in the attribute, so a screen reader announces the tags. '
+  'axe passes it, because a name exists; <code>scripts/namegate.js</code> now also '
+  'fails a name that contains markup. It is the plugin&rsquo;s bug and it needs a '
+  'filter on its output, not CSS. The specimen above uses the corrected name.</p>')
 A('</section>')
 
 # --------------------------------------------------------------------- card ---

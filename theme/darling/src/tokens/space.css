@@ -72,6 +72,17 @@
 	   context, because it read whatever font-size its label happened to have. */
 	--control:       1rem;
 
+	/* *** THE TAP TARGET, AND IT IS A STANDARD RATHER THAN A TASTE. ***
+	   44px is WCAG 2.5.5 Target Size (Enhanced) and the floor for anything a
+	   finger has to hit. It was typed as `min-height:44px` in footer.css and as
+	   a `var(--control-h, 2.75rem)` I invented in social.css before this existed
+	   - a magic number in one file and a phantom token in another, for the same
+	   requirement. In rem so it tracks a person's own text size; the AA minimum,
+	   WCAG 2.5.8, is 24px and is what --tap-min covers where a pointer is fine
+	   and a finger is not. */
+	--tap:           2.75rem;   /* 44px - WCAG 2.5.5 Enhanced   */
+	--tap-min:       1.75rem;   /* 28px - clears 2.5.8 Minimum  */
+
 	/* -- the page column -----------------------------------------------------
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye

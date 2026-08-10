@@ -117,6 +117,7 @@
    These have to outrank WooCommerce, and only unlayered CSS can. Last on
    purpose, and no layer() on purpose. */
 @import url("adopted/vh.css");
+@import url("adopted/social.css");
 @import url("adopted/blocklayout.css");
 @import url("adopted/icon.css");
 @import url("adopted/card.css");
