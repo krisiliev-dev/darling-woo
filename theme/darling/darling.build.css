@@ -7902,6 +7902,36 @@ main .entry-content{
 	max-width:var(--measure-lede);
 	margin-inline:auto;
 }
+/* *** A MEASURE IS FOR PROSE, AND A SHOP SURFACE IS NOT PROSE. ***
+   Measured 2026-08-10 on /my-account/: #customer_login was 431px wide inside a
+   1240px page, because every WooCommerce page is an ordinary WP page and its
+   content lands in .entry-content - which the rule above caps at --measure-lede,
+   470.772px. The owner saw the symptom and described it exactly: "the right
+   half of the page is just empty space". The login and register columns were
+   never going to sit side by side in 431px, whatever the grid said.
+
+   This is the SAME mistake as p{max-width:44ch} capping every classic-checkout
+   field at 44 characters, recorded in the review queue in the same week. A
+   measure is a property of running text; the moment it lands on a container that
+   holds a form, a table or a cart, it is just a narrow page.
+
+   So a content area holding a shop surface takes the PAGE rail instead - the
+   same --page-max everything else lines up on. :has() rather than a new class,
+   because the markup is WooCommerce's and we do not get to add one. */
+main .entry-content:has(.woocommerce),
+main .entry-content:has(#customer_login),
+main .entry-content:has([class*="wp-block-woocommerce-"]){
+	max-width:var(--page-max);
+}
+/* AND THE SECOND CAP, because there were two. With the measure lifted the
+   account forms still only reached 688px: WordPress's own constrained layout
+   caps the children of post content at theme.json's contentSize, and the LIVE
+   theme's is 43rem. Ours is 660px, so deploying does not fix it - it makes it
+   28px worse. Same finding as B1's search page, one template further out. */
+main .entry-content:has(.woocommerce) > .woocommerce,
+main .entry-content > .woocommerce{
+	max-width:none;
+}
 /* The card treatment is for a standalone PAGE, not for every .entry-content on
    the site - a product description is also .entry-content and must not grow a
    white box inside a tab. */
@@ -8941,6 +8971,108 @@ html.d-a11y .d-fab{ text-decoration:none }
 	.d-burst,
 	.d-metal {
 		display: none;
+	}
+}
+
+}
+
+/* ==== patterns/print.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / PRINT — ONE DOCUMENT, AND IT CARRIES THE NAME
+
+   Reachable by exactly one customer action: printing an order confirmation.
+   `scripts/printgate.js` measured it before any of this was written and found
+   two things — the header AND footer both print, so every confirmation spends
+   ink on navigation, and the order-total row has no edge on paper because its
+   boundary is a background and browsers drop backgrounds in print.
+
+   *** THE OWNER DECIDED THE BRANDING QUESTION, 2026-08-10: the printed order
+   CARRIES it. *** So this does not hide the header — it reduces it to the mark.
+   Navigation, search, the cart button and the footer go; the logo stays, and
+   stays in colour, because `print-color-adjust: exact` is the only way to stop
+   a browser's ink-saving mode blanking it.
+
+   Everything else here follows from one rule: on paper a boundary must be a
+   BORDER. A fill is a suggestion the printer is free to ignore.
+   ========================================================================== */
+
+@media print {
+
+	@page {
+		margin: 14mm 12mm;
+	}
+
+	html, body {
+		background: #fff;
+		color: #000;
+	}
+
+	/* -- the mark stays, the chrome goes ------------------------------------ */
+	.d-header {
+		position: static;
+		box-shadow: none;
+		border-bottom: 1px solid #000;
+	}
+	.d-header__inner {
+		padding-inline: 0;
+	}
+	.d-logo,
+	.d-header__logo {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+	}
+	.d-nav,
+	.d-mega,
+	.d-search,
+	.d-header__icons,
+	.d-header__icon,
+	.d-drawer,
+	.d-footer,
+	.d-a11y,
+	.d-consent,
+	.d-newsletter,
+	.d-burst,
+	.d-metal,
+	.d-notice__stars,
+	.wc-block-components-checkout-place-order-button,
+	.d-btn,
+	button {
+		display: none !important;
+	}
+
+	/* -- a boundary must be a border ---------------------------------------- */
+	.d-table,
+	.d-table th,
+	.d-table td,
+	.wc-block-components-totals-item,
+	.woocommerce-table,
+	.woocommerce-table td,
+	.woocommerce-table th,
+	.d-card,
+	.d-panel,
+	.d-notice {
+		border: 1px solid #000;
+		box-shadow: none;
+		background: none;
+	}
+	.d-table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	/* -- nothing may be cut in half across a page break --------------------- */
+	tr, .d-card, .wc-block-components-order-summary-item {
+		break-inside: avoid;
+	}
+	h1, h2, h3 {
+		break-after: avoid;
+	}
+
+	/* -- and no animation on paper ------------------------------------------ */
+	*, *::before, *::after {
+		animation: none !important;
+		transition: none !important;
 	}
 }
 
@@ -10698,6 +10830,91 @@ li.product .wp-block-button__link{
 	background-image:linear-gradient(45deg,
 		transparent calc(50% - .9px), currentColor calc(50% - .9px),
 		currentColor calc(50% + .9px), transparent calc(50% + .9px));
+}
+
+/* -- the account page's two columns ------------------------------------------
+   The owner, 2026-08-10: *"The Login section should be in a card and so should
+   the Register section and they should be next to each other because currently
+   the right half of the page is just empty space."*
+
+   He is describing a surface WooCommerce lays out with a grid system we never
+   named. `scripts/wooinv.js` found it: `col2-set`, `col-1`, `col-2`, `login`,
+   `register`, `woocommerce-form-login` — all defined in woocommerce.css and
+   woocommerce-layout.css, all present on /my-account/, none of them drawn by us.
+   So the empty right half is not a design mistake, it is the dequeue arriving
+   early: Woo's float-based columns are already gone in our captures.
+
+   *** NOT FLOATS, AND NOT A MEDIA QUERY. *** Woo's own version is `float:left;
+   width:48%`, which is why the second column falls under the first the moment
+   the float is dropped. auto-fit with a minimum means the two sit side by side
+   whenever there is room for both and stack when there is not, decided by the
+   CONTAINER — the same arithmetic as .d-split, for the same reason. */
+#customer_login,
+.u-columns.col2-set {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+	gap: var(--space-l);
+	align-items: start;
+}
+/* Woo floats these; the grid needs them not to */
+#customer_login .col-1,
+#customer_login .col-2,
+.u-columns.col2-set > .col-1,
+.u-columns.col2-set > .col-2 {
+	float: none;
+	width: auto;
+	box-sizing: border-box;
+	padding: var(--space-m);
+	border-radius: var(--radius-l);
+	background: var(--surface-raised);
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ink) 12%, transparent);
+}
+/* the heading WooCommerce prints above each form */
+#customer_login > .col-1 > h2,
+#customer_login > .col-2 > h2 {
+	margin-block: 0 var(--space-s);
+	font-size: var(--fs-h3, 1.25rem);
+}
+/* the forms themselves own no surface — the column is the surface */
+.woocommerce-form-login,
+.woocommerce-form-register {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+}
+.woocommerce-form-login__rememberme {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--control-gap, var(--space-2xs));
+	margin-block: var(--space-2xs);
+}
+
+/* -- and the two caps that made the columns impossible -----------------------
+   *** THIS IS IN adopted/ AND NOT IN patterns/page.css, AND THAT IS THE WHOLE
+   TRICK. *** The first attempt put it in patterns/, which is layered, and it
+   lost — WordPress prints its constrained-layout rule in an INLINE <style> in
+   the page, and an unlayered declaration beats a layered one regardless of
+   specificity. That cascade law is already written down in the review queue;
+   this is the second time it has cost an attempt.
+
+   Measured on /my-account/ at a 1240 viewport, before either fix:
+     #customer_login   431px
+     .woocommerce      max-width 688px   <- WP constrained layout, contentSize
+     .entry-content    max-width 470.772px  <- our --measure-lede, i.e. 44ch
+
+   TWO caps, stacked. The owner saw the result and described it exactly: "the
+   right half of the page is just empty space." Two 21rem columns were never
+   going to sit side by side in 431px, whatever the grid said.
+
+   A measure is a property of running text. The moment it lands on a container
+   holding a form, a table or a cart it is not a measure, it is a narrow page. */
+main .entry-content:has(.woocommerce),
+main .entry-content:has(#customer_login) {
+	max-width: var(--page-max);
+}
+main .entry-content > .woocommerce {
+	max-width: none;
 }
 
 

@@ -90,6 +90,7 @@
 @import url("patterns/mappick.css") layer(patterns);
 @import url("patterns/a11y.css") layer(patterns);
 @import url("patterns/forced.css") layer(patterns);
+@import url("patterns/print.css") layer(patterns);
 @import url("finish.css")        layer(finish);
 
 /* card, field, badge, placeholder, utilities: not written yet. */

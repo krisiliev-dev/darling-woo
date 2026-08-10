@@ -151,3 +151,88 @@
 		transparent calc(50% - .9px), currentColor calc(50% - .9px),
 		currentColor calc(50% + .9px), transparent calc(50% + .9px));
 }
+
+/* -- the account page's two columns ------------------------------------------
+   The owner, 2026-08-10: *"The Login section should be in a card and so should
+   the Register section and they should be next to each other because currently
+   the right half of the page is just empty space."*
+
+   He is describing a surface WooCommerce lays out with a grid system we never
+   named. `scripts/wooinv.js` found it: `col2-set`, `col-1`, `col-2`, `login`,
+   `register`, `woocommerce-form-login` — all defined in woocommerce.css and
+   woocommerce-layout.css, all present on /my-account/, none of them drawn by us.
+   So the empty right half is not a design mistake, it is the dequeue arriving
+   early: Woo's float-based columns are already gone in our captures.
+
+   *** NOT FLOATS, AND NOT A MEDIA QUERY. *** Woo's own version is `float:left;
+   width:48%`, which is why the second column falls under the first the moment
+   the float is dropped. auto-fit with a minimum means the two sit side by side
+   whenever there is room for both and stack when there is not, decided by the
+   CONTAINER — the same arithmetic as .d-split, for the same reason. */
+#customer_login,
+.u-columns.col2-set {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+	gap: var(--space-l);
+	align-items: start;
+}
+/* Woo floats these; the grid needs them not to */
+#customer_login .col-1,
+#customer_login .col-2,
+.u-columns.col2-set > .col-1,
+.u-columns.col2-set > .col-2 {
+	float: none;
+	width: auto;
+	box-sizing: border-box;
+	padding: var(--space-m);
+	border-radius: var(--radius-l);
+	background: var(--surface-raised);
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ink) 12%, transparent);
+}
+/* the heading WooCommerce prints above each form */
+#customer_login > .col-1 > h2,
+#customer_login > .col-2 > h2 {
+	margin-block: 0 var(--space-s);
+	font-size: var(--fs-h3, 1.25rem);
+}
+/* the forms themselves own no surface — the column is the surface */
+.woocommerce-form-login,
+.woocommerce-form-register {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+}
+.woocommerce-form-login__rememberme {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--control-gap, var(--space-2xs));
+	margin-block: var(--space-2xs);
+}
+
+/* -- and the two caps that made the columns impossible -----------------------
+   *** THIS IS IN adopted/ AND NOT IN patterns/page.css, AND THAT IS THE WHOLE
+   TRICK. *** The first attempt put it in patterns/, which is layered, and it
+   lost — WordPress prints its constrained-layout rule in an INLINE <style> in
+   the page, and an unlayered declaration beats a layered one regardless of
+   specificity. That cascade law is already written down in the review queue;
+   this is the second time it has cost an attempt.
+
+   Measured on /my-account/ at a 1240 viewport, before either fix:
+     #customer_login   431px
+     .woocommerce      max-width 688px   <- WP constrained layout, contentSize
+     .entry-content    max-width 470.772px  <- our --measure-lede, i.e. 44ch
+
+   TWO caps, stacked. The owner saw the result and described it exactly: "the
+   right half of the page is just empty space." Two 21rem columns were never
+   going to sit side by side in 431px, whatever the grid said.
+
+   A measure is a property of running text. The moment it lands on a container
+   holding a form, a table or a cart it is not a measure, it is a narrow page. */
+main .entry-content:has(.woocommerce),
+main .entry-content:has(#customer_login) {
+	max-width: var(--page-max);
+}
+main .entry-content > .woocommerce {
+	max-width: none;
+}

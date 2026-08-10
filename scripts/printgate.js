@@ -75,7 +75,11 @@ const PROBE = `() => {
     const A = (a.shown ? 'h=' + a.h : 'hidden') + (a.border ? ' border' : (a.shadow ? ' shadow' : ''));
     const B = (b.shown ? 'h=' + b.h : 'hidden') + (b.border ? ' border' : (b.shadow ? ' shadow' : ''));
     say('  ' + a.name.padEnd(20) + A.padEnd(32) + B);
-    if (/chrome/.test(a.name) && b.shown) wasted.push(a.name);
+    // *** THE HEADER IS SUPPOSED TO PRINT. *** The owner decided on 2026-08-10
+    // that a printed order carries Darling branding, so a header on paper is
+    // the requirement, not the defect. Only the footer is waste. A gate that
+    // keeps flagging an approved decision teaches people to ignore it.
+    if (/footer chrome/.test(a.name) && b.shown) wasted.push(a.name);
     if (!/chrome/.test(a.name) && b.shown && !b.border && !b.shadow) gone.push(a.name);
   }
   say('');

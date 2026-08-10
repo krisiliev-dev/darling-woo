@@ -31,6 +31,36 @@ main .entry-content{
 	max-width:var(--measure-lede);
 	margin-inline:auto;
 }
+/* *** A MEASURE IS FOR PROSE, AND A SHOP SURFACE IS NOT PROSE. ***
+   Measured 2026-08-10 on /my-account/: #customer_login was 431px wide inside a
+   1240px page, because every WooCommerce page is an ordinary WP page and its
+   content lands in .entry-content - which the rule above caps at --measure-lede,
+   470.772px. The owner saw the symptom and described it exactly: "the right
+   half of the page is just empty space". The login and register columns were
+   never going to sit side by side in 431px, whatever the grid said.
+
+   This is the SAME mistake as p{max-width:44ch} capping every classic-checkout
+   field at 44 characters, recorded in the review queue in the same week. A
+   measure is a property of running text; the moment it lands on a container that
+   holds a form, a table or a cart, it is just a narrow page.
+
+   So a content area holding a shop surface takes the PAGE rail instead - the
+   same --page-max everything else lines up on. :has() rather than a new class,
+   because the markup is WooCommerce's and we do not get to add one. */
+main .entry-content:has(.woocommerce),
+main .entry-content:has(#customer_login),
+main .entry-content:has([class*="wp-block-woocommerce-"]){
+	max-width:var(--page-max);
+}
+/* AND THE SECOND CAP, because there were two. With the measure lifted the
+   account forms still only reached 688px: WordPress's own constrained layout
+   caps the children of post content at theme.json's contentSize, and the LIVE
+   theme's is 43rem. Ours is 660px, so deploying does not fix it - it makes it
+   28px worse. Same finding as B1's search page, one template further out. */
+main .entry-content:has(.woocommerce) > .woocommerce,
+main .entry-content > .woocommerce{
+	max-width:none;
+}
 /* The card treatment is for a standalone PAGE, not for every .entry-content on
    the site - a product description is also .entry-content and must not grow a
    white box inside a tab. */

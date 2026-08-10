@@ -1,0 +1,97 @@
+/* =============================================================================
+   PATTERN / PRINT — ONE DOCUMENT, AND IT CARRIES THE NAME
+
+   Reachable by exactly one customer action: printing an order confirmation.
+   `scripts/printgate.js` measured it before any of this was written and found
+   two things — the header AND footer both print, so every confirmation spends
+   ink on navigation, and the order-total row has no edge on paper because its
+   boundary is a background and browsers drop backgrounds in print.
+
+   *** THE OWNER DECIDED THE BRANDING QUESTION, 2026-08-10: the printed order
+   CARRIES it. *** So this does not hide the header — it reduces it to the mark.
+   Navigation, search, the cart button and the footer go; the logo stays, and
+   stays in colour, because `print-color-adjust: exact` is the only way to stop
+   a browser's ink-saving mode blanking it.
+
+   Everything else here follows from one rule: on paper a boundary must be a
+   BORDER. A fill is a suggestion the printer is free to ignore.
+   ========================================================================== */
+
+@media print {
+
+	@page {
+		margin: 14mm 12mm;
+	}
+
+	html, body {
+		background: #fff;
+		color: #000;
+	}
+
+	/* -- the mark stays, the chrome goes ------------------------------------ */
+	.d-header {
+		position: static;
+		box-shadow: none;
+		border-bottom: 1px solid #000;
+	}
+	.d-header__inner {
+		padding-inline: 0;
+	}
+	.d-logo,
+	.d-header__logo {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+	}
+	.d-nav,
+	.d-mega,
+	.d-search,
+	.d-header__icons,
+	.d-header__icon,
+	.d-drawer,
+	.d-footer,
+	.d-a11y,
+	.d-consent,
+	.d-newsletter,
+	.d-burst,
+	.d-metal,
+	.d-notice__stars,
+	.wc-block-components-checkout-place-order-button,
+	.d-btn,
+	button {
+		display: none !important;
+	}
+
+	/* -- a boundary must be a border ---------------------------------------- */
+	.d-table,
+	.d-table th,
+	.d-table td,
+	.wc-block-components-totals-item,
+	.woocommerce-table,
+	.woocommerce-table td,
+	.woocommerce-table th,
+	.d-card,
+	.d-panel,
+	.d-notice {
+		border: 1px solid #000;
+		box-shadow: none;
+		background: none;
+	}
+	.d-table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	/* -- nothing may be cut in half across a page break --------------------- */
+	tr, .d-card, .wc-block-components-order-summary-item {
+		break-inside: avoid;
+	}
+	h1, h2, h3 {
+		break-after: avoid;
+	}
+
+	/* -- and no animation on paper ------------------------------------------ */
+	*, *::before, *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+}
