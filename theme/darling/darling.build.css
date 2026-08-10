@@ -14573,3 +14573,46 @@ a.wc-block-components-button{
    ========================================================================== */
 img[data-d-media-fail]{ display:none !important }
 
+
+/* ==== adopted/wp-globals.css ==== */
+/* =============================================================================
+   ADOPTED / WHAT WORDPRESS'S GLOBAL STYLES TAKE FROM US
+
+   *** THIS FILE EXISTS BECAUSE UNLAYERED BEATS EVERY LAYER. *** WordPress prints
+   the merged theme.json - ours and Twenty Twenty-Five's - as
+   `global-styles-inline-css`, with no layer. Everything in patterns/ IS in a
+   layer. So on any element the parent theme names, our component loses no matter
+   how specific it is, and there is no value that hands control back: `inherit`
+   and `revert` both make it worse.
+
+   adopted/ is the system's only unlayered ground, so this is where such a
+   component has to sit until the leak is closed at the source - either by our
+   generated theme.json restating the elements, or by stopping being a child of
+   Twenty Twenty-Five. Both are written up in claude/GALLERY_IS_THE_SPEC_20260810.md.
+
+   *** EVERY RULE HERE IS A DEBT. *** When the leak is closed, each one moves
+   back to the pattern file it belongs to. Do not grow this file casually: add a
+   rule only when there is a MEASURED computed value proving the component lost.
+   ========================================================================== */
+
+/* -- the seasonal band's call to action --------------------------------------
+   Measured on the live home page, 2026-08-10:
+
+       .d-season__cta   color rgb(255,246,233) on background rgb(255,246,233)
+
+   Cream on cream. The button was invisible - a real one, on the home page, that
+   a customer is meant to click. patterns/hero.css says
+   `color:var(--c-cherry-deep)` and the token is declared (#B01F30); what beat it
+   was the parent theme's link element style, which WordPress prints as
+
+       a:where(:not(.wp-element-button)) { color: currentColor }
+
+   Specificity (0,0,1) against our (0,1,0) - we should win by a mile, and we lose
+   on layer alone. currentColor inside .d-season is --ink-on-dark, i.e. cream,
+   which is why the failure is total rather than merely wrong.
+
+   Only the colour is restated. Everything else about the button still comes from
+   patterns/hero.css, so there is one definition of its shape and one line of
+   debt to unwind. */
+.d-season__cta{ color:var(--c-cherry-deep) }
+.d-season__cta:hover{ color:var(--c-cherry-deep) }
