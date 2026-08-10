@@ -1451,7 +1451,42 @@ svg{ max-width:100% }
 	display:grid;
 	grid-template-columns:minmax(0, 1fr);   /* one column, and it may not overflow */
 	row-gap:var(--section-y);
+	/* the page's own air at its two ends - see THE EDGES below */
+	padding-block:var(--section-y);
 }
+
+/* -- THE EDGES, WHICH THE GAP DOES NOT COVER ---------------------------------
+   The owner, on the first version: "the band is edge to edge which looks right
+   with no gap below it, since it is the last item before the footer. But if it
+   was not an end to end band, or if it wasn't the last item, I think it would
+   need a gap."
+
+   Both halves are right and they need different answers.
+
+   NOT LAST is already handled and needs nothing: row-gap sits between ANY two
+   children, so a band followed by another section gets its 59px like anything
+   else. The gap does not care what its neighbours are.
+
+   NOT EDGE TO EDGE is the real hole, and it is at both ends rather than one. A
+   gap has no leading or trailing edge - that is exactly why the hero came out
+   flush for free - which also means the page has NO air at its ends at all. That
+   is correct when a bleed is there and wrong the moment anything else is: a card
+   grid butting straight into the footer, or sitting straight under the header.
+
+   So the page carries padding at its ends, and a bleed at an end removes it. The
+   condition is a fact about the first or last block, so :has() states it -
+   and unlike the one deleted last commit, this is not an artefact of the
+   mechanism. A bleed genuinely IS chrome: an edge-to-edge surface meeting the
+   header or the footer, which are also edge-to-edge surfaces. Two surfaces meet;
+   they do not need air between them. Anything on the page does.
+
+   THE LIST WANTS TO BE A MARKER CLASS. `.d-hero-band` and `.d-band` are the two
+   things in the system that reach both edges; a `.d-bleed` on each would let
+   this rule stop enumerating them. Left as a list because adding the marker
+   means touching both patterns and the templates that use them, and that is a
+   change to make deliberately rather than in passing. */
+.wp-site-blocks > main:has(> :first-child:is(.d-hero-band, .d-band)){ padding-block-start:0 }
+.wp-site-blocks > main:has(> :last-child:is(.d-hero-band, .d-band)){ padding-block-end:0 }
 /* *** THE ONE PLACE THE TWO MECHANISMS COULD DOUBLE. *** main is itself often
    `.is-layout-constrained`, so without this its children would take the gap AND
    the child margin below - which is precisely the doubling the model exists to
@@ -15038,6 +15073,9 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    demonstrating shows nothing, which is why .alignwide and .alignfull looked
    identical in the first version */
 .flowfull{ background:var(--surface-page,#efecea); padding-block:var(--space-s) }
+/* two whole pages side by side, so the edge rule is visible rather than asserted */
+.edgepair{ display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:var(--space-m) }
+.edgepair .d-section-title{ font-size:var(--fs-h4,1rem) }
 /* NO `.flowpage main{display:block}` HERE. It was, and it overrode the very
    rule the specimen exists to show - main is a grid now, and the furniture
    was quietly turning it back into a block. */
@@ -15153,6 +15191,79 @@ accessibility decision for a visual one without saying so, so it is halved behin
 <code>@media (pointer: fine)</code>. A phone keeps 44px (WCAG 2.5.5); a desktop
 gets 28px, still over the 24px minimum of WCAG 2.5.8.</p>
 
+<p class="lbl">The edges &mdash; a bleed touches, anything else gets air</p><p class="note">The gap has no leading or trailing edge, which is why the hero
+came out flush for free &mdash; and also why the page would have <em>no</em> air at
+its ends at all. Correct when a bleed is there; wrong the moment anything else is.
+So <code>main</code> carries <code>padding-block:--section-y</code> and a bleed at
+an end removes it. Two edge-to-edge surfaces meeting need no air between them;
+a card grid butting into the footer does.</p>
+<div class="edgepair"><div><p class="lbl">ends with a bleed &mdash; touches the footer</p><div class="flowpage wp-site-blocks"><main><section class="d-section"><h2 class="d-section-title d-shell">Изборът</h2><div class="d-shell"><div class="d-grid"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Ново</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p><button class="d-card__cta">Добави</button></article></div></div></section><section class="d-band"><h2 class="d-band__title">Подаръци</h2></section></main><footer class="d-footer">
+  <div>
+    <h2 class="d-footer__head">Дарлинг</h2>
+    <nav class="d-footer__links">
+      <a href="#">За нас</a><a href="#">Контакти</a><a href="#">Доставка</a>
+      <a href="#">Връщане и замяна</a><a href="#">Често задавани въпроси</a>
+    </nav>
+  </div>
+
+  <div class="d-footflair">
+    <span class="d-finish d-footflair__rule" aria-hidden="true"></span>
+    <span class="d-footflair__mark">
+      <span class="d-footflair__bow" aria-hidden="true"></span>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+    </span>
+    <p class="d-footflair__word">Дарлинг</p>
+    <p class="d-footflair__tag">Неща за дома, подбрани с внимание</p>
+    <ul class="d-footflair__social">
+      <li><a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6A21 21 0 0 0 14.3 3.5c-2.4 0-4 1.46-4 4.14V9.9H7.6V13h2.7v8z"/></svg></a></li>
+      <li><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 7.2A4.8 4.8 0 1 0 16.8 12 4.81 4.81 0 0 0 12 7.2m0 7.92A3.12 3.12 0 1 1 15.12 12 3.12 3.12 0 0 1 12 15.12M18.1 7a1.12 1.12 0 1 1-1.12-1.12A1.12 1.12 0 0 1 18.1 7M16.2 3H7.8A4.8 4.8 0 0 0 3 7.8v8.4A4.8 4.8 0 0 0 7.8 21h8.4a4.8 4.8 0 0 0 4.8-4.8V7.8A4.8 4.8 0 0 0 16.2 3m3 13.2a3 3 0 0 1-3 3H7.8a3 3 0 0 1-3-3V7.8a3 3 0 0 1 3-3h8.4a3 3 0 0 1 3 3Z"/></svg></a></li>
+      <li><a href="#" aria-label="Имейл"><span class="d-icon d-icon--mail"></span></a></li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="d-footer__head">Дарлинг 7 ООД</h2>
+    <div class="d-footer__policies">
+      <a href="#">Общи условия</a><a href="#">Поверителност</a><a href="#">Бисквитки</a>
+    </div>
+    <p class="d-footer__map"><a href="#">ул. Пример 12, София 1000</a></p>
+  </div>
+</footer></div></div><div><p class="lbl">ends with a grid &mdash; takes the page’s air</p><div class="flowpage wp-site-blocks"><main><section class="d-section"><h2 class="d-section-title d-shell">Изборът</h2><div class="d-shell"><div class="d-grid"><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Керамична купа</a></h3><p class="d-card__price">26,40 лв.</p><button class="d-card__cta">Добави</button></article><article class="d-card"><div class="d-card__media"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""><span class="d-badge d-badge--on-image" style="position:absolute;top:8px;left:8px">Ново</span></div><div class="d-card__accent d-finish"></div><h3 class="d-card__title"><a href="#">Дървена дъска за рязане с дръжка</a></h3><p class="d-card__price">31,90 лв.</p><button class="d-card__cta">Добави</button></article></div></div></section></main><footer class="d-footer">
+  <div>
+    <h2 class="d-footer__head">Дарлинг</h2>
+    <nav class="d-footer__links">
+      <a href="#">За нас</a><a href="#">Контакти</a><a href="#">Доставка</a>
+      <a href="#">Връщане и замяна</a><a href="#">Често задавани въпроси</a>
+    </nav>
+  </div>
+
+  <div class="d-footflair">
+    <span class="d-finish d-footflair__rule" aria-hidden="true"></span>
+    <span class="d-footflair__mark">
+      <span class="d-footflair__bow" aria-hidden="true"></span>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+      <i class="d-footflair__s" aria-hidden="true"></i>
+    </span>
+    <p class="d-footflair__word">Дарлинг</p>
+    <p class="d-footflair__tag">Неща за дома, подбрани с внимание</p>
+    <ul class="d-footflair__social">
+      <li><a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6A21 21 0 0 0 14.3 3.5c-2.4 0-4 1.46-4 4.14V9.9H7.6V13h2.7v8z"/></svg></a></li>
+      <li><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 7.2A4.8 4.8 0 1 0 16.8 12 4.81 4.81 0 0 0 12 7.2m0 7.92A3.12 3.12 0 1 1 15.12 12 3.12 3.12 0 0 1 12 15.12M18.1 7a1.12 1.12 0 1 1-1.12-1.12A1.12 1.12 0 0 1 18.1 7M16.2 3H7.8A4.8 4.8 0 0 0 3 7.8v8.4A4.8 4.8 0 0 0 7.8 21h8.4a4.8 4.8 0 0 0 4.8-4.8V7.8A4.8 4.8 0 0 0 16.2 3m3 13.2a3 3 0 0 1-3 3H7.8a3 3 0 0 1-3-3V7.8a3 3 0 0 1 3-3h8.4a3 3 0 0 1 3 3Z"/></svg></a></li>
+      <li><a href="#" aria-label="Имейл"><span class="d-icon d-icon--mail"></span></a></li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="d-footer__head">Дарлинг 7 ООД</h2>
+    <div class="d-footer__policies">
+      <a href="#">Общи условия</a><a href="#">Поверителност</a><a href="#">Бисквитки</a>
+    </div>
+    <p class="d-footer__map"><a href="#">ул. Пример 12, София 1000</a></p>
+  </div>
+</footer></div></div></div>
 <p class="lbl">.is-layout-flow &gt; * &mdash; the product page&rsquo;s buy column</p><div class="flowdemo"><div class="is-layout-flow" style="max-width:23rem">
   <h1 class="d-product__title">Керамична купа</h1>
   <div class="d-product__price">26,40 лв.</div>

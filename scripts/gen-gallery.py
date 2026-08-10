@@ -212,6 +212,9 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    demonstrating shows nothing, which is why .alignwide and .alignfull looked
    identical in the first version */
 .flowfull{ background:var(--surface-page,#efecea); padding-block:var(--space-s) }
+/* two whole pages side by side, so the edge rule is visible rather than asserted */
+.edgepair{ display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:var(--space-m) }
+.edgepair .d-section-title{ font-size:var(--fs-h4,1rem) }
 /* NO `.flowpage main{display:block}` HERE. It was, and it overrode the very
    rule the specimen exists to show - main is a grid now, and the furniture
    was quietly turning it back into a block. */
@@ -345,6 +348,26 @@ accessibility decision for a visual one without saying so, so it is halved behin
 <code>@media (pointer: fine)</code>. A phone keeps 44px (WCAG 2.5.5); a desktop
 gets 28px, still over the 24px minimum of WCAG 2.5.8.</p>
 
+<p class="lbl">The edges &mdash; a bleed touches, anything else gets air</p>''')
+A('''<p class="note">The gap has no leading or trailing edge, which is why the hero
+came out flush for free &mdash; and also why the page would have <em>no</em> air at
+its ends at all. Correct when a bleed is there; wrong the moment anything else is.
+So <code>main</code> carries <code>padding-block:--section-y</code> and a bleed at
+an end removes it. Two edge-to-edge surfaces meeting need no air between them;
+a card grid butting into the footer does.</p>
+<div class="edgepair">''')
+for last, label in ((True, 'ends with a bleed &mdash; touches the footer'),
+                    (False, 'ends with a grid &mdash; takes the page\u2019s air')):
+    A('<div><p class="lbl">%s</p><div class="flowpage wp-site-blocks"><main>' % label)
+    A('<section class="d-section"><h2 class="d-section-title d-shell">\u0418\u0437\u0431\u043e\u0440\u044a\u0442</h2>'
+      '<div class="d-shell"><div class="d-grid">')
+    for name, price, was, badge in PRODUCTS[:2]:
+        A(FLOW_CARD(name, price, was, badge))
+    A('</div></div></section>')
+    if last:
+        A('<section class="d-band"><h2 class="d-band__title">\u041f\u043e\u0434\u0430\u0440\u044a\u0446\u0438</h2></section>')
+    A('</main>' + FOOTER_SPECIMEN + '</div></div>')
+A('''</div>
 <p class="lbl">.is-layout-flow &gt; * &mdash; the product page&rsquo;s buy column</p>''')
 A('''<div class="flowdemo"><div class="is-layout-flow" style="max-width:23rem">
   <h1 class="d-product__title">Керамична купа</h1>

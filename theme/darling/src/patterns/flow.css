@@ -93,7 +93,42 @@
 	display:grid;
 	grid-template-columns:minmax(0, 1fr);   /* one column, and it may not overflow */
 	row-gap:var(--section-y);
+	/* the page's own air at its two ends - see THE EDGES below */
+	padding-block:var(--section-y);
 }
+
+/* -- THE EDGES, WHICH THE GAP DOES NOT COVER ---------------------------------
+   The owner, on the first version: "the band is edge to edge which looks right
+   with no gap below it, since it is the last item before the footer. But if it
+   was not an end to end band, or if it wasn't the last item, I think it would
+   need a gap."
+
+   Both halves are right and they need different answers.
+
+   NOT LAST is already handled and needs nothing: row-gap sits between ANY two
+   children, so a band followed by another section gets its 59px like anything
+   else. The gap does not care what its neighbours are.
+
+   NOT EDGE TO EDGE is the real hole, and it is at both ends rather than one. A
+   gap has no leading or trailing edge - that is exactly why the hero came out
+   flush for free - which also means the page has NO air at its ends at all. That
+   is correct when a bleed is there and wrong the moment anything else is: a card
+   grid butting straight into the footer, or sitting straight under the header.
+
+   So the page carries padding at its ends, and a bleed at an end removes it. The
+   condition is a fact about the first or last block, so :has() states it -
+   and unlike the one deleted last commit, this is not an artefact of the
+   mechanism. A bleed genuinely IS chrome: an edge-to-edge surface meeting the
+   header or the footer, which are also edge-to-edge surfaces. Two surfaces meet;
+   they do not need air between them. Anything on the page does.
+
+   THE LIST WANTS TO BE A MARKER CLASS. `.d-hero-band` and `.d-band` are the two
+   things in the system that reach both edges; a `.d-bleed` on each would let
+   this rule stop enumerating them. Left as a list because adding the marker
+   means touching both patterns and the templates that use them, and that is a
+   change to make deliberately rather than in passing. */
+.wp-site-blocks > main:has(> :first-child:is(.d-hero-band, .d-band)){ padding-block-start:0 }
+.wp-site-blocks > main:has(> :last-child:is(.d-hero-band, .d-band)){ padding-block-end:0 }
 /* *** THE ONE PLACE THE TWO MECHANISMS COULD DOUBLE. *** main is itself often
    `.is-layout-constrained`, so without this its children would take the gap AND
    the child margin below - which is precisely the doubling the model exists to
