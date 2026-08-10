@@ -2074,7 +2074,7 @@ live home page three of them had 0px above and 42px below, which reads as a
 caption hanging off the bottom of the previous section.</p>
 <div style="border:1px dashed var(--hairline);border-radius:var(--radius-m);padding:4px 0">
   <p class="d-hero__eyebrow" style="max-width:1120px;margin:0 auto;padding-inline:var(--gutter)">Току-що пристигна</p>
-  <h2 class="d-section-title">Новото от Дарлинг</h2>
+  <h2 class="d-section-title d-shell">Новото от Дарлинг</h2>
   <p style="max-width:1120px;margin:0 auto;padding-inline:var(--gutter);color:var(--ink-quiet)">
   The eyebrow sits close to the title; the title sits far from whatever is above it.</p>
 </div>
@@ -2553,8 +2553,8 @@ its own token.</p>
     </ul></nav>
   </div>
 </header>
-<h2 class="d-section-title" style="margin-block:var(--space-m) var(--space-s)">&#x41D;&#x43E;&#x432;&#x43E; &#x432; &#x43C;&#x430;&#x433;&#x430;&#x437;&#x438;&#x43D;&#x430;</h2>
-<div class="d-grid" style="padding-bottom:var(--space-m)">''')
+<h2 class="d-section-title d-shell" style="margin-block:var(--space-m) var(--space-s)">&#x41D;&#x43E;&#x432;&#x43E; &#x432; &#x43C;&#x430;&#x433;&#x430;&#x437;&#x438;&#x43D;&#x430;</h2>
+<div class="d-grid d-shell" style="padding-bottom:var(--space-m)">''')
 for name, price, now, chip in PRODUCTS[:3]:
     A('<article class="d-card">')
     A('<div class="d-card__media">')
@@ -2681,9 +2681,14 @@ which a margin on the block itself cannot do.</p>
 write rules for the checkout &mdash; it is to have a frame, a split and a rhythm
 that every page uses, and then let the checkout be one of them. Anything still
 declaring its own <code>max-width:var(--page-max)</code> is on the list:
-<code>.d-grid</code>, <code>.d-archive</code>, <code>.d-product</code>,
-<code>.d-hero</code>, <code>.d-404</code> and <code>.d-section-title</code> all
-predate <code>.d-shell</code> and still agree with it by hand.</div>
+<b>As of 2026-08-10 they no longer do.</b> <code>.d-grid</code>,
+<code>.d-archive</code>, <code>.d-product</code>, <code>.d-hero</code>, <code>.d-404</code>
+and <code>.d-section-title</code> used to be listed beside <code>.d-shell</code> so
+the templates would not have to say it. Measured, that cost two bugs: the 404 page
+applied the gutter twice (its heading and grid are INSIDE the main), and the shop
+archive paid the page gutter inside a column. A frame taken by name cannot know
+where it is. Now the markup composes <code>.d-shell</code> and
+<code>scripts/b1shell.js</code> fails if any shell leaves the rail.</div>
 </section>''')
 
 # ------------------------------------------------------------------- matrix ---

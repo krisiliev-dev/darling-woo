@@ -11,7 +11,7 @@
 	<!-- Full-bleed via the WRAPPER: the outer band paints the cherry edge to edge,
 	     the inner grid stays constrained. No negative margins anywhere. -->
 	<div class="d-hero-band">
-	<div class="d-hero d-hero--red">
+	<div class="d-hero d-hero--red d-shell">
 		<div class="d-hero__copy">
 			<h1 class="d-hero__title">Тайната на една <em>домакиня.</em></h1>
 			<p class="d-hero__sub">
@@ -46,7 +46,7 @@
 	     width and a retina desktop picks the 440w file for a slot that needs 800w,
 	     and the tiles go soft. Measured: jpg set 792 KB -> 440w webp 160 KB. -->
 	<p class="d-hero__eyebrow">За целия дом</p>
-	<h2 class="d-section-title">Категории</h2>
+	<h2 class="d-section-title d-shell">Категории</h2>
 	<div class="d-carousel" aria-label="Категории">
 		<div class="d-carousel__row">
 			<a class="d-carousel__tile" href="/product-category/za-kuhnyata/"><picture><source type="image/webp" srcset="/wp-content/themes/darling/assets/img/categories/za-kuhnyata-440.webp 440w, /wp-content/themes/darling/assets/img/categories/za-kuhnyata-800.webp 800w" sizes="(max-width:940px) 300px, 400px"><img src="/wp-content/themes/darling/assets/img/categories/za-kuhnyata.jpg" alt="" loading="lazy" decoding="async"></picture><span>За кухнята</span></a>
@@ -65,12 +65,12 @@
 <p class="d-hero__eyebrow">Лично избрано</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":2,"className":"d-section-title"} -->
-<h2 class="wp-block-heading d-section-title">Изборът на Lady D</h2>
+<!-- wp:heading {"level":2,"className":"d-section-title d-shell"} -->
+<h2 class="wp-block-heading d-section-title d-shell">Изборът на Lady D</h2>
 <!-- /wp:heading -->
 
-<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date","taxQuery":{"product_cat":[24]}},"className":"d-grid"} -->
-<div class="wp-block-query d-grid">
+<!-- wp:query {"query":{"perPage":4,"postType":"product","order":"desc","orderBy":"date","taxQuery":{"product_cat":[24]}},"className":"d-grid d-shell"} -->
+<div class="wp-block-query d-grid d-shell">
 	<!-- wp:post-template -->
 		<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
 		<!-- wp:post-title {"level":3,"isLink":true} /-->
@@ -102,14 +102,14 @@
 <p class="d-hero__eyebrow">Току-що пристигна</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":2,"className":"d-section-title"} -->
-<h2 class="wp-block-heading d-section-title">Ново в Darling</h2>
+<!-- wp:heading {"level":2,"className":"d-section-title d-shell"} -->
+<h2 class="wp-block-heading d-section-title d-shell">Ново в Darling</h2>
 <!-- /wp:heading -->
 
 <!-- A real product grid, so it fills in by itself the moment the catalogue
      lands rather than needing another pass. -->
-<!-- wp:query {"query":{"perPage":8,"postType":"product","order":"desc","orderBy":"date"},"className":"d-grid"} -->
-<div class="wp-block-query d-grid">
+<!-- wp:query {"query":{"perPage":8,"postType":"product","order":"desc","orderBy":"date"},"className":"d-grid d-shell"} -->
+<div class="wp-block-query d-grid d-shell">
 	<!-- wp:post-template -->
 		<!-- wp:woocommerce/product-image {"imageSizing":"thumbnail"} /-->
 		<!-- wp:post-title {"level":3,"isLink":true} /-->
