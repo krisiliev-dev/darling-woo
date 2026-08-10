@@ -10456,6 +10456,162 @@ li.product .wp-block-button__link{
 }
 
 
+/* ==== adopted/account.css ==== */
+/* =============================================================================
+   ADOPTED / THE ACCOUNT FORM'S PASSWORD FIELD
+
+   Three families that no phase list covered, because the stage-6 parse read
+   `blocks/checkout.css` and these live in `woocommerce-general`. B7 went looking
+   for `.wc-block-components-password-strength`, found it correctly switched off
+   (signup-at-checkout is "no"), and found its CLASSIC TWIN LIVE on /my-account/
+   for any customer making an account.
+
+   *** MEASURED BEFORE ANY OF THIS WAS WRITTEN. *** `scripts/pwmeter.js` types
+   four passwords into `#reg_password` and captures each bucket with Woo's
+   sheets on, then performs the cutover in the page and captures them again.
+   What the dequeue takes away:
+
+     .woocommerce-password-strength   a FILLED BANNER - bg rgb(241,173,173) at
+                                      "short", rgb(251,197,169) at "bad",
+                                      weight 600, padding 3px 8.48px.
+                                      After: transparent, weight 300, no
+                                      padding. The words survive; the signal
+                                      does not.
+     .password-input                  display:flex -> display:inline, so the
+                                      eye stops being positioned at all.
+     .show-password-input             falls back to RAW USER-AGENT CHROME:
+                                      16x6px, `border: 2px outset`, face
+                                      rgb(240,240,240). A default browser button
+                                      on a live signup form, and the one nobody
+                                      would have predicted from a class list.
+     .woocommerce-password-hint       display:inline, loses its 7px top margin,
+                                      runs into the meter above it.
+
+   Unlayered, like every file in adopted/ - these have to beat whatever survives
+   the cutover without an !important anywhere.
+   ========================================================================== */
+
+/* -- the meter --------------------------------------------------------------
+   It is a notice, so it is the notice we already own rather than a fifth
+   surface invented for one form. Same fill arithmetic as `patterns/notice.css`:
+   a token mixed into the raised surface, with the same token at higher strength
+   as an inset hairline.
+
+   *** AND THE STRONG STATE IS GOLD, NOT GREEN. *** `tokens/colour.css` records
+   the ruling: "Four states. Three of them are brand colours we already had;
+   SUCCESS IS --notice-success-edge: var(--g-core). The owner ruled out green."
+   A green meter here would have been the one place on the site that broke it.
+
+   Woo writes four classes - short, bad, good, strong - plus `mismatch` when the
+   confirmation does not agree. Mismatch is an error about a DIFFERENT field, so
+   it reads as error, not as weakness. */
+.woocommerce-password-strength{
+	display:block;
+	margin-block-start:var(--space-2xs);
+	padding:var(--space-2xs) var(--space-xs);
+	border-radius:var(--radius-m);
+	font-size:var(--fs-meta);
+	font-weight:500;
+	line-height:1.35;
+	color:var(--ink);
+	background:color-mix(in oklab, var(--notice-info-edge) 9%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-info-edge) 22%, transparent);
+}
+.woocommerce-password-strength.short,
+.woocommerce-password-strength.mismatch{
+	background:color-mix(in oklab, var(--notice-error-edge) 9%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-error-edge) 22%, transparent);
+}
+.woocommerce-password-strength.bad{
+	background:color-mix(in oklab, var(--notice-warning-edge) 11%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-warning-edge) 24%, transparent);
+}
+.woocommerce-password-strength.good{
+	background:color-mix(in oklab, var(--notice-info-edge) 11%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-info-edge) 26%, transparent);
+}
+.woocommerce-password-strength.strong{
+	background:color-mix(in oklab, var(--g-core) 13%, var(--surface-raised));
+	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--g-core) 30%, transparent);
+}
+
+/* -- the hint ---------------------------------------------------------------
+   Quiet, and separated from the meter. It was running into it because the
+   dequeue takes its margin as well as its display. */
+.woocommerce-password-hint{
+	display:block;
+	margin-block-start:var(--space-2xs);
+	color:var(--ink-quiet);
+	font-size:var(--fs-meta);
+	line-height:1.45;
+}
+
+/* -- the field and its eye --------------------------------------------------
+   The row owns the position; the button is placed against its inline end and
+   the field reserves the room, so the two can never overlap at any width. Woo's
+   own version relies on a glyph from the WooCommerce icon font, which the
+   dequeue also removes - so the eye is DRAWN, out of two pseudo-elements, and
+   depends on nothing we do not ship. */
+.password-input{
+	position:relative;
+	display:flex;
+	align-items:center;
+	width:100%;
+}
+.password-input > input{
+	flex:1 1 auto;
+	/* room for the button, in em so it tracks the field's own text size */
+	padding-inline-end:2.6em;
+}
+.show-password-input{
+	position:absolute;
+	inset-inline-end:.55em;
+	inset-block-start:50%;
+	translate:0 -50%;
+	display:grid;
+	place-items:center;
+	width:1.9em;
+	height:1.9em;
+	padding:0;
+	border:0;
+	border-radius:var(--radius-s);
+	background:none;
+	appearance:none;
+	-webkit-appearance:none;
+	color:var(--ink-quiet);
+	cursor:pointer;
+}
+.show-password-input:hover{ color:var(--ink) }
+.show-password-input:focus-visible{
+	outline:2px solid var(--focus-ring, var(--ink));
+	outline-offset:2px;
+}
+/* the eye: an ellipse and a pupil */
+.show-password-input::before{
+	content:"";
+	width:1.15em;
+	height:.72em;
+	border:1.5px solid currentColor;
+	border-radius:100%;
+}
+.show-password-input::after{
+	content:"";
+	position:absolute;
+	width:.34em;
+	height:.34em;
+	border-radius:50%;
+	background:currentColor;
+}
+/* revealed: Woo adds .display-password. A slash across the eye, drawn on the
+   button itself so it needs no third element. */
+.show-password-input.display-password{
+	color:var(--ink);
+	background-image:linear-gradient(45deg,
+		transparent calc(50% - .9px), currentColor calc(50% - .9px),
+		currentColor calc(50% + .9px), transparent calc(50% + .9px));
+}
+
+
 /* ==== adopted/notice.css ==== */
 /* =============================================================================
    ADOPTED / notice
