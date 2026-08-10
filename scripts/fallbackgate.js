@@ -1,4 +1,4 @@
-﻿// Does the fallback actually catch a surface nobody has ever styled - and does
+// Does the fallback actually catch a surface nobody has ever styled - and does
 // it correctly LOSE to everything we styled deliberately?
 //
 // Both halves matter. A fallback that does not catch is useless; a fallback
@@ -20,7 +20,21 @@ body{margin:0;padding:16px;background:var(--surface-page)}</style>
 <div class="wc-block-imaginary__notice" id="notice">a notice</div>
 <table class="wc-block-imaginary-table" id="table"><tr><th>k</th><td>v</td></tr></table>
 <button class="d-btn d-btn--primary" id="control">a real one</button>
-<div class="d-notice" id="control2">a real notice</div>`;
+<div class="d-notice" id="control2">a real notice</div>
+
+<!-- *** THE CONTROLS ABOVE CANNOT FAIL, AND THAT IS THE HOLE. ***
+     The net reaches a button two ways: by the button carrying a wc- class, and
+     by any ANCESTOR carrying one. The controls above sit at the top level of
+     this fixture, so the second branch never touches them - the gate was
+     comparing the net against components the net cannot even match, and passed
+     for months while the net was overriding real components on every live
+     WooCommerce page.
+     These two are the real case, measured on the live shop toolbar: a Darling
+     component INSIDE a WooCommerce container. -->
+<div class="woocommerce-imaginary-wrap">
+  <div class="d-view"><button class="is-active" id="inwoo1"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7"/></svg></button></div>
+  <button class="d-btn d-btn--primary" id="inwoo2">a real one, inside Woo</button>
+</div>`;
 
 const PROBE = `(id) => {
   const e = document.getElementById(id);
@@ -44,6 +58,7 @@ const PROBE = `(id) => {
   const surface = await g('surface'), btn = await g('btn'), field = await g('field');
   const notice = await g('notice'), table = await g('table');
   const control = await g('control'), control2 = await g('control2');
+  const inwoo1 = await g('inwoo1'), inwoo2 = await g('inwoo2');
 
   const fails = [];
   const ok = (what, cond, saw) => {
@@ -63,6 +78,11 @@ const PROBE = `(id) => {
   console.log('LOSES - the control, styled deliberately, must be untouched');
   ok('a real button keeps its own background', control.bg !== btn.bg, control.bg + ' vs fallback ' + btn.bg);
   ok('a real notice keeps its own background', control2.bg !== notice.bg, control2.bg + ' vs fallback ' + notice.bg);
+
+  console.log('');
+  console.log('LOSES INSIDE A WOOCOMMERCE CONTAINER - the case the net actually meets');
+  ok('a patterns-layer component keeps its own background', inwoo1.bg !== btn.bg, inwoo1.bg + ' vs fallback ' + btn.bg);
+  ok('a patterns-layer button keeps its own padding', inwoo2.pad !== btn.pad, inwoo2.pad + ' vs fallback ' + btn.pad);
 
   console.log('');
   if (fails.length) { console.log('FALLBACKGATE FAIL'); for (const f of fails) console.log('  ' + f); }

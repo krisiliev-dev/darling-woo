@@ -46,7 +46,23 @@
    utilities last, and allowed to be specific
    ========================================================================== */
 
-@layer wc, tokens, base, motion, patterns, finish, utilities;
+/* *** `fallback` HAS TO BE NAMED HERE, FIRST, OR IT IS THE STRONGEST LAYER. ***
+   Layer order is the order of FIRST DECLARATION, and build-css.js hoists this
+   statement to the top of the built file, above every @import it then inlines.
+   So a layer that appears only as `@import ... layer(fallback)` is declared
+   AFTER all seven named here - last, and therefore strongest.
+   fallback.css opens by calling itself "THE WEAKEST LAYER IN THE SYSTEM, ON
+   PURPOSE... imported FIRST in index.css, so @layer fallback is declared before
+   tokens, base, patterns and finish". That was true of the source file and
+   false of the file that ships, from the day the file was written.
+   Measured on the live shop toolbar: `.d-view button` in layer `patterns` lost
+   its background to `:is([class*="woocommerce-"]) button` in layer `fallback`,
+   because the toolbar sits inside a WooCommerce container. The safety net was
+   overriding approved components on every WooCommerce page.
+   scripts/fallbackgate.js now puts a real component inside a Woo container and
+   fails if the net wins - it could not see this before, because both its
+   controls sat at the top level where the net's descendant branch cannot reach. */
+@layer fallback, wc, tokens, base, motion, patterns, finish, utilities;
 
 /* -- tokens ---------------------------------------------------------------- */
 @import url("fallback.css") layer(fallback);
