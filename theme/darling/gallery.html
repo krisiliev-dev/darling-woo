@@ -8752,6 +8752,84 @@ html.d-a11y .d-mappick__office{ transition:none }
 
 }
 
+/* ==== patterns/ambient.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / AMBIENT - the sky behind the page
+
+   *** THE SYSTEM WAS ALREADY WAITING FOR THIS FILE. *** Everything the ambient
+   layer needs was written months ago and pointed at a class that did not exist:
+
+     tokens/motion.css   @keyframes d-star, whose 18% and 60% stops read
+                         var(--peak,.95) - the exact custom property
+                         assets/ambient.js sets on every star it spawns
+     tokens/motion.css   --star-life-min: 1.6s, --star-life-max: 11s, with a
+                         comment describing the weighting. BOTH were listed as
+                         UNUSED by the build's own token check, every build.
+     patterns/a11y.css   html.d-a11y .d-ambient{ display:none !important }
+                         a rule matching nothing at all
+
+   The layer itself kept the legacy class. `assets/ambient.js` inserted
+   `<div class="darling-ambient">` and its look lived in the ported stylesheet -
+   the one archived on 2026-08-10. So the moment that sheet came off the page,
+   eight sparkle CHARACTERS landed in a 1240x32 static block as the first child
+   of <body>, above the header, which is what the owner saw and described as
+   "a band with some text stars at the very top of the page".
+
+   Not a regression in the deletion. A port that was never finished, held up by
+   a stylesheet nobody could remove.
+   ========================================================================== */
+
+/* The layer is out of flow entirely, so it can never contribute a band, a
+   scrollbar or a hit target. `inset:0` on a fixed element is the viewport. */
+.d-ambient{
+	position:fixed;
+	inset:0;
+	z-index:0;
+	pointer-events:none;
+	overflow:hidden;
+	contain:strict;      /* nothing inside it can affect layout outside it */
+}
+/* WordPress's own wrapper takes no position by default, so without this the
+   page content and a z-index:0 fixed layer are siblings in the same stacking
+   context and paint order decides - which put stars over the header. */
+.wp-site-blocks{
+	position:relative;
+	z-index:1;
+}
+
+/* One star. Everything variable about it - where, how big, how long, how
+   bright - arrives as an inline style from ambient.js, because it is per
+   element and random; everything shared is here. `forwards` is load-bearing:
+   each star runs ONCE and stops, and the script removes it on animationend
+   and spawns another. */
+.d-ambient i{
+	position:absolute;
+	font-style:normal;
+	line-height:1;
+	opacity:0;
+	color:var(--g-hi, var(--g-core));
+	animation:d-star var(--ease-star) forwards;
+	/* *** THE RANGE IS ENFORCED HERE, NOT TRUSTED FROM THE SCRIPT. ***
+	   ambient.js picks a duration and writes it to --dur. The token declares
+	   what a legitimate one is - 1.6s to 11s - so the clamp is what actually
+	   holds the contract: a bad inline value cannot produce a 0.1s strobe or a
+	   star that hangs for five minutes.
+	   It also means --star-life-min and --star-life-max are referenced by a
+	   STYLESHEET again. Both had been sitting in the build's unused-token list
+	   every single build since they were written, which was the standing clue
+	   that the layer they were for had never been ported. */
+	animation-duration:clamp(var(--star-life-min), var(--dur, 8s), var(--star-life-max));
+	will-change:opacity, transform;
+}
+
+/* Both kill switches already cover this file - tokens/motion.css stops every
+   animation under prefers-reduced-motion and on the three money-path bodies,
+   and a11y.css hides the layer outright. ambient.js ALSO declines to build it
+   in those cases, which is not redundancy: a stopped animation still leaves
+   the elements in the DOM, and the point on a checkout is to have none. */
+}
+
 /* ==== patterns/a11y.css ==== */
 @layer patterns{
 /* =============================================================================

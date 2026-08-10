@@ -1,9 +1,14 @@
 /**
  * Ambient background stars.
  *
- * The ported stylesheet defines the look — `.darling-ambient i` animates
- * `darling-amb` with `forwards`, driven by two custom properties the element must
- * carry:
+ * src/patterns/ambient.css defines the look - `.d-ambient i` animates `d-star`
+ * with `forwards`, driven by two custom properties the element must carry:
+ *
+ * It used to say `.darling-ambient i` and `darling-amb`, and those lived in the
+ * ported stylesheet. That sheet was archived on 2026-08-10 and this file went on
+ * emitting the legacy class, so eight sparkle CHARACTERS appeared in a static
+ * band above the header. The keyframe, the --peak contract and the a11y opt-out
+ * were all already in src/ under the d- name, waiting.
  *
  *   --dur   how long one star's fade-in/rotate/fade-out takes
  *   --peak  its maximum opacity at the midpoint
@@ -80,11 +85,33 @@
 		return { max: n, interval: Math.round( 1100 + ( CEIL - n ) * 90 ) };
 	}
 
+	// THE RANGE IS A TOKEN, NOT A NUMBER IN THIS FILE. tokens/motion.css declares
+	//   --star-life-min: 1.6s;  --star-life-max: 11s;
+	// with the note "A RANGE, not a value. Most linger; the occasional one is a
+	// quick twinkle... Weighted long: roughly three in four should sit above 6s."
+	// This used to be a hardcoded 6 + rand*7, which is the wrong RANGE and a flat
+	// distribution - no quick twinkles at all, and the sky read as uniform. Read
+	// the tokens off the layer so the stylesheet stays the source of truth; fall
+	// back only if the stylesheet is not there at all.
+	function secs( name, fallback ) {
+		if ( ! layer ) { return fallback; }
+		var v = parseFloat( getComputedStyle( layer ).getPropertyValue( name ) );
+		return isNaN( v ) || v <= 0 ? fallback : v;
+	}
+	function starLife() {
+		var lo = secs( '--star-life-min', 1.6 );
+		var hi = secs( '--star-life-max', 11 );
+		// pow < 1 biases toward the top of the range: with 0.35, about three in
+		// four land above the 6s mark, which is the weighting the token asks for.
+		var t = Math.pow( Math.random(), 0.35 );
+		return ( lo + t * ( hi - lo ) ).toFixed( 2 ) + 's';
+	}
+
 	function spawn() {
 		if ( ! layer || ! budget.max || layer.childElementCount >= budget.max ) { return; }
 
 		var i   = document.createElement( 'i' );
-		var dur = ( 6 + Math.random() * 7 ).toFixed( 2 ) + 's';
+		var dur = starLife();
 
 		i.textContent = GLYPHS[ ( Math.random() * GLYPHS.length ) | 0 ];
 		i.style.setProperty( '--dur', dur );
@@ -133,7 +160,7 @@
 		if ( ! budget.max ) { return; }
 
 		layer = document.createElement( 'div' );
-		layer.className = 'darling-ambient';
+		layer.className = 'd-ambient';
 		layer.setAttribute( 'aria-hidden', 'true' );
 		// FIRST child, not last: DOM order should agree with paint order, so the
 		// layer reads as a background rather than something laid over the page.

@@ -105,6 +105,7 @@
 @import url("patterns/media-fail.css") layer(patterns);
 @import url("patterns/checkout.css") layer(patterns);
 @import url("patterns/mappick.css") layer(patterns);
+@import url("patterns/ambient.css") layer(patterns);
 @import url("patterns/a11y.css") layer(patterns);
 @import url("patterns/forced.css") layer(patterns);
 @import url("patterns/print.css") layer(patterns);
