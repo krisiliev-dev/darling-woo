@@ -1,8 +1,19 @@
 /**
  * Category carousel controls.
  *
+ * *** THIS SCRIPT SPOKE A VOCABULARY THE MARKUP NO LONGER USES. *** Until
+ * 2026-08-10 it looked for `.darling-catsv2` and `.darling-catsv2__row` and
+ * built `.darling-carousel-btn` - all three legacy names. The template emits
+ * `.d-carousel` / `.d-carousel__row`, so init() found nothing, built nothing,
+ * and the owner reported "the carousel is missing its buttons". Nothing errored:
+ * a querySelectorAll that matches nothing is a successful call.
+ *
+ * The CSS was ported to the d- names and the JavaScript was not. Same shape as
+ * ambient.js, which was still writing class="darling-ambient" the day its
+ * stylesheet was archived.
+ *
  * The row is a native overflow-x scroller. This adds prev/next buttons and hides the
- * native scrollbar (CSS side lives in style.css).
+ * native scrollbar (CSS side lives in src/patterns/catalogue.css).
  *
  * MEASURED CONSTRAINT, do not "improve" this into breaking:
  * scrollBy({behavior:'smooth'}) could NOT be verified against this row, because the row
@@ -15,13 +26,9 @@
 ( function () {
 	'use strict';
 
-	var ARROW =
-		'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
-		'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
-		'<path d="M15 5l-7 7 7 7"/></svg>';
 
 	function build( section ) {
-		var row = section.querySelector( '.darling-catsv2__row' );
+		var row = section.querySelector( '.d-carousel__row' );
 		if ( ! row || row.children.length < 2 ) {
 			return;
 		}
@@ -35,12 +42,12 @@
 		function makeButton( direction, label, flip ) {
 			var b = document.createElement( 'button' );
 			b.type = 'button';
-			b.className = 'darling-carousel-btn darling-carousel-btn--' + direction;
+			b.className = 'd-carousel__btn d-carousel__btn--' + direction;
 			b.setAttribute( 'aria-label', label );
-			b.innerHTML = ARROW;
-			if ( flip ) {
-				b.firstChild.style.transform = 'rotate(180deg)';
-			}
+			// The icon set has both chevrons, so the 'next' one is not the 'prev' one
+			// rotated. A rotated glyph and a drawn one are not the same shape at 1px.
+			b.innerHTML = '<span class="d-icon d-icon--chevron-' +
+				( 'prev' === direction ? 'left' : 'right' ) + '" aria-hidden="true"></span>';
 			b.addEventListener( 'click', function () {
 				var steps = Math.max( 1, Math.floor( ( row.clientWidth * 0.8 ) / pitch ) );
 				row.scrollBy( {
@@ -75,7 +82,7 @@
 	}
 
 	function init() {
-		var sections = document.querySelectorAll( '.darling-catsv2' );
+		var sections = document.querySelectorAll( '.d-carousel' );
 		for ( var i = 0; i < sections.length; i++ ) {
 			build( sections[ i ] );
 		}

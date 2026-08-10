@@ -54,6 +54,34 @@ add_action( 'wp_enqueue_scripts', function () {
 			filemtime( $build )
 		);
 	}
+	/*
+	 * *** THE DESIGN SYSTEM'S OWN SCRIPT WAS NEVER ENQUEUED. ***
+	 *
+	 * assets/darling-ui.js is, by its own header, "the only script the design
+	 * system has". It publishes numbers the stylesheet cannot compute: the
+	 * slider fill, the scrollbar thumb length, the scroll clock behind --sc-pos,
+	 * and the tab underline geometry - and it drives the search field's wipe,
+	 * .d-wipe__input / .d-wipe__clear.
+	 *
+	 * It was the ONLY script in assets/ written entirely in the d- vocabulary,
+	 * and the only one this file never asked for. The owner reported it as "the
+	 * search bar doesn't have its animation"; the file was on the box the whole
+	 * time, next to five scripts that were enqueued.
+	 *
+	 * Everything it does degrades to nothing rather than to broken, which is why
+	 * its absence read as a missing flourish instead of an error.
+	 */
+	$ui = get_stylesheet_directory() . '/assets/darling-ui.js';
+	if ( file_exists( $ui ) ) {
+		wp_enqueue_script(
+			'darling-ui',
+			get_stylesheet_directory_uri() . '/assets/darling-ui.js',
+			array(),
+			filemtime( $ui ),
+			true
+		);
+	}
+
 	$hdr = get_stylesheet_directory() . '/assets/header.js';
 	if ( file_exists( $hdr ) ) {
 		wp_enqueue_script(
