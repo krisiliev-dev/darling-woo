@@ -1,0 +1,102 @@
+/* =============================================================================
+   FALLBACK - SO NOTHING IS EVER RAW
+
+   The owner, 2026-08-10: "I think we need to have an equivalent for every sheet
+   even if it is unreachable or we don't use it currently, because in the future
+   we might and it might give us problems that which we don't know why are
+   happening."
+
+   The worry is right and the direct method would have made it worse. Writing
+   equivalents for all 2271 families means writing CSS for surfaces we cannot
+   render, cannot review and cannot gate - and a surface with WRONG styles ships,
+   where a surface with NO styles looks broken and gets fixed in an hour. Blind
+   porting manufactures exactly the mystery it is meant to prevent.
+
+   So the promise is kept a different way, in three parts:
+     1. this file - nothing is ever raw browser chrome
+     2. the reachability gate - nothing appears without us being told
+     3. porting on reachability, as before
+
+   *** THIS IS THE WEAKEST LAYER IN THE SYSTEM, ON PURPOSE. *** It is imported
+   FIRST in index.css, so @layer fallback is declared before tokens, base,
+   patterns and finish, and therefore loses to every one of them - and to
+   everything in adopted/, which is unlayered. Nothing here can ever beat a rule
+   somebody wrote deliberately. It only ever fills a hole.
+
+   Measured, this is the hole it fills. When the dequeue took the reveal button
+   on /my-account/, the browser default came back: 16x6 pixels, border 2px
+   outset, face rgb(240,240,240). That is what an unported Woo surface looks
+   like, and it is what a customer would meet the day somebody switches on local
+   pickup or a mini-cart. After this file the same surface is plain Darling -
+   our type, our ink, our radius - and legible while it waits its turn.
+
+   Scoped to WooCommerce's own prefixes so it cannot reach our components or
+   WordPress core blocks. Inherited properties broadly; box properties only
+   where the browser default is actively ugly: buttons, fields and tables.
+   ========================================================================== */
+
+[class*="wc-block-"],
+[class*="wc-blocks-"],
+[class*="woocommerce-"],
+[class*="wc-item"] {
+	box-sizing: border-box;
+	font-family: inherit;
+	color: var(--ink);
+	line-height: inherit;
+}
+
+/* a button. The measured case: 16x6px with an outset border. */
+button:is([class*="wc-block-"], [class*="woocommerce-"]),
+:is([class*="wc-block-"], [class*="woocommerce-"]) button,
+:is([class*="wc-block-"], [class*="woocommerce-"]) input:is([type="submit"], [type="button"]) {
+	appearance: none;
+	-webkit-appearance: none;
+	padding: var(--space-2xs) var(--space-s);
+	border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+	border-radius: var(--radius-m);
+	background: var(--surface-raised);
+	color: var(--ink);
+	font: inherit;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+/* a field */
+:is([class*="wc-block-"], [class*="woocommerce-"]) :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+:is(input, textarea, select)[class*="wc-block-"]:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+:is(input, textarea, select)[class*="woocommerce-"]:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]) {
+	box-sizing: border-box;
+	max-width: 100%;
+	padding: var(--space-2xs) var(--space-xs);
+	border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+	border-radius: var(--radius-m);
+	background: var(--surface-sunken, var(--surface-raised));
+	color: var(--ink);
+	font: inherit;
+}
+
+/* a table. Unstyled tables collapse to unreadable rows of text. */
+:is([class*="wc-block-"], [class*="woocommerce-"]) table,
+table[class*="wc-block-"],
+table[class*="woocommerce-"] {
+	width: 100%;
+	border-collapse: collapse;
+}
+:is([class*="wc-block-"], [class*="woocommerce-"]) :is(th, td) {
+	padding: var(--space-2xs) var(--space-xs);
+	border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+	text-align: start;
+}
+
+/* A container that announces itself by name. Woo is consistent enough that a
+   thing called notice, __panel or __card is a box, and a box with no edge is
+   the failure this file exists for. Narrow on purpose. */
+[class*="wc-block-"][class*="notice"],
+[class*="woocommerce-"][class*="notice"],
+[class*="wc-block-"][class*="__panel"],
+[class*="wc-block-"][class*="__card"] {
+	padding: var(--space-2xs) var(--space-xs);
+	border-radius: var(--radius-m);
+	background: var(--surface-raised);
+	box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ink) 12%, transparent);
+}

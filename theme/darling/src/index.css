@@ -49,6 +49,7 @@
 @layer wc, tokens, base, motion, patterns, finish, utilities;
 
 /* -- tokens ---------------------------------------------------------------- */
+@import url("fallback.css") layer(fallback);
 @import url("tokens/colour.css") layer(tokens);
 @import url("tokens/type.css")   layer(tokens);
 @import url("tokens/space.css")  layer(tokens);
