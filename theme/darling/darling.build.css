@@ -103,7 +103,7 @@ table[class*="woocommerce-"] {
 	--g-hi:      hsl(calc(var(--gh) +  6)  calc((var(--gs) +  6) * 1%)  calc(82% + var(--gl) * 1%));
 	--g-light:   hsl(calc(var(--gh) +  2)  calc( var(--gs)        * 1%)  calc(68% + var(--gl) * 1%));
 	--g-core:    hsl(     var(--gh)        calc( var(--gs)        * 1%)  calc(52% + var(--gl) * 1%));
-	--g-shadow:  hsl(calc(var(--gh) -  9)  calc((var(--gs) +  6) * 1%)  calc(38% + var(--gl) * 1%));
+	--g-shadow:  hsl(calc(var(--gh) -  9)  calc((var(--gs) +  6) * 1%)  calc(34% + var(--gl) * 1%));
 	--g-deep:    hsl(calc(var(--gh) - 17)  calc((var(--gs) + 10) * 1%)  calc(27% + var(--gl) * 1%));
 
 
