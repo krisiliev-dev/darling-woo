@@ -1059,17 +1059,32 @@ a.wc-block-components-button{
 	width:3.25rem;
 	aspect-ratio:1;
 }
+/* *** display:block ON THE SLAB PUT THE BOW IN THE TOP-LEFT CORNER. ***
+   The owner: "the image thumbnail has the torn bow on the top left, when it
+   should be centered." One declaration, meant for the <img> and applied to both.
+   media-fail.css centres its bow with `display:grid; place-items:center`, and
+   place-items does nothing to a block box - so the SVG fell back to normal flow
+   at the slab's padding origin, 5px,5px inside a 52px square.
+
+   The two need different display values and always did: a photograph is a
+   replaced element and wants block, the slab is a LAYOUT holding a bow and a
+   caption and wants its grid. Everything else they share. */
 .wc-block-components-order-summary-item__image img,
 .wc-block-components-order-summary-item__image .d-media-fail{
 	width:100%;
 	height:100%;
-	display:block;
 	object-fit:cover;
 	border-radius:var(--radius-s);
 	/* The clip moved here WITH the corner, which is the point: the slab clips
 	   its own caption, and the badge - which is not inside it - survives. */
 	overflow:hidden;
 	background:var(--surface-quiet);
+}
+.wc-block-components-order-summary-item__image img{ display:block }
+/* the slab keeps the component's own centring - see media-fail.css */
+.wc-block-components-order-summary-item__image .d-media-fail{
+	display:grid;
+	place-items:center;
 }
 /* Theirs is `.__image .__quantity` at (0,2,0) and paints it pale; a single
    class of ours was never going to be heard. Measured, like the rest of today. */

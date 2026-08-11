@@ -13,7 +13,26 @@
    miss here means changing a quantity you did not mean to change.
    ========================================================================== */
 
-.d-qty{
+/* *** AND WooCommerce'S BLOCK STEPPER IS ON THESE LISTS, NOT IN adopted/. ***
+   The owner, twice: "The stepper looks different than our stepper component" and
+   then, after a first attempt that only resized it, "The stepper is still not our
+   stepper component." He was right both times, and the reason is the one this
+   project keeps paying for: adopted/quantity.css held a SECOND full stepper for
+   .wc-block-components-quantity-selector - its own wrapper, input, button, hover
+   and disabled - written to the same intent and drifting from it. Measured
+   against .d-qty in the gallery: the children carried a 14px radius ours does
+   not, and the ink came out --ink-quiet against our cocoa.
+
+   Two implementations cannot be kept equal by care. They are one selector list
+   now, and adopted/quantity.css keeps only what is genuinely Woo's: the grid
+   AREAS, because their buttons come after the input in the source, and the
+   ::after divider that has to be switched off.
+
+   Same trade as the ordering select: this is layered and their sheet is not, so
+   it wins the day the sheet goes. The gallery is the post-dequeue page and shows
+   the truth now. */
+.d-qty,
+.wc-block-components-quantity-selector{
 	display:inline-grid;
 	grid-template-columns:auto 3.2em auto;
 	align-items:stretch;
@@ -24,7 +43,8 @@
 	transition:border-color var(--dur-ui) var(--ease-float),
 	           box-shadow var(--dur-ui) var(--ease-float);
 }
-.d-qty:focus-within{
+.d-qty:focus-within,
+.wc-block-components-quantity-selector:focus-within{
 	border-color:var(--focus-ring);
 	box-shadow:0 0 0 3px var(--focus-halo);
 }
@@ -32,7 +52,8 @@
    the buttons carry no corner of their own - and inside a WooCommerce container
    the fallback net gives every button --radius-m unless the component says
    otherwise. max-width:100% for the input is the net's too. */
-.d-qty__button{
+.d-qty__button,
+.wc-block-components-quantity-selector__button{
 	appearance:none;
 	border:0;
 	border-radius:0;
@@ -45,8 +66,10 @@
 	cursor:pointer;
 	transition:background var(--dur-ui) var(--ease-float);
 }
-.d-qty__button:hover{ background:var(--surface-quiet) }
-.d-qty__button:disabled{ color:var(--ink-placeholder); cursor:not-allowed; background:none }
+.d-qty__button:hover,
+.wc-block-components-quantity-selector__button:hover{ background:var(--surface-quiet) }
+.d-qty__button:disabled,
+.wc-block-components-quantity-selector__button:disabled{ color:var(--ink-placeholder); cursor:not-allowed; background:none }
 /* *** border-radius:0 IS NOT REDUNDANT, AND THE CONTEXT IS WHY. ***
    The wrapper draws the pill, so the input must have no corner of its own - and
    it did not declare one, which is fine anywhere except inside WooCommerce
@@ -60,7 +83,8 @@
    This is the failure fallbackgate.js exists to catch; it did not, because it
    tests components at the top level and this one only differs inside a Woo
    container. */
-.d-qty__input{
+.d-qty__input,
+.wc-block-components-quantity-selector__input{
 	appearance:none;
 	border:0;
 	border-radius:0;
@@ -83,8 +107,13 @@
 .d-qty__input:focus,
 .d-qty__input:focus-visible,
 .wc-block-components-quantity-selector__input:focus,
+.wc-block-components-quantity-selector__input:focus-visible,
+.wc-block-components-quantity-selector__input:focus,
 .wc-block-components-quantity-selector__input:focus-visible{ outline:none }
 
 .d-qty__input::-webkit-outer-spin-button,
-.d-qty__input::-webkit-inner-spin-button{ appearance:none; margin:0 }
-.d-qty__input[type="number"]{ -moz-appearance:textfield }
+.d-qty__input::-webkit-inner-spin-button,
+.wc-block-components-quantity-selector__input::-webkit-outer-spin-button,
+.wc-block-components-quantity-selector__input::-webkit-inner-spin-button{ appearance:none; margin:0 }
+.d-qty__input[type="number"],
+.wc-block-components-quantity-selector__input[type="number"]{ -moz-appearance:textfield }

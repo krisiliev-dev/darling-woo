@@ -32,58 +32,34 @@
    ========================================================================== */
 
 /* -- ADOPTED: WooCommerce -------------------------------------------------- */
-.wc-block-components-quantity-selector.wc-block-components-quantity-selector{
-	display:inline-grid;
-	grid-template-columns:auto 3.2em auto;
-	grid-template-areas:"minus input plus";
-	align-items:stretch;
-	width:auto;
-	min-width:0;
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-pill);
-	background:var(--surface-raised);
-	overflow:hidden;
-}
+/* *** WHAT IS LEFT HERE IS ONLY WHAT IS GENUINELY WooCommerce'S. ***
+   The wrapper, input, button, focus, hover and disabled all moved to
+   patterns/quantity.css and joined .d-qty's own selector lists - one definition,
+   see the note there. These three are not styling opinions, they are facts about
+   Woo's markup that our component has no reason to carry:
+
+     the grid AREAS   their buttons come AFTER the input in the source, so the
+                      order is done with grid-area rather than flex order, which
+                      keeps the tab sequence matching the visual one. Captured,
+                      not assumed.
+     the ::after      Woo draws a divider between the input and the plus. The
+                      pill needs no seam.
+     the column track our --w for the input, because a cart line and a product
+                      page want different widths of the same control. */
 .wc-block-components-quantity-selector.wc-block-components-quantity-selector::after{
-	content:none;   /* Woo draws a divider here; the pill needs no seam */
-}
-.wc-block-components-quantity-selector:focus-within{
-	border-color:var(--focus-ring);
-	box-shadow:0 0 0 3px var(--focus-halo);
-}
-/* *** THE BUTTONS COME AFTER THE INPUT IN THE SOURCE. ***
-   Captured, not assumed - the minus is not the first child, so grid areas do
-   the ordering rather than flex order, which keeps the tab sequence matching
-   the visual one. */
-.wc-block-components-quantity-selector__input.wc-block-components-quantity-selector__input{
-	grid-area:input;
-	border:0;
-	background:none;
-	text-align:center;
-	font:var(--type-body);
-	color:var(--c-cocoa);
-	font-variant-numeric:tabular-nums;
-	padding:0;
-	min-width:0;
-}
-.wc-block-components-quantity-selector__button.wc-block-components-quantity-selector__button{
-	border:0;
-	background:none;
-	min-width:2.6em;
-	min-height:2.6em;
-	padding:0;
-	font:var(--fw-medium) var(--fs-lede)/1 var(--font-ui);
-	color:var(--c-cocoa);
-	opacity:1;
-	cursor:pointer;
+	content:none;
 }
 .wc-block-components-quantity-selector__button--minus{ grid-area:minus }
 .wc-block-components-quantity-selector__button--plus{ grid-area:plus }
-.wc-block-components-quantity-selector__button:hover{ background:var(--surface-quiet) }
-.wc-block-components-quantity-selector__button:disabled{
-	color:var(--ink-placeholder);
-	cursor:not-allowed;
-	background:none;
+.wc-block-components-quantity-selector__input{ grid-area:input }
+/* *** AND THE AREAS NEED A TEMPLATE TO LAND IN. ***
+   .d-qty's own grid is three columns and no NAMES, because our markup is already
+   in visual order and needs none. Naming areas without declaring them made five
+   implicit tracks - measured `0px 30.8px 0px 0px 28px`, a stepper with two dead
+   columns in it. The template belongs with the areas, in the file that knows why
+   the areas exist at all. */
+.wc-block-components-quantity-selector.wc-block-components-quantity-selector{
+	grid-template-areas:"minus input plus";
 }
 
 /* the classic quantity box, on the product page */
