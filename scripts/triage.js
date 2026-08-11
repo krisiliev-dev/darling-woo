@@ -104,6 +104,51 @@ const RUN = (KEEP) => {
     if (col > st) out.push(t.slice(st, col).trim());
     return out;
   };
+  /* *** LOGICAL AND PHYSICAL ARE THE SAME DECLARATION AND THIS DID NOT KNOW IT.
+   * ***
+   * The shorthand table above is asked of the browser, so `gap` reaches
+   * row-gap/column-gap and `margin` reaches four longhands. But a LOGICAL
+   * property is not a shorthand - setProperty('margin-block-end', …) serialises
+   * to exactly `margin-block-end` - so expandOf returns nothing for it and the
+   * name stays logical.
+   *
+   * That is fatal here, because of what the two sides write. WooCommerce is old
+   * and writes `margin-bottom`, `padding-left`, `right`. This codebase writes
+   * logical throughout, deliberately: `margin-block-end`, `padding-inline`,
+   * `inset-inline-end`. So `ourProps` filled up with logical names, the watch
+   * list filled up with physical ones, THEY NEVER INTERSECTED, and every
+   * correctly-claimed declaration in patterns/ was counted as still-to-claim.
+   *
+   * Caught on `.woocommerce .woocommerce-ordering{margin-bottom}`, which
+   * patterns/woo-tail.css claims as `margin-block-end:0` and which triage was
+   * still reporting as CLAIM three commits after it was written.
+   *
+   * The map is one-directional on purpose: everything is normalised to the
+   * PHYSICAL name, because that is the name getComputedStyle answers to and the
+   * name the snapshot compares. Correct for horizontal-tb / ltr, which is the
+   * whole of this site - a Bulgarian shop with no vertical writing anywhere. If
+   * that ever stops being true this becomes per-element and reads the element's
+   * own writing-mode; it is written as one table so that change is one place. */
+  const PHYS = {
+    'margin-block-start': 'margin-top', 'margin-block-end': 'margin-bottom',
+    'margin-inline-start': 'margin-left', 'margin-inline-end': 'margin-right',
+    'padding-block-start': 'padding-top', 'padding-block-end': 'padding-bottom',
+    'padding-inline-start': 'padding-left', 'padding-inline-end': 'padding-right',
+    'inset-block-start': 'top', 'inset-block-end': 'bottom',
+    'inset-inline-start': 'left', 'inset-inline-end': 'right',
+    'border-block-start-width': 'border-top-width', 'border-block-end-width': 'border-bottom-width',
+    'border-inline-start-width': 'border-left-width', 'border-inline-end-width': 'border-right-width',
+    'border-block-start-style': 'border-top-style', 'border-block-end-style': 'border-bottom-style',
+    'border-inline-start-style': 'border-left-style', 'border-inline-end-style': 'border-right-style',
+    'border-block-start-color': 'border-top-color', 'border-block-end-color': 'border-bottom-color',
+    'border-inline-start-color': 'border-left-color', 'border-inline-end-color': 'border-right-color',
+    'border-start-start-radius': 'border-top-left-radius', 'border-start-end-radius': 'border-top-right-radius',
+    'border-end-start-radius': 'border-bottom-left-radius', 'border-end-end-radius': 'border-bottom-right-radius',
+    'inline-size': 'width', 'block-size': 'height',
+    'min-inline-size': 'min-width', 'min-block-size': 'min-height',
+    'max-inline-size': 'max-width', 'max-block-size': 'max-height',
+    'overflow-inline': 'overflow-x', 'overflow-block': 'overflow-y',
+  };
   const flatten = (s) => {
     const m = Object.create(null);
     for (const p of s) { const v = s.getPropertyValue(p); if (v !== '') m[p] = v; }
@@ -113,6 +158,10 @@ const RUN = (KEEP) => {
       const v = s.getPropertyValue(n); if (v === '') continue;
       for (const x of L) if (m[x] === undefined) m[x] = v;
     }
+    /* both names, so a rule that writes one is seen by a comparison against the
+     * other. Done last, and never overwriting, so an explicit physical
+     * declaration always wins over a translated logical one. */
+    for (const k in PHYS) if (m[k] !== undefined && m[PHYS[k]] === undefined) m[PHYS[k]] = m[k];
     return m;
   };
 
