@@ -673,7 +673,7 @@ svg{ max-width:100% }
 .wp-site-blocks > main:has(> :first-child:is(.d-hero-band, .d-band)){ padding-block-start:0 }
 .wp-site-blocks > main:has(> :last-child:is(.d-hero-band, .d-band)){ padding-block-end:0 }
 
-.wp-site-blocks > main > *{ margin-block:0; width:100% }
+.wp-site-blocks > main > *{ margin-block:0 }
 
 .wp-site-blocks{ display:block }
 .wp-site-blocks > *{ margin-block:0 }

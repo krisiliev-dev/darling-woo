@@ -133,7 +133,32 @@
    `.is-layout-constrained`, so without this its children would take the gap AND
    the child margin below - which is precisely the doubling the model exists to
    prevent. The container has already spoken; the section says nothing. */
-.wp-site-blocks > main > *{ margin-block:0; width:100% }
+/* *** width:100% WAS HERE AND IT ATE THE PAGE RAIL. ***
+   The owner, on the live home page: "There is no padding on either side of the
+   sections." Measured on a fresh capture: every .d-shell on the page came out
+   0..1240 - the full viewport - so the category strip, Изборът на Lady D and
+   the section titles all ran to the glass.
+
+   It was not a change that failed to apply. It was THIS line, which has been
+   correct for weeks and stopped being correct the moment .d-shell changed shape.
+
+   The note below records why it was written: .d-shell used to be `max-width` +
+   `margin-inline:auto`, and as a GRID ITEM an auto margin overrides the default
+   stretch, so the shell sized to its content - 350px inside a 1084px section.
+   `width:100%` restored the stretch and the max-width still capped it. Two
+   declarations that cooperated.
+
+   The width rewire made .d-shell an explicit `width: min(--w-body, ...)`. A
+   grid item with a definite width does not shrink to content, so the original
+   problem is gone - and `width:100%` is no longer a floor, it is a COMPETING
+   WIDTH. Both are (0,1,0) and layered in patterns/, so it came down to import
+   order, and flow.css is imported after layout.css. The frame lost to a line
+   written to protect it.
+
+   Deleted rather than tuned. Grid's default justify-self is stretch, which is
+   what every other child of main wants anyway; the one child that wants
+   something else now says so itself. */
+.wp-site-blocks > main > *{ margin-block:0 }
 /* *** AND A GRID ITEM WITH `margin-inline:auto` SHRINKS TO FIT. ***
    .d-shell is `max-width:--page-max; margin-inline:auto`, which in normal flow
    means "as wide as the container, up to the cap, centred". As a GRID ITEM an
