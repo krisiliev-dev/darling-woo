@@ -679,6 +679,50 @@
    Hidden, not removed, so nothing silently stops being sent to Barsy. */
 /* the office-id field is visually hidden - recipe in adopted/vh.css */
 
+/* -- three gaps the owner measured by eye, and what each one actually was ------
+
+   *** 1. THE BILLING TICK WAS TOUCHING THE PHONE FIELD. ***
+   "The checkmark under the phone field needs a little space between it and the
+   field." Measured: the phone input's box ends at exactly the tick's top - zero
+   px. The tick is not part of the address grid, so the grid's row-gap never
+   reached it; it is the next block in normal flow after a grid, and nothing had
+   said what goes between them. */
+.wc-block-checkout__use-address-for-billing{ margin-block-start:var(--space-s) }
+
+/* *** 2. AND THE HOLE UNDER "ДОПЪЛНИТЕЛНА ИНФОРМАЦИЯ" IS NOT THE DELIVERY
+   PLUGIN. *** The owner asked: "There is empty space between the Допълнителна
+   информация checkmarks, which there shouldn't be. That's the delivery plugin's
+   cause right? Can we not make the plugin take from the above fields?"
+
+   Reasonable guess, and the measurement says no. 41px between the two ticks,
+   and the plugin is responsible for 11 of it:
+
+     11px   the office-id field. It is visually hidden - 1px tall - but it is a
+            GRID CHILD, so it still takes a grid row and the row still takes the
+            grid's gap. Hidden from the eye, present in the layout.
+     30px   `padding-bottom:var(--space-m)` on the step itself. Ours, and correct
+            everywhere else: it is the air between two SUBJECTS.
+
+   The six invoice fields the plugin prints - EIK, VAT, company, MOL, city,
+   address - are already display:none above and contribute nothing. So there is
+   nothing for the plugin to take from the fields above; the fields it wants do
+   not exist up there anyway, and the space is not theirs.
+
+   The real fault is that "Искам фактура за фирма" and "Добавяне на бележка" are
+   TWO STEPS in Woo's markup and ONE SUBJECT to a reader. Two ticks under one
+   heading do not need a subject's worth of air between them - they need a line's
+   worth, which the notes block supplies itself. */
+/* (0,2,0) to match the step rule above, which doubles its own class. At (0,1,0)
+   this tied nothing and lost - the fieldset kept all 29.7px and only the 11px of
+   office-id row came back. Measured again after: 129 -> 118 -> 88. */
+.wc-block-checkout__order-fields.wc-block-checkout__order-fields{ padding-block-end:0 }
+/* the office-id leaves grid flow entirely rather than occupying a 1px row. It
+   stays in the form and still submits, which is the whole reason it was hidden
+   rather than removed - see the stopgap note above. */
+.wc-block-components-address-form > .wc-block-components-text-input:has(input[id*="office-id"]){
+	position:absolute;
+}
+
 /* -- notes, terms, and the button ---------------------------------------------
    *** THE TERMS LINE HAS A CHECKBOX'S CLASS AND NO CHECKBOX. ***
    Woo reuses .wc-block-components-checkbox__label for a plain sentence when the
@@ -687,7 +731,12 @@
 /* The step above already ends in its own padding, and this added a second
    band of air after the last field - which is the gap under "Офис на куриера"
    that had no reason to be there. */
-.wc-block-checkout__order-notes{ padding-block:0 }
+/* *** AND THEN THEY WERE 1px APART, WHICH IS THE OTHER WRONG. ***
+   Dropping the step's bottom padding closed 41px to 1. Two ticks under one
+   heading are a LIST, and a list has a line between its items - not a subject's
+   worth of air and not nothing. --space-2xs is what .d-check rows use between
+   each other everywhere else on the site. */
+.wc-block-checkout__order-notes{ padding-block:0; margin-block-start:var(--space-2xs) }
 .wc-block-checkout__add-note{ margin:0 }
 
 .wc-block-checkout__terms{
@@ -823,6 +872,21 @@ a.wc-block-components-button{
 	align-items:center;
 }
 .wc-block-components-totals-coupon__input{ margin:0 }
+/* *** align-items:center WAS ALREADY HERE AND THE BUTTON STILL SAT LOW. ***
+   The owner: "The button next to the promo code field needs to be aligned to the
+   middle of it." Measured: the field is 57px and the button 31px, so centring
+   should have left 13px above and below - and there were 23 above, 3 below.
+
+   A GRID ITEM'S MARGIN IS INSIDE ITS ALIGNMENT. `align-items:center` centres the
+   MARGIN BOX, so a stray `margin-top:var(--space-2xs)` on the button shifts the
+   border box down by the whole 9.9px and no amount of centring corrects it. The
+   margin came from the generic step-content rule, which gives every direct child
+   of a step some air - correct for stacked blocks, wrong for a grid item.
+
+   Fifth time in this codebase that a child's own margin has fought its parent's
+   layout, and the ruling has not changed: THE PARENT OWNS THE SPACING. The gap
+   above already provides it. */
+.wc-block-components-totals-coupon__form > *{ margin-block:0 }
 /* *** A SECOND CHERRY PILL IN THE SIDEBAR COMPETES WITH THE ONE THAT TAKES THE
    MONEY. *** Woo ships this as `contained`, the same treatment as Поръчай.
    Applying a discount is a small, optional act next to placing the order, so it

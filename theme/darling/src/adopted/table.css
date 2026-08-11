@@ -75,6 +75,119 @@
 	color:var(--ink-quiet);
 }
 
+/* -- the line's controls: quantity, then remove, BESIDE the text --------------
+   The owner, reviewing the dequeued cart: "What I would fix on it is the stepper
+   and the trash button on the row. They need to be smaller and to the right of
+   the text, not below it."
+
+   They were below it because nothing said otherwise: Woo puts the name, the
+   price, the quantity and the remove button in one <td> as four blocks, and a
+   block after a block stacks. The cell is the thing that has an opinion here, so
+   the cell becomes a grid - text on the left taking the room, controls on the
+   right taking what they need.
+
+   *** align-items:start, NOT center. *** A line with a long product name wraps
+   to two or three lines and the controls should stay level with the FIRST one,
+   next to the name, rather than drifting to the middle of a tall cell. */
+/* *** THE GRID GOES ON `__wrap`, NOT ON THE CELL, AND THE FIRST ATTEMPT PUT IT
+   ON THE CELL. *** The captured tree has a wrapper the class name gives no hint
+   of, and the remove button is INSIDE the quantity block rather than beside it:
+
+     td.wc-block-cart-item__product
+       div.wc-block-cart-item__wrap
+         a.wc-block-components-product-name
+         div.wc-block-cart-item__prices
+         div.wc-block-components-product-metadata
+         div.wc-block-cart-item__quantity
+           div.wc-block-components-quantity-selector
+           button.wc-block-cart-item__remove-link
+
+   So a grid on the cell had exactly one child to lay out and nothing moved. Read
+   off the specimen, which is why the specimen is captured markup. */
+.wc-block-cart-item__wrap{
+	display:grid;
+	grid-template-columns:minmax(0,1fr) auto;
+	align-items:start;
+	column-gap:var(--space-s);
+	row-gap:var(--space-3xs);
+}
+/* the words stack down the first column; the controls take the second, level
+   with the name rather than with the middle of a tall cell */
+.wc-block-cart-item__wrap > *{ grid-column:1 }
+.wc-block-cart-item__wrap > .wc-block-cart-item__quantity{
+	grid-column:2;
+	grid-row:1;
+	margin:0;
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+
+/* *** AND SMALLER, BECAUSE A CART ROW IS NOT A PRODUCT PAGE. ***
+   The stepper is the same component either way - adopted/quantity.css draws it
+   once - but the product page's is a primary control you press before you buy,
+   and this one is an adjustment to something already chosen. --tap-min is the
+   AA floor (28px) and applies here rather than --tap, under the same
+   `pointer: fine` reasoning footer.css already records: a 44px target is for a
+   finger, and this row is a table that only exists on a pointer device at this
+   width. Below 600px the row restacks and the full target comes back. */
+/* *** AND IT HAS TO OUT-SPECIFY THE COMPONENT, WHICH DOUBLES ITS OWN CLASS. ***
+   adopted/quantity.css writes `.wc-block-components-quantity-selector__button
+   .wc-block-components-quantity-selector__button` - (0,2,0), doubled on purpose
+   to beat Woo. A descendant selector of mine is also (0,2,0), so it TIED and
+   lost on source order, and the first run of this came back at 49px unchanged.
+   Doubled here too. Not a fight with the component - a size for one context, and
+   the component still owns everything else about it. */
+@media (pointer: fine){
+	.wc-block-cart-item__quantity .wc-block-components-quantity-selector__button.wc-block-components-quantity-selector__button{
+		min-width:var(--tap-min);
+		min-height:var(--tap-min);
+		font-size:var(--fs-meta);
+	}
+	.wc-block-cart-item__quantity .wc-block-components-quantity-selector.wc-block-components-quantity-selector{
+		grid-template-columns:auto 2.2em auto;
+	}
+	.wc-block-cart-item__quantity .wc-block-components-quantity-selector__input.wc-block-components-quantity-selector__input{
+		font-size:var(--fs-meta);
+	}
+}
+
+/* *** THE TRASH BUTTON IS .d-icon-btn, AND THE FIRST VERSION WROTE IT AGAIN. ***
+   The owner: "The trash button needs a hover effect." True, and I answered it by
+   writing a whole icon button here - grid, place-items, no chrome, a radius, a
+   cursor - which dupes.js flagged against BOTH patterns/icon.css and
+   adopted/account.css's eye at 64% overlap. Third bare icon button in the system
+   and the gate caught it before it shipped, which is the entire point of it.
+
+   So the component carries it, and this file writes only what is DIFFERENT: the
+   size, because a cart row is not a toolbar, and the destructive hover.
+
+   The class is added in patterns/icon.css's own selector list rather than here -
+   see the note there. What remains below is the delta. */
+.wc-block-cart-item__remove-link{
+	width:var(--tap-min);
+	height:var(--tap-min);
+	border-radius:var(--radius-m);
+	color:var(--ink-quiet);
+}
+.wc-block-cart-item__remove-link svg{ width:1.15em; height:1.15em; fill:currentColor }
+/* A destructive control with an icon and no visible label has to say two things
+   on hover: that it is a target, and that it is the one that removes. The tint
+   is --notice-error-edge at low strength, the same colour notice.css uses for an
+   error. Not a fill - a solid red chip in a quiet row reads as an alarm that has
+   already gone off. */
+.wc-block-cart-item__remove-link:hover{
+	background:color-mix(in oklab, var(--notice-error-edge) 12%, transparent);
+	color:var(--notice-error-edge);
+}
+
+/* Stacked, the controls go back under the text - there is no room beside it. */
+@media (max-width: 600px){
+	.wc-block-cart-item__product.wc-block-cart-item__product{
+		grid-template-columns:minmax(0,1fr) auto auto;
+	}
+}
+
 /* *** THE BLOCK CART HAS NO data-title, SO IT COLLAPSES WITH GRID. ***
    Captured and checked: its cells carry no attribute we could label a stacked
    row with. So the row becomes a two-column grid - image on the left spanning

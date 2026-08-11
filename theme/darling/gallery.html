@@ -772,7 +772,8 @@ svg{ max-width:100% }
 @keyframes d-icon-spin{ to{ transform:rotate(360deg) } }
 
 .d-icon-btn,
-.d-heart{
+.d-heart,
+.wc-block-cart-item__remove-link{
 	display:grid;
 	place-items:center;
 	width:var(--tap);
@@ -7850,6 +7851,57 @@ main .entry-content > .woocommerce {
 	color:var(--ink-quiet);
 }
 
+.wc-block-cart-item__wrap{
+	display:grid;
+	grid-template-columns:minmax(0,1fr) auto;
+	align-items:start;
+	column-gap:var(--space-s);
+	row-gap:var(--space-3xs);
+}
+
+.wc-block-cart-item__wrap > *{ grid-column:1 }
+.wc-block-cart-item__wrap > .wc-block-cart-item__quantity{
+	grid-column:2;
+	grid-row:1;
+	margin:0;
+	display:flex;
+	align-items:center;
+	gap:var(--space-2xs);
+}
+
+@media (pointer: fine){
+	.wc-block-cart-item__quantity .wc-block-components-quantity-selector__button.wc-block-components-quantity-selector__button{
+		min-width:var(--tap-min);
+		min-height:var(--tap-min);
+		font-size:var(--fs-meta);
+	}
+	.wc-block-cart-item__quantity .wc-block-components-quantity-selector.wc-block-components-quantity-selector{
+		grid-template-columns:auto 2.2em auto;
+	}
+	.wc-block-cart-item__quantity .wc-block-components-quantity-selector__input.wc-block-components-quantity-selector__input{
+		font-size:var(--fs-meta);
+	}
+}
+
+.wc-block-cart-item__remove-link{
+	width:var(--tap-min);
+	height:var(--tap-min);
+	border-radius:var(--radius-m);
+	color:var(--ink-quiet);
+}
+.wc-block-cart-item__remove-link svg{ width:1.15em; height:1.15em; fill:currentColor }
+
+.wc-block-cart-item__remove-link:hover{
+	background:color-mix(in oklab, var(--notice-error-edge) 12%, transparent);
+	color:var(--notice-error-edge);
+}
+
+@media (max-width: 600px){
+	.wc-block-cart-item__product.wc-block-cart-item__product{
+		grid-template-columns:minmax(0,1fr) auto auto;
+	}
+}
+
 @media (max-width: 600px){
 
 	.wc-block-cart-items.wc-block-cart-items tr{
@@ -9541,7 +9593,15 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	display:none;
 }
 
-.wc-block-checkout__order-notes{ padding-block:0 }
+.wc-block-checkout__use-address-for-billing{ margin-block-start:var(--space-s) }
+
+.wc-block-checkout__order-fields.wc-block-checkout__order-fields{ padding-block-end:0 }
+
+.wc-block-components-address-form > .wc-block-components-text-input:has(input[id*="office-id"]){
+	position:absolute;
+}
+
+.wc-block-checkout__order-notes{ padding-block:0; margin-block-start:var(--space-2xs) }
 .wc-block-checkout__add-note{ margin:0 }
 
 .wc-block-checkout__terms{
@@ -9629,6 +9689,8 @@ a.wc-block-components-button{
 	align-items:center;
 }
 .wc-block-components-totals-coupon__input{ margin:0 }
+
+.wc-block-components-totals-coupon__form > *{ margin-block:0 }
 
 .wc-block-components-button.wc-block-components-totals-coupon__button{
 	padding:.62em 1.05em;

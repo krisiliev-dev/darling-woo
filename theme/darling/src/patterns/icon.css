@@ -56,8 +56,16 @@
    favourite toggle IS a round icon button; it differs only in being a checkbox
    and in what it draws. One selector, and --tap for the size, which is the same
    44px both had typed by hand. */
+/* *** AND WooCommerce'S CART REMOVE BUTTON IS ON THIS LIST TOO. ***
+   It is a bare icon button - a trash glyph, an aria-label, no chrome - which is
+   exactly what this rule is. The first attempt at giving it a hover restated the
+   whole component in adopted/table.css and dupes.js flagged it against this rule
+   AND against the password eye at 64% overlap. Three implementations of one
+   idea, caught before it shipped. table.css now writes only the delta: a smaller
+   box, a softer radius and the destructive hover. */
 .d-icon-btn,
-.d-heart{
+.d-heart,
+.wc-block-cart-item__remove-link{
 	display:grid;
 	place-items:center;
 	width:var(--tap);
