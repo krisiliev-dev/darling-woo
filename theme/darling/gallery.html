@@ -677,9 +677,15 @@ svg{ max-width:100% }
 	padding-block-end:0;
 }
 
-.wp-site-blocks > main > *{ margin-block:0; margin-inline:0 }
-
-.wp-site-blocks > main > :is(.d-shell, .d-trustbar){ margin-inline:auto }
+.wp-site-blocks > main > *{ margin-block:0; width:100% }
+.wp-site-blocks > main > .d-shell{
+	width:min(var(--w-body), 100% - var(--edge-min) * 2);
+	margin-inline:auto;
+}
+.wp-site-blocks > main > .d-trustbar{
+	width:min(var(--w-body), 100% - var(--edge-min) * 2);
+	margin-inline:auto;
+}
 
 .wp-site-blocks{ display:block }
 .wp-site-blocks > *{ margin-block:0 }
@@ -1586,13 +1592,15 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	color:var(--ink-quiet);
 }
 
-.d-drawer__empty{
+.d-drawer__body:has(> .d-drawer__empty){
 	display:grid;
 	justify-items:center;
+	align-content:start;
 	gap:var(--space-s);
 	padding:var(--space-l) var(--space-s);
 	text-align:center;
-}.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
+}
+.d-drawer__empty{ margin:0 }.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
 
 @media (prefers-reduced-motion: reduce){
 	.d-drawer, .d-drawer--end{ translate:none }

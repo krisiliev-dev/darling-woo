@@ -199,9 +199,37 @@
    wrong for anything that is not. Zeroing them lets grid's own stretch do the
    job it was always meant to do, and the components that size themselves ask
    for their centring back by name on the next line. */
-.wp-site-blocks > main > *{ margin-block:0; margin-inline:0 }
-/* the ones that declare a width still centre themselves within the column */
-.wp-site-blocks > main > :is(.d-shell, .d-trustbar){ margin-inline:auto }
+/* *** AND ZEROING THE MARGINS WAS NOT ENOUGH EITHER. SECOND WRONG FIX. ***
+   With the auto margins gone the item still came out 0. Tested on the live page,
+   one property at a time:
+
+     justify-self:stretch  ->  0
+     max-width:none        ->  0
+     width:auto            ->  0
+     min-width:100%        ->  1240   <- the only one that works
+
+   So it is not the margins and it is not the cap: the item is being sized by its
+   CONTENT even when told to stretch, and its content is an inline-size container
+   whose intrinsic contribution is zero by definition. Whatever the exact spec
+   path, the measurement is unambiguous - a definite inline size is the only
+   thing that makes it fill its track.
+
+   width:100% is that, it is what was here for weeks, and it was right. What was
+   wrong was deleting it without noticing that the ONE component it conflicted
+   with could simply be given the last word. So: the floor goes back for
+   everything, and the two components that size themselves out-specify it on the
+   next line - (0,2,1) against (0,1,1), stated here rather than left to import
+   order, so the relationship between the two rules is visible in one place
+   instead of spread across two files. */
+.wp-site-blocks > main > *{ margin-block:0; width:100% }
+.wp-site-blocks > main > .d-shell{
+	width:min(var(--w-body), 100% - var(--edge-min) * 2);
+	margin-inline:auto;
+}
+.wp-site-blocks > main > .d-trustbar{
+	width:min(var(--w-body), 100% - var(--edge-min) * 2);
+	margin-inline:auto;
+}
 /* *** AND A GRID ITEM WITH `margin-inline:auto` SHRINKS TO FIT. ***
    .d-shell is `max-width:--page-max; margin-inline:auto`, which in normal flow
    means "as wide as the container, up to the cap, centred". As a GRID ITEM an

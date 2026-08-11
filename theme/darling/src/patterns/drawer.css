@@ -216,13 +216,28 @@
    telling it otherwise it sat where the text flow put it. A grid that centres
    its children states both at once - the paragraph was already centred by its
    own text-align and stays where it is. */
-.d-drawer__empty{
+/* *** .d-drawer__empty IS THE PARAGRAPH, NOT THE STATE. ***
+   The first attempt made it a centring grid, which did nothing: the paragraph
+   and the button are SIBLINGS, both direct children of .d-drawer__body, so the
+   grid had one child and it was already centred by its own text-align. Read off
+   the live drawer after the fix failed - the same mistake as the cart row, where
+   the grid went on the cell instead of the wrapper that actually holds the
+   children. Ask the tree, not the class name.
+
+   The body is the state's container, and :has() lets it say so without needing
+   a class the markup does not have. Padding as well as centring: measured, the
+   filled drawer's children run 20..332 of 352 and the empty one's ran 0..213 -
+   flush to the glass, because the empty branch never got the body padding that
+   the filled one gets from its own rows. */
+.d-drawer__body:has(> .d-drawer__empty){
 	display:grid;
 	justify-items:center;
+	align-content:start;
 	gap:var(--space-s);
 	padding:var(--space-l) var(--space-s);
 	text-align:center;
-}.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
+}
+.d-drawer__empty{ margin:0 }.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
 
 /* -- reduced motion ----------------------------------------------------------
    motion.css kills animations, not transitions, and this drawer is transitions
