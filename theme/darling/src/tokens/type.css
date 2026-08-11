@@ -59,7 +59,17 @@
 	--type-hero:    var(--fw-bold) var(--fs-hero)/var(--lh-hero) var(--font-display);
 	--type-band:    var(--fw-bold) var(--fs-band)/var(--lh-heading) var(--font-display);
 	--type-section: var(--fw-bold) var(--fs-section)/var(--lh-heading) var(--font-display);
-	--type-wordmark:var(--fw-bold) var(--fs-wordmark)/var(--lh-flush) var(--font-display);
+	/* *** --lh-flush CLIPPED THE DESCENDER OF THE "g". *** The owner: "the Дарлинг
+	   logo in our header has the tail of the g clipped off." Measured: the logo's
+	   box is 30px, the glyph box is 33px, and .d-header__logo has overflow:hidden
+	   - which it needs, because that is what makes text-overflow:ellipsis work
+	   when the wordmark and five 44px buttons will not fit a 390px phone.
+	   So the fix is the line box, not the overflow. --lh-flush is 1, which is
+	   flush by definition and has no room under the baseline; a wordmark in a
+	   display face with a descender needs some. 1.12 clears it with 3.6px to
+	   spare at 30px, and it applies to the footer wordmark too, which had the
+	   same clip nobody had noticed. */
+	--type-wordmark:var(--fw-bold) var(--fs-wordmark)/1.12 var(--font-display);
 	--type-body:    var(--fw-regular) var(--fs-body)/var(--lh-body) var(--font-ui);
 	--type-lede:    var(--fw-regular) var(--fs-lede)/var(--lh-body) var(--font-ui);
 	--type-ui:      var(--fw-medium) var(--fs-ui)/var(--lh-flush) var(--font-ui);

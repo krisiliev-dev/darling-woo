@@ -367,7 +367,17 @@ table[class*="woocommerce-"] {
 	--type-hero:    var(--fw-bold) var(--fs-hero)/var(--lh-hero) var(--font-display);
 	--type-band:    var(--fw-bold) var(--fs-band)/var(--lh-heading) var(--font-display);
 	--type-section: var(--fw-bold) var(--fs-section)/var(--lh-heading) var(--font-display);
-	--type-wordmark:var(--fw-bold) var(--fs-wordmark)/var(--lh-flush) var(--font-display);
+	/* *** --lh-flush CLIPPED THE DESCENDER OF THE "g". *** The owner: "the Дарлинг
+	   logo in our header has the tail of the g clipped off." Measured: the logo's
+	   box is 30px, the glyph box is 33px, and .d-header__logo has overflow:hidden
+	   - which it needs, because that is what makes text-overflow:ellipsis work
+	   when the wordmark and five 44px buttons will not fit a 390px phone.
+	   So the fix is the line box, not the overflow. --lh-flush is 1, which is
+	   flush by definition and has no room under the baseline; a wordmark in a
+	   display face with a descender needs some. 1.12 clears it with 3.6px to
+	   spare at 30px, and it applies to the footer wordmark too, which had the
+	   same clip nobody had noticed. */
+	--type-wordmark:var(--fw-bold) var(--fs-wordmark)/1.12 var(--font-display);
 	--type-body:    var(--fw-regular) var(--fs-body)/var(--lh-body) var(--font-ui);
 	--type-lede:    var(--fw-regular) var(--fs-lede)/var(--lh-body) var(--font-ui);
 	--type-ui:      var(--fw-medium) var(--fs-ui)/var(--lh-flush) var(--font-ui);
@@ -1659,11 +1669,18 @@ svg{ max-width:100% }
 /* -- an icon that is itself the control -------------------------------------
    44px of target around 1.25em of mark. These are the header's search, cart and
    account buttons, the drawer's close, and every place a mark is pressable. */
-.d-icon-btn{
+/* *** .d-heart WAS TEN DECLARATIONS OF THIS RULE, COPIED. *** scripts/dupes.js:
+   `.d-icon-btn` and `.d-heart` share display, place-items, width, height,
+   padding, border, radius, background, colour and cursor at 91% overlap. A
+   favourite toggle IS a round icon button; it differs only in being a checkbox
+   and in what it draws. One selector, and --tap for the size, which is the same
+   44px both had typed by hand. */
+.d-icon-btn,
+.d-heart{
 	display:grid;
 	place-items:center;
-	width:2.75rem;
-	height:2.75rem;
+	width:var(--tap);
+	height:var(--tap);
 	padding:0;
 	border:0;
 	border-radius:var(--radius-circle);
@@ -2060,16 +2077,10 @@ a:hover > .d-icon--user::after{
    the control is reachable by keyboard, and a screen reader says "checked"
    without an aria attribute anyone has to remember. */
 .d-heart{
+	/* everything a round icon button already is now comes from .d-icon-btn above;
+	   what is left here is only what makes it a HEART and a checkbox */
 	position:relative;
-	display:grid;
-	place-items:center;
-	width:2.75rem;
-	height:2.75rem;
-	padding:0;
 	margin:0;
-	border:0;
-	border-radius:var(--radius-circle);
-	background:none;
 	appearance:none;
 	-webkit-appearance:none;
 	color:var(--ink);

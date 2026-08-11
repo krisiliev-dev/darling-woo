@@ -139,8 +139,9 @@ function get(url) {
 		const GATES = [
 			['namegate.js', 'every control, link and image announces itself', false],
 			['srgate.js', 'hidden text stays hidden with the Woo sheets off', true],
+			['dupes.js', 'no NEW near-duplicate rules', false, ['--gate']],
 		];
-		for (const [file, what, needsMirror] of GATES) {
+		for (const [file, what, needsMirror, args] of GATES) {
 			const g = path.join(ROOT, 'scripts', file);
 			if (!fs.existsSync(g)) { die('missing gate ' + file); }
 			if (needsMirror && !fs.existsSync(MIRROR)) {
@@ -149,7 +150,7 @@ function get(url) {
 				continue;
 			}
 			try {
-				execFileSync(process.execPath, [g], { cwd: ROOT, stdio: 'inherit' });
+				execFileSync(process.execPath, [g].concat(args || []), { cwd: ROOT, stdio: 'inherit' });
 				ok(what);
 			} catch (e) {
 				die(file + ' failed - ' + what);
