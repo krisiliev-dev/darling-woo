@@ -35,23 +35,26 @@
    "edge to edge" means. Same split as .d-band. */
 .d-footer{
 	display:grid;
-	/* *** THREE COLUMNS OR ONE, AND auto-fit CANNOT SAY THAT. ***
+	/* *** IT ASKS THE CONTAINER, NOT THE VIEWPORT. ***
 	   The owner asked for the switch to happen "when the screen is narrower than
-	   the 3 sections width summed up", and asked whether there was another way. I
-	   tried the container-driven one this codebase prefers -
-	   `repeat(auto-fit, minmax(14rem, 1fr))` - and it produced exactly the state
-	   he was complaining about: TWO columns at 700px, with the wordmark stranded
-	   in the left one. auto-fit fits as many as will fit; it has no way to
-	   express "three or one", and two is the arrangement that looks broken.
+	   the 3 sections width summed up", and whether there was another way. There
+	   is, and it is the one layout.css already argues for on .d-split: ask the
+	   CONTAINER.
 
-	   So it is his number after all, and it is measured rather than guessed:
-	   3 x 14rem of column + 2 x --space-l of gap + 2 x --gutter of page inset
-	   = 872px. The switch is at 880.
+	   I replaced this with a media query at a measured 880px and that was a
+	   mistake. A media query only ever knows the VIEWPORT, so the footer stayed
+	   in three columns inside every narrow container on a wide screen - the
+	   gallery's edgepair specimens put it in a ~500px half-column at a 1240
+	   viewport, and it clipped there exactly as before. The owner: "the footer
+	   solution you had last time was better, it was just that the title below the
+	   bow was for some reason misaligned."
 
-	   The usual objection to a media query - that it knows the viewport and not
-	   the container - does not bite here: the footer is always the full width of
-	   the page, so for this one component the two are the same thing. */
-	grid-template-columns:1fr auto 1fr;
+	   He was right on both counts. The misalignment was a separate bug - see
+	   .d-footflair below, which had been centred by accident and needed to be
+	   centred on purpose - and fixing it did not need the mechanism thrown away.
+	   auto-fit wraps at 3 x 14rem plus the gaps, about 752px OF CONTAINER, and is
+	   right at every width in every context without anybody choosing a number. */
+	grid-template-columns:repeat(auto-fit, minmax(14rem, 1fr));
 	gap:var(--space-l);
 	align-items:start;
 	padding:var(--space-l) var(--gutter) var(--space-m);
@@ -72,10 +75,11 @@
 	.d-footer > :last-child .d-footer__pledge{ margin-inline-start:auto }
 }
 @media (max-width: 880px){
-	/* One column below the measured three-column minimum. And the ORDER: the
-	   wordmark and the social row are what the footer is FOR on a narrow screen,
-	   and three columns of text before them is three screens of scroll. */
-	.d-footer{ grid-template-columns:1fr; gap:var(--space-xl) }
+	/* The columns take care of themselves. This is only the phone ORDER, which is
+	   a genuine "is this a phone" question rather than a width: the wordmark and
+	   the social row are what the footer is FOR on a narrow screen, and three
+	   columns of text before them is three screens of scroll. */
+	.d-footer{ gap:var(--space-xl) }
 	.d-footflair{ order:-1 }
 }
 
