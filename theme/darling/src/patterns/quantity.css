@@ -28,9 +28,14 @@
 	border-color:var(--focus-ring);
 	box-shadow:0 0 0 3px var(--focus-halo);
 }
+/* Same completeness point as .d-qty__input below: the pill is the wrapper's, so
+   the buttons carry no corner of their own - and inside a WooCommerce container
+   the fallback net gives every button --radius-m unless the component says
+   otherwise. max-width:100% for the input is the net's too. */
 .d-qty__button{
 	appearance:none;
 	border:0;
+	border-radius:0;
 	background:none;
 	min-width:2.6em;
 	min-height:2.6em;
@@ -42,9 +47,24 @@
 }
 .d-qty__button:hover{ background:var(--surface-quiet) }
 .d-qty__button:disabled{ color:var(--ink-placeholder); cursor:not-allowed; background:none }
+/* *** border-radius:0 IS NOT REDUNDANT, AND THE CONTEXT IS WHY. ***
+   The wrapper draws the pill, so the input must have no corner of its own - and
+   it did not declare one, which is fine anywhere except inside WooCommerce
+   markup. fallback.css's net is scoped to Woo containers
+   (`:is([class*="wc-block-"], [class*="woocommerce-"]) :is(input...)`) and gives
+   every field --radius-m. So the SAME component rendered a 14px corner on the
+   product page and none in the gallery's Quantity section - which is exactly the
+   difference the owner kept seeing between the two steppers, and it was never
+   duplication at all: it was one component that had not finished describing
+   itself, meeting the safety net in one context and not the other.
+   This is the failure fallbackgate.js exists to catch; it did not, because it
+   tests components at the top level and this one only differs inside a Woo
+   container. */
 .d-qty__input{
 	appearance:none;
 	border:0;
+	border-radius:0;
+	max-width:none;
 	background:none;
 	text-align:center;
 	font:var(--type-body);

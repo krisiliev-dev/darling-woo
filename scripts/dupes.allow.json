@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 225,
+ "seeded": 212,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details))::before",
@@ -548,11 +548,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/notice.css|.d-notice__dismiss  ==  patterns/quantity.css|.d-qty__button",
-   "shared": 6,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/slider.css|.d-slider__input::-moz-range-thumb  ==  patterns/slider.css|.d-slider__input::-webkit-slider-thumb",
    "shared": 6,
    "why": "SAME FILE"
@@ -591,16 +586,6 @@
    "pair": "adopted/field.css|.wc-block-components-validation-error  ==  patterns/field.css|.d-field__error",
    "shared": 5,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control\n\t.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option  ==  adopted/field.css|.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control,\n.wc-block-components-form .wc-block-components-radio-control--highlight-checked.wc-block-components-radio-control--highlight-checked,\n.wc-block-components-form .wc-block-checkout__payment-method.wc-block-checkout__payment-method",
-   "shared": 5,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control\n\t.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option  ==  adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li",
-   "shared": 5,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "adopted/filters.css|.wc-block-catalog-sorting select.orderby,\nselect.orderby  ==  patterns/field.css|.d-field select,\n.d-select",
@@ -651,21 +636,6 @@
    "pair": "adopted/account.css|.password-input  ==  patterns/hero.css|.d-hero__visual",
    "shared": 4,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/account.css|.woocommerce form.woocommerce-form.woocommerce-form-login,\n.woocommerce form.woocommerce-form.woocommerce-form-register,\n.woocommerce-form-login,\n.woocommerce-form-register  ==  adopted/field.css|.wc-block-components-form .wc-block-components-radio-control\n\t.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/account.css|.woocommerce form.woocommerce-form.woocommerce-form-login,\n.woocommerce form.woocommerce-form.woocommerce-form-register,\n.woocommerce-form-login,\n.woocommerce-form-register  ==  adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/account.css|.woocommerce form.woocommerce-form.woocommerce-form-login,\n.woocommerce form.woocommerce-form.woocommerce-form-register,\n.woocommerce-form-login,\n.woocommerce-form-register  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist li",
-   "shared": 4,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "adopted/card.css|li.product .wc-block-components-product-image,\nli.wc-block-grid__product .wc-block-components-product-image  ==  patterns/card.css|.d-card__media",
@@ -743,16 +713,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-totals-coupon[data-d-coupon-open]  ==  adopted/field.css|.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control,\n.wc-block-components-form .wc-block-components-radio-control--highlight-checked.wc-block-components-radio-control--highlight-checked,\n.wc-block-components-form .wc-block-checkout__payment-method.wc-block-checkout__payment-method",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-totals-coupon[data-d-coupon-open]  ==  adopted/field.css|.wc-block-components-form .wc-block-components-radio-control\n\t.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "adopted/checkout.css|.wc-block-components-order-summary-item__image img,\n.wc-block-components-order-summary-item__image .d-media-fail  ==  patterns/hero.css|.d-collection img",
    "shared": 4,
    "why": "CROSS-ORIGIN"
@@ -803,21 +763,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control.wc-block-components-radio-control,\n.wc-block-components-form .wc-block-components-radio-control--highlight-checked.wc-block-components-radio-control--highlight-checked,\n.wc-block-components-form .wc-block-checkout__payment-method.wc-block-checkout__payment-method  ==  adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control\n\t.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist li",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control\n\t.wc-block-components-radio-control-accordion-option.wc-block-components-radio-control-accordion-option  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .comment-text.comment-text",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "adopted/filters.css|.wc-block-product-filters__overlay-header  ==  patterns/drawer.css|.d-drawer__line__foot",
    "shared": 4,
    "why": "CROSS-ORIGIN"
@@ -856,16 +801,6 @@
    "pair": "adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs  ==  patterns/header.css|.d-nav > ul",
    "shared": 4,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li  ==  adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .comment-text.comment-text  ==  adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li",
-   "shared": 4,
-   "why": "SAME FILE"
   },
   {
    "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children",

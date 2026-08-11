@@ -153,8 +153,18 @@ for (let i = 0; i < all.length; i++) {
     if (a.sel === b.sel) continue;                       // one rule, written once
     if (SKIP_FILE(a.file) || SKIP_FILE(b.file)) continue;
     let shared = 0;
-    for (const x of a.d) if (b.d.has(x)) shared++;
+    const both = [];
+    for (const x of a.d) if (b.d.has(x)) { shared++; both.push(x); }
     if (shared < MIN_SHARED) continue;
+    /* *** A SHARED RESET IS NOT A SHARED COMPONENT. ***
+     * `padding:0; border:0; border-radius:0; background:none` means "this
+     * element carries no chrome of its own", and two unrelated things saying it
+     * is not duplication - it is both of them declining to decorate. The gate
+     * caught exactly that on .d-qty__button and a radio control and would have
+     * been right about the letter and wrong about the point. Only the SHARED set
+     * is tested: two rules that agree on a reset AND on real values are still a
+     * duplicate. */
+    if (both.every((d) => /:\s*(0|0px|none|transparent|auto|normal|inherit|initial|unset)$/.test(d))) continue;
     const overlap = shared / Math.min(a.d.size, b.d.size);
     if (overlap < 0.6) continue;
     pairs.push({ a, b, shared, overlap });
@@ -205,7 +215,10 @@ if (worst.length) {
   console.log('');
 }
 
-for (const p of (process.argv.includes('--all') ? pairs : fresh).slice(0, 0)) {
+if (fresh.length) {
+  console.log('NEW since the ledger was written\n');
+}
+for (const p of fresh.slice(0, 20)) {
   console.log('  ' + p.shared + ' shared, ' + Math.round(p.overlap * 100) + '% overlap');
   console.log('     ' + p.a.file.padEnd(26) + p.a.sel.slice(0, 64));
   console.log('     ' + p.b.file.padEnd(26) + p.b.sel.slice(0, 64));
