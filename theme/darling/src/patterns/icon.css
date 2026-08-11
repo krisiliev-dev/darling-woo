@@ -71,8 +71,24 @@
    own deltas - a 1.75rem box rather than a tap target, the gold-tint hover, and
    the appear/disappear on :placeholder-shown, which is the only part of it that
    is about a search field rather than about an icon button. */
+/* *** AND THE DRAWER CLOSE MAKES FIVE - THE ONE THE GATE COULD NOT SEE. ***
+   patterns/drawer.css carried a complete second copy of everything below: a
+   grid, centred, 2.75rem square, no border, a circle, no background, cocoa, a
+   pointer, and the same two-property transition. Eleven declarations against
+   eleven, and dupes.js scored the pair at 55% - under its 60% cutoff - so it has
+   never once been reported.
+
+   *** THE REASON IS THE INTERESTING PART, AND IT IS NOT UNTIDINESS. *** The gate
+   compares declaration TEXT. `2.75rem` and `var(--tap)` are the same 44 pixels.
+   `var(--c-cocoa)` and `var(--ink)` are the same colour through an alias. The
+   transition list was written in the opposite property order. Six of eleven
+   matched as strings while eleven of eleven matched as values, and every
+   hand-typed literal in that copy is a point the similarity score lost. A
+   ratchet that reads text cannot see a component; it can only see spelling.
+   That is the whole argument for reviewing by purpose rather than by overlap. */
 .d-icon-btn,
 .d-heart,
+.d-drawer__close,
 .wc-block-cart-item__remove-link,
 .d-wipe__clear{
 	display:grid;
@@ -88,13 +104,54 @@
 	transition:background var(--dur-ui) var(--ease-float),
 	           color var(--dur-ui) var(--ease-float);
 }
-.d-icon-btn:hover{
+/* *** THE BASE WAS FOLDED AND THE STATES WERE NOT, SO ONE COMPONENT ANSWERED IN
+   THREE COLOURS. *** Measured in the gallery with hover forced and a 900ms
+   settle: the header buttons went cherry-deep rgb(176,31,48), the drawer close
+   went claret rgb(158,27,50), the search clear went claret, and the heart did
+   not change ink at all. A customer meets the first three in one session.
+
+   *** WIDENING THIS LIST ON ITS OWN WOULD HAVE DONE NOTHING. *** icon.css is
+   imported at index.css:79, BEFORE drawer.css (81) and wipe.css (90). Their
+   per-file copies are later in the same layer at the same specificity, so they
+   kept winning. Widen and delete together or nothing moves - which is why this
+   change touches four files at once and cannot be split.
+
+   *** THE HEART IS EXCLUDED FROM THE INK, DELIBERATELY, AND IT IS THE OWNER'S
+   CALL. *** icon.css:533 is `.d-heart:checked{color:var(--c-cherry)}` - on this
+   control ink is the STATE channel. Giving an unchecked heart cherry ink on
+   hover would make it read as already favourited, which is the one thing a
+   favourite toggle must never say by accident. So the heart takes the gold wash
+   like every other icon button and keeps its ink until it is actually checked.
+   Owner, asked before this was written rather than after: "Heart keeps the gold
+   tint only." */
+.d-icon-btn:hover,
+.d-heart:hover,
+.d-drawer__close:hover,
+.d-wipe__clear:hover{
 	background:var(--tint-gold);
+}
+.d-icon-btn:hover,
+.d-drawer__close:hover,
+.d-wipe__clear:hover{
 	color:var(--c-cherry-deep);
 }
-.d-icon-btn:focus-visible{
+.d-icon-btn:focus-visible,
+.d-heart:focus-visible,
+.d-wipe__clear:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
+}
+/* *** THE DRAWER CLOSE'S RING IS INSET, AND THAT IS NOT DRIFT. ***
+   -2px rather than +2px, matching drawer.css:161-163 and panel.css:158-161: an
+   inset ring is this codebase's convention for a control inside an
+   overflow:hidden container, and .d-drawer sets that at drawer.css:35. It does
+   deviate from the single ring in DESIGN_SYSTEM.md 8.2, and measured, the close
+   button sits 12px inside the drawer's clip on every side so a +2px ring would
+   NOT be cut off. Kept as a convention rather than changed on my own judgement;
+   it is a decision for the owner, not a defect. */
+.d-drawer__close:focus-visible{
+	outline:2px solid var(--focus-ring);
+	outline-offset:-2px;
 }
 .d-icon-btn .d-icon{ width:1.25rem; height:1.25rem }
 /* A count riding on the cart button. Cocoa rather than cherry: cherry is the
@@ -503,18 +560,18 @@ a:hover > .d-icon--user::after{
    the control is reachable by keyboard, and a screen reader says "checked"
    without an aria attribute anyone has to remember. */
 .d-heart{
-	/* everything a round icon button already is now comes from .d-icon-btn above;
-	   what is left here is only what makes it a HEART and a checkbox */
+	/* everything a round icon button already is comes from the shared rule above;
+	   what is left here is only what makes it a HEART and a checkbox. `color`,
+	   `cursor` and the transition were restated and are gone - the base rule
+	   carries all three, and the transition it carries is the wider of the two. */
 	position:relative;
 	margin:0;
 	appearance:none;
 	-webkit-appearance:none;
-	color:var(--ink);
-	cursor:pointer;
-	transition:background var(--dur-ui) var(--ease-float);
 }
-.d-heart:hover{ background:var(--tint-gold) }
-.d-heart:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+/* the hover and the focus ring were restated here verbatim, directly under a
+   comment saying "what is left here is only what makes it a HEART". They come
+   from the shared rules above now. */
 .d-heart::before{
 	content:"";
 	width:1.25rem;

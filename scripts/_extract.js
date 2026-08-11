@@ -133,8 +133,24 @@ function accountHalf() {
     const root = dom.window.document.querySelector(sel);
     if (!root) { console.error('  ' + name + ': ' + sel + ' NOT FOUND in ' + page + '.html'); process.exitCode = 1; continue; }
     /* href="#" AFTER the clone, so the scrub above stays about identity */
-    const html = launder(scrub(root, name, dom.window.document))
+    let html = launder(scrub(root, name, dom.window.document))
       .replace(/\shref="[^"]*"/g, ' href="#"');
+
+    /* *** A SPECIMEN THAT LOSES AN ANCESTOR IS NOT A SPECIMEN. ***
+     * The content columns are cut at .woocommerce-MyAccount-content, which on
+     * every real account page is a child of <div class="woocommerce">. Half the
+     * rules that style these fields are DESCENDANT selectors rooted at that
+     * class - `.woocommerce form .form-row input.input-text` is the whole
+     * classic-field component. Cut the wrapper off and 15 inputs in the gallery
+     * stop matching the rule that styles them on the live site, so the gallery
+     * shows a control nobody will ever see and hides the one they will.
+     *
+     * Caught by measuring a fix and finding nothing to measure it on. Restored
+     * rather than worked around, because the alternative is remembering this
+     * every time somebody probes the profile section. */
+    if (!/^<div class="woocommerce"/.test(html) && /MyAccount-content/.test(html)) {
+      html = '<div class="woocommerce">' + html + '</div>';
+    }
     if (write(name, html)) moved++;
   }
   return moved;

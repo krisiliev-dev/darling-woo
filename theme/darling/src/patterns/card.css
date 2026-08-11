@@ -166,7 +166,21 @@
 	cursor:pointer;
 	transition:background var(--dur-ui) var(--ease-ui);
 }
-.d-card__cta:hover{ background:var(--c-cherry-deep) }
+/* *** THE CARD CTA'S HOVER IS NOT HERE ANY MORE. ***
+   It was `background:var(--c-cherry-deep)` - the raw primitive, not
+   --action-hover - and it was one of four separate declarations of the same
+   decision. button.css:92-96 lists `.d-card__cta:hover` explicitly and calls
+   itself "the one place the cherry hover lives"; this line was what stopped that
+   being true. Same layer, same specificity, and index.css imports card.css one
+   line after button.css, so the later copy won on source order alone.
+
+   Nothing changes today: --action-hover resolves to --c-cherry-deep, so both
+   produce #B01F30. That is exactly why it was worth removing rather than
+   leaving - the day the hover colour moves, this card would have been the one
+   that did not follow, and there would have been no symptom to lead anyone back
+   here. Proved by giving each of the four competing declarations a unique colour
+   and reading the forced-hover value; with this line gone the card takes
+   button.css's. */
 
 /* A chip over the media. THE PLYWOOD ONE - owner picked it over the cocoa
    scrim it used to be. It carries .d-finish, so it gets the ramp, the rim and

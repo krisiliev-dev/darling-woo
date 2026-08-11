@@ -61,7 +61,16 @@
 	transition:transform var(--dur-ui) var(--ease-float),
 	           background-color var(--dur-ui) var(--ease-float);
 }
-.d-btn:active{ transform:translateY(1px) }
+/* *** THE BASE LIST HAS THREE MEMBERS; THIS RULE HAD ONE. ***
+   `.single_add_to_cart_button` and `.wc-block-cart__submit-button` were joined
+   to the base list above so there would be one definition, and were joined to
+   the base list only. The base rule transitions `transform` for all three, and
+   only one of them ever had a transform to transition - so Add to Cart, on every
+   product page, and the cart's own checkout button did not move under a press
+   while the button beside them did. */
+.d-btn:active,
+.single_add_to_cart_button:active,
+.wc-block-cart__submit-button:active{ transform:translateY(1px) }
 /* *** THE HOVER BELONGS TO THE SOLID CHERRY BUTTON AND TO NOTHING ELSE. ***
    The first version was `.d-btn:not(.d-finish):hover`, and testing every variant
    caught what that meant: .d-btn--text is a link that behaves like a button, and
@@ -72,6 +81,20 @@
    already has its own pointer response through --glow-hover. */
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
 .single_add_to_cart_button:not(.d-finish):hover,
+/* *** AND THE CART'S CHECKOUT BUTTON HAD NO HOVER AT ALL. ***
+   Measured in the gallery, #wcart: rest rgb(212,42,60), forced hover
+   rgb(212,42,60) - unchanged. Every peer on the same page reaches
+   rgb(176,31,48). Chrome's matched-styles dump returned exactly one background
+   rule for it and no hover rule anywhere in the build.
+
+   *** IT IS NOT VISIBLE TODAY, AND THAT IS THE INTERESTING PART. *** theme.json
+   makes WordPress emit, UNLAYERED, `:root :where(.wp-element-button:hover)
+   {background-color:claret}`, and this button carries wp-element-button. So on
+   the live cart it does hover - to #9E1B32, the wrong red, the same wrong red
+   the Place Order button hovers to. When triage.js strips global-styles down to
+   custom properties at the cutover, that net goes and the button goes dead.
+   Adding this now is inert until that day and correct on it. */
+.wc-block-cart__submit-button:not(.d-finish):hover,
 /* *** FOUR THINGS ON THIS SITE ARE A CHERRY BUTTON AND ONLY ONE WAS .d-btn. ***
    The owner, testing the gallery: "some are now darkening on hover, but others
    aren't, like the ones under Catalogue filters and Може би ще харесате." He is
@@ -89,9 +112,25 @@
    this commit (each sits in a grid of its own), but the cherry surface and its
    response are one decision and belong in one place. Listed here, so the day the
    hover changes it changes for all four. */
-.d-card__cta:hover,
-li.wc-block-grid__product .wp-block-button__link:hover,
-.wc-block-product-filters__apply:hover{
+/* *** TWO OF THE FOUR WERE LISTED HERE AND NEVER REACHED, AND THE LIST WAS THE
+   PROBLEM. *** The upsell grid button and the filters apply button are painted
+   from adopted/card.css and adopted/filters.css - a LATER layer - so a hover
+   written in patterns could not touch them however it was spelt. They were named
+   here anyway, which made this rule read like the single source it says it is
+   while two of its four members were inert. A list that names things it does not
+   reach is worse than a short list: it is the reason nobody went looking.
+
+   Their hovers stay beside their fills, one copy per origin, which is the trade
+   adopted/vh.css already records. The VALUE is still single-sourced - all three
+   files say var(--action-hover) - and that is the part that has to hold.
+   Verified by counterfactual: setting --action-hover to rgb(1,2,3) moves .d-btn,
+   the cart's checkout button, .d-card__cta, the upsell button and the filters
+   apply button, all five, in one edit. They fold into this rule the day those
+   two files can be layered.
+
+   .d-card__cta stays because it genuinely is reached from here now:
+   patterns/card.css's competing copy was deleted in the same pass. */
+.d-card__cta:hover{
 	background:var(--action-hover);
 }
 

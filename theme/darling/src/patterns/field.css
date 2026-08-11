@@ -61,6 +61,18 @@
 .d-field input[type="search"],
 .d-field select,
 select.orderby,
+/* the price filter's two number inputs. They live in a 250px sidebar and keep
+   three deltas of their own in adopted/filters.css - shrinkable, flexed,
+   tabular digits - and take the box, the states and the type from here. */
+.wc-block-product-filter-price-content input[type="text"],
+.wc-block-product-filter-price-content input[type="number"],
+/* the classic templates' fields - my-account and the address forms. Same box,
+   same states, same type; there is no delta at all, which is why the ledger
+   scored the two rules at 100%. */
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select,
+.woocommerce-page form .form-row input.input-text,
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -78,11 +90,29 @@ select.orderby,
 
 .d-field__control::placeholder,
 .d-field input::placeholder,
+.woocommerce form .form-row input.input-text::placeholder,
+.woocommerce form .form-row textarea::placeholder,
+.woocommerce-page form .form-row input.input-text::placeholder,
 .d-field textarea::placeholder{ color:var(--ink-placeholder) }
 
+/* *** THE STATE LISTS MUST CARRY EVERY MEMBER OF THE BASE LIST. ***
+   `select.orderby` - the catalogue sort dropdown - was joined to the control
+   list above so it would stop being drawn by the safety net, and was joined to
+   the base list ONLY. Measured in the gallery, both toolbar instances: resting
+   border rgb(194,194,205), hover border rgb(194,194,205). No response at all,
+   on the one control on the shop page a customer is most likely to poke at.
+   `.d-select` was missing from both state lists too; nothing carries that class
+   yet, so nothing measured wrong, which is exactly how it stayed missing. */
 .d-field__control:hover,
 .d-field input:hover,
 .d-field select:hover,
+:is(.d-select, select.orderby):hover,
+.wc-block-product-filter-price-content input[type="text"]:hover,
+.wc-block-product-filter-price-content input[type="number"]:hover,
+.woocommerce form .form-row input.input-text:hover,
+.woocommerce form .form-row textarea:hover,
+.woocommerce form .form-row select:hover,
+.woocommerce-page form .form-row input.input-text:hover,
 .d-field textarea:hover{ border-color:var(--c-mauve-light) }
 
 /* Focus is a RING plus a colour, never a colour alone - and never the browser
@@ -93,9 +123,26 @@ select.orderby,
    click into a field says "this is wrong" before you have typed anything. Red
    belongs to the invalid state and nowhere else on a form. Cocoa is the calmest
    thing in the palette that still clearly is not the resting edge. */
+/* *** :focus, NOT :focus-visible, AND THAT IS THE WHOLE POINT FOR A SELECT. ***
+   FIREFOX DOES NOT MATCH :focus-visible ON A <select> FOCUSED BY MOUSE CLICK.
+   `select.orderby` had no rule here, so its only indicator was the system-wide
+   :focus-visible ring in base/elements.css - which means a Firefox user who
+   CLICKS the sort dropdown got border rgb(194,194,205), outline none, box-shadow
+   none. Nothing whatsoever to say the control had focus. Measured in all three
+   engines; only Firefox loses it, and only on a click.
+
+   `.d-field select`, keyed off :focus, kept its cocoa border and halo in the
+   same engine, which is why the defect could sit next to a working example. */
 .d-field__control:focus,
 .d-field input:focus,
 .d-field select:focus,
+:is(.d-select, select.orderby):focus,
+.wc-block-product-filter-price-content input[type="text"]:focus,
+.wc-block-product-filter-price-content input[type="number"]:focus,
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus,
+.woocommerce form .form-row select:focus,
+.woocommerce-page form .form-row input.input-text:focus,
 .d-field textarea:focus{
 	outline:none;
 	border-color:var(--focus-ring);
@@ -196,9 +243,20 @@ select.orderby,
 	.d-field select,
 	:is(.d-select, select.orderby),
 	.d-field select::picker(select),
-	:is(.d-select, select.orderby)::picker(select){
+	:is(.d-select, select.orderby)::picker(select),
+	.wc-block-components-form select::picker(select){
 		appearance:base-select;
 	}
+	/* *** THE CHECKOUT SELECT'S SWITCH IS NOT HERE, AND THAT IS NOT AN OVERSIGHT.
+	   *** It was, briefly, and the browser said no. The declaration it has to beat
+	   is `appearance:none` in adopted/field.css, and adopted is a LATER LAYER than
+	   patterns - layer order is consulted before specificity, so a rule written
+	   here cannot win no matter how it is spelt. Measured after moving it: the
+	   checkout select still computed `appearance: none` while every .d-field
+	   select read `base-select`.
+	   So the switch lives beside the rule it contests, at matching specificity.
+	   The MENU - the picker box, the options, the highlight - stays here, because
+	   nothing in adopted contests those and there should be one drawing of them. */
 	/* *** base-select MAKES THE SELECT A FLEX CONTAINER. ***
 	   Its default align-items is `normal`, which stretches the value to the full
 	   height instead of centring it - so the text sat slightly high against the
@@ -207,14 +265,21 @@ select.orderby,
 	   rather than centred. These four lines put it back on the same line as
 	   every other control. */
 	.d-field select,
-	:is(.d-select, select.orderby){
+	:is(.d-select, select.orderby),
+	.wc-block-components-form select{
 		align-items:center;
 		justify-content:flex-start;
+	}
+	/* the checkout select is a floating-label control: its own min-height and
+	   line-height live in adopted/field.css and must not be restated here. */
+	.d-field select,
+	:is(.d-select, select.orderby){
 		min-height:2.9em;
 		line-height:var(--lh-flush);
 	}
 	.d-field select::picker(select),
-	:is(.d-select, select.orderby)::picker(select){
+	:is(.d-select, select.orderby)::picker(select),
+	.wc-block-components-form select::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
 		border:1px solid var(--edge-field);
@@ -230,7 +295,8 @@ select.orderby,
 	   14 - 4 lands on --radius-s. That is arithmetic, not taste - if the picker
 	   padding changes, this has to move with it. */
 	.d-field option,
-	:is(.d-select, select.orderby) option{
+	:is(.d-select, select.orderby) option,
+	.wc-block-components-form option{
 		padding:.52em .7em;
 		border-radius:var(--radius-s);
 		color:var(--c-cocoa);
@@ -241,19 +307,23 @@ select.orderby,
 	   under a cocoa word is 3.1:1 and fails, and the row you are hovering is the
 	   one you most need to be able to read. */
 	.d-field option:hover,
-	:is(.d-select, select.orderby) option:hover{
+	:is(.d-select, select.orderby) option:hover,
+	.wc-block-components-form option:hover{
 		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
 	}
 	.d-field option:checked,
-	:is(.d-select, select.orderby) option:checked{
+	:is(.d-select, select.orderby) option:checked,
+	.wc-block-components-form option:checked{
 		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
 		font-weight:var(--fw-medium);
 	}
 	/* base-select draws its own arrow; ours is the background gradient above. */
 	.d-field select::picker-icon,
-	:is(.d-select, select.orderby)::picker-icon{ display:none }
+	:is(.d-select, select.orderby)::picker-icon,
+	.wc-block-components-form select::picker-icon{ display:none }
 	.d-field select::checkmark,
-	:is(.d-select, select.orderby)::checkmark{ display:none }
+	:is(.d-select, select.orderby)::checkmark,
+	.wc-block-components-form select::checkmark{ display:none }
 }
 
 /* -- checkbox and radio -----------------------------------------------------

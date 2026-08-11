@@ -102,12 +102,14 @@
 	min-width:0;
 	padding:0;
 	flex:none;
+	/* a quieter resting ink than the component's, because this one sits inside a
+	   filled field and must not compete with the text it clears. The transition
+	   is the component's and is not restated. */
 	color:var(--ink-quiet);
-	transition:color var(--dur-ui) var(--ease-float),
-	           background var(--dur-ui) var(--ease-float);
 }
-.d-wipe__clear:hover{ color:var(--c-claret); background:var(--tint-gold) }
-.d-wipe__clear:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+/* the hover and the focus ring were the component's, restated here in claret
+   instead of cherry-deep - which is how one icon button came to answer in three
+   colours across three files. They come from patterns/icon.css now. */
 .d-wipe__clear .d-icon{ width:.85rem; height:.85rem }
 /* *** THE x HAS TO OUTLIVE THE TEXT IT DELETED. ***
    :placeholder-shown flips the instant the value is emptied - halfway through

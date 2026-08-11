@@ -164,36 +164,59 @@
 	cursor:pointer;
 }
 
-/* Woo's country and state pickers get the styled menu too. */
+/* *** THE base-select SWITCH, AT THE SPECIFICITY IT HAS TO BEAT. ***
+   The rule directly above sets `appearance:none` at (0,4,1). The old upgrade was
+   written as `.wc-block-components-form select`, (0,1,1), and lost - which is
+   why the checkout's country and area pickers opened the OPERATING SYSTEM's grey
+   list while the shop's sort dropdown, one page away, opened ours.
+
+   Two things that do NOT fix it, both tried and measured:
+     reordering   the loser was already the later rule. Same layer, same file:
+                  only specificity or a change of layer resolves it.
+     moving it to patterns/field.css   adopted is a LATER layer than patterns, so
+                  the `appearance:none` above beats anything written there. The
+                  select still computed `none` while every .d-field select read
+                  `base-select`.
+
+   So it is the same three selectors as the rule above, verbatim, one rule later.
+   Equal specificity, same layer, later wins. Keep the two lists in step: if a
+   selector is added above and not here, that control silently drops back to the
+   OS menu, which is the exact failure this replaces.
+
+   The MENU itself - the picker box, the options, the cherry highlight - is drawn
+   once in patterns/field.css and reaches these selects from there, because
+   nothing here contests it. */
 @supports (appearance: base-select){
-	.wc-block-components-form select,
-	.wc-block-components-form select::picker(select){ appearance:base-select }
-	/* same flex-centring fix as the .d-field select above */
-	.wc-block-components-form select{ align-items:center; justify-content:flex-start }
-	.wc-block-components-form select::picker(select){
-		margin-top:.35em;
-		padding:var(--space-3xs);
-		border:1px solid var(--edge-field);
-		border-radius:var(--radius-m);
-		background:var(--surface-raised);
-		box-shadow:var(--shadow-card);
+	.wc-block-components-form .wc-blocks-components-select__select,
+	.wc-block-components-form .wc-block-components-country-input.wc-block-components-country-input select,
+	.wc-block-components-form .wc-block-components-state-input.wc-block-components-state-input select{
+		appearance:base-select;
 	}
-	.wc-block-components-form option{
-		padding:.52em .7em;
-		border-radius:var(--radius-s);   /* concentric with the picker; see above */
-		color:var(--c-cocoa);
-		background:transparent;
-	}
-	.wc-block-components-form option:hover{
-		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
-	}
-	.wc-block-components-form option:checked{
-		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
-		font-weight:var(--fw-medium);
-	}
-	.wc-block-components-form select::picker-icon,
-	.wc-block-components-form select::checkmark{ display:none }
 }
+
+/* *** THE SECOND COPY OF THE PICKER BLOCK LIVED HERE, AND IT WAS DEAD. ***
+   Both this file and patterns/field.css wrote an `@supports (appearance:
+   base-select)` block for the SAME control. Two rules, same layer is not what
+   decided it - the base rule at :151 above is
+   `.wc-block-components-form .wc-block-components-country-input.wc-block-components-country-input select`,
+   (0,4,1), and this copy's `.wc-block-components-form select` is (0,1,1). The
+   base out-specified the upgrade, so `appearance:none` won and
+   `appearance:base-select` never applied.
+
+   The visible cost: on a Chromium browser the shop's sort dropdown opened OUR
+   menu - drawn, cherry-tinted highlight, rounded - and the checkout's country
+   and area pickers opened the operating system's grey list, one page apart, in
+   the middle of paying. Measured; and it is Chromium-only today only because
+   the other engines have not shipped base-select yet, which is an argument for
+   fixing it now rather than when they do.
+
+   Reordering would not have fixed it, and this is the part worth remembering:
+   the loser was already the later rule. Same layer, same file order - only
+   specificity or a change of layer resolves that. So the selectors moved UP into
+   patterns/field.css's block instead, which changes the layer and settles it
+   without a specificity war. What is left below is the checkout's genuine
+   delta - a transparent, borderless select inside a bordered wrapper, with the
+   padding a floating label needs. */
 .wc-blocks-components-select__label,
 .wc-block-components-country-input label,
 .wc-block-components-state-input label{
@@ -453,28 +476,28 @@
 	color:var(--ink-quiet);
 }
 
-/* -- the classic templates' fields, for my-account and the review form ------ */
-.woocommerce form .form-row input.input-text,
-.woocommerce form .form-row textarea,
-.woocommerce form .form-row select,
-.woocommerce-page form .form-row input.input-text{
-	width:100%;
-	min-height:2.9em;
-	padding:.72em .9em;
-	font:var(--type-body);
-	color:var(--c-cocoa);
-	background:var(--surface-raised);
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
-	appearance:none;
-}
-.woocommerce form .form-row input.input-text:focus,
-.woocommerce form .form-row textarea:focus,
-.woocommerce form .form-row select:focus{
-	outline:none;
-	border-color:var(--focus-ring);
-	box-shadow:0 0 0 3px var(--focus-halo);
-}
+/* -- the classic templates' fields ------------------------------------------
+   *** THE WHOLE BOX MOVED TO patterns/field.css, BECAUSE THERE WAS NO DELTA. ***
+   This was a transcription of .d-field's control with three lines missing - no
+   transition, no hover, no placeholder colour - across 17 live fields on
+   /my-account/edit-account/ and /my-account/edit-address/billing/. A customer
+   changing their address was using a control that looked identical to the one in
+   the gallery and was measurably deader under the pointer.
+
+   Adding the three missing lines made the two rules 100% identical, and the
+   duplication ratchet said so the moment they were: 10 shared, 100% overlap, a
+   NEW pair. That is the gate working exactly as intended - it noticed that
+   "fixing" the drift had turned a near-duplicate into an exact one, and refused
+   to let a second copy of the component ship. So the selectors joined the
+   component's lists instead and this rule is gone.
+
+   *** WHY LEAVING THE LAYER IS SAFE HERE, MEASURED RATHER THAN ASSUMED. ***
+   patterns is a WEAKER layer than adopted, so this only works if nothing
+   unlayered contests these selectors. What is left on an account page after the
+   dequeue is exactly one third-party sheet, select2.css, and it styles
+   .select2-* - it never names .form-row. Verified in the browser against the
+   captured account markup: every one of the 15 fields still measures the
+   component's box, and now hovers and transitions with it. */
 .woocommerce form .form-row label{
 	display:block;
 	margin-bottom:var(--stack-tight);

@@ -295,22 +295,38 @@
 	align-items:center;
 	gap:var(--space-3xs);
 }
+/* *** "ONLY MAKES THE INPUTS LOOK LIKE OUR INPUTS" - MEASURED, IT DID NOT. ***
+   The comment above was the intention; these were the only four text inputs on
+   the whole site that did not match .d-field. Roughly 70 inputs were enumerated
+   across the gallery and every one measured rgb(241,241,246) at 16px, except
+   these:
+
+     background   rgb(230,230,236) --surface-page   vs  rgb(241,241,246) --surface-raised
+     min-height   41.25px                           vs  46.4px
+     padding      8.25px 12px                       vs  11.52px 14.4px
+     font         15px/600/15px --type-ui           vs  16px/400/25.6px --type-body
+     hover        none                              vs  border rgb(138,112,118)
+     focus        2px outline at 1px offset         vs  cocoa border + 3px halo
+
+   The fill is the one that gives it away. This was the only place in all of
+   src/ that painted a CONTROL with --surface-page, and in the inline sidebar
+   every ancestor up to <body> is transparent - so the input's fill was exactly
+   the page ground and the control read as border-only, sitting beside .d-field
+   controls with a visible lighter fill. --type-ui also rendered the typed number
+   bold and flush against the box.
+
+   So it joins the component and keeps only what is genuinely different about
+   living in a 250px sidebar: it may shrink below its content, it flexes, and its
+   digits are tabular. That is the shape adopted/quantity.css already uses - keep
+   the deltas, inherit everything else.
+
+   Not visible on the live shop TODAY: the catalogue's price range is 13-14, so
+   WooCommerce renders the block empty. It applies the moment there is a range. */
 .wc-block-product-filter-price-content input[type="text"],
 .wc-block-product-filter-price-content input[type="number"]{
 	min-width:0;
 	flex:1 1 5.5rem;
-	min-height:2.75em;
-	padding:.55em .8em;
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
-	background:var(--surface-page);
-	color:var(--ink);
-	font:var(--type-ui);
 	font-variant-numeric:tabular-nums;
-}
-.wc-block-product-filter-price-content input:focus-visible{
-	outline:2px solid var(--focus-ring);
-	outline-offset:1px;
 }
 
 /* The chips a chosen filter leaves behind, and the "clear all" beside them. */

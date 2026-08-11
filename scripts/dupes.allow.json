@@ -1,6 +1,6 @@
 {
- "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 169,
+ "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one. Re-keying is allowed ONLY when the same two rules are still the pair and only the selector text moved - and it must say so, as `rekeyed`, so a re-key can never be mistaken for a fix. 2026-08-11: 169 -> 166. Three re-keyed after the field component's list was widened; three DELETED because the duplicate was merged away - the two classic-field pairs and the drawer close, which was a whole second copy of .d-icon-btn that this gate never reported, because it scored 6/11 = 55% against a 60% cutoff. The literals were the reason: 2.75rem for var(--tap), var(--c-cocoa) for var(--ink). A ratchet that compares declaration TEXT cannot see a component, only spelling.",
+ "seeded": 166,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -105,12 +105,6 @@
    "pair": "adopted/checkout.css|.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option  ==  patterns/field.css|.d-choice",
    "shared": 9,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n.d-field textarea",
-   "shared": 9,
-   "why": "CROSS-ORIGIN",
-   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  adopted/filters.css|.wc-block-product-filters__open-overlay",
@@ -223,10 +217,10 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n.d-field textarea",
+   "pair": "adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n.d-field textarea",
    "shared": 7,
    "why": "CROSS-ORIGIN",
-   "rekeyed": "selector list widened to carry Woo markup; same debt"
+   "rekeyed": "same two rules; patterns/field.css widened its selector list on 2026-08-11"
   },
   {
    "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme)",
@@ -287,11 +281,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/drawer.css|.d-drawer__close  ==  patterns/drawer.css|.d-drawer__line__rm",
-   "shared": 7,
-   "why": "SAME FILE"
-  },
-  {
    "pair": "patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after  ==  patterns/footer.css|.d-footflair__s",
    "shared": 7,
    "why": "SAME ORIGIN"
@@ -347,11 +336,6 @@
    "why": "SAME FILE"
   },
   {
-   "pair": "adopted/field.css|.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text  ==  adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]",
-   "shared": 6,
-   "why": "SAME FILE"
-  },
-  {
    "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]",
    "shared": 6,
    "why": "SAME FILE"
@@ -373,10 +357,10 @@
    "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n.d-field textarea",
+   "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n.d-field textarea",
    "shared": 6,
    "why": "CROSS-ORIGIN",
-   "rekeyed": "selector list widened to carry Woo markup; same debt"
+   "rekeyed": "same two rules; patterns/field.css widened its selector list on 2026-08-11"
   },
   {
    "pair": "adopted/filters.css|.wc-block-product-filter-removable-chips__remove  ==  patterns/header.css|.d-search input::-webkit-search-cancel-button",
@@ -614,10 +598,10 @@
    "why": "SAME FILE"
   },
   {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n.d-field textarea",
+   "pair": "adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n.d-field textarea",
    "shared": 4,
    "why": "CROSS-ORIGIN",
-   "rekeyed": "selector list widened to carry Woo markup; same debt"
+   "rekeyed": "same two rules; patterns/field.css widened its selector list on 2026-08-11"
   },
   {
    "pair": "adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container  ==  patterns/field.css|.d-choice",

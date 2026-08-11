@@ -95,24 +95,25 @@
 }
 /* Not a star, and not a spin. That was settled on the notice: a close button is
    the most-pressed control in the drawer and the least interesting. */
+/* *** THIS WAS A COMPLETE SECOND COPY OF .d-icon-btn AND NOTHING CAUGHT IT. ***
+   Eleven declarations, all eleven of them the component's, written with literals
+   instead of tokens: 2.75rem for var(--tap), var(--c-cocoa) for var(--ink), the
+   transition list in the other order. dupes.js compares declaration TEXT, so it
+   scored the pair at 6/11 = 55% against a 60% cutoff and never reported it. The
+   hand-typed literal is not untidiness - it is the reason the ratchet stayed
+   green. See the note above .d-icon-btn in patterns/icon.css.
+
+   What is left below is what is actually the drawer's: a negative margin that
+   pulls the button into the header's padding, and a smaller mark. The hover, the
+   focus ring - inset, by this codebase's convention for a clipped container -
+   the box, the colour and the transition all come from the component now.
+
+   NOTE ON ORDER, because it is a trap: icon.css is imported at index.css:79 and
+   this file at 81. Same layer, same specificity, later wins - so deleting this
+   copy is what lets the component's rules through, and widening the component's
+   rules without deleting this would have changed nothing at all. */
 .d-drawer__close{
-	display:grid;
-	place-items:center;
-	width:2.75rem;
-	height:2.75rem;
 	margin:-.5rem -.5rem -.5rem 0;
-	border:0;
-	border-radius:var(--radius-circle);
-	background:none;
-	color:var(--c-cocoa);
-	cursor:pointer;
-	transition:color var(--dur-ui) var(--ease-float),
-	           background var(--dur-ui) var(--ease-float);
-}
-.d-drawer__close:hover{ color:var(--c-claret); background:var(--tint-gold) }
-.d-drawer__close:focus-visible{
-	outline:2px solid var(--focus-ring);
-	outline-offset:-2px;
 }
 .d-drawer__close .d-icon{ width:1.15rem; height:1.15rem }
 
