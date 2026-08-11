@@ -22,6 +22,8 @@ Horizontal hairlines only. Vertical rules turn a price list into a spreadsheet,
 and the eye already tracks a row without help.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -423,6 +425,7 @@ def main():
     p = os.path.join(SRC, 'patterns', 'table.css')
     assert all(ord(ch) < 128 for ch in TABLE)
     assert TABLE.count('/*') == TABLE.count('*/'), (TABLE.count('/*'), TABLE.count('*/'))
+    guard(p, TABLE)
     io.open(p, 'w', encoding='ascii', newline='\n').write(TABLE)
     print('wrote  patterns/table.css %5d bytes' % len(TABLE))
 
@@ -433,6 +436,7 @@ def main():
                       if 'patterns/field.css' in l and '@import' in l)
         index = index.replace(anchor,
                               anchor + '\n@import url("patterns/table.css")   layer(patterns);', 1)
+        guard(ip, index)
         io.open(ip, 'w', encoding='utf-8', newline='\n').write(index)
         print('index.css: registered patterns/table.css')
 

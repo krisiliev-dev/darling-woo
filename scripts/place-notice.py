@@ -37,6 +37,8 @@ half by the next element's background. The rain enters from above and the orbit
 stays inside because both are composed against the box, not against the icon.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -385,6 +387,7 @@ NOTICE = '''/* =================================================================
 def main():
     p = os.path.join(SRC, 'patterns', 'notice.css')
     assert all(ord(ch) < 128 for ch in NOTICE)
+    guard(p, NOTICE)
     io.open(p, 'w', encoding='ascii', newline='\n').write(NOTICE)
     print('wrote  patterns/notice.css %5d bytes' % len(NOTICE))
 

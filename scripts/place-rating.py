@@ -21,6 +21,8 @@ font we do not load. Left alone it shows THROUGH our mask as a row of black
 stars behind gold ones. font-size:0 on the content is what stops it.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -309,6 +311,7 @@ RATING = '''/* =================================================================
 def main():
     p = os.path.join(SRC, 'patterns', 'rating.css')
     assert all(ord(ch) < 128 for ch in RATING)
+    guard(p, RATING)
     io.open(p, 'w', encoding='ascii', newline='\n').write(RATING)
     print('wrote  patterns/rating.css %5d bytes' % len(RATING))
 
@@ -319,6 +322,7 @@ def main():
                       if 'patterns/notice.css' in l and '@import' in l)
         index = index.replace(anchor,
                               anchor + '\n@import url("patterns/rating.css")  layer(patterns);', 1)
+        guard(ip, index)
         io.open(ip, 'w', encoding='utf-8', newline='\n').write(index)
         print('index.css: registered patterns/rating.css')
 

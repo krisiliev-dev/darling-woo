@@ -1,0 +1,55 @@
+<div class="woocommerce-MyAccount-content">
+	<div class="woocommerce-notices-wrapper"></div>
+
+<form class="woocommerce-EditAccountForm edit-account" action="" method="post">
+
+	
+	<p class="woocommerce-form-row woocommerce-form-row--first form-row form-row-first">
+		<label for="account-details-account_first_name">Име&nbsp;<span class="required" aria-hidden="true">*</span></label>
+		<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_first_name" id="account-details-account_first_name" autocomplete="given-name" value="" aria-required="true">
+	</p>
+	<p class="woocommerce-form-row woocommerce-form-row--last form-row form-row-last">
+		<label for="account-details-account_last_name">Фамилия&nbsp;<span class="required" aria-hidden="true">*</span></label>
+		<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_last_name" id="account-details-account_last_name" autocomplete="family-name" value="" aria-required="true">
+	</p>
+	<div class="clear"></div>
+
+	<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+		<label for="account-details-account_display_name">Видимо име&nbsp;<span class="required" aria-hidden="true">*</span></label>
+		<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="account_display_name" id="account-details-account_display_name" aria-describedby="account-details-account_display_name_description" value="mariya" aria-required="true"> <span id="account-details-account_display_name_description"><em>Така ще бъде изписано името ви във вашия профил и отзиви</em></span>
+	</p>
+	<div class="clear"></div>
+
+	<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+		<label for="account-details-account_email">Имейл адрес&nbsp;<span class="required" aria-hidden="true">*</span></label>
+		<input type="email" class="woocommerce-Input woocommerce-Input--email input-text" name="account_email" id="account-details-account_email" autocomplete="email" value="mariya@example.com" aria-required="true">
+	</p>
+
+	
+	<fieldset>
+		<legend>Промяна на парола</legend>
+
+		<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+			<label for="account-details-password_current">Текуща парола (оставете празно, за да я оставите непроменена)</label>
+			<span class="password-input"><input type="password" class="woocommerce-Input woocommerce-Input--password input-text" name="password_current" id="account-details-password_current" autocomplete="current-password"><button type="button" class="show-password-input" aria-label="Показване на паролата" aria-describedby="account-details-password_current"></button></span>
+		</p>
+		<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+			<label for="account-details-password_1">Нова парола (остави празно, за да не се промени)</label>
+			<span class="password-input"><input type="password" class="woocommerce-Input woocommerce-Input--password input-text" name="password_1" id="account-details-password_1" autocomplete="new-password"><button type="button" class="show-password-input" aria-label="Показване на паролата" aria-describedby="account-details-password_1"></button></span>
+		</p>
+		<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+			<label for="account-details-password_2">Потвърждаване на новата парола</label>
+			<span class="password-input"><input type="password" class="woocommerce-Input woocommerce-Input--password input-text" name="password_2" id="account-details-password_2" autocomplete="new-password"><button type="button" class="show-password-input" aria-label="Показване на паролата" aria-describedby="account-details-password_2"></button></span>
+		</p>
+	</fieldset>
+	<div class="clear"></div>
+
+	
+	<p>
+		<input type="hidden" id="account-details-save-account-details-nonce" name="save-account-details-nonce" value="REDACTED"><input type="hidden" name="_wp_http_referer" value="/my-account/edit-account/">		<button type="submit" class="woocommerce-Button button wp-element-button" name="save_account_details" value="Запазване на промените">Запазване на промените</button>
+		<input type="hidden" name="action" value="save_account_details">
+	</p>
+
+	</form>
+
+</div>

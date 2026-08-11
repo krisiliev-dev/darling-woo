@@ -25,6 +25,8 @@ here for free - which is the whole argument for styling the real structure
 rather than inventing our own and bolting theirs on afterwards.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -640,6 +642,7 @@ def main():
     p = os.path.join(SRC, 'patterns', 'field.css')
     assert all(ord(ch) < 128 for ch in FIELD)
     assert FIELD.count('/*') == FIELD.count('*/'), (FIELD.count('/*'), FIELD.count('*/'))
+    guard(p, FIELD)
     io.open(p, 'w', encoding='ascii', newline='\n').write(FIELD)
     print('wrote  patterns/field.css %5d bytes' % len(FIELD))
 
@@ -650,6 +653,7 @@ def main():
                       if 'patterns/rating.css' in l and '@import' in l)
         index = index.replace(anchor,
                               anchor + '\n@import url("patterns/field.css")   layer(patterns);', 1)
+        guard(ip, index)
         io.open(ip, 'w', encoding='utf-8', newline='\n').write(index)
         print('index.css: registered patterns/field.css')
 

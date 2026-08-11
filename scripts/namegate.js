@@ -26,7 +26,18 @@ const ROOT = path.dirname(__dirname);
    gate that cannot fail. */
 const GALLERY = process.env.DARLING_GALLERY ||
   ('file://' + path.join(ROOT, 'theme', 'darling', 'gallery.html'));
-const AXE = fs.readFileSync(path.join(ROOT, 'node_modules', 'axe-core', 'axe.min.js'), 'utf8');
+/* axe-core is a DEPENDENCY of this gate and was missing from package.json, so
+ * `npm i` pruned it and namegate died on ENOENT before it audited a thing. Same
+ * class of failure as the day playwright vanished and took eleven gates with it,
+ * which is why that file carries a paragraph about it. It is listed now. */
+const AXE_PATH = path.join(ROOT, 'node_modules', 'axe-core', 'axe.min.js');
+if (!fs.existsSync(AXE_PATH)) {
+  console.error('namegate: no axe-core at ' + AXE_PATH + '\n' +
+    'It is in package.json; run `npm i`. This is NOT a pass.');
+  process.exit(2);
+}
+const AXE = fs.readFileSync(AXE_PATH, 'utf8');
+const ALLOW_FILE = path.join(__dirname, 'namegate.allow.json');
 const RULES = ['button-name', 'link-name', 'image-alt', 'input-image-alt', 'label',
   'form-field-multiple-labels', 'aria-command-name', 'aria-toggle-field-name',
   'select-name', 'empty-heading', 'aria-input-field-name', 'aria-required-attr',
@@ -37,10 +48,62 @@ const RULES = ['button-name', 'link-name', 'image-alt', 'input-image-alt', 'labe
   await p.goto(GALLERY, { waitUntil: 'load' });
   await p.waitForTimeout(1500);
   await p.addScriptTag({ content: AXE });
-  const r = await p.evaluate((rules) => window.axe.run(document, { runOnly: { type: 'rule', values: rules } })
-    .then((res) => res.violations.map((v) => ({ id: v.id, impact: v.impact, n: v.nodes.length,
-      eg: v.nodes.slice(0, 3).map((n) => n.html.slice(0, 100)),
-      sec: [...new Set(v.nodes.map((n) => { try { return (document.querySelector(n.target[0]).closest('section') || {}).id || '?'; } catch (e) { return '?'; } }))].slice(0, 5) }))), RULES);
+  const raw = await p.evaluate((rules) => window.axe.run(document, { runOnly: { type: 'rule', values: rules } })
+    .then((res) => res.violations.map((v) => ({ id: v.id, impact: v.impact,
+      nodes: v.nodes.map((n) => ({ html: n.html.slice(0, 160),
+        sec: (() => { try { return (document.querySelector(n.target[0]).closest('section') || {}).id || '?'; } catch (e) { return '?'; } })() })) }))), RULES);
+
+  /* *** THE ALLOWLIST, AND THE ONLY ARGUMENT IT ACCEPTS. ***
+   * The gallery carries CAPTURED third-party markup now - WooCommerce's checkout
+   * and cart blocks, the six account pages - because a specimen of my guess about
+   * their DOM is worth nothing. Some of that markup has real accessibility bugs
+   * in it that no stylesheet can reach: select2 draws a role="textbox" with no
+   * name inside its own combobox, on the live address form.
+   *
+   * A permanently red gate is worse than no gate - it teaches you to skip it, and
+   * this repo has already learned that lesson from a non-deterministic one. So
+   * those are allowed BY NAME, with a written reason, and printed on every run so
+   * they cannot quietly become furniture.
+   *
+   * *** AN ENTRY THAT MATCHES NOTHING IS A FAILURE. *** A stale allowlist that
+   * silently covers nothing is exactly how srgate passed on nothing for three
+   * commits. If the bug is fixed, the entry goes; the gate says so rather than
+   * letting the file rot. */
+  const ALLOW = fs.existsSync(ALLOW_FILE) ? (JSON.parse(fs.readFileSync(ALLOW_FILE, 'utf8')).allow || {}) : {};
+  const used = new Set();
+  const excused = [];
+  const r = [];
+  for (const v of raw) {
+    const keep = [];
+    for (const n of v.nodes) {
+      const key = Object.keys(ALLOW).find((k) => {
+        const [rule, frag] = k.split('::');
+        return rule === v.id && (!frag || n.html.includes(frag));
+      });
+      if (key) { used.add(key); excused.push({ key, id: v.id, sec: n.sec }); } else keep.push(n);
+    }
+    if (keep.length) r.push({ id: v.id, impact: v.impact, n: keep.length,
+      eg: keep.slice(0, 3).map((n) => n.html.slice(0, 100)),
+      sec: [...new Set(keep.map((n) => n.sec))].slice(0, 5) });
+  }
+  if (excused.length) {
+    console.log('  allowed, and still real:');
+    for (const k of new Set(excused.map((e) => e.key))) {
+      const hits = excused.filter((e) => e.key === k);
+      console.log('    ' + String(hits.length).padStart(3) + '  ' + k +
+        '   sections: ' + [...new Set(hits.map((h) => h.sec))].join(', '));
+      console.log('         ' + ALLOW[k].split('. ')[0] + '.');
+    }
+  }
+  const stale = Object.keys(ALLOW).filter((k) => !used.has(k));
+  if (stale.length) {
+    await b.close();
+    console.log('\nname gate FAILED: ' + stale.length + ' allowlist entr(ies) matched NOTHING:');
+    stale.forEach((k) => console.log('    ' + k));
+    console.log('Either the violation is fixed - delete the entry - or the key no longer\n' +
+      'matches the markup and the gate has been excusing nothing. Both need a hand.');
+    process.exit(1);
+  }
   /* *** A NAME CAN EXIST AND STILL BE BROKEN, AND axe CANNOT SEE IT. ***
    * Nextend Social Login ships aria-label="Продължи с <b>Facebook</b>" - the
    * markup is inside the attribute, so a screen reader announces the tags. axe

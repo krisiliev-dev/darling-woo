@@ -307,8 +307,53 @@ def _spec(name):
 		raise SystemExit(1)
 	return open(f, encoding='utf-8').read()
 
+# *** THE CHECKOUT HEADER IS READ FROM page-checkout.html, NOT FROM A PART. ***
+# Same rule as the site header - the gallery must not be able to disagree with
+# what ships - but a different file, and the difference is the whole story.
+#
+# This read `parts/checkout-header.html` until now, and that part DOES NOT EXIST.
+# It was the first attempt at the checkout header, it blanked the live checkout
+# for about twenty minutes, and it was reverted. The generator kept reading it
+# because a stale working copy still had the file on disk; on any checkout of
+# the repo, gen-gallery.py died on a FileNotFoundError. A gallery that only
+# builds on one machine is a gallery nobody else can check.
+#
+# The header now lives inline in a wp:html block in the checkout template,
+# precisely so there is no slug to resolve and no second file to find. So that
+# is where this reads it from - the same one file that ships.
+_ctpl = os.path.join(THEME, 'templates', 'page-checkout.html')
+_cm = re.search(r'<header\b.*?</header>', open(_ctpl, encoding='utf-8').read(), re.S)
+if not _cm:
+	sys.stderr.write('gen-gallery: no <header> in templates/page-checkout.html\n')
+	raise SystemExit(1)
+CHECKOUT_HEADER = _cm.group(0).replace('<header class="d-header',
+                                       '<header style="position:relative" class="d-header', 1)
+
 WC_CHECKOUT = _spec('checkout')
 WC_CART = _spec('cart')
+
+# *** THE PROFILE SPECIMENS ARE CAPTURED THE SAME WAY, FOR THE SAME REASON. ***
+# The owner: "One page that we have never gotten to is the Profile page... Right
+# now there is just a bullet list with different URLs for the different pages,
+# which should be styled. There is also a notice there which appears at the wrong
+# place. Plus the actual pages where the bullet list items lead to need to also
+# be looked at."
+#
+# So all six sub-pages are here, not just the dashboard, and they are the live
+# DOM rather than my reading of WooCommerce's templates. scripts/acctpages.js
+# logs in and saves them; scripts/_extract.js --account cuts them up.
+#
+# The nav is lifted ONCE. All six pages carry the identical six-item list, and
+# six copies of it would mean six chances to review the same thing and none to
+# see the content columns next to each other.
+MY_PAGE = _spec('account-page')
+MY_NAV = _spec('account-nav')
+MY_DASH = _spec('account-dashboard')
+MY_ORDERS = _spec('account-orders')
+MY_ADDRESSES = _spec('account-addresses')
+MY_ADDRESS_FORM = _spec('account-address-form')
+MY_PAYMENT = _spec('account-payment')
+MY_DETAILS = _spec('account-details')
 
 PRODUCTS = [
     ('Керамична купа', '26,40', None, None),
@@ -892,6 +937,50 @@ A('<p class="note"><b>One correction to what the commit message said.</b> '
   'why this is a paragraph and not a specimen.</p>')
 A('</section>')
 
+A('<section class="sec" id="wcheader"><h2>The cutover</h2>'
+  '<h3>The checkout header</h3>')
+A('<p class="note"><b>The one regression the two sections above could not show.</b> '
+  '<code>page-checkout.html</code> pulled '
+  '<code>template-part slug="checkout-header" theme="woocommerce/woocommerce"</code> '
+  '&mdash; the plugin&rsquo;s header, built from CORE blocks. '
+  '<code>patterns/header.css</code> keys everything off <code>.d-header</code>, so '
+  'it never reached a single node of it, and core&rsquo;s own flex layout was the '
+  'only thing putting the wordmark and the cart on one line. Both stacked at the '
+  'left edge the moment that sheet went.</p>')
+A('<p class="note"><b>Correction, and it is the expensive one on this page.</b> '
+  'This section used to say &ldquo;a theme part beats a plugin part of the same '
+  'slug, so the whole fix is a file.&rdquo; That fix <b>blanked the checkout on '
+  'the live shop for about twenty minutes</b> &mdash; the template rendered its '
+  'header and its footer and no checkout block at all &mdash; and it was reverted. '
+  'Two candidates were never separated: the <code>{"theme":"darling"}</code> '
+  'reference failing to resolve, or the part file opening with a long HTML comment '
+  'before any block markup. I also misdiagnosed the outage as the dequeue and '
+  'reverted that first, which cost most of the twenty minutes.</p>')
+A('<p class="note"><b>So the question was removed rather than answered.</b> The '
+  'header below is inline markup in a <code>wp:html</code> block in '
+  '<code>templates/page-checkout.html</code>: no slug to resolve, no second file '
+  'to find, no theme attribute to be wrong about &mdash; and it is used on exactly '
+  'one template, which is the case where a part buys nothing. If it is ever needed '
+  'on a second one, that is the moment to make it a part, with a rendered check on '
+  'the page it is added to. It stays minimal because that was WooCommerce&rsquo;s '
+  'decision and a good one: no nav, no search, no mega menu, nothing that leads out '
+  'of the funnel. The wordmark is the way back if somebody changes their mind; the '
+  'cart is what they came to pay for.</p>')
+A(CHECKOUT_HEADER)
+A('<p class="note"><b>Two details that are not decoration.</b> The cart sits in '
+  '<code>.d-header__actions</code> rather than a class of its own &mdash; that '
+  'component already carries the flex, the gap and the '
+  '<code>margin-inline-start:auto</code> that pushes it to the end, and my first '
+  'draft invented <code>.d-header__basket</code> and would have restated all three. '
+  'And it carries <code>data-cart-button</code>, because <code>header.css</code> '
+  'hides every icon button in that row on a narrow screen except the burger, the '
+  'small search and anything with that attribute &mdash; without it the only way '
+  'back to the cart vanishes on a phone, on the page where somebody most wants it. '
+  'The rail is <code>.d-shell--bar</code>, the same one the site header uses, so '
+  'the wordmark lands on the same vertical line here as everywhere else and '
+  '<code>aligngate</code> covers it for free.</p>')
+A('</section>')
+
 # ------------------------------------------------------------- wc-checkout ---
 A('<section class="sec" id="wcheckout" style="max-width:none;padding-inline:0">'
   '<div class="wrap"><h2>The cutover</h2>'
@@ -941,6 +1030,117 @@ A('<p class="note"><b>Two claims here, and both are small.</b> The <b>items '
   '<code>.wc-block-cart__submit-button</code> is a real button element that '
   '<code>patterns/button.css</code> does not name yet.</p>')
 A('<div class="wcspec">' + WC_CART + '</div>')
+A('</div></section>')
+
+# --------------------------------------------------------------- my-account ---
+# *** THE PROFILE, AND IT IS SIX PAGES RATHER THAN ONE. *** Everything below is
+# captured markup with only our stylesheet behind it, exactly like the two
+# sections above. What it shows is a hole: `.woocommerce-MyAccount-navigation`
+# and `.woocommerce-MyAccount-content` appear NOWHERE in src/, so the whole
+# profile is running on fallback.css and browser defaults.
+A('<section class="sec" id="profile" style="max-width:none;padding-inline:0">'
+  '<div class="wrap"><h2>The cutover</h2>'
+  '<h3>The profile &mdash; six pages, none of them ported</h3>')
+A('<p class="note"><b>Measured, not guessed.</b> <code>scripts/acctpages.js</code> '
+  'logs in as the parity customer and saves all six account pages; '
+  '<code>scripts/_extract.js --account</code> cuts them up. Everything below is '
+  'that DOM with our stylesheet and nothing of WooCommerce&rsquo;s &mdash; which '
+  'is what the live site is serving right now.</p>')
+A('<p class="note"><b>And one Woo stylesheet is still shipping.</b> Every one of '
+  'the six captures has <code>select2-css</code> in its head: '
+  '<code>plugins/woocommerce/assets/css/select2.css</code>, on the dashboard too, '
+  'where there is no select at all. The dequeue sweeps by prefix &mdash; '
+  '<code>wc-blocks-</code>, <code>woocommerce-</code>, <code>wc-stripe-blocks</code>, '
+  '<code>wp-block-</code> &mdash; and this handle is called plain '
+  '<code>select2</code>, so it matches none of them. It is the answer to '
+  '&ldquo;are all of Woo&rsquo;s styles dequeued&rdquo;: all but this one. '
+  '<b>It must not be dropped before <code>.select2-*</code> is ported</b>, '
+  'because the country and area pickers on this form and on checkout are select2 '
+  'widgets and dropping the sheet first ships a broken country picker.</p>')
+
+A('<h3>The layout, which is the actual complaint</h3>')
+A('<p class="note"><b>&ldquo;Right now there is just a bullet list with different '
+  'URLs.&rdquo;</b> Below is a whole profile page as it renders. The nav is a '
+  'plain <code>&lt;ul&gt;</code> with browser bullets and browser indentation, and '
+  'because nothing makes the two into columns, the content follows the list in '
+  'normal flow instead of sitting beside it. That is also why <b>the notice is in '
+  'the wrong place</b> &mdash; it is the first child of the content column and the '
+  'content column starts below the nav, so a message about the thing you just did '
+  'appears halfway down the page under a list of links.</p>')
+A('<div class="wcspec">' + MY_PAGE + '</div>')
+
+A('<h3>The navigation on its own</h3>')
+A('<p class="note"><b>Six items, one of them destructive.</b> '
+  '<code>--dashboard</code>, <code>--orders</code>, <code>--edit-address</code>, '
+  '<code>--payment-methods</code>, <code>--edit-account</code> and '
+  '<code>--customer-logout</code>, and the current page carries '
+  '<code>.is-active</code> plus <code>aria-current="page"</code> &mdash; so the '
+  'active state can be styled off the markup that is already there rather than a '
+  'class we add. Logout is a link with a nonce in it, which is worth knowing '
+  'before anything here is turned into a tab strip: whatever this becomes, that '
+  'item should not read as the same kind of thing as the other five.</p>')
+A('<div class="wcspec">' + MY_NAV + '</div>')
+
+A('<h3>Табло</h3>')
+A('<p class="note">Two paragraphs of prose and the notice slot. Nothing to port, '
+  'but it is the page the notice lands on and the reason the misplacement is '
+  'visible at all.</p>')
+A('<div class="wcspec">' + MY_DASH + '</div>')
+
+A('<h3>Поръчки, and Методи за разплащане</h3>')
+A('<p class="note"><b>The two empty states, and they are the same shape.</b> A '
+  '<code>.wc-block-components-notice-banner.is-info</code> &mdash; the block '
+  'notice, which we already style &mdash; and then a bare '
+  '<code>&lt;a class="button"&gt;</code>. That class is WooCommerce&rsquo;s, not '
+  'ours: <code>patterns/button.css</code> does not name it, so both call-to-action '
+  'links here are running on the fallback net. Same defect as '
+  '&ldquo;Продължи към поръчката&rdquo; in the cart section above, which is the '
+  'argument for fixing it in <code>button.css</code> once rather than three '
+  'times.</p>')
+A('<div class="wcspec">' + MY_ORDERS + '</div>')
+A('<div class="wcspec">' + MY_PAYMENT + '</div>')
+
+A('<h3>Адреси</h3>')
+A('<p class="note"><b>This one has a real two-column layout already.</b> '
+  '<code>.u-columns.col2-set</code> with <code>.col-1</code> and '
+  '<code>.col-2</code> is ported in <code>adopted/account.css</code> &mdash; '
+  '<code>wooinv.js</code> found those names. What is NOT ported is the pair '
+  'inside: <code>.woocommerce-Address-title</code> holds an '
+  '<code>&lt;h2&gt;</code> and an edit link that should sit on one line with the '
+  'link at the end, and <code>&lt;address&gt;</code> is a raw element with the '
+  'browser&rsquo;s italic on it.</p>')
+A('<div class="wcspec">' + MY_ADDRESSES + '</div>')
+
+A('<h3>Адрес за фактуриране</h3>')
+A('<p class="note"><b>The classic form-row grid, not the block one.</b> '
+  '<code>form-row-first</code> / <code>form-row-last</code> / '
+  '<code>form-row-wide</code>, with each field wrapped in '
+  '<code>&lt;span class="woocommerce-input-wrapper"&gt;</code> &mdash; a different '
+  'DOM from the checkout block, and the same visual job. And '
+  '<b>two select2 widgets</b>: the real <code>&lt;select&gt;</code> is hidden with '
+  '<code>.select2-hidden-accessible</code> and a stack of spans is drawn beside '
+  'it. Those spans are why <code>select2.css</code> cannot simply be dequeued.</p>')
+A('<p class="note"><b>Read the two country pickers below as a preview, not a '
+  'bug.</b> They render TWICE here &mdash; the real <code>&lt;select&gt;</code> and '
+  'the span stack side by side &mdash; because the gallery loads no WooCommerce '
+  'CSS, and the only thing hiding the real select is '
+  '<code>.select2-hidden-accessible</code> in <code>select2.css</code>. '
+  'That is precisely what the live form would look like the moment that handle is '
+  'added to the sweep with nothing written to replace it, which is the argument '
+  'for porting first and dropping second, in that order.</p>')
+A('<div class="wcspec">' + MY_ADDRESS_FORM + '</div>')
+
+A('<h3>Детайли на профила</h3>')
+A('<p class="note"><b>And the password eye, which is a known open bug and lives '
+  'here.</b> <code>.password-input</code> is defined twice &mdash; in '
+  '<code>adopted/account.css</code> and again in <code>patterns/forms.css</code> '
+  '&mdash; and the <code>padding-inline-end:2.6em</code> that keeps the text clear '
+  'of the eye loses. One component, two definitions, and the visible cost is the '
+  'reveal button sitting on top of the characters. Also here: '
+  '<code>&lt;div class="clear"&gt;</code>, a float clearer from before this form '
+  'was a grid, which in a grid is a phantom row; and a real '
+  '<code>&lt;fieldset&gt;&lt;legend&gt;</code>, which we have no rule for.</p>')
+A('<div class="wcspec">' + MY_DETAILS + '</div>')
 A('</div></section>')
 
 # --------------------------------------------------------------------- card ---
@@ -3302,7 +3502,7 @@ its own token.</p>
 <i class="gl gl--low" style="left:calc((100% - var(--w-body)) / 2)"><b>page rail &mdash; --w-body, 80%</b></i>
 <i class="gl" style="left:auto;right:calc((100% - var(--w-body)) / 2)"></i>
 <i class="gl gl--bar" style="left:calc((100% - var(--w-wide)) / 2)"><b>bar rail &mdash; --w-wide, 95%</b></i>
-<i class="gl gl--was" style="left:calc((100%% - var(--w-wide)) / 2 + var(--gutter))"><b>where content started while --page-max was a max-width AND --gutter a padding</b></i>
+<i class="gl gl--was" style="left:calc((100% - var(--w-wide)) / 2 + var(--gutter))"><b>where content started while --page-max was a max-width AND --gutter a padding</b></i>
 <header class="d-header" style="position:relative;border-radius:var(--radius-m) var(--radius-m) 0 0">
   <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">&#x414;&#x430;&#x440;&#x43B;&#x438;&#x43D;&#x433;</a>
@@ -3809,6 +4009,8 @@ NAV_LABEL = {
 	'tail':      u'The tail',
 	'wcheckout': u'Checkout, dequeued',
 	'wcart':     u'Cart, dequeued',
+	'wcheader':  u'Checkout header',
+	'profile':   u'Profile, dequeued',
 	'season':    u'Season',
 	'upsell':    u'Upsell grid',
 	'addcart':   u'Add to cart',

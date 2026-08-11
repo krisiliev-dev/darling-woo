@@ -14,6 +14,8 @@ This also removes the LAST white surface in the system, which is the real point.
 cream came back three times.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -65,6 +67,7 @@ def main():
         m = re.search(r'^\s*--surface-raised\s*:.*$', c, re.M)
         print('colour.css: CHECK --surface-raised by hand: ' + (m.group(0).strip() if m else 'not found'))
 
+    guard(cp, c)
     io.open(cp, 'w', encoding='utf-8', newline='\n').write(c)
 
     # card.css: use the shadow tokens
@@ -80,6 +83,7 @@ def main():
     k = k.replace('box-shadow:inset 0 0 0 1px var(--hairline), 0 10px 24px rgb(0 0 0 / .10)',
                   'box-shadow:inset 0 0 0 1px var(--hairline), var(--shadow-card)')
     if k != before:
+        guard(kp, k)
         io.open(kp, 'w', encoding='ascii', newline='\n').write(k)
         print('card.css: now uses --shadow-card / --shadow-card-hover')
     else:

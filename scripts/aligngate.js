@@ -12,7 +12,25 @@ const ROOT = path.dirname(__dirname);
 const T = 1;   // px. Sub-pixel layout rounds; a real drift is tens of px.
 
 const fails = [];
+/* *** THIS GATE PASSED ON NOTHING, AND HERE IS THE ARITHMETIC THAT LET IT. ***
+ * q() returns null when the element is not in the gallery, and guides[i] is
+ * undefined when the guide is not drawn. Math.abs(null - undefined) is NaN, and
+ * `NaN > 1` is FALSE - so the old comparison fell into the else and printed
+ * `ok`. Measured, not reasoned: with all ten .gl guides renamed out of the
+ * gallery, this gate still printed all thirteen assertions as ok and exited 0
+ * with the sentence "every component in #align is on its own token."
+ *
+ * It is one of the five gates scripts/deploy.js runs. Second time on this
+ * project a gate has been green because it was looking at nothing - srgate was
+ * the first, for three commits - so the rule is now written down where it can be
+ * read: A COMPARISON WITH A MISSING OPERAND IS A FAILURE, NOT A PASS. Never let
+ * a NaN reach a `>`; test for the absence first and say which side was missing,
+ * because "the guide is not drawn" and "the component is not there" are two
+ * different repairs. */
 const eq = (what, a, b) => {
+  const bad = [a === null || a === undefined || Number.isNaN(a) ? 'the component' : null,
+    b === null || b === undefined || Number.isNaN(b) ? 'the guide' : null].filter(Boolean);
+  if (bad.length) { fails.push(what + ': MEASURED NOTHING - ' + bad.join(' and ') + ' missing (a=' + a + ', b=' + b + ')'); return; }
   if (Math.abs(a - b) > T) fails.push(what + ': ' + a + ' vs ' + b + ' (' + Math.abs(a - b) + 'px apart)');
   else console.log('  ok  ' + what + '  x=' + a);
 };
@@ -46,6 +64,27 @@ const eq = (what, a, b) => {
   });
   if (!m) { console.log('FAIL: no #align section in the gallery'); process.exit(1); }
   if (m.length !== 4) fails.push('expected 4 alignment demos, found ' + m.length);
+
+  /* *** SAY OUT LOUD WHAT WAS FOUND, BEFORE ASSERTING ANYTHING ABOUT IT. ***
+   * The per-assertion guard above catches a missing operand one at a time. This
+   * catches the whole instrument being pointed at an empty page, which is the
+   * shape the failure actually took: thirteen ok lines and nothing measured.
+   * The counts are the ones the four demos are BUILT with, so a demo that loses
+   * a guide is a red gate rather than a quieter green one. */
+  /* What each demo is BUILT with, counting only .gl:not(.gl--was) - demo 1 draws
+   * a fourth, .gl--was, marking where content sat while --page-max was a
+   * max-width and --gutter a padding, and that one is history rather than a
+   * rail. Demo 4 makes one assertion and needs one guide; it is not an
+   * oversight. */
+  const WANT_GUIDES = [3, 2, 3, 1];
+  m.forEach((pg, i) => {
+    if (!pg.guides || pg.guides.length !== WANT_GUIDES[i]) {
+      fails.push('demo ' + (i + 1) + ' draws ' + ((pg.guides || []).length) +
+        ' guides, not ' + WANT_GUIDES[i] + ' - the gate has nothing to measure against');
+    }
+  });
+  console.log('guides found per demo: ' + m.map((pg) => (pg.guides || []).length).join(', ') +
+    '   (want ' + WANT_GUIDES.join(', ') + ')');
 
   console.log('1 the page rail');
   // The logo is deliberately NOT on the page rail: the owner asked for the bar

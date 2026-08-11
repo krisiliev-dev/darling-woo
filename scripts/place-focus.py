@@ -20,6 +20,8 @@ TWO THINGS FOR THE OWNER, NOT FIXED HERE BECAUSE THEY ARE PALETTE DECISIONS:
                 every filled control in the system.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -43,6 +45,7 @@ def main():
     if '--focus-ring' not in c:
         i = c.rindex('}')
         c = c[:i] + TOKEN + c[i:]
+        guard(cp, c)
         io.open(cp, 'w', encoding='utf-8', newline='\n').write(c)
         print('colour.css: added --focus-ring, --focus-halo')
 
@@ -62,6 +65,7 @@ def main():
                           'box-shadow:0 0 0 3px var(--focus-halo)')
             t = t.replace('border-color:var(--c-cocoa);', 'border-color:var(--focus-ring);')
             if t != before:
+                guard(p, t)
                 io.open(p, 'w', encoding='ascii', newline='\n').write(t)
                 changed += 1
                 print('  focus ring -> token in %s' % os.path.join(os.path.basename(dp), n))
@@ -84,6 +88,7 @@ def main():
 .wc-block-components-quantity-selector__input:focus-visible{ outline:none }
 
 .d-qty__input::-webkit-outer-spin-button,""")
+        guard(qp, q)
         io.open(qp, 'w', encoding='ascii', newline='\n').write(q)
         print('quantity.css: input no longer draws its own ring')
 

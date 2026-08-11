@@ -15,6 +15,8 @@ pattern would be the rule this system exists to enforce being broken in the
 first component that wanted a second accent.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -326,6 +328,7 @@ def main():
         i = colour.rindex('}')
         # put it back inside the last block that still has semantics in it
         colour = colour[:i] + COLOUR_TOKENS + colour[i:]
+        guard(cp, colour)
         io.open(cp, 'w', encoding='utf-8', newline='\n').write(colour)
         print('colour.css: added --action-cart, --action-cart-ink')
     else:
@@ -333,6 +336,7 @@ def main():
 
     path = os.path.join(SRC, 'patterns', 'card.css')
     assert all(ord(c) < 128 for c in CARD)
+    guard(path, CARD)
     io.open(path, 'w', encoding='ascii', newline='\n').write(CARD)
     print('wrote  patterns/card.css %5d bytes' % len(CARD))
 

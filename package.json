@@ -3,6 +3,7 @@
   "private": true,
   "description": "Not a package - just the dependency list for scripts/. Every gate in scripts/ drives a real browser, so playwright is not optional; pixelmatch and pngjs are the pixel layer of scripts/dtest. This file exists because `npm i <something>` in a directory with no package.json creates one containing ONLY that something, and prunes everything else out of node_modules. That is how playwright vanished on 2026-08-10 and took eleven gates with it.",
   "dependencies": {
+    "axe-core": "^4.10.2",
     "playwright": "^1.56.0",
     "pixelmatch": "^7.2.0",
     "pngjs": "^7.0.0"

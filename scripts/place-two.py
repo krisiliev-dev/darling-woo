@@ -14,6 +14,8 @@ that is only a moving highlight over the page colour is invisible on the one
 page it exists for.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 SRC = os.path.join(ROOT, 'theme', 'darling', 'src')
@@ -242,6 +244,7 @@ def main():
         p = os.path.join(SRC, 'patterns', name + '.css')
         assert all(ord(c) < 128 for c in css), name
         assert css.count('/*') == css.count('*/'), (name, css.count('/*'), css.count('*/'))
+        guard(p, css)
         io.open(p, 'w', encoding='ascii', newline='\n').write(css)
         print('wrote  patterns/%-14s %5d bytes' % (name + '.css', len(css)))
         if ('patterns/%s.css' % name) not in index:
@@ -250,6 +253,7 @@ def main():
             index = index.replace(
                 anchor, anchor + '\n@import url("patterns/%s.css") layer(patterns);' % name, 1)
             print('index.css: + patterns/%s.css' % name)
+    guard(ip, index)
     io.open(ip, 'w', encoding='utf-8', newline='\n').write(index)
 
     declared = set()

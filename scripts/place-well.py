@@ -24,6 +24,8 @@ backdrop with it. That is intended - it is also a thing to remember before
 touching --gh/--gs/--gl.
 """
 import io, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _place import guard   # refuses to clobber a component that has moved on
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\lora_\darling\darling-woo'
 CP = os.path.join(ROOT, 'theme', 'darling', 'src', 'tokens', 'colour.css')
@@ -43,5 +45,6 @@ if 'radial-gradient' in old:
     print('colour.css: --placeholder-product already the sweep')
 else:
     c = c[:m.start()] + '\n\t' + D2 + c[m.end():]
+    guard(CP, c)
     io.open(CP, 'w', encoding='utf-8', newline='\n').write(c)
     print('colour.css: --placeholder-product\n  was  ' + old + '\n  now  the D2 sweep')
