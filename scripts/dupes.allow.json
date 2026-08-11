@@ -1,22 +1,12 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 203,
+ "seeded": 180,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
    "shared": 16,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened to carry Woo markup; same debt"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before  ==  patterns/product.css|.d-gallery__zoom::before",
-   "shared": 16,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger  ==  patterns/product.css|.d-gallery__zoom",
-   "shared": 15,
-   "why": "CROSS-ORIGIN"
   },
   {
    "pair": "patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after  ==  patterns/header.css|.d-mega__link::before,\n.d-mega__link::after",
@@ -49,11 +39,6 @@
    "shared": 11,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened to carry Woo markup; same debt"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li img.avatar  ==  patterns/product.css|.d-review__avatar",
-   "shared": 11,
-   "why": "CROSS-ORIGIN"
   },
   {
    "pair": "adopted/vh.css|.wc-block-components-address-form__darling-office-id,\n.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input  ==  patterns/a11y.css|.d-vh,\n.screen-reader-text,\n\n.darling-contact-form__row > label,\n.darling-contact-form > p > label,\n\n.d-choice input",
@@ -147,22 +132,13 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before  ==  patterns/icon.css|.d-icon--cart::before",
+   "pair": "patterns/icon.css|.d-icon--cart::before  ==  patterns/product.css|.d-gallery__zoom::before,\n.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before",
    "shared": 9,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a  ==  patterns/product.css|.d-tabs__tab",
-   "shared": 9,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after  ==  patterns/hero.css|.d-hero__visual .d-hero__star",
-   "shared": 9,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/icon.css|.d-icon--cart::before  ==  patterns/product.css|.d-gallery__zoom::before",
    "shared": 9,
    "why": "SAME ORIGIN"
   },
@@ -193,14 +169,10 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before  ==  patterns/icon.css|.d-heart::before",
+   "pair": "patterns/icon.css|.d-heart::before  ==  patterns/product.css|.d-gallery__zoom::before,\n.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before",
    "shared": 8,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs  ==  patterns/product.css|.d-tabs__list",
-   "shared": 8,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "patterns/a11y.css|html.d-a11y .d-notice__title::before  ==  patterns/icon.css|.d-icon--cart::before",
@@ -253,11 +225,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/icon.css|.d-heart::before  ==  patterns/product.css|.d-gallery__zoom::before",
-   "shared": 8,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/slider.css|.d-slider__wake  ==  patterns/wipe.css|.d-wipe::after",
    "shared": 8,
    "why": "SAME ORIGIN"
@@ -306,17 +273,13 @@
    "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before  ==  patterns/mappick.css|.d-mappick__pin::before",
+   "pair": "patterns/mappick.css|.d-mappick__pin::before  ==  patterns/product.css|.d-gallery__zoom::before,\n.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before",
    "shared": 7,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs::before,\n.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs::after  ==  patterns/product.css|.d-tabs__list::after,\n.d-tabs__list::before",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .comment_container  ==  patterns/product.css|.d-review",
    "shared": 7,
    "why": "CROSS-ORIGIN"
   },
@@ -379,11 +342,6 @@
    "pair": "patterns/mappick.css|.d-mappick__office::before  ==  patterns/mappick.css|.d-mappick__pin::before",
    "shared": 7,
    "why": "SAME FILE"
-  },
-  {
-   "pair": "patterns/mappick.css|.d-mappick__pin::before  ==  patterns/product.css|.d-gallery__zoom::before",
-   "shared": 7,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "patterns/pagination.css|.d-pagination__item  ==  patterns/pagination.css|.d-pagination__step",
@@ -469,21 +427,6 @@
    "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .flex-control-thumbs  ==  patterns/product.css|.d-gallery__thumbs",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce .woocommerce-noreviews  ==  patterns/product.css|.d-reviews__empty",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta  ==  patterns/product.css|.d-review__meta",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/slider.css|.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,\n.wc-block-price-filter .ui-slider .ui-slider-handle  ==  patterns/slider.css|.d-slider__input::-webkit-slider-thumb",
    "shared": 6,
    "why": "CROSS-ORIGIN"
@@ -549,27 +492,19 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-checkout__guest-checkout-notice  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta",
+   "pair": "adopted/checkout.css|.wc-block-checkout__guest-checkout-notice  ==  patterns/product.css|.d-review__meta,\n.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta",
    "shared": 5,
-   "why": "SAME ORIGIN"
+   "why": "SAME ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-checkout__guest-checkout-notice  ==  patterns/product.css|.d-review__meta",
+   "pair": "adopted/checkout.css|.wc-block-components-totals-discount__coupon-list  ==  patterns/product.css|.d-tabs__list,\n.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs",
    "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-totals-discount__coupon-list  ==  adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs",
-   "shared": 5,
-   "why": "SAME ORIGIN"
+   "why": "SAME ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-totals-discount__coupon-list  ==  patterns/header.css|.d-nav > ul",
-   "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-totals-discount__coupon-list  ==  patterns/product.css|.d-tabs__list",
    "shared": 5,
    "why": "CROSS-ORIGIN"
   },
@@ -580,11 +515,6 @@
   },
   {
    "pair": "adopted/notice.css|.wc-block-components-notice-banner::before,\n.woocommerce-message::before,\n.woocommerce-error::before,\n.woocommerce-info::before  ==  patterns/notice.css|.d-notice::before,\n.d-notice::after,\n.d-notice__stars,\n.d-notice__stars::before,\n.d-notice__stars::after",
-   "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist  ==  patterns/product.css|.d-reviews__list",
    "shared": 5,
    "why": "CROSS-ORIGIN"
   },
@@ -756,57 +686,55 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .flex-control-thumbs  ==  patterns/drawer.css|.d-drawer__list",
+   "pair": "patterns/drawer.css|.d-drawer__list  ==  patterns/product.css|.d-gallery__thumbs,\n.woocommerce div.product div.images .flex-control-thumbs",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product div.images .flex-control-thumbs  ==  patterns/footer.css|.d-footflair__social",
+   "pair": "patterns/footer.css|.d-footflair__social  ==  patterns/product.css|.d-gallery__thumbs,\n.woocommerce div.product div.images .flex-control-thumbs",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs  ==  patterns/header.css|.d-nav > ul",
+   "pair": "patterns/header.css|.d-nav > ul  ==  patterns/product.css|.d-tabs__list,\n.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children",
+   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children  ==  patterns/product.css|.d-reviews__list,\n.woocommerce #reviews #comments ol.commentlist",
    "shared": 4,
-   "why": "SAME FILE"
+   "why": "SAME FILE",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist  ==  patterns/page.css|.d-postlist",
+   "pair": "patterns/page.css|.d-postlist  ==  patterns/product.css|.d-reviews__list,\n.woocommerce #reviews #comments ol.commentlist",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist  ==  patterns/product.css|.d-reviews__list ul.children",
+   "pair": "patterns/product.css|.d-reviews__list ul.children  ==  patterns/product.css|.d-reviews__list,\n.woocommerce #reviews #comments ol.commentlist",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li  ==  adopted/product.css|.woocommerce #reviews #comments ol.commentlist li img.avatar",
+   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li  ==  patterns/product.css|.d-review__avatar,\n.woocommerce #reviews #comments ol.commentlist li img.avatar",
    "shared": 4,
-   "why": "SAME FILE"
+   "why": "SAME FILE",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li  ==  patterns/product.css|.d-review__avatar",
+   "pair": "patterns/page.css|.d-post  ==  patterns/product.css|.d-review,\n.woocommerce #reviews #comments ol.commentlist li .comment_container",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .comment_container  ==  patterns/page.css|.d-post",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children  ==  patterns/page.css|.d-postlist",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children  ==  patterns/product.css|.d-reviews__list",
    "shared": 4,
    "why": "CROSS-ORIGIN"
   },
@@ -886,11 +814,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/drawer.css|.d-drawer__list  ==  patterns/product.css|.d-gallery__thumbs",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/field.css|.d-choice  ==  patterns/hero.css|.d-hero__visual",
    "shared": 4,
    "why": "SAME ORIGIN"
@@ -916,11 +839,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/footer.css|.d-footflair__social  ==  patterns/product.css|.d-gallery__thumbs",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/footer.css|.d-news__form  ==  patterns/hero.css|.d-empty__actions",
    "shared": 4,
    "why": "SAME ORIGIN"
@@ -942,11 +860,6 @@
   },
   {
    "pair": "patterns/header.css|.d-nav > ul  ==  patterns/pagination.css|.d-pagination__strip",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/header.css|.d-nav > ul  ==  patterns/product.css|.d-tabs__list",
    "shared": 4,
    "why": "SAME ORIGIN"
   },
@@ -996,11 +909,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/page.css|.d-postlist  ==  patterns/product.css|.d-reviews__list",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/page.css|.d-postlist  ==  patterns/product.css|.d-reviews__list ul.children",
    "shared": 4,
    "why": "SAME ORIGIN"
@@ -1011,19 +919,9 @@
    "why": "SAME FILE"
   },
   {
-   "pair": "patterns/page.css|.d-post  ==  patterns/product.css|.d-review",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/pagination.css|.d-pagination__radio  ==  patterns/rating.css|.d-rating-input input",
    "shared": 4,
    "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/product.css|.d-reviews__list  ==  patterns/product.css|.d-reviews__list ul.children",
-   "shared": 4,
-   "why": "SAME FILE"
   },
   {
    "pair": "patterns/progress.css|.d-progress__native  ==  patterns/progress.css|.d-progress__track",

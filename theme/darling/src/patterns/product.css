@@ -133,7 +133,10 @@
    absolutely centred in it, so nothing a third party puts inside the anchor can
    move it. Same geometry and same hover as .d-icon-btn - which is the component
    this WOULD be, if we could put a class on markup WooCommerce emits. */
-.d-gallery__zoom{
+.d-gallery__zoom,
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger{
+	text-indent:0;
+
 	position:absolute;
 	z-index:3;
 	top:var(--space-2xs);
@@ -152,7 +155,11 @@
 	transition:background var(--dur-ui) var(--ease-float),
 	           color var(--dur-ui) var(--ease-float);
 }
-.d-gallery__zoom::before{
+.d-gallery__zoom::before,
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before{
+	border:0;
+	border-radius:0;
+
 	content:"";
 	position:absolute;
 	top:50%;
@@ -170,10 +177,15 @@
 	-webkit-mask-repeat:no-repeat;
 	-webkit-mask-position:center;
 }
-.d-gallery__zoom:hover{ background:var(--tint-gold); color:var(--c-cherry-deep) }
-.d-gallery__zoom:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+.d-gallery__zoom:hover,
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger:hover{ background:var(--tint-gold); color:var(--c-cherry-deep) }
+.d-gallery__zoom:focus-visible,
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
 
-.d-gallery__thumbs{
+.d-gallery__thumbs,
+.woocommerce div.product div.images .flex-control-thumbs{
+	overflow:visible;
+
 	display:grid;
 	grid-template-columns:repeat(4, 1fr);
 	gap:var(--space-2xs);
@@ -429,7 +441,8 @@
 	clear:both;
 	margin-block:var(--space-l) var(--space-m);
 }
-.d-tabs__list{
+.d-tabs__list,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs{
 	position:relative;
 	display:flex;
 	flex-wrap:wrap;
@@ -438,10 +451,13 @@
 	padding:0;
 	list-style:none;
 	border-bottom:1px solid var(--hairline);
+
+	overflow:visible;
 }
 .d-tabs__list > li{ margin:0; padding:0; list-style:none }
 
-.d-tabs__tab{
+.d-tabs__tab,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a{
 	display:flex;
 	align-items:center;
 	min-height:44px;
@@ -453,9 +469,15 @@
 	white-space:nowrap;
 	transition:color var(--dur-ui) var(--ease-float),
 	           background var(--dur-ui) var(--ease-float);
+
+	padding:0 var(--space-s);
 }
-.d-tabs__tab:hover{ color:var(--ink); background:var(--tint-gold) }
-.d-tabs__tab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-3px }
+.d-tabs__tab:hover,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a:hover{ color:var(--ink); background:var(--tint-gold) 
+	text-decoration:none;
+}
+.d-tabs__tab:focus-visible,
+.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-3px }
 .d-tabs__tab[aria-selected="true"],
 .d-tabs li.active > .d-tabs__tab{ color:var(--c-cherry-deep) }
 
@@ -532,17 +554,22 @@
 	color:var(--ink-quiet);
 	font-variant-numeric:tabular-nums;
 }
-.d-reviews__list{
+.d-reviews__list,
+.woocommerce #reviews #comments ol.commentlist{
 	margin:0 0 var(--space-m);
 	padding:0;
 	list-style:none;
 	display:grid;
 	gap:var(--space-s);
+
+	width:100%;
+	background:none;
 }
 .d-reviews__list li{ margin:0; padding:0; list-style:none }
 .d-reviews__list li::before{ content:none }
 
-.d-review{
+.d-review,
+.woocommerce #reviews #comments ol.commentlist li .comment_container{
 	display:grid;
 	grid-template-columns:2.5rem 1fr;
 	gap:var(--space-2xs) var(--space-xs);
@@ -550,8 +577,11 @@
 	border:1px solid var(--hairline);
 	border-radius:var(--radius-l);
 	background:var(--surface-raised);
+
+	align-items:start;
 }
-.d-review__avatar{
+.d-review__avatar,
+.woocommerce #reviews #comments ol.commentlist li img.avatar{
 	grid-row:span 2;
 	width:2.5rem;
 	height:2.5rem;
@@ -565,7 +595,16 @@
 	float:none;
 	position:static;
 }
-.d-review__meta{
+/* *** MERGING THESE TWO DROPPED A MARGIN, AND cascadediff CAUGHT IT. ***
+   Woo's copy carried `margin:0 0 var(--space-2xs)` where ours carries `margin:0`,
+   so folding them changed three elements - the only three the whole product
+   merge moved. Not a regression: .d-review above is a grid with
+   `gap:var(--space-2xs)`, so the adopted margin was being ADDED to a gap the
+   parent already provides. Sixth time in this codebase that a child's margin has
+   doubled its parent's gap, and the first time a tool found it rather than an
+   eye. THE PARENT OWNS THE GAP. */
+.d-review__meta,
+.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta{
 	display:flex;
 	flex-wrap:wrap;
 	align-items:center;
@@ -605,7 +644,8 @@
 .d-reviews__list ul.children .d-rating,
 .d-reviews__list ul.children .star-rating{ display:none }
 
-.d-reviews__empty{
+.d-reviews__empty,
+.woocommerce .woocommerce-noreviews{
 	margin:0 0 var(--space-m);
 	padding:var(--space-s);
 	border:1px dashed var(--hairline);

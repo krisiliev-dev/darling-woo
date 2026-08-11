@@ -19,15 +19,22 @@
  * changes for every refactor and is useless - worse than useless, because the
  * real change hides in the noise.
  *
- * So --against takes a CONTROL first: it snapshots the current page twice, in
- * the same run, and treats every element that differs between those two as
- * noise. Only differences outside that set are reported. When this was used on
- * the adopted/ layering - 504 rules changing origin - it reported 90 raw
- * differences and ONE outside the control, which was itself a sparkle the
- * control had happened to catch mid-cycle.
+ * *** SAMPLING THE NOISE DOES NOT WORK, AND THAT WAS THE FIRST ATTEMPT. ***
+ * Version one took a control - two snapshots of the unchanged page - and
+ * subtracted everything that differed between them. It looked right on the
+ * layering change: 90 raw differences, one survivor. Then the same command run
+ * four times in a row on the SAME code reported 1, 6, 0 and 13 survivors, a
+ * different sparkle each time. Of course it did: a control pair only catches
+ * the elements that happened to be mid-cycle during those two frames, and every
+ * run rolls the dice again. A non-deterministic test that mostly passes is
+ * worse than no test - it teaches you to ignore it.
  *
- * A tool that cannot tell a real change from a running animation would have
- * called that refactor "90 regressions" and nobody would have shipped it.
+ * So the animation is STOPPED rather than measured. reducedMotion:'reduce' for
+ * anything keyed off the media query, plus a stylesheet that forces every
+ * animation and transition to a halt and pins them to their final frame. The
+ * control is still taken and still printed, because it should now be ZERO and a
+ * non-zero control means something is animating in a way the freeze missed -
+ * which is a finding about the page, not a reason to subtract.
  */
 const http = require('http');
 const fs = require('fs');
@@ -83,7 +90,21 @@ const shoot = (page, port) => page.goto('http://127.0.0.1:' + port + '/gallery.h
   fs.mkdirSync(DIR, { recursive: true });
   const { srv, port } = await serve();
   const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: 1240, height: 1200 } });
+  const p = await b.newPage({ viewport: { width: 1240, height: 1200 }, reducedMotion: 'reduce' });
+  /* *** FREEZE, DO NOT SAMPLE. *** -0.001s rather than 0s: a paused animation
+   * sits on its FINAL frame, which is a defined state, where `none` would leave
+   * elements at their unanimated start and hide any rule that only applies
+   * mid-way. Injected before every navigation so it survives them. */
+  await p.addInitScript(() => {
+    const css = '*,*::before,*::after{animation-play-state:paused !important;' +
+      'animation-delay:-0.001s !important;animation-duration:0.001s !important;' +
+      'transition-duration:0s !important;transition-delay:0s !important;' +
+      'scroll-behavior:auto !important}';
+    document.addEventListener('DOMContentLoaded', () => {
+      const s = document.createElement('style'); s.textContent = css;
+      document.head.appendChild(s);
+    });
+  });
 
   if (SAVE) {
     const rows = await shoot(p, port);
@@ -98,7 +119,8 @@ const shoot = (page, port) => page.goto('http://127.0.0.1:' + port + '/gallery.h
   const c2 = await shoot(p, port);
   const noise = new Set();
   for (let i = 0; i < Math.min(c1.length, c2.length); i++) if (c1[i] !== c2[i]) noise.add(i);
-  console.log('control: ' + noise.size + ' of ' + c1.length + ' elements differ between two runs of the SAME page (animation)');
+  console.log('control: ' + noise.size + ' of ' + c1.length + ' elements differ between two runs of the SAME page' +
+    (noise.size ? '  <- NOT ZERO: something is still moving that the freeze missed' : '  (frozen, as it should be)'));
 
   const before = fs.readFileSync(path.join(DIR, AGAINST + '.txt'), 'utf8').split('\n');
   await b.close(); srv.close();

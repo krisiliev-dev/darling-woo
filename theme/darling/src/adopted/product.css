@@ -106,61 +106,10 @@
    font-size:0 rather than Woo's text-indent:-9999px. The indent moves the glyph
    off-screen but leaves it in the line box, which is why the disc has to be
    36px of content-box with no padding to stay round. */
-.woocommerce div.product div.images .woocommerce-product-gallery__trigger{
-	position:absolute;
-	z-index:3;
-	top:var(--space-2xs);
-	right:var(--space-2xs);
-	/* *** NOT A GRID. MEASURED: THREE ROWS, 25.59px / 7.20px / 7.20px. ***
-	   Woo's trigger is an <a> holding a text node AND a span. In a grid
-	   container each of those is its own item in its own row, so place-items
-	   centred the mark inside the first row rather than inside the disc - about
-	   7px high in a 40px button, which is exactly what the owner saw. The mark
-	   is absolutely positioned now, so nothing inside the anchor can move it and
-	   a WooCommerce update that adds another child cannot break it either. */
-	display:block;
-	width:2.5rem;
-	height:2.5rem;
-	padding:0;
-	border:0;
-	border-radius:var(--radius-circle);
-	background:color-mix(in oklab, var(--surface-raised) 88%, transparent);
-	color:var(--ink);
-	font-size:0;
-	text-indent:0;
-	cursor:pointer;
-	box-shadow:var(--shadow-card);
-	transition:background var(--dur-ui) var(--ease-float),
-	           color var(--dur-ui) var(--ease-float);
-}
-.woocommerce div.product div.images .woocommerce-product-gallery__trigger:hover{
-	background:var(--tint-gold);
-	color:var(--c-cherry-deep);
-}
-.woocommerce div.product div.images .woocommerce-product-gallery__trigger:focus-visible{
-	outline:2px solid var(--focus-ring);
-	outline-offset:2px;
-}
-.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before{
-	content:"";
-	position:absolute;
-	top:50%;
-	left:50%;
-	translate:-50% -50%;
-	width:1.15rem;
-	height:1.15rem;
-	border:0;
-	border-radius:0;
-	background:currentColor;
-	-webkit-mask-image:var(--icon-search);
-	        mask-image:var(--icon-search);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
-	-webkit-mask-position:center;
-	        mask-position:center;
-}
+
+
+
+
 .woocommerce div.product div.images .woocommerce-product-gallery__trigger::after{
 	content:none;
 }
@@ -173,15 +122,7 @@
    The column count still comes from Woo's --columns-N class so the shop setting
    is respected, and the clear rules are switched off because a grid item that
    clears is a grid item with a stray blank cell after it. */
-.woocommerce div.product div.images .flex-control-thumbs{
-	display:grid;
-	grid-template-columns:repeat(4, 1fr);
-	gap:var(--space-2xs);
-	margin:0;
-	padding:0;
-	overflow:visible;
-	list-style:none;
-}
+
 .woocommerce div.product .woocommerce-product-gallery--columns-3 .flex-control-thumbs{
 	grid-template-columns:repeat(3, 1fr);
 }
@@ -254,20 +195,7 @@
 	clear:both;
 	margin-block:var(--space-l) var(--space-m);
 }
-.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs{
-	position:relative;
-	display:flex;
-	flex-wrap:wrap;
-	gap:var(--space-3xs);
-	/* 0, and it matters: Woo's `padding:0 0 0 1em` is (0,3,2) and computed to
-	   17px on the live page against our (0,3,1) zero. The strip was indented by
-	   a value nobody in this codebase had chosen. */
-	padding:0;
-	margin:0 0 var(--space-m);
-	overflow:visible;
-	list-style:none;
-	border-bottom:1px solid var(--hairline);
-}
+
 .woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li{
 	position:relative;
 	z-index:auto;
@@ -280,28 +208,9 @@
 	background-color:transparent;
 	color:inherit;
 }
-.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a{
-	display:flex;
-	align-items:center;
-	min-height:44px;
-	padding:0 var(--space-s);
-	border-radius:var(--radius-s) var(--radius-s) 0 0;
-	color:var(--ink-quiet);
-	text-decoration:none;
-	font:var(--fw-medium) var(--fs-ui)/1 var(--font-ui);
-	white-space:nowrap;
-	transition:color var(--dur-ui) var(--ease-float),
-	           background var(--dur-ui) var(--ease-float);
-}
-.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a:hover{
-	color:var(--ink);
-	background:var(--tint-gold);
-	text-decoration:none;
-}
-.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li > a:focus-visible{
-	outline:2px solid var(--focus-ring);
-	outline-offset:-3px;
-}
+
+
+
 .woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs > li.active{
 	background:none;
 	background-color:transparent;
@@ -409,24 +318,9 @@
 	color:var(--ink-quiet);
 }
 .woocommerce #reviews h2 small a{ color:var(--ink-quiet); text-decoration:underline }
-.woocommerce .woocommerce-noreviews{
-	margin:0 0 var(--space-m);
-	padding:var(--space-s);
-	border:1px dashed var(--hairline);
-	border-radius:var(--radius-l);
-	color:var(--ink-quiet);
-	text-align:center;
-}
 
-.woocommerce #reviews #comments ol.commentlist{
-	display:grid;
-	gap:var(--space-s);
-	width:100%;
-	margin:0 0 var(--space-m);
-	padding:0;
-	background:none;
-	list-style:none;
-}
+
+
 .woocommerce #reviews #comments ol.commentlist::before,
 .woocommerce #reviews #comments ol.commentlist::after{ content:none }
 .woocommerce #reviews #comments ol.commentlist li{
@@ -440,29 +334,8 @@
 
 /* The card. .comment_container is Woo's own wrapper, so the grid can go on it
    and the avatar and the body become its two children with no extra markup. */
-.woocommerce #reviews #comments ol.commentlist li .comment_container{
-	display:grid;
-	grid-template-columns:2.5rem 1fr;
-	gap:var(--space-2xs) var(--space-xs);
-	align-items:start;
-	padding:var(--space-s);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
-}
-.woocommerce #reviews #comments ol.commentlist li img.avatar{
-	position:static;
-	float:none;
-	width:2.5rem;
-	height:2.5rem;
-	padding:0;
-	margin:0;
-	border:0;
-	border-radius:var(--radius-circle);
-	object-fit:cover;
-	background:var(--tint-grey-quiet);
-	box-shadow:none;
-}
+
+
 .woocommerce #reviews #comments ol.commentlist li .comment-text.comment-text{
 	margin:0;
 	padding:0;
@@ -479,15 +352,7 @@
 	display:block;
 	margin:0 0 var(--space-3xs);
 }
-.woocommerce #reviews #comments ol.commentlist li .comment-text p.meta{
-	display:flex;
-	flex-wrap:wrap;
-	align-items:center;
-	gap:var(--space-3xs) var(--space-2xs);
-	margin:0 0 var(--space-2xs);
-	font-size:var(--fs-fine);
-	color:var(--ink-quiet);
-}
+
 .woocommerce:where(body:not(.woocommerce-uses-block-theme)) #reviews #comments ol.commentlist li .meta{
 	color:var(--ink-quiet);
 	font-size:var(--fs-fine);
