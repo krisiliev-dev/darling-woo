@@ -564,6 +564,45 @@ for name, price, was, badge in PRODUCTS:
 A('</ul>')
 A('</section>')
 
+# ------------------------------------------------------------------ addcart ---
+# TRANCHE 5. WooCommerce's add-to-cart form and the review form's star picker,
+# both copied from the live product page. Neither was in the gallery, which is
+# why neither had ever been reviewed.
+A('<section class="sec" id="addcart"><h2>Dequeue tranche 5</h2>'
+  '<h3>Add to cart, and the star picker</h3>')
+A('<p class="note"><b>Woo lays this form out two ways at once and we had claimed '
+  'neither.</b> The block editor&rsquo;s sheet makes <code>form.cart</code> a grid; '
+  '<code>woocommerce.css</code>, written years earlier, floats the quantity beside '
+  'the button. With both sheets off the quantity stacked above a shrink-wrapped '
+  'button. One rule replaces both idioms &mdash; <code>auto 1fr</code>, quantity '
+  'then button, with the float explicitly cleared so nothing of the old one is '
+  'left to leak.</p>')
+A('<div class="nsldemo" style="max-width:26rem">'
+  '<div class="wp-block-woocommerce-add-to-cart-form">'
+  '<form class="cart" action="#" method="post">'
+  '<div class="quantity">'
+  '<label class="screen-reader-text" for="gq">количество за Керамична купа</label>'
+  '<input type="number" id="gq" class="input-text qty text" name="quantity" '
+  'value="1" min="1" max="3" step="1" inputmode="numeric" autocomplete="off">'
+  '</div>'
+  '<button type="submit" name="add-to-cart" class="single_add_to_cart_button button alt wp-element-button">'
+  'Добавяне в количката</button>'
+  '</form></div></div>')
+A('<p class="note"><b>The star picker is ours already, and its SIZE was Woo&rsquo;s.</b> '
+  'The shape is a mask we draw, so the WooCommerce icon font going with the '
+  'dequeue costs nothing &mdash; but the box is <code>1.3em</code>, and the only '
+  'thing setting that em was <code>.woocommerce p.stars a{font-size:24px}</code>. '
+  'Measured with the sheet off: 31px stars became 21px and the links picked up an '
+  'underline they never had. Now <code>1.5rem</code>, which is the same 24px, in '
+  'rem because a star is a control and should not resize with whatever paragraph '
+  'it lands in.</p>')
+A('<div class="nsldemo woocommerce" style="max-width:26rem">'
+  '<p class="stars"><span>'
+  '<a class="star-1" href="#">1</a><a class="star-2" href="#">2</a>'
+  '<a class="star-3" href="#">3</a><a class="star-4" href="#">4</a>'
+  '<a class="star-5" href="#">5</a></span></p></div>')
+A('</section>')
+
 # --------------------------------------------------------------------- card ---
 
 
@@ -3422,6 +3461,7 @@ NAV_LABEL = {
 	'social':    u'Social login',
 	'season':    u'Season',
 	'upsell':    u'Upsell grid',
+	'addcart':   u'Add to cart',
 	'footer':    u'Footer',
 	'hero':      u'Hero',
 	'catalogue': u'Catalogue',

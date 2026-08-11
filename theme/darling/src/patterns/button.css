@@ -20,7 +20,16 @@
    in that block, and anything added to it without a collide.js run is a guess.
    ========================================================================== */
 
-.d-btn{
+/* *** THE PRODUCT PAGE'S ADD-TO-CART IS THIS BUTTON, NOT A COPY OF IT. ***
+   Tranche 5's specimen showed `.single_add_to_cart_button` falling through to the
+   fallback layer once WooCommerce's sheets are off - an outlined browser control
+   where the page's primary action should be. It is the same object as .d-btn, so
+   it joins the selector rather than getting a fourth set of declarations that
+   say amber, pill, medium. (adopted/checkout.css still carries its own copy for
+   the place-order button, because that one has to win TODAY; it folds in here
+   the day the checkout sheets are dequeued.) */
+.d-btn,
+.single_add_to_cart_button{
 	display:inline-flex;
 	align-items:center;
 	justify-content:center;

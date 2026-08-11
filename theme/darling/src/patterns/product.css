@@ -613,3 +613,58 @@
 @supports selector(:has(*)){
 	.d-related:not(:has(li, .d-card)){ display:none }
 }
+
+
+/* =============================================================================
+   TRANCHE 5 / THE ADD-TO-CART FORM
+
+   Woo lays this out three different ways at once and we had never claimed any of
+   them. Measured on the product page with the four owning sheets off:
+
+     form.cart          display grid -> block, and its columns go with it
+     form.cart .quantity  display flex -> block, FLOAT:LEFT, margin-right 4px
+     form.cart .qty       display block -> inline-block, padding 0 5px -> 8px
+     the submit button  display block -> inline-block
+
+   Two idioms stacked: the block editor's sheet makes the form a grid, and
+   woocommerce.css - written years earlier - floats the quantity beside the
+   button. Remove both and the quantity stacks above a shrink-wrapped button.
+
+   One rule replaces both: a two-column grid, quantity then button, and the float
+   explicitly cleared so nothing is left of the old idiom to leak. `auto 1fr`
+   rather than Woo's measured `94px 227px 0px` - the quantity is as wide as it
+   needs to be and the button takes the rest, which is the same arrangement
+   without three numbers nobody chose.
+
+   LAYERED: nothing here is broken today, and the sheets are on the dequeue list.
+   See patterns/grid.css for what writing this in adopted/ cost last time. */
+.wp-block-woocommerce-add-to-cart-form form.cart{
+	display:grid;
+	grid-template-columns:auto 1fr;
+	align-items:stretch;
+	gap:var(--space-2xs);
+	margin-block:var(--space-2xs) var(--space-l);
+	padding:0;
+}
+.wp-block-woocommerce-add-to-cart-form form.cart .quantity{
+	display:flex;
+	align-items:stretch;
+	float:none;          /* woocommerce.css floats it; the grid places it */
+	margin:0;
+	vertical-align:baseline;
+}
+.wp-block-woocommerce-add-to-cart-form form.cart .qty{
+	margin:0;
+	padding-block:0;
+}
+.wp-block-woocommerce-add-to-cart-form form.cart > .single_add_to_cart_button{
+	grid-column:auto;
+	justify-self:stretch;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+}
+/* the block's own vertical rhythm between the form and whatever follows it */
+.wp-block-woocommerce-add-to-cart-form > * + *{
+	margin-block-start:var(--space-2xs);
+}

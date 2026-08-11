@@ -65,8 +65,21 @@
 /* The review form's star picker. Woo emits five nested <a> elements; they get
    the shape, and the fill follows hover left to right. */
 .woocommerce p.stars{ display:inline-flex; gap:.1em; margin:0 }
+/* *** THE STAR IS OURS AND ITS SIZE WAS WOO'S. *** The shape is a mask we draw,
+   so the WooCommerce icon font going with the dequeue costs nothing - but the box
+   is 1.3em, and the only thing setting that em was `.woocommerce p.stars a
+   {font-size:24px}` in woocommerce.css. Measured with the sheet off: 31px stars
+   become 21px, and the <a> picks up an underline it never had.
+   1.5rem is the 24px Woo was setting, so this changes nothing today and keeps
+   the picker its own size afterwards. In rem rather than em: a star is a control,
+   not running text, and it should not resize with whatever paragraph it lands in.
+   Kept here rather than in a layer because this is the same component as the
+   rules around it, and splitting one component across two origins to save a
+   declaration that changes nothing is a worse trade. */
 .woocommerce p.stars a{
 	display:block;
+	font-size:1.5rem;
+	text-decoration:none;
 	width:1.3em;
 	height:1.3em;
 	text-indent:-999em;

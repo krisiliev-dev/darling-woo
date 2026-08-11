@@ -4665,7 +4665,16 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
    in that block, and anything added to it without a collide.js run is a guess.
    ========================================================================== */
 
-.d-btn{
+/* *** THE PRODUCT PAGE'S ADD-TO-CART IS THIS BUTTON, NOT A COPY OF IT. ***
+   Tranche 5's specimen showed `.single_add_to_cart_button` falling through to the
+   fallback layer once WooCommerce's sheets are off - an outlined browser control
+   where the page's primary action should be. It is the same object as .d-btn, so
+   it joins the selector rather than getting a fourth set of declarations that
+   say amber, pill, medium. (adopted/checkout.css still carries its own copy for
+   the place-order button, because that one has to win TODAY; it folds in here
+   the day the checkout sheets are dequeued.) */
+.d-btn,
+.single_add_to_cart_button{
 	display:inline-flex;
 	align-items:center;
 	justify-content:center;
@@ -7969,6 +7978,61 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 .d-related__title{ margin:0 0 var(--space-s); font:var(--type-section) }
 @supports selector(:has(*)){
 	.d-related:not(:has(li, .d-card)){ display:none }
+}
+
+
+/* =============================================================================
+   TRANCHE 5 / THE ADD-TO-CART FORM
+
+   Woo lays this out three different ways at once and we had never claimed any of
+   them. Measured on the product page with the four owning sheets off:
+
+     form.cart          display grid -> block, and its columns go with it
+     form.cart .quantity  display flex -> block, FLOAT:LEFT, margin-right 4px
+     form.cart .qty       display block -> inline-block, padding 0 5px -> 8px
+     the submit button  display block -> inline-block
+
+   Two idioms stacked: the block editor's sheet makes the form a grid, and
+   woocommerce.css - written years earlier - floats the quantity beside the
+   button. Remove both and the quantity stacks above a shrink-wrapped button.
+
+   One rule replaces both: a two-column grid, quantity then button, and the float
+   explicitly cleared so nothing is left of the old idiom to leak. `auto 1fr`
+   rather than Woo's measured `94px 227px 0px` - the quantity is as wide as it
+   needs to be and the button takes the rest, which is the same arrangement
+   without three numbers nobody chose.
+
+   LAYERED: nothing here is broken today, and the sheets are on the dequeue list.
+   See patterns/grid.css for what writing this in adopted/ cost last time. */
+.wp-block-woocommerce-add-to-cart-form form.cart{
+	display:grid;
+	grid-template-columns:auto 1fr;
+	align-items:stretch;
+	gap:var(--space-2xs);
+	margin-block:var(--space-2xs) var(--space-l);
+	padding:0;
+}
+.wp-block-woocommerce-add-to-cart-form form.cart .quantity{
+	display:flex;
+	align-items:stretch;
+	float:none;          /* woocommerce.css floats it; the grid places it */
+	margin:0;
+	vertical-align:baseline;
+}
+.wp-block-woocommerce-add-to-cart-form form.cart .qty{
+	margin:0;
+	padding-block:0;
+}
+.wp-block-woocommerce-add-to-cart-form form.cart > .single_add_to_cart_button{
+	grid-column:auto;
+	justify-self:stretch;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+}
+/* the block's own vertical rhythm between the form and whatever follows it */
+.wp-block-woocommerce-add-to-cart-form > * + *{
+	margin-block-start:var(--space-2xs);
 }
 
 }
@@ -12335,8 +12399,21 @@ main .entry-content > .woocommerce {
 /* The review form's star picker. Woo emits five nested <a> elements; they get
    the shape, and the fill follows hover left to right. */
 .woocommerce p.stars{ display:inline-flex; gap:.1em; margin:0 }
+/* *** THE STAR IS OURS AND ITS SIZE WAS WOO'S. *** The shape is a mask we draw,
+   so the WooCommerce icon font going with the dequeue costs nothing - but the box
+   is 1.3em, and the only thing setting that em was `.woocommerce p.stars a
+   {font-size:24px}` in woocommerce.css. Measured with the sheet off: 31px stars
+   become 21px, and the <a> picks up an underline it never had.
+   1.5rem is the 24px Woo was setting, so this changes nothing today and keeps
+   the picker its own size afterwards. In rem rather than em: a star is a control,
+   not running text, and it should not resize with whatever paragraph it lands in.
+   Kept here rather than in a layer because this is the same component as the
+   rules around it, and splitting one component across two origins to save a
+   declaration that changes nothing is a worse trade. */
 .woocommerce p.stars a{
 	display:block;
+	font-size:1.5rem;
+	text-decoration:none;
 	width:1.3em;
 	height:1.3em;
 	text-indent:-999em;
