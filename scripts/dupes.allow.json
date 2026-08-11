@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 211,
+ "seeded": 204,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details))::before",
@@ -38,9 +38,10 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button",
+   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 11,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::after  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::after",
@@ -58,14 +59,16 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button",
+   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 10,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filters__open-overlay  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button",
+   "pair": "adopted/filters.css|.wc-block-product-filters__open-overlay  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 10,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/icon.css|.woocommerce .woocommerce-customer-details--email::before,\n.woocommerce .woocommerce-customer-details--phone::before,\n.woocommerce-account ul.digital-downloads li::before,\n.woocommerce .widget_layered_nav_filters ul li a::before,\n.woocommerce .widget_rating_filter ul li.chosen a::before,\n.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,\n.woocommerce-message::before,\n.woocommerce-error::before,\n.woocommerce-info::before,\n.woocommerce .cart-collaterals .shipping-calculator-button::after  ==  patterns/a11y.css|html.d-a11y .d-notice__title::before",
@@ -93,9 +96,10 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button",
+   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 9,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  adopted/filters.css|.wc-block-product-filters__open-overlay",
@@ -191,16 +195,6 @@
   },
   {
    "pair": "adopted/product.css|.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs  ==  patterns/product.css|.d-tabs__list",
-   "shared": 8,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/quantity.css|.wc-block-components-quantity-selector__input.wc-block-components-quantity-selector__input  ==  patterns/quantity.css|.d-qty__input",
-   "shared": 8,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/quantity.css|.wc-block-components-quantity-selector__button.wc-block-components-quantity-selector__button  ==  patterns/quantity.css|.d-qty__button",
    "shared": 8,
    "why": "CROSS-ORIGIN"
   },
@@ -328,11 +322,6 @@
   },
   {
    "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .woocommerce-review__verified  ==  patterns/product.css|.d-review__verified",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/quantity.css|.wc-block-components-quantity-selector.wc-block-components-quantity-selector  ==  patterns/quantity.css|.d-qty",
    "shared": 7,
    "why": "CROSS-ORIGIN"
   },
@@ -704,32 +693,13 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button",
+   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 4,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/grid.css|.wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-order-summary-item__image img,\n.wc-block-components-order-summary-item__image .d-media-fail  ==  patterns/hero.css|.d-collection img",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-order-summary-item__image img,\n.wc-block-components-order-summary-item__image .d-media-fail  ==  patterns/layout.css|.d-frame",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-order-summary-item__image img,\n.wc-block-components-order-summary-item__image .d-media-fail  ==  patterns/layout.css|.d-frame > :is(img, video, iframe, svg, picture)",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-order-summary-item__image img,\n.wc-block-components-order-summary-item__image .d-media-fail  ==  patterns/product.css|.d-gallery__main img",
    "shared": 4,
    "why": "CROSS-ORIGIN"
   },

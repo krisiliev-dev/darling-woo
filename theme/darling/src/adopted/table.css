@@ -49,6 +49,18 @@
 .wc-block-cart-items.wc-block-cart-items td + td{ border-left:1px solid var(--hairline) }
 .wc-block-cart-items.wc-block-cart-items tbody tr:nth-of-type(odd){ background:var(--c-grey-050) }
 .wc-block-cart-items.wc-block-cart-items tbody tr:nth-of-type(even){ background:var(--c-grey-200) }
+/* *** THE ITEMS TABLE DID NOT FILL ITS COLUMN. ***
+   The owner, on the dequeued cart: "the items table does not fill its column".
+   Measured on the mirror: 600px of a 724px column, so the row ended in mid-air
+   with the totals card floating clear of it. `width:100%` on the table was
+   WooCommerce's, and the only thing of ours saying it was the fallback net -
+   which is the weakest layer in the system by design and lost the moment
+   anything else had an opinion. A table that holds the cart is not a fallback
+   case; it is the cart. */
+.wc-block-cart-items.wc-block-cart-items{
+	width:100%;
+	table-layout:auto;
+}
 .wc-block-cart-item__image.wc-block-cart-item__image{
 	width:5.5em;
 	padding-left:0;

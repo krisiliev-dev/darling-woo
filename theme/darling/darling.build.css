@@ -2801,7 +2801,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 @layer patterns{
 
 .d-btn,
-.single_add_to_cart_button{
+.single_add_to_cart_button,
+.wc-block-cart__submit-button{
 	display:inline-flex;
 	align-items:center;
 	justify-content:center;
@@ -7835,6 +7836,11 @@ main .entry-content > .woocommerce {
 .wc-block-cart-items.wc-block-cart-items td + td{ border-left:1px solid var(--hairline) }
 .wc-block-cart-items.wc-block-cart-items tbody tr:nth-of-type(odd){ background:var(--c-grey-050) }
 .wc-block-cart-items.wc-block-cart-items tbody tr:nth-of-type(even){ background:var(--c-grey-200) }
+
+.wc-block-cart-items.wc-block-cart-items{
+	width:100%;
+	table-layout:auto;
+}
 .wc-block-cart-item__image.wc-block-cart-item__image{
 	width:5.5em;
 	padding-left:0;
@@ -9428,10 +9434,13 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 .wc-block-components-address-form .wc-block-components-checkbox{
 	margin-block:0;
 }
+
 .wc-block-components-address-form__first_name,
 .wc-block-components-address-form__last_name,
 .wc-block-components-address-form__city,
-.wc-block-components-address-form__postcode{ grid-column:span 1 }
+.wc-block-components-address-form__state,
+.wc-block-components-address-form__postcode,
+.wc-block-components-address-form__phone{ grid-column:span 1 }
 
 @media (max-width: 560px){
 	.wc-block-components-address-form{ grid-template-columns:minmax(0,1fr) }

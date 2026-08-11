@@ -505,10 +505,24 @@
 .wc-block-components-address-form .wc-block-components-checkbox{
 	margin-block:0;
 }
+/* *** FOUR OF THE SIX PAIRS WERE NAMED AND TWO WERE NOT, SO THE ROW BROKE. ***
+   The owner, on the dequeued checkout: "the address grid stacks". Measured
+   against the live page: Woo pairs Град|Област and Пощенски код|Телефон, and
+   this list had city and postcode but not state or phone. A half-named pair does
+   not make half a row - it makes NO row: city takes one column, state takes
+   1 / -1 and starts a new line, so city sits alone with a hole beside it and
+   postcode does the same one row down. Four fields, four rows, and each one
+   looked like a deliberate full-width field.
+
+   The order matters as much as the spans. These are in Woo's source order, so
+   the pairs fall out of normal grid flow with no explicit placement - naming
+   rows would break the moment the plugin adds a field. */
 .wc-block-components-address-form__first_name,
 .wc-block-components-address-form__last_name,
 .wc-block-components-address-form__city,
-.wc-block-components-address-form__postcode{ grid-column:span 1 }
+.wc-block-components-address-form__state,
+.wc-block-components-address-form__postcode,
+.wc-block-components-address-form__phone{ grid-column:span 1 }
 
 @media (max-width: 560px){
 	.wc-block-components-address-form{ grid-template-columns:minmax(0,1fr) }

@@ -28,8 +28,19 @@
    say amber, pill, medium. (adopted/checkout.css still carries its own copy for
    the place-order button, because that one has to win TODAY; it folds in here
    the day the checkout sheets are dequeued.) */
+/* *** THE CART'S CHECKOUT LINK IS A BUTTON AND WAS RENDERING AS TEXT. ***
+   The owner: "Продължи към поръчката renders as a plain link rather than our
+   button." Measured after the cutover: 191x26, transparent, no radius - an <a>
+   with Woo's button classes on it and nothing of ours reaching them. It is the
+   single most important control on the cart page and it looked like a sentence.
+
+   `.wc-block-cart__submit-button` is the class Woo puts on that anchor whether
+   it renders a <button> or an <a>, so naming it here catches both. It joins the
+   list rather than getting its own rule for the same reason the ordering select
+   and the cart's trash button did: one definition. */
 .d-btn,
-.single_add_to_cart_button{
+.single_add_to_cart_button,
+.wc-block-cart__submit-button{
 	display:inline-flex;
 	align-items:center;
 	justify-content:center;
