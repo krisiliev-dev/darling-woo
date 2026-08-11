@@ -520,3 +520,49 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'darling-global-vars' );
 	wp_add_inline_style( 'darling-global-vars', $vars );
 }, 1 );
+
+/* *** THE SWEEP MISSED TWO SHEETS AND THE REASON IS TIMING, NOT NAMES. ***
+   Measured on the live home page after the dequeue shipped:
+
+     wc-blocks-style-css                  78 rules   still on the page
+     wc-stripe-blocks-checkout-style-css  35 rules   still on the page
+
+   Both start with prefixes the sweep above already drops, so it was never a
+   matter of the list being short. WooCommerce Blocks enqueues per-block styles
+   WHEN THE BLOCK RENDERS - inside `render_block`, during template output, long
+   after `wp_enqueue_scripts` has finished. A sweep of `wp_styles()->queue` at
+   priority 100 looks at the queue before those handles are in it.
+
+   `print_styles_array` is the hook that cannot be too early: core passes it the
+   exact list of handles it is about to print, on every print pass, head and
+   footer both. Whatever put a handle there and whenever, it goes through here.
+
+   The sweep above is KEPT rather than replaced. Dequeuing early stops core
+   resolving dependencies and generating inline styles for sheets we are going
+   to drop anyway; this filter is the backstop for what arrives late. Two nets,
+   one list - $darling_drop_style() is the single definition both consult. */
+function darling_drop_style( $handle ) {
+	static $keep = array( 'darling-system', 'darling-global-vars', 'admin-bar', 'wp-block-library-theme' );
+	static $prefixes = array(
+		'wc-blocks-', 'woocommerce-', 'wc-stripe-blocks',
+		'wp-block-library', 'wp-block-', 'core-block-supports',
+	);
+	if ( in_array( $handle, $keep, true ) ) {
+		return false;
+	}
+	foreach ( $prefixes as $prefix ) {
+		if ( 0 === strpos( $handle, $prefix ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+add_filter( 'print_styles_array', function ( $handles ) {
+	if ( isset( $_GET['d_woocss'] ) && '1' === $_GET['d_woocss'] ) {
+		return $handles;
+	}
+	return array_values( array_filter( (array) $handles, function ( $h ) {
+		return ! darling_drop_style( $h );
+	} ) );
+} );

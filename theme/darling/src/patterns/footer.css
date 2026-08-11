@@ -165,6 +165,28 @@
 	.d-footer__policies a,
 	.d-footer__map a,
 	.d-footer__legal a{ min-height:var(--tap-min) }
+
+	/* *** AND THE LIST'S GAP IS ON TOP OF A TARGET THAT IS ALREADY MOSTLY AIR.
+	   *** The owner, a third time: "The footer still looks the same." He was
+	   right again, and the padding I halved last time was worth 20px of 412.
+
+	   Measured where the height actually is: the third column is 343px of a
+	   392px footer, and its link list is 5 links x 28px + 4 gaps x 9.9px = 180.
+	   The TEXT in each of those links is 16.8px, so a 28px target already
+	   carries 11.2px of white - 5.6 above and 5.6 below. The row-gap then adds
+	   another 9.9, making the visual separation 21px between items whose own
+	   boxes were already comfortably apart. The gap is not spacing here; it is
+	   the second helping.
+
+	   Zeroed on a fine pointer only. The targets do not move, so nothing about
+	   2.5.8 changes, and the separation stays at the 11.2px the min-height was
+	   always providing. On touch the gap stays, because there the targets are
+	   44px and the list needs the extra room to read as a list rather than a
+	   slab. Worth 40px per column. */
+	.d-footer__links,
+	.d-footer__policies,
+	.d-footer__map,
+	.d-footer__legal{ gap:0 }
 }
 .d-footer__links a:hover,
 .d-footer__policies a:hover,
