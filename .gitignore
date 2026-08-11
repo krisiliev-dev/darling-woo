@@ -39,3 +39,6 @@ scripts/mirror/
 scripts/triage*.json
 scripts/_cutshot.js`nscripts/_sel.js
 
+
+scripts/.cascade/
+

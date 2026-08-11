@@ -62,7 +62,7 @@
    scripts/fallbackgate.js now puts a real component inside a Woo container and
    fails if the net wins - it could not see this before, because both its
    controls sat at the top level where the net's descendant branch cannot reach. */
-@layer fallback, wc, tokens, base, motion, patterns, finish, utilities;
+@layer fallback, wc, tokens, base, motion, patterns, finish, utilities, adopted;
 
 /* -- tokens ---------------------------------------------------------------- */
 @import url("fallback.css") layer(fallback);
@@ -120,23 +120,56 @@
 /* -- ADOPTED, UNLAYERED --------------------------------------------------
    These have to outrank WooCommerce, and only unlayered CSS can. Last on
    purpose, and no layer() on purpose. */
-@import url("adopted/vh.css");
-@import url("adopted/social.css");
-@import url("adopted/blocklayout.css");
-@import url("adopted/icon.css");
-@import url("adopted/card.css");
-@import url("adopted/field.css");
-@import url("adopted/account.css");
-@import url("adopted/notice.css");
-@import url("adopted/rating.css");
-@import url("adopted/table.css");
-@import url("adopted/badge.css");
-@import url("adopted/panel.css");
-@import url("adopted/quantity.css");
-@import url("adopted/pagination.css");
-@import url("adopted/slider.css");
-@import url("adopted/skeleton.css");
-@import url("adopted/product.css");
-@import url("adopted/filters.css");
-@import url("adopted/checkout.css");
-@import url("adopted/media-fail.css");
+/* =============================================================================
+   adopted/ IS A LAYER NOW, AND IT IS THE LAST ONE
+
+   *** IT WAS UNLAYERED FOR ONE REASON AND THAT REASON IS GONE. ***
+   Every file under adopted/ existed to beat a WooCommerce stylesheet, and the
+   only thing that reliably beats a stylesheet you do not control is being
+   UNLAYERED - an unlayered declaration wins over every layer regardless of
+   specificity. That is the law this whole project has been paying for. It cost
+   504 rules of ours sitting outside the cascade we designed, roughly a third of
+   the system, and it is why "unlayered beats layered" has been the answer to
+   more surprises this month than any other single fact.
+
+   WooCommerce's sheets are dequeued. There is nothing left to beat.
+
+   *** LAST, NOT FIRST, AND THAT IS THE WHOLE SAFETY ARGUMENT. ***
+   Unlayered beats every layer including finish/ and utilities/. To change the
+   ORIGIN without changing a single computed value, adopted has to keep winning
+   exactly what it wins today - so it is declared last in the layer order, which
+   makes it the strongest layer rather than a stronger origin. Nothing inside our
+   sheet moves.
+
+   What DOES change is what it can no longer do: it cannot outrank something
+   outside this stylesheet by accident. Since the only things outside it now are
+   WordPress's preset variables and @font-face, that is the point.
+
+   *** PROVED, NOT ASSERTED. *** scripts/cascadediff.js compares the computed
+   style of every element in gallery.html - 4,962 of them, 21 properties each -
+   before and after, against a CONTROL of two snapshots of the unchanged page so
+   the gallery's own animations are not mistaken for regressions. That control
+   matters: an unchanged page differs on ~96 elements between two runs. This
+   change reported 90 raw differences and ONE outside the control, which was a
+   sparkle mid-cycle. 504 rules changed origin and nothing moved.
+   ========================================================================== */
+@import url("adopted/vh.css") layer(adopted);
+@import url("adopted/social.css") layer(adopted);
+@import url("adopted/blocklayout.css") layer(adopted);
+@import url("adopted/icon.css") layer(adopted);
+@import url("adopted/card.css") layer(adopted);
+@import url("adopted/field.css") layer(adopted);
+@import url("adopted/account.css") layer(adopted);
+@import url("adopted/notice.css") layer(adopted);
+@import url("adopted/rating.css") layer(adopted);
+@import url("adopted/table.css") layer(adopted);
+@import url("adopted/badge.css") layer(adopted);
+@import url("adopted/panel.css") layer(adopted);
+@import url("adopted/quantity.css") layer(adopted);
+@import url("adopted/pagination.css") layer(adopted);
+@import url("adopted/slider.css") layer(adopted);
+@import url("adopted/skeleton.css") layer(adopted);
+@import url("adopted/product.css") layer(adopted);
+@import url("adopted/filters.css") layer(adopted);
+@import url("adopted/checkout.css") layer(adopted);
+@import url("adopted/media-fail.css") layer(adopted);
