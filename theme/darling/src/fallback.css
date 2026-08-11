@@ -101,9 +101,39 @@ table[class*="woocommerce-"] {
    no content in it was never raw in the first place.
    `:empty` is exact here - the wrapper's innerHTML is "" with no whitespace -
    and the name exclusion covers the case where a plugin prints a newline into
-   it, because a thing called *-wrapper is a container by its own admission. */
-[class*="wc-block-"][class*="notice"]:not(:empty):not([class*="wrapper"]),
-[class*="woocommerce-"][class*="notice"]:not(:empty):not([class*="wrapper"]),
+   it, because a thing called *-wrapper is a container by its own admission.
+
+   *** AND THE BLOCK CART PRINTS THE SAME SLOT UNDER A DIFFERENT NAME, WITH A
+   CHILD IN IT, SO BOTH GUARDS MISSED IT. *** Third time an empty pill has been
+   found on this site. `.wc-block-store-notices` is on /cart/ and /checkout/
+   whether or not there is anything to say; it contains "notice", it is not
+   called wrapper, and it is NOT :empty because Woo puts one empty <div> inside
+   it as a mount point. Measured on the mirror: 1120x20, --surface-raised, a 14px
+   radius and an inset hairline, sitting under the header on both pages - on the
+   LIVE site as well, which is where the cutover screenshots first showed it.
+
+   So the guard stops being about emptiness and starts being about CONTENT, and
+   the first attempt at it was still too narrow. `:not(:has(> :only-child:empty))`
+   fixed the empty slot and left the FILLED one double-boxed: a store-notices
+   slot with a real notice-banner in it drew our surface twice, once around the
+   notice and once around the slot holding it. Verified on a four-case harness -
+   empty slot, classic wrapper, bare notice, filled slot - because three of those
+   four look identical in a diff and only the fourth is wrong.
+
+   *** AND IT IS TWO GUARDS, NOT ONE, BECAUSE THE SLOT HAS TWO STATES. ***
+   Swapping :only-child:empty for :has(> [class*=notice]) fixed the filled slot
+   and un-fixed the empty one - the mount point is a bare <div> with no class on
+   it, so a notice-name test cannot see it. The harness caught the swap
+   immediately, which is the entire reason it exists: case (a) went from clean
+   back to painted while cases (b), (c) and (d) never moved, and a diff of the
+   selector would have looked like a strict improvement.
+
+   The rule, said properly: A BOX THAT CONTAINS A NOTICE IS NOT ITSELF THE
+   NOTICE, and neither is a box waiting for one. Empty mount point, or a notice
+   inside - either way it is a slot. The name exclusion stays for the classic
+   wrapper, whose child is a bare text node rather than an element. */
+[class*="wc-block-"][class*="notice"]:not(:empty):not([class*="wrapper"]):not(:has(> :only-child:empty)):not(:has(> [class*="notice"])),
+[class*="woocommerce-"][class*="notice"]:not(:empty):not([class*="wrapper"]):not(:has(> :only-child:empty)):not(:has(> [class*="notice"])),
 [class*="wc-block-"][class*="__panel"]:not(:empty),
 [class*="wc-block-"][class*="__card"]:not(:empty) {
 	padding: var(--space-2xs) var(--space-xs);

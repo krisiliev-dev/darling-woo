@@ -55,8 +55,8 @@ table[class*="woocommerce-"] {
 	text-align: start;
 }
 
-[class*="wc-block-"][class*="notice"]:not(:empty):not([class*="wrapper"]),
-[class*="woocommerce-"][class*="notice"]:not(:empty):not([class*="wrapper"]),
+[class*="wc-block-"][class*="notice"]:not(:empty):not([class*="wrapper"]):not(:has(> :only-child:empty)):not(:has(> [class*="notice"])),
+[class*="woocommerce-"][class*="notice"]:not(:empty):not([class*="wrapper"]):not(:has(> :only-child:empty)):not(:has(> [class*="notice"])),
 [class*="wc-block-"][class*="__panel"]:not(:empty),
 [class*="wc-block-"][class*="__card"]:not(:empty) {
 	padding: var(--space-2xs) var(--space-xs);

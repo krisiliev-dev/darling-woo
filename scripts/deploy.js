@@ -148,6 +148,11 @@ function get(url) {
 			 * "two rails" defect the gate was written to catch. A gate that is not
 			 * in the deploy is a comment. */
 			['aligngate.js', 'every component sits on its own width token', false],
+			/* The fallback net has caught a CONTAINER three times, each fix one
+			 * selector longer than the last, and the third broke the first. Four
+			 * states, rendered together, because the selector diff read as a
+			 * strict improvement every single time. */
+			['slotgate.js', 'an empty slot paints nothing and a full one paints once', false],
 		];
 		for (const [file, what, needsMirror, args] of GATES) {
 			const g = path.join(ROOT, 'scripts', file);
