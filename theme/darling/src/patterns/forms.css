@@ -1,0 +1,72 @@
+/* =============================================================================
+   PATTERN / WOOCOMMERCE'S FORM ROWS — TRANCHE 6 OF THE DEQUEUE
+
+   13 declarations, 6 selectors, all on /my-account/ and the classic checkout.
+   Measured by disabling woocommerce.css and woocommerce-layout.css and reading
+   the account form back.
+
+   *** THE WHOLE TRANCHE IS FLOATS AND A 3px PADDING. *** Woo's classic forms
+   predate flexbox: a row is a block with `padding:3px`, a wide row `clear:both`,
+   the submit button `float:left; margin-right:1em`, and the password reveal is
+   positioned with a `transform` against a column-direction flex parent. Nothing
+   here is a design; it is 2013 layout, and the only reason to write any of it
+   down is that removing it moves things.
+
+   What actually moves, at 1240 with the sheets off:
+
+     .form-row              padding 3px -> 0     (48 instances, every field)
+     .form-row-wide         clear:both -> none
+     .password-input        flex-direction column -> row
+     .show-password-input   right 11.2 -> 8.8, transform -15.2px -> none
+     .form-row .input-text  display block -> inline-block
+     .woocommerce-form-login__submit   float:left, margin-right 16px -> none
+
+   So: the row keeps a real gap instead of 3px of padding, the input stays a
+   block, the reveal button is placed by the row rather than by a transform, and
+   the submit stops floating. adopted/account.css already draws the reveal itself
+   - this is only its POSITION, which was Woo's.
+
+   LAYERED. Nothing is broken today and the sheets are going.
+   ========================================================================== */
+
+/* -- the row -----------------------------------------------------------------
+   3px of padding is not spacing, it is a rounding error somebody typed. The gap
+   between fields belongs to the form, and --space-s is what field.css already
+   uses between a label and its control's neighbours. */
+.woocommerce form .form-row{
+	display:grid;
+	gap:var(--stack-tight);
+	padding:0;
+	margin-block:0 var(--space-s);
+}
+.woocommerce form .form-row:last-child{ margin-block-end:0 }
+.woocommerce form .form-row-wide{ clear:none }
+.woocommerce form .form-row .input-text{
+	display:block;
+	width:100%;
+}
+
+/* -- the password field and its reveal ---------------------------------------
+   adopted/account.css draws the eye out of two pseudo-elements and owns how it
+   LOOKS; this is where it sits. Woo puts the row in a column-direction flex and
+   then hauls the button back up with `transform:translateY(-15.2px)`, which is a
+   position expressed as an apology. A row that places its own end is enough. */
+.woocommerce form .password-input{
+	display:flex;
+	flex-direction:row;
+	align-items:center;
+	justify-content:normal;
+}
+.woocommerce form .show-password-input{
+	inset-inline-end:var(--space-2xs);
+	transform:none;
+}
+
+/* -- the submit --------------------------------------------------------------
+   It floated, so the "Remember me" checkbox sat beside it by accident of source
+   order. The form is a grid; the button is a row in it. */
+.woocommerce .woocommerce-form-login .woocommerce-form-login__submit{
+	float:none;
+	margin-inline-end:0;
+	justify-self:start;
+}

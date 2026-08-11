@@ -1615,6 +1615,58 @@ svg{ max-width:100% }
    rather than inherited, because after the dequeue nobody else will say it. */
 .wp-block-group.wp-block-group-is-layout-constrained{ position:relative }
 
+
+/* =============================================================================
+   TRANCHE 8 / CORE'S BLOCK SUPPORTS
+
+   17 declarations, 11 selectors, and every one is a primitive the block editor
+   emits rather than a component anybody designed. They belong here beside the
+   layout supports for the same reason: this file is where WordPress's own
+   structure is claimed.
+
+   Measured with the core inline sheets off:
+
+     .wp-block-column        flex-grow 1 -> 0, min-width 0 -> auto, break-word -> normal
+     .wp-block-post-title    word-break break-word -> normal
+     .wp-block-button__link  align-content center -> normal, height 42.6 -> 33.6
+     .wp-block-post-content  display flow-root -> block
+     .has-text-align-center  text-align center -> start
+     the columns' mobile stack, and three wp-container-* layout hashes
+
+   *** THE THREE `wp-container-*` HASHES ARE DELIBERATELY NOT CLAIMED. ***
+   `.wp-container-core-columns-is-layout-7387b849` is a hash of the block's own
+   layout attributes; it changes whenever somebody edits the block in the site
+   editor, so a rule naming one is a rule that stops matching without warning.
+   What they set - flex-wrap, justify-content, align-items on our own three
+   components - is already claimed above by name. Nothing to do.
+
+   min-width:0 on a column is the one that would bite hardest: without it a long
+   unbroken string in one column widens the whole grid. patterns/layout.css
+   records the same fix for .d-footer's children. */
+.wp-block-column{
+	flex-grow:1;
+	min-width:0;          /* a long URL may not widen the row */
+	overflow-wrap:break-word;
+	word-break:normal;    /* break-word breaks INSIDE words; overflow-wrap is enough */
+}
+/* Core stacks columns below 782px by making each one full width. Kept, because
+   two 50% columns on a phone is two unreadable columns. */
+@media (max-width: 781px){
+	.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column{
+		flex-basis:100%;
+		flex-grow:1;
+	}
+}
+.wp-block-post-title{ word-break:normal; overflow-wrap:break-word }
+.wp-block-post-title :where(a){ display:inline }
+.wp-block-post-content{ display:flow-root }   /* contains its children's margins */
+:root .has-text-align-center{ text-align:center }
+:root .has-text-align-left{ text-align:start }
+:root .has-text-align-right{ text-align:end }
+/* The button block's own box. .d-btn owns how a button LOOKS; this is the height
+   core reserves for it, which is what changes when the sheet goes. */
+.wp-block-button__link{ align-content:center }
+
 }
 
 /* ==== patterns/icon.css ==== */
@@ -9084,6 +9136,141 @@ main .entry-content > .woocommerce{
    one - it would inset twice. */
 .d-archive .d-section-title,
 .d-carousel .d-section-title{ max-width:none; padding-inline:0 }
+
+}
+
+/* ==== patterns/forms.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / WOOCOMMERCE'S FORM ROWS — TRANCHE 6 OF THE DEQUEUE
+
+   13 declarations, 6 selectors, all on /my-account/ and the classic checkout.
+   Measured by disabling woocommerce.css and woocommerce-layout.css and reading
+   the account form back.
+
+   *** THE WHOLE TRANCHE IS FLOATS AND A 3px PADDING. *** Woo's classic forms
+   predate flexbox: a row is a block with `padding:3px`, a wide row `clear:both`,
+   the submit button `float:left; margin-right:1em`, and the password reveal is
+   positioned with a `transform` against a column-direction flex parent. Nothing
+   here is a design; it is 2013 layout, and the only reason to write any of it
+   down is that removing it moves things.
+
+   What actually moves, at 1240 with the sheets off:
+
+     .form-row              padding 3px -> 0     (48 instances, every field)
+     .form-row-wide         clear:both -> none
+     .password-input        flex-direction column -> row
+     .show-password-input   right 11.2 -> 8.8, transform -15.2px -> none
+     .form-row .input-text  display block -> inline-block
+     .woocommerce-form-login__submit   float:left, margin-right 16px -> none
+
+   So: the row keeps a real gap instead of 3px of padding, the input stays a
+   block, the reveal button is placed by the row rather than by a transform, and
+   the submit stops floating. adopted/account.css already draws the reveal itself
+   - this is only its POSITION, which was Woo's.
+
+   LAYERED. Nothing is broken today and the sheets are going.
+   ========================================================================== */
+
+/* -- the row -----------------------------------------------------------------
+   3px of padding is not spacing, it is a rounding error somebody typed. The gap
+   between fields belongs to the form, and --space-s is what field.css already
+   uses between a label and its control's neighbours. */
+.woocommerce form .form-row{
+	display:grid;
+	gap:var(--stack-tight);
+	padding:0;
+	margin-block:0 var(--space-s);
+}
+.woocommerce form .form-row:last-child{ margin-block-end:0 }
+.woocommerce form .form-row-wide{ clear:none }
+.woocommerce form .form-row .input-text{
+	display:block;
+	width:100%;
+}
+
+/* -- the password field and its reveal ---------------------------------------
+   adopted/account.css draws the eye out of two pseudo-elements and owns how it
+   LOOKS; this is where it sits. Woo puts the row in a column-direction flex and
+   then hauls the button back up with `transform:translateY(-15.2px)`, which is a
+   position expressed as an apology. A row that places its own end is enough. */
+.woocommerce form .password-input{
+	display:flex;
+	flex-direction:row;
+	align-items:center;
+	justify-content:normal;
+}
+.woocommerce form .show-password-input{
+	inset-inline-end:var(--space-2xs);
+	transform:none;
+}
+
+/* -- the submit --------------------------------------------------------------
+   It floated, so the "Remember me" checkbox sat beside it by accident of source
+   order. The form is a grid; the button is a row in it. */
+.woocommerce .woocommerce-form-login .woocommerce-form-login__submit{
+	float:none;
+	margin-inline-end:0;
+	justify-self:start;
+}
+
+}
+
+/* ==== patterns/woo-tail.css ==== */
+@layer patterns{
+/* =============================================================================
+   PATTERN / THE TAIL — TRANCHES 7 AND 9
+
+   What is left once the six named tranches are done: twenty small things that
+   belong to no component, on six different pages. Measured, not guessed, and
+   each one is here because removing its sheet moves something.
+
+   TRANCHE 7, cart and checkout, is three declarations:
+     .wp-block-woocommerce-cart      container-type inline-size -> normal
+     div.product form.cart           margin-bottom 32px -> 0
+     form.cart .single_add_to_cart   display block -> inline-block
+
+   *** container-type IS NOT DECORATION AND IT IS THE ONE THAT MATTERS. ***
+   The block cart declares itself a container so its own children can ask about
+   its width with container queries. Drop it and every @container rule inside the
+   cart silently stops matching - no error, no visual clue until a narrow cart
+   lays out as though it were wide. It is claimed here verbatim.
+
+   The rest is the tail of tranche 9: the ordering dropdown that floats, the
+   stock line's size, a label's margin, the reviews block's margin, the account
+   title's cap, and the filters overlay's position. Small, unglamorous, and each
+   one visible on a page a customer can reach.
+   ========================================================================== */
+
+/* -- the block cart's container context -------------------------------------- */
+.wp-block-woocommerce-cart{ container-type:inline-size }
+
+/* -- the classic product form ------------------------------------------------ */
+.woocommerce div.product form.cart{ margin-block-end:var(--space-l) }
+.woocommerce div.product form.cart button.single_add_to_cart_button{
+	display:inline-flex;
+	vertical-align:middle;
+}
+.woocommerce div.product{ position:relative }   /* the gallery's zoom is absolute */
+.woocommerce div.product p.stock{ font-size:var(--fs-meta) }
+
+/* -- the catalogue ordering dropdown -----------------------------------------
+   It floated right, which is how it ended up beside the results count by
+   accident. .d-toolbar places it now; the float only had to stop. */
+.woocommerce .woocommerce-ordering{
+	float:none;
+	margin-block-end:0;
+}
+.woocommerce .woocommerce-ordering select{ vertical-align:baseline }
+
+/* -- odds ---------------------------------------------------------------------
+   A label's bottom margin, the reviews list's, and the cap Woo puts on the
+   account page's title. The cap goes: patterns/flow.css decides how wide a page
+   column is, and a second opinion from a plugin is how we got two rails in the
+   first place. */
+.woocommerce-page label{ margin-block-end:var(--stack-tight) }
+.woocommerce .woocommerce-Reviews #comments{ margin-block-end:var(--space-m) }
+.woocommerce-account .wp-block-post-title{ max-width:none }
 
 }
 

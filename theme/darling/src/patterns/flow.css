@@ -223,3 +223,55 @@
    inside it - core sets this and things inside groups depend on it. Claimed
    rather than inherited, because after the dequeue nobody else will say it. */
 .wp-block-group.wp-block-group-is-layout-constrained{ position:relative }
+
+
+/* =============================================================================
+   TRANCHE 8 / CORE'S BLOCK SUPPORTS
+
+   17 declarations, 11 selectors, and every one is a primitive the block editor
+   emits rather than a component anybody designed. They belong here beside the
+   layout supports for the same reason: this file is where WordPress's own
+   structure is claimed.
+
+   Measured with the core inline sheets off:
+
+     .wp-block-column        flex-grow 1 -> 0, min-width 0 -> auto, break-word -> normal
+     .wp-block-post-title    word-break break-word -> normal
+     .wp-block-button__link  align-content center -> normal, height 42.6 -> 33.6
+     .wp-block-post-content  display flow-root -> block
+     .has-text-align-center  text-align center -> start
+     the columns' mobile stack, and three wp-container-* layout hashes
+
+   *** THE THREE `wp-container-*` HASHES ARE DELIBERATELY NOT CLAIMED. ***
+   `.wp-container-core-columns-is-layout-7387b849` is a hash of the block's own
+   layout attributes; it changes whenever somebody edits the block in the site
+   editor, so a rule naming one is a rule that stops matching without warning.
+   What they set - flex-wrap, justify-content, align-items on our own three
+   components - is already claimed above by name. Nothing to do.
+
+   min-width:0 on a column is the one that would bite hardest: without it a long
+   unbroken string in one column widens the whole grid. patterns/layout.css
+   records the same fix for .d-footer's children. */
+.wp-block-column{
+	flex-grow:1;
+	min-width:0;          /* a long URL may not widen the row */
+	overflow-wrap:break-word;
+	word-break:normal;    /* break-word breaks INSIDE words; overflow-wrap is enough */
+}
+/* Core stacks columns below 782px by making each one full width. Kept, because
+   two 50% columns on a phone is two unreadable columns. */
+@media (max-width: 781px){
+	.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column{
+		flex-basis:100%;
+		flex-grow:1;
+	}
+}
+.wp-block-post-title{ word-break:normal; overflow-wrap:break-word }
+.wp-block-post-title :where(a){ display:inline }
+.wp-block-post-content{ display:flow-root }   /* contains its children's margins */
+:root .has-text-align-center{ text-align:center }
+:root .has-text-align-left{ text-align:start }
+:root .has-text-align-right{ text-align:end }
+/* The button block's own box. .d-btn owns how a button LOOKS; this is the height
+   core reserves for it, which is what changes when the sheet goes. */
+.wp-block-button__link{ align-content:center }
