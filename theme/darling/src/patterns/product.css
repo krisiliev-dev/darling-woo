@@ -295,7 +295,15 @@
 	background:var(--tint-grey-quiet);
 	color:var(--ink-quiet);
 }
-/* an out-of-stock chip should not stretch to the column - it is a label */
+/* A chip should not stretch to the column - it is a label, not a banner.
+   *** AND IT HAS TO BE ON BOTH NAMES, WHICH THE PAIRED SPECIMEN CAUGHT. ***
+   The first version put it on Woo's two selectors only, so the gallery rendered
+   Woo's chip at 149px and ours at 704px - one rule, two results, which is the
+   duplication back again in a smaller form. Showing each state twice, under both
+   names, is what made a one-line omission visible; a diff would have shown a
+   selector list that looked complete. */
+.d-product__stock--backorder,
+.d-product__stock--out,
 .woocommerce div.product p.stock.available-on-backorder,
 .woocommerce div.product p.stock.out-of-stock{ width:fit-content }
 

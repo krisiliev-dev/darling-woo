@@ -380,31 +380,30 @@
 }
 
 /* -- the sort control ---------------------------------------------------------
-   Not a filter, but it sits in the same toolbar and it is the last bare
-   <select> on the catalogue: `select.orderby` has no .d-field around it, so the
-   field pattern's selector list never reaches it. */
-.wc-block-catalog-sorting select.orderby,
-select.orderby{
-	min-height:2.75em;
-	padding:.5em 2.4em .5em .8em;
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
-	background-color:var(--surface-page);
-	background-image:
-		linear-gradient(45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%),
-		linear-gradient(-45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%);
-	background-size:.42em .42em, .42em .42em;
-	background-position:right 1.1em top 55%, right .78em top 55%;
-	background-repeat:no-repeat;
-	color:var(--ink);
-	font:var(--type-ui);
-	appearance:none;
-	cursor:pointer;
-}
-select.orderby:focus-visible{
-	outline:2px solid var(--focus-ring);
-	outline-offset:1px;
-}
+   *** THE THIRD IMPLEMENTATION OF A <select> LIVED HERE AND IT IS DELETED. ***
+   The owner, after the ordering dropdown was put on the field component's
+   selector lists: *"The dropdown and the stock line are still not the same as
+   the other ones."* He was right, and adding the selector to patterns/field.css
+   had not been enough, for the reason this whole project keeps rediscovering:
+
+     patterns/field.css is LAYERED. This file is UNLAYERED.
+     Unlayered beats every layer, whatever the specificity.
+
+   So the component was being computed and then thrown away. Measured against
+   .d-field__control in the gallery, this rule was winning on FIFTEEN properties:
+   min-height 2.75em against 2.9em, font --type-ui (15px/600) against --type-body
+   (16px/400), background --surface-page against --surface-raised, and its own
+   padding. Not a cascade accident - a different control, written before the
+   component's list could reach it, and never reconciled.
+
+   *** AND IT WOULD NOT HAVE FIXED ITSELF AT THE DEQUEUE, WHICH IS THE POINT. ***
+   The dequeue removes THEIR sheets. This is ours. A duplicate in adopted/ that
+   beats its own component survives every step of the cutover and comes out the
+   other side still winning. The only thing that removes it is deleting it.
+
+   Nothing replaces it here: `select.orderby` and `.wc-block-catalog-sorting
+   select.orderby` are on .d-field's control list and .d-select's arrow, focus
+   and base-select rules in patterns/field.css. One control, one definition. */
 
 /* -- the money path and the plain mode ---------------------------------------- */
 html.d-a11y .wc-block-product-filters__overlay,

@@ -5686,7 +5686,7 @@ li.wc-block-grid__product .wp-block-button__link:hover,
 .d-field input[type="password"],
 .d-field input[type="search"],
 .d-field select,
-.woocommerce .woocommerce-ordering select.orderby,
+select.orderby,
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -5795,7 +5795,7 @@ li.wc-block-grid__product .wp-block-button__link:hover,
 
 /* -- select: the arrow is ours, because appearance:none removes theirs ------ */
 .d-field select,
-:is(.d-select, .woocommerce-ordering select.orderby){
+:is(.d-select, select.orderby){
 	padding-right:2.4em;
 	background-image:
 		linear-gradient(45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%),
@@ -5820,9 +5820,9 @@ li.wc-block-grid__product .wp-block-button__link:hover,
    control itself is styled either way - only the open list changes. */
 @supports (appearance: base-select){
 	.d-field select,
-	:is(.d-select, .woocommerce-ordering select.orderby),
+	:is(.d-select, select.orderby),
 	.d-field select::picker(select),
-	:is(.d-select, .woocommerce-ordering select.orderby)::picker(select){
+	:is(.d-select, select.orderby)::picker(select){
 		appearance:base-select;
 	}
 	/* *** base-select MAKES THE SELECT A FLEX CONTAINER. ***
@@ -5833,14 +5833,14 @@ li.wc-block-grid__product .wp-block-button__link:hover,
 	   rather than centred. These four lines put it back on the same line as
 	   every other control. */
 	.d-field select,
-	:is(.d-select, .woocommerce-ordering select.orderby){
+	:is(.d-select, select.orderby){
 		align-items:center;
 		justify-content:flex-start;
 		min-height:2.9em;
 		line-height:var(--lh-flush);
 	}
 	.d-field select::picker(select),
-	:is(.d-select, .woocommerce-ordering select.orderby)::picker(select){
+	:is(.d-select, select.orderby)::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
 		border:1px solid var(--edge-field);
@@ -5856,7 +5856,7 @@ li.wc-block-grid__product .wp-block-button__link:hover,
 	   14 - 4 lands on --radius-s. That is arithmetic, not taste - if the picker
 	   padding changes, this has to move with it. */
 	.d-field option,
-	:is(.d-select, .woocommerce-ordering select.orderby) option{
+	:is(.d-select, select.orderby) option{
 		padding:.52em .7em;
 		border-radius:var(--radius-s);
 		color:var(--c-cocoa);
@@ -5867,19 +5867,19 @@ li.wc-block-grid__product .wp-block-button__link:hover,
 	   under a cocoa word is 3.1:1 and fails, and the row you are hovering is the
 	   one you most need to be able to read. */
 	.d-field option:hover,
-	:is(.d-select, .woocommerce-ordering select.orderby) option:hover{
+	:is(.d-select, select.orderby) option:hover{
 		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
 	}
 	.d-field option:checked,
-	:is(.d-select, .woocommerce-ordering select.orderby) option:checked{
+	:is(.d-select, select.orderby) option:checked{
 		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
 		font-weight:var(--fw-medium);
 	}
 	/* base-select draws its own arrow; ours is the background gradient above. */
 	.d-field select::picker-icon,
-	:is(.d-select, .woocommerce-ordering select.orderby)::picker-icon{ display:none }
+	:is(.d-select, select.orderby)::picker-icon{ display:none }
 	.d-field select::checkmark,
-	:is(.d-select, .woocommerce-ordering select.orderby)::checkmark{ display:none }
+	:is(.d-select, select.orderby)::checkmark{ display:none }
 }
 
 /* -- checkbox and radio -----------------------------------------------------
@@ -7882,7 +7882,15 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	background:var(--tint-grey-quiet);
 	color:var(--ink-quiet);
 }
-/* an out-of-stock chip should not stretch to the column - it is a label */
+/* A chip should not stretch to the column - it is a label, not a banner.
+   *** AND IT HAS TO BE ON BOTH NAMES, WHICH THE PAIRED SPECIMEN CAUGHT. ***
+   The first version put it on Woo's two selectors only, so the gallery rendered
+   Woo's chip at 149px and ours at 704px - one rule, two results, which is the
+   duplication back again in a smaller form. Showing each state twice, under both
+   names, is what made a one-line omission visible; a diff would have shown a
+   selector list that looked complete. */
+.d-product__stock--backorder,
+.d-product__stock--out,
 .woocommerce div.product p.stock.available-on-backorder,
 .woocommerce div.product p.stock.out-of-stock{ width:fit-content }
 
@@ -14764,31 +14772,30 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 
 /* -- the sort control ---------------------------------------------------------
-   Not a filter, but it sits in the same toolbar and it is the last bare
-   <select> on the catalogue: `select.orderby` has no .d-field around it, so the
-   field pattern's selector list never reaches it. */
-.wc-block-catalog-sorting select.orderby,
-select.orderby{
-	min-height:2.75em;
-	padding:.5em 2.4em .5em .8em;
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
-	background-color:var(--surface-page);
-	background-image:
-		linear-gradient(45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%),
-		linear-gradient(-45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%);
-	background-size:.42em .42em, .42em .42em;
-	background-position:right 1.1em top 55%, right .78em top 55%;
-	background-repeat:no-repeat;
-	color:var(--ink);
-	font:var(--type-ui);
-	appearance:none;
-	cursor:pointer;
-}
-select.orderby:focus-visible{
-	outline:2px solid var(--focus-ring);
-	outline-offset:1px;
-}
+   *** THE THIRD IMPLEMENTATION OF A <select> LIVED HERE AND IT IS DELETED. ***
+   The owner, after the ordering dropdown was put on the field component's
+   selector lists: *"The dropdown and the stock line are still not the same as
+   the other ones."* He was right, and adding the selector to patterns/field.css
+   had not been enough, for the reason this whole project keeps rediscovering:
+
+     patterns/field.css is LAYERED. This file is UNLAYERED.
+     Unlayered beats every layer, whatever the specificity.
+
+   So the component was being computed and then thrown away. Measured against
+   .d-field__control in the gallery, this rule was winning on FIFTEEN properties:
+   min-height 2.75em against 2.9em, font --type-ui (15px/600) against --type-body
+   (16px/400), background --surface-page against --surface-raised, and its own
+   padding. Not a cascade accident - a different control, written before the
+   component's list could reach it, and never reconciled.
+
+   *** AND IT WOULD NOT HAVE FIXED ITSELF AT THE DEQUEUE, WHICH IS THE POINT. ***
+   The dequeue removes THEIR sheets. This is ours. A duplicate in adopted/ that
+   beats its own component survives every step of the cutover and comes out the
+   other side still winning. The only thing that removes it is deleting it.
+
+   Nothing replaces it here: `select.orderby` and `.wc-block-catalog-sorting
+   select.orderby` are on .d-field's control list and .d-select's arrow, focus
+   and base-select rules in patterns/field.css. One control, one definition. */
 
 /* -- the money path and the plain mode ---------------------------------------- */
 html.d-a11y .wc-block-product-filters__overlay,

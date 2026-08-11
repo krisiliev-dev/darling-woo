@@ -60,7 +60,7 @@
 .d-field input[type="password"],
 .d-field input[type="search"],
 .d-field select,
-.woocommerce .woocommerce-ordering select.orderby,
+select.orderby,
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -169,7 +169,7 @@
 
 /* -- select: the arrow is ours, because appearance:none removes theirs ------ */
 .d-field select,
-:is(.d-select, .woocommerce-ordering select.orderby){
+:is(.d-select, select.orderby){
 	padding-right:2.4em;
 	background-image:
 		linear-gradient(45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%),
@@ -194,9 +194,9 @@
    control itself is styled either way - only the open list changes. */
 @supports (appearance: base-select){
 	.d-field select,
-	:is(.d-select, .woocommerce-ordering select.orderby),
+	:is(.d-select, select.orderby),
 	.d-field select::picker(select),
-	:is(.d-select, .woocommerce-ordering select.orderby)::picker(select){
+	:is(.d-select, select.orderby)::picker(select){
 		appearance:base-select;
 	}
 	/* *** base-select MAKES THE SELECT A FLEX CONTAINER. ***
@@ -207,14 +207,14 @@
 	   rather than centred. These four lines put it back on the same line as
 	   every other control. */
 	.d-field select,
-	:is(.d-select, .woocommerce-ordering select.orderby){
+	:is(.d-select, select.orderby){
 		align-items:center;
 		justify-content:flex-start;
 		min-height:2.9em;
 		line-height:var(--lh-flush);
 	}
 	.d-field select::picker(select),
-	:is(.d-select, .woocommerce-ordering select.orderby)::picker(select){
+	:is(.d-select, select.orderby)::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
 		border:1px solid var(--edge-field);
@@ -230,7 +230,7 @@
 	   14 - 4 lands on --radius-s. That is arithmetic, not taste - if the picker
 	   padding changes, this has to move with it. */
 	.d-field option,
-	:is(.d-select, .woocommerce-ordering select.orderby) option{
+	:is(.d-select, select.orderby) option{
 		padding:.52em .7em;
 		border-radius:var(--radius-s);
 		color:var(--c-cocoa);
@@ -241,19 +241,19 @@
 	   under a cocoa word is 3.1:1 and fails, and the row you are hovering is the
 	   one you most need to be able to read. */
 	.d-field option:hover,
-	:is(.d-select, .woocommerce-ordering select.orderby) option:hover{
+	:is(.d-select, select.orderby) option:hover{
 		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
 	}
 	.d-field option:checked,
-	:is(.d-select, .woocommerce-ordering select.orderby) option:checked{
+	:is(.d-select, select.orderby) option:checked{
 		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
 		font-weight:var(--fw-medium);
 	}
 	/* base-select draws its own arrow; ours is the background gradient above. */
 	.d-field select::picker-icon,
-	:is(.d-select, .woocommerce-ordering select.orderby)::picker-icon{ display:none }
+	:is(.d-select, select.orderby)::picker-icon{ display:none }
 	.d-field select::checkmark,
-	:is(.d-select, .woocommerce-ordering select.orderby)::checkmark{ display:none }
+	:is(.d-select, select.orderby)::checkmark{ display:none }
 }
 
 /* -- checkbox and radio -----------------------------------------------------
