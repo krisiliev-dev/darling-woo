@@ -152,10 +152,24 @@ function get(url) {
 		for (const [file, what, needsMirror, args] of GATES) {
 			const g = path.join(ROOT, 'scripts', file);
 			if (!fs.existsSync(g)) { die('missing gate ' + file); }
+			/* *** THIS WAS A SKIP AND THE OWNER MADE IT A STOP. ***
+			 * The skip was honest about itself - it printed "NOT a pass" every
+			 * time - and it still let the one gate that guards the loudest dequeue
+			 * regression there is be absent from every deploy that ran without a
+			 * mirror. A line nobody has to act on is a line nobody reads.
+			 *
+			 * Asked whether a missing mirror should skip or stop, the owner chose
+			 * stop: "Make a missing mirror block the deploy." So there is now
+			 * exactly one way to deploy without this check, and it is to type
+			 * --skip-gates, which is a decision with a name rather than a
+			 * side effect of an empty directory.
+			 *
+			 * scripts/capture-mirror.js builds one. */
 			if (needsMirror && !fs.existsSync(MIRROR)) {
-				console.log('   SKIP  ' + file + ' - no mirror at ' + MIRROR +
-					' (set DARLING_MIRROR). NOT a pass: ' + what);
-				continue;
+				die(file + ' cannot run: no mirror at ' + MIRROR + '.\n' +
+					'        It checks that ' + what + ', against a capture of the live site.\n' +
+					'        Build one:  node scripts/capture-mirror.js\n' +
+					'        Or point at one:  DARLING_MIRROR=<dir>');
 			}
 			try {
 				execFileSync(process.execPath, [g].concat(args || []), { cwd: ROOT, stdio: 'inherit' });

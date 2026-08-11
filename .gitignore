@@ -30,3 +30,7 @@ tests/_diag*.js
 # build machinery: local machine state, not source
 scripts/.watch.log
 scripts/.build-cache.json
+
+# a 27MB capture of the live site, rebuilt by scripts/capture-mirror.js
+scripts/mirror/
+
