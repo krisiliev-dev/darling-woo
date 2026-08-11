@@ -8424,8 +8424,25 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
    thing it maps to is a comment rather than a rule.
    The gold-shadow is what `.dff-word` was before any of that, and it is the
    same ink as the footer headings. */
+/* *** A SHORTHAND `margin` WITH 0 IN THE INLINE SLOT, AGAIN. ***
+   The owner: "the bow, the social media buttons and even the text just above the
+   buttons are centered. The only text not centered is Дарлинг."
+
+   Measured inside the flair, each child's centre against the flair's centre:
+   the rule 0, the bow 0, the strapline 0, the social row 0 - and the wordmark
+   -48px. It is 145px wide in a 241px flair, so it is the one child that does not
+   fill its track, and `margin: ... 0 ...` pinned its inline margins to zero, so a
+   narrow box sat at the start instead of in the middle. text-align:center on the
+   parent centres the TEXT INSIDE a box; it cannot centre the box.
+
+   This is the third time a shorthand margin has quietly cancelled centring in
+   this codebase - b1shell.js caught `.d-hero__eyebrow` doing it to .d-shell's
+   margin-inline:auto, and ORIENTATION.md records the rule: write margin-block
+   when you mean vertical, and never let a shorthand answer a question you did
+   not ask. */
 .d-footflair__word{
-	margin:var(--space-2xs) 0 var(--space-3xs);
+	margin-block:var(--space-2xs) var(--space-3xs);
+	margin-inline:auto;
 	font:var(--type-wordmark);
 	font-weight:var(--fw-regular);
 	color:var(--tint-gold-mark);
