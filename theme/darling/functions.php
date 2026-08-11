@@ -403,3 +403,120 @@ add_action( 'wp_enqueue_scripts', function () {
 		}
 	}
 }, 30 );
+
+/* =============================================================================
+   THE DEQUEUE — remove WooCommerce's and core's CSS and let ours decide.
+
+   Everything in this file was measured before it was written. scripts/triage.js
+   performs exactly this cutover in a browser against a nine-page capture of the
+   live site and reports what MOVES; scripts/cutshot.js renders every page twice,
+   their sheets on and off, and those renders are what the owner reviewed and
+   approved. The gallery's #wcheckout and #wcart sections load no WooCommerce CSS
+   at all, which is why they ARE the post-dequeue pages rather than a picture of
+   them.
+
+   *** THE ORDER MATTERED AND IT WAS NOT A PREFERENCE. *** srgate.js measured the
+   deployed build leaking five .screen-reader-text nodes with these sheets off -
+   "количество за Тестова табуретка" going 1x1 -> 21x384 on the product page,
+   "Продукти в кошницата" going 1x1 -> 728x42 on the cart. Real text a customer
+   would read, appearing out of nowhere. adopted/vh.css fixes it and had to be
+   LIVE first. Re-measured against a fresh capture after the deploy: nine nodes
+   across four pages, all holding at 1x1. Only then this.
+
+   -- BY PREFIX, NOT BY A LIST OF NAMES --------------------------------------
+   WooCommerce registers its block styles per block - wc-blocks-style-cart,
+   -checkout, -product-image, -cart-link, and more the day a merchant enables a
+   block nobody has enabled yet. A hard-coded list would go stale silently and
+   the failure mode is a surface that quietly styles itself again. So: a prefix
+   sweep with an explicit KEEP list, at priority 100 so every plugin has finished
+   registering before we look.
+
+   -- WHAT IS KEPT, AND WHY EACH ONE ------------------------------------------
+     darling-system     ours
+     @font-face         WordPress prints the font library in its own inline
+                        block. Fonts are MACHINERY, not opinion - dropping them
+                        substitutes a system serif for Playfair across the site.
+                        Kept whole, by not touching wp_print_font_faces().
+     global-styles      NOT kept, and not dropped either: replaced with its
+                        VARIABLES ONLY. It is the sole source of every
+                        --wp--preset--* custom property, and our own tokens
+                        reference some of them; drop it whole and colours and
+                        spacing resolve to nothing. wp_get_global_stylesheet(
+                        ['variables'] ) is core's own way of asking for exactly
+                        the custom properties and none of the rules, which is
+                        the same strip triage.js performs in the browser.
+
+   -- THE ESCAPE HATCH --------------------------------------------------------
+   `?d_woocss=1` on any URL puts every sheet back for that one request. Not a
+   feature - a diagnostic. When something looks wrong on a live page the first
+   question is always "is this the dequeue or is this us", and the alternative to
+   answering it in one click is a deploy to find out. It is a GET parameter with
+   no side effects and it caches nothing (the request is excluded below).
+   ========================================================================== */
+add_action( 'wp_enqueue_scripts', function () {
+
+	if ( isset( $_GET['d_woocss'] ) && '1' === $_GET['d_woocss'] ) {
+		return;   // diagnostic: leave everything exactly as WordPress built it
+	}
+
+	$keep = array(
+		'darling-system',       // ours
+		'admin-bar',            // logged-in chrome; not a shop surface
+		'wp-block-library-theme' // core's element defaults are 4 rules and cheap
+	);
+
+	/* A handle is dropped if it starts with any of these. Deliberately narrow:
+	   we are removing WooCommerce and core's block CSS, not every plugin on the
+	   site. A plugin that ships its own broken stylesheet is a separate decision
+	   and fallback.css already stops it looking raw. */
+	$drop_prefixes = array(
+		'wc-blocks-',
+		'woocommerce-',
+		'wc-stripe-blocks',
+		'wp-block-library',
+		'wp-block-',
+		'core-block-supports',
+	);
+
+	$styles = wp_styles();
+	if ( ! $styles || empty( $styles->queue ) ) {
+		return;
+	}
+
+	foreach ( (array) $styles->queue as $handle ) {
+		if ( in_array( $handle, $keep, true ) ) {
+			continue;
+		}
+		foreach ( $drop_prefixes as $prefix ) {
+			if ( 0 === strpos( $handle, $prefix ) ) {
+				wp_dequeue_style( $handle );
+				break;
+			}
+		}
+	}
+}, 100 );
+
+/* global-styles, stripped to its custom properties.
+   *** REPLACED RATHER THAN REMOVED, AND THE DIFFERENCE IS THE WHOLE PAGE. ***
+   This inline block carries two things that look alike and are not: the
+   --wp--preset--* variables, which the theme and the block editor both read, and
+   a pile of layout and element RULES that fight ours. triage.js measured 17
+   declarations of ours losing to those rules. Taking the block away entirely
+   takes the variables with it and every preset colour resolves to nothing.
+   wp_get_global_stylesheet( array( 'variables' ) ) is core's own accessor for
+   exactly the half we want. */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( isset( $_GET['d_woocss'] ) && '1' === $_GET['d_woocss'] ) {
+		return;
+	}
+	remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+	remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+
+	$vars = wp_get_global_stylesheet( array( 'variables' ) );
+	if ( ! $vars ) {
+		return;   // core changed its mind about this API: keep the sheet rather than lose the presets
+	}
+	wp_register_style( 'darling-global-vars', false, array(), null );
+	wp_enqueue_style( 'darling-global-vars' );
+	wp_add_inline_style( 'darling-global-vars', $vars );
+}, 1 );
