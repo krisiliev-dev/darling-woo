@@ -240,6 +240,13 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    note and wrong for an alignment specimen - has-text-align-right aligned to the
    end of the MEASURE and read as broken. The box is the ruler here. */
 .algdemo p{ max-width:none }
+/* GALLERY ONLY. A frame for the two CAPTURED specimens, so a full page of
+   WooCommerce markup reads as a page inside the gallery rather than as loose
+   markup bleeding into the notes around it. Padding and a surface only - it
+   must not style anything INSIDE, or the specimen stops being a specimen. */
+.wcspec{ padding:var(--space-m); border-radius:var(--radius-l);
+  background:var(--surface-page);
+  box-shadow:inset 0 0 0 1px color-mix(in oklab, currentColor 12%, transparent) }
 .vhdemo{ background:var(--surface-raised,#fff); border-radius:var(--radius-m);
   padding:var(--space-s); box-shadow:inset 0 0 0 1px var(--hairline,#0002) }
 .vhdemo--reveal .screen-reader-text{
@@ -276,6 +283,32 @@ if not _m:
 HEADER_SPECIMEN = (_m.group(0)
                    # the specimen sits inside the page rather than at its top
                    .replace('<header class="d-header"', '<header class="d-header" style="position:relative"', 1))
+
+
+# ---------------------------------------------------------------- WooCommerce --
+# *** THE CHECKOUT AND CART SPECIMENS ARE CAPTURED MARKUP, NOT WRITTEN MARKUP. ***
+# The owner, on the cutover screenshots: "For both the checkout after looks
+# great, with small adjustments. I think we can leave whatever styling the before
+# applies and start from the after. Put it in our gallery as its own sections and
+# we can review it."
+#
+# So these two are WooCommerce's own block output, class for class, pulled out of
+# the mirror by scripts/cutshot.js's sibling and saved under theme/darling/
+# specimens/. Hand-writing them would make the gallery a specimen of my guess
+# about Woo's DOM - and this project has paid for that guess twice already, with
+# the upsell cards and the add-to-cart button.
+#
+# They are checked in rather than generated at build time so the gallery builds
+# without a mirror; scripts/_extract.js regenerates them when Woo's markup moves.
+def _spec(name):
+	f = os.path.join(THEME, 'specimens', name + '.html')
+	if not os.path.exists(f):
+		sys.stderr.write('gen-gallery: missing specimen %s - run scripts/_extract.js\n' % f)
+		raise SystemExit(1)
+	return open(f, encoding='utf-8').read()
+
+WC_CHECKOUT = _spec('checkout')
+WC_CART = _spec('cart')
 
 PRODUCTS = [
     ('Керамична купа', '26,40', None, None),
@@ -858,6 +891,55 @@ A('<p class="note"><b>One correction to what the commit message said.</b> '
   'for it from a broken narrow cart. There is nothing here to render, which is '
   'why this is a paragraph and not a specimen.</p>')
 A('</section>')
+
+# ------------------------------------------------------------- wc-checkout ---
+A('<section class="sec" id="wcheckout" style="max-width:none;padding-inline:0">'
+  '<div class="wrap"><h2>The cutover</h2>'
+  '<h3>Checkout, with none of WooCommerce&rsquo;s CSS</h3>')
+A('<p class="note"><b>This is WooCommerce&rsquo;s own block markup with only our '
+  'stylesheet behind it.</b> Not a mock-up and not a copy &mdash; it is the DOM '
+  'captured off the live checkout and saved to '
+  '<code>theme/darling/specimens/checkout.html</code>, class for class. The '
+  'gallery loads no WooCommerce CSS at all, so what is below IS the post-dequeue '
+  'page. Every one of the 132 declarations triage reports for '
+  '<code>wc-blocks-style-checkout</code> is already gone here.</p>')
+A('<p class="note"><b>Four things to look at, because they are what the cutover '
+  'actually costs.</b> (1) The <b>address grid</b> &mdash; on the live page '
+  'Град/Област and Пощенски&nbsp;код/Телефон '
+  'sit as two pairs; here they stack, because that grid was Woo&rsquo;s. That is '
+  'a real claim and the biggest single one. (2) The <b>order summary</b> has lost '
+  'its own border and radius, which is right: '
+  '<code>adopted/checkout.css</code> already makes the sidebar a card and '
+  'Woo&rsquo;s was a second card inside it. (3) Everything is <b>looser</b>, '
+  'because their compact paddings go. (4) The column is <b>narrower</b>, because '
+  '<code>--w-body</code> at 80% now decides it rather than their constrained '
+  'layout.</p>')
+A('<p class="note"><b>Not shown, and it is the one regression worth naming.</b> '
+  'The live checkout has a stripped-down header built from CORE blocks rather '
+  'than <code>.d-header</code>, so <code>patterns/header.css</code> never reaches '
+  'it and the wordmark and cart icon lose their row when core&rsquo;s flex layout '
+  'goes. It is not in this specimen because the specimen is the checkout BLOCK; '
+  'the header is a separate fix and it belongs with the header, not here.</p>')
+A('<div class="wcspec">' + WC_CHECKOUT + '</div>')
+A('</div></section>')
+
+# ----------------------------------------------------------------- wc-cart ---
+A('<section class="sec" id="wcart" style="max-width:none;padding-inline:0">'
+  '<div class="wrap"><h2>The cutover</h2>'
+  '<h3>Cart, with none of WooCommerce&rsquo;s CSS</h3>')
+A('<p class="note"><b>Same again: captured markup, our CSS only.</b> The cart '
+  'survives the cutover better than the checkout &mdash; the sidebar card, the '
+  'coupon row, the totals and the quantity stepper are all ours already.</p>')
+A('<p class="note"><b>Two claims here, and both are small.</b> The <b>items '
+  'table</b> does not fill its column: <code>width:100%</code> on '
+  '<code>table.wc-block-cart-items</code> was theirs, so the table shrink-wraps '
+  'to its content and leaves the column short. And '
+  '<b>&ldquo;Продължи към поръчката&rdquo;</b> '
+  'renders as a plain link rather than our button &mdash; '
+  '<code>.wc-block-cart__submit-button</code> is a real button element that '
+  '<code>patterns/button.css</code> does not name yet.</p>')
+A('<div class="wcspec">' + WC_CART + '</div>')
+A('</div></section>')
 
 # --------------------------------------------------------------------- card ---
 
@@ -3723,6 +3805,8 @@ NAV_LABEL = {
 	'account':   u'Account forms',
 	'columns':   u'Block columns',
 	'tail':      u'The tail',
+	'wcheckout': u'Checkout, dequeued',
+	'wcart':     u'Cart, dequeued',
 	'season':    u'Season',
 	'upsell':    u'Upsell grid',
 	'addcart':   u'Add to cart',
