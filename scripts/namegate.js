@@ -42,6 +42,11 @@ const RULES = ['button-name', 'link-name', 'image-alt', 'input-image-alt', 'labe
   'form-field-multiple-labels', 'aria-command-name', 'aria-toggle-field-name',
   'select-name', 'empty-heading', 'aria-input-field-name', 'aria-required-attr',
   'aria-valid-attr-value', 'duplicate-id-aria'];
+/* gallery.html INLINES the stylesheet, so a build without a regenerate leaves
+ * this measuring the previous one - and passing on it, in the same words. See
+ * scripts/_fresh.js: that trap gave a clean all-clear on a 78-element change. */
+require('./_fresh').assertGalleryFresh();
+
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1240, height: 1000 } });

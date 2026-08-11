@@ -29,6 +29,11 @@ const SWITCH_AT = 480;   // --threshold, 30rem
 // aside/0.4 + gap. With --aside 21rem and --space-l that is around 880px.
 const SPLIT_AT = 880;
 
+/* gallery.html INLINES the stylesheet, so a build without a regenerate leaves
+ * this measuring the previous one - and passing on it, in the same words. See
+ * scripts/_fresh.js: that trap gave a clean all-clear on a 78-element change. */
+require('./_fresh').assertGalleryFresh();
+
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1440, height: 1000 } });

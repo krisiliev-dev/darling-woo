@@ -87,6 +87,11 @@ const shoot = (page, port) => page.goto('http://127.0.0.1:' + port + '/gallery.h
     console.error('usage: --save <name>  |  --against <name>');
     process.exit(2);
   }
+  /* *** THE PAGE THIS SERVES INLINES THE STYLESHEET. *** So `make the change,
+   * rebuild` above means BOTH steps - build-css.js AND gen-gallery.py - and the
+   * one time it meant only the first, this reported "nothing moved" for a change
+   * that moves 78 elements. See scripts/_fresh.js for the measurement. */
+  require('./_fresh').assertGalleryFresh();
   fs.mkdirSync(DIR, { recursive: true });
   const { srv, port } = await serve();
   const b = await chromium.launch();

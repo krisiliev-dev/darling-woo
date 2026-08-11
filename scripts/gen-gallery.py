@@ -20,7 +20,7 @@ network - everything is inlined, including the plywood tile as a data: URL.
 DARLING_ROOT overrides the repo root, which is how it is tested outside a
 checkout.
 """
-import base64, html, os, re, sys
+import base64, hashlib, html, os, re, sys
 
 ROOT = os.environ.get('DARLING_ROOT') or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 THEME = os.path.join(ROOT, 'theme', 'darling')
@@ -35,6 +35,21 @@ for p in (CSS_FILE, PLY_FILE):
         raise SystemExit(1)
 
 CSS = open(CSS_FILE, encoding='utf-8').read()
+# *** THE STAMP, AND WHY IT IS NOT DECORATION. ***
+# gallery.html INLINES this stylesheet - it does not <link> it. So editing src/
+# and running build-css.js changes NOTHING the gallery shows until this script
+# runs again, and every gate that reads gallery.html is measuring whatever was
+# inlined last time.
+#
+# Measured 2026-08-11, and it is the reason this exists: a 3px padding change on
+# .d-card, built but with the gallery not regenerated, made cascadediff report
+# "nothing moved" - a clean all-clear on a change that in fact moves 78
+# elements. That is the instrument I was about to gate a few dozen serial merges
+# with. It would have blessed every one of them without looking at any of them.
+#
+# So the built sheet's hash goes into the page, and scripts/_fresh.js refuses to
+# measure a gallery whose stamp does not match the build on disk.
+CSS_STAMP = hashlib.md5(CSS.encode('utf-8')).hexdigest()
 CSS = CSS.replace('url("../assets/ply-grain.webp")',
                   'url("data:image/webp;base64,%s")'
                   % base64.b64encode(open(PLY_FILE, 'rb').read()).decode())
@@ -115,7 +130,9 @@ A = P.append
 
 A('<!doctype html><html lang="bg"><head><meta charset="utf-8">')
 A('<meta name="viewport" content="width=device-width,initial-scale=1">')
-A('<title>Darling components</title><style>\n' + CSS + '''
+A('<title>Darling components</title>'
+  '<meta name="darling-css-stamp" content="' + CSS_STAMP + '">'
+  '<style>\n' + CSS + '''
 /* gallery chrome only - not part of the system */
 body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-body)}
 .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 120px}
