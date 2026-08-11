@@ -307,6 +307,18 @@ def _spec(name):
 		raise SystemExit(1)
 	return open(f, encoding='utf-8').read()
 
+# *** THE CHECKOUT HEADER IS READ FROM ITS PART, LIKE THE SITE HEADER. ***
+# Same rule and the same reason: the gallery must not be able to disagree with
+# what ships. Two breakages are already recorded above from a copy of the site
+# header that drifted.
+_cpart = os.path.join(THEME, 'parts', 'checkout-header.html')
+_cm = re.search(r'<header\b.*?</header>', open(_cpart, encoding='utf-8').read(), re.S)
+if not _cm:
+	sys.stderr.write('gen-gallery: no <header> in parts/checkout-header.html\n')
+	raise SystemExit(1)
+CHECKOUT_HEADER = _cm.group(0).replace('<header class="d-header',
+                                       '<header style="position:relative" class="d-header', 1)
+
 WC_CHECKOUT = _spec('checkout')
 WC_CART = _spec('cart')
 
@@ -890,6 +902,36 @@ A('<p class="note"><b>One correction to what the commit message said.</b> '
   'because it costs one declaration and the alternative is discovering the need '
   'for it from a broken narrow cart. There is nothing here to render, which is '
   'why this is a paragraph and not a specimen.</p>')
+A('</section>')
+
+A('<section class="sec" id="wcheader"><h2>The cutover</h2>'
+  '<h3>The checkout header</h3>')
+A('<p class="note"><b>The one regression the two sections above could not show.</b> '
+  '<code>page-checkout.html</code> pulled '
+  '<code>template-part slug="checkout-header" theme="woocommerce/woocommerce"</code> '
+  '&mdash; the plugin&rsquo;s header, built from CORE blocks. '
+  '<code>patterns/header.css</code> keys everything off <code>.d-header</code>, so '
+  'it never reached a single node of it, and core&rsquo;s own flex layout was the '
+  'only thing putting the wordmark and the cart on one line. Both stacked at the '
+  'left edge the moment that sheet went.</p>')
+A('<p class="note"><b>A theme part beats a plugin part of the same slug</b>, so the '
+  'whole fix is a file &mdash; no CSS, no override, no specificity fight. It stays '
+  'minimal because that was WooCommerce&rsquo;s decision and a good one: no nav, no '
+  'search, no mega menu, nothing that leads out of the funnel. The wordmark is the '
+  'way back if somebody changes their mind; the cart is what they came to pay for.</p>')
+A(CHECKOUT_HEADER)
+A('<p class="note"><b>Two details that are not decoration.</b> The cart sits in '
+  '<code>.d-header__actions</code> rather than a class of its own &mdash; that '
+  'component already carries the flex, the gap and the '
+  '<code>margin-inline-start:auto</code> that pushes it to the end, and my first '
+  'draft invented <code>.d-header__basket</code> and would have restated all three. '
+  'And it carries <code>data-cart-button</code>, because <code>header.css</code> '
+  'hides every icon button in that row on a narrow screen except the burger, the '
+  'small search and anything with that attribute &mdash; without it the only way '
+  'back to the cart vanishes on a phone, on the page where somebody most wants it. '
+  'The rail is <code>.d-shell--bar</code>, the same one the site header uses, so '
+  'the wordmark lands on the same vertical line here as everywhere else and '
+  '<code>aligngate</code> covers it for free.</p>')
 A('</section>')
 
 # ------------------------------------------------------------- wc-checkout ---
@@ -3809,6 +3851,7 @@ NAV_LABEL = {
 	'tail':      u'The tail',
 	'wcheckout': u'Checkout, dequeued',
 	'wcart':     u'Cart, dequeued',
+	'wcheader':  u'Checkout header',
 	'season':    u'Season',
 	'upsell':    u'Upsell grid',
 	'addcart':   u'Add to cart',

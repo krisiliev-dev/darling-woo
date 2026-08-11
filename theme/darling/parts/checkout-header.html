@@ -1,0 +1,61 @@
+<!-- CHECKOUT HEADER — a theme part that overrides WooCommerce's.
+
+     page-checkout.html pulls
+       <!-- wp:template-part {"slug":"checkout-header","theme":"woocommerce/woocommerce"} -->
+     so the header on /checkout/ is not ours at all: it is the plugin's, built
+     from CORE blocks. patterns/header.css keys everything off .d-header, so it
+     never reached a single node of it, and core's own flex layout was the only
+     thing putting the wordmark and the cart icon on one line. The cutover
+     screenshots showed exactly that — both stacked at the left edge the moment
+     core's sheet went.
+
+     *** A THEME PART WINS OVER A PLUGIN PART OF THE SAME SLUG. *** So this file
+     is the whole fix. No CSS, no override, no fight: WordPress resolves
+     `checkout-header` to the theme first and the plugin's copy is never asked
+     for. The template's own reference names the plugin explicitly, which is why
+     that one line changes with it.
+
+     *** AND IT STAYS MINIMAL, BECAUSE THAT PART WAS A DECISION. ***
+     WooCommerce strips the nav, the search and the mega menu from checkout on
+     purpose — a distraction-free checkout is a conversion decision, and
+     page-checkout.html already records respecting it for the h1. So this is the
+     site header's CHROME with none of its navigation: the wordmark, which is the
+     way back if somebody changes their mind, and the cart total, which is the
+     number they are here to pay. Nothing that leads out of the funnel.
+
+     .d-shell--bar is the same rail the site header sits on, so the wordmark
+     lands on the same vertical line here as on every other page — aligngate
+     asserts that rail and this part inherits it for free. -->
+<header class="d-header d-header--checkout" role="banner">
+	<div class="d-header__inner d-shell d-shell--bar">
+		<a class="d-header__logo" href="/" aria-label="Darling &mdash; начало">Darling</a>
+
+		<!-- *** .d-header__actions, NOT A NEW CLASS. *** The first draft invented
+		     .d-header__basket and would have needed its own margin-inline-start
+		     to push the cart to the end - which .d-header__actions already does,
+		     along with the flex and the gap. Same ruling as the ordering select
+		     and the trash button: the component exists, use its name.
+
+		     data-cart-button is not decoration either. header.css hides every
+		     .d-icon-btn in the actions row on a narrow screen EXCEPT the burger,
+		     the small search and anything carrying that attribute - so without it
+		     the only way back to the cart disappears on a phone, on the one page
+		     where somebody most wants to check what they are paying for.
+
+		     A link rather than the drawer trigger: on checkout the drawer would
+		     open a second cart over the one being paid for. -->
+		<div class="d-header__actions">
+		<a class="d-icon-btn" data-cart-button href="/cart/"
+		   aria-label="Количка &mdash; обратно към редакция">
+			<!-- *** THE ICON IS .d-icon--cart, NOT AN SVG I DREW. ***
+			     The first draft inlined a hand-written path and it rendered as a
+			     TRASH CAN at 22px - the handle arc reads as a bin lid. The site
+			     header uses `<span class="d-icon d-icon--cart">`, a mask driven by
+			     the icon token, and there was never a reason for a second drawing of
+			     the same object. Fourth time this turn that reaching for the
+			     component beat inventing one. -->
+			<span class="d-icon d-icon--cart" aria-hidden="true"></span>
+		</a>
+		</div>
+	</div>
+</header>

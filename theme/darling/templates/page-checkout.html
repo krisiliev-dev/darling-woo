@@ -7,7 +7,12 @@
      is a conversion decision, not a bug. This gives assistive tech the heading
      without changing what anyone sees. Note there is no footer and no theme nav in
      this template; that is WooCommerce intent and is left alone. -->
-<!-- wp:template-part {"slug":"checkout-header","theme":"woocommerce/woocommerce","tagName":"header"} /-->
+<!-- The slug is the same; the THEME is not. WooCommerce's checkout-header is
+     built from core blocks, so patterns/header.css - which keys off .d-header -
+     never reached a node of it, and the wordmark and cart icon lost their row
+     the moment core's layout sheet went. parts/checkout-header.html is ours and
+     minimal, keeping the distraction-free intent the h1 note below records. -->
+<!-- wp:template-part {"slug":"checkout-header","theme":"darling","tagName":"header"} /-->
 <!-- wp:woocommerce/page-content-wrapper {"page":"checkout"} -->
 <!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
 <main class="wp-block-group">
