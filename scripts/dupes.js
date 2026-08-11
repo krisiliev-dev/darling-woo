@@ -173,6 +173,14 @@ for (let i = 0; i < all.length; i++) {
 pairs.sort((x, y) => y.shared - x.shared);
 
 const key = (p) => [p.a.file + '|' + p.a.sel, p.b.file + '|' + p.b.sel].sort().join('  ==  ');
+/* --dump prints the current pair keys as JSON and nothing else, so a migration
+ * can be written against the tool's OWN key function instead of reimplementing
+ * it and drifting. Read-only; it never touches the ledger. */
+if (process.argv.includes('--dump')) {
+  process.stdout.write(JSON.stringify({ keys: pairs.map(key) }));
+  process.exit(0);
+}
+
 let allow = [];
 try { allow = JSON.parse(fs.readFileSync(ALLOW, 'utf8')).allow || []; } catch (e) { /* none yet */ }
 const allowed = new Set(allow.map((a) => a.pair));

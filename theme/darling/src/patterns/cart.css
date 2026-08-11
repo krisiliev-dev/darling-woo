@@ -100,7 +100,10 @@
    variable that only existed while the old grid did. */
 .d-trustbar--bleed{
 	margin-inline:calc(50% - 50vw);
-	padding-inline:max(var(--gutter), calc(50vw - var(--page-max) / 2));
+	/* it is 100vw wide now, so half of what the body column leaves over brings
+	   its content back onto the page rail. The old form divided a PERCENTAGE by
+	   two inside calc() and resolved against the wrong box. */
+	padding-inline:calc((100% - var(--w-body)) / 2);
 }
 @media (max-width: 820px){
 	.d-trustbar{ grid-template-columns:repeat(2, 1fr) }

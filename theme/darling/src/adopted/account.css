@@ -248,7 +248,7 @@
    holding a form, a table or a cart it is not a measure, it is a narrow page. */
 main .entry-content:has(.woocommerce),
 main .entry-content:has(#customer_login) {
-	max-width: var(--page-max);
+	max-width: var(--w-body);
 }
 main .entry-content > .woocommerce {
 	max-width: none;

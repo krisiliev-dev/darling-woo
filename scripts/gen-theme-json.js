@@ -55,7 +55,7 @@ const lengthOf = (name, map, fallback) => {
   if (/^(calc|var)\(/.test(v)) throw new Error('gen-theme-json: theme.json cannot hold a calc()/var(): ' + name + ' = ' + v);
   return v;
 };
-const MEASURE_PAGE = lengthOf('--measure-page', type, '90%');
+const MEASURE_PAGE = lengthOf('--w-body', space, '80%');
 
 // ---- palette ---------------------------------------------------------------
 // The --c-* primitives and nothing else. Primitives name the VALUE, semantics
@@ -171,12 +171,12 @@ const theme = {
       fontFamilies: families
     },
     layout: {
-      // contentSize follows --measure-page, the constrained default in
+      // contentSize follows --w-body, the page rail and the constrained default in
       // patterns/flow.css, so the block editor and the front end cannot disagree
       // about how wide a page column is. It is a calc() in the token file; the
       // resolved value is written here because theme.json cannot hold one.
       contentSize: MEASURE_PAGE,
-      wideSize: lengthOf('--page-max', space, '95%')
+      wideSize: lengthOf('--w-wide', space, '95%')
     },
     spacing: {
       units: ['px', 'em', 'rem', '%'],

@@ -56,24 +56,39 @@
 
    A frame taken by name cannot know whether it is on the page or inside
    something. .d-shell in the markup can, because a human put it there. */
+/* *** A WIDTH, NOT A MAX-WIDTH AND A PADDING. THAT PAIR WAS THE BUG. ***
+   This used to be `max-width:var(--page-max)` (95%) PLUS
+   `padding-inline:var(--gutter)` (60px), so content started 2.5% in and then
+   another 60px in - two insets for one rail, and neither of them was the number
+   anybody had chosen. aligngate.js has been failing on the 27px that produced,
+   quietly, because deploy.js was not running it.
+
+   The owner settled it: "the percentages I have given you are what I want the
+   different insets to be." So the width IS the inset. Nothing pads on top.
+
+   ONE declaration of the arithmetic and four variants that change only the
+   number, rather than four copies of `min(...)` - which is also what stops
+   dupes.js flagging this file against itself. --edge-min is a floor and not a
+   rail: at 1440 it never binds, at 320 it keeps the wide column off the glass. */
 	box-sizing:border-box;
-	max-width:var(--page-max);
+	--w:var(--w-body);
+	width:min(var(--w), 100% - var(--edge-min) * 2);
 	margin-inline:auto;
-	padding-inline:var(--gutter);
 }
-/* A shell inside a shell would pad twice. This is for the common case: a header
-   bar that is full-bleed, with a .d-shell inside it that is already padded by
-   its parent's own inset. */
-.d-shell--flush{ padding-inline:0 }
-/* Chrome - a header bar, a toolbar - sits on its own rail, further out than the
-   page's, because the owner asked for the logo nearer the edge than the heading
-   under it. Declared, named and gated, which is the only difference between a
-   second rail and a mistake. */
-.d-shell--bar{ padding-inline:var(--gutter-bar) }
-/* Prose is measured by the eye, not by the layout - see --measure-lede in
-   space.css. Still centred on the same rail, so a paragraph and the section
-   title above it start together. */
-.d-shell--prose{ max-width:var(--measure-lede) }
+/* A shell inside a shell would inset twice. This is for the common case: a
+   full-bleed bar whose inner shell is already placed by its parent. */
+.d-shell--flush{ --w:100% }
+/* Chrome - a header bar, a toolbar - sits further out than the page column,
+   because the owner asked for the logo nearer the edge than the heading under
+   it. It is the WIDE width rather than a private number: "we have the wide one
+   for some variance where we need it", and this is the where. Declared, named
+   and gated, which is the only difference between a second rail and a mistake. */
+.d-shell--bar{ --w:var(--w-wide) }
+/* "Some variance where we need it" - anything that wants to run wider than the
+   page column without going edge to edge. */
+.d-shell--wide{ --w:var(--w-wide) }
+/* Long copy. The column is the measure; the paragraphs inside it fill it. */
+.d-shell--prose{ --w:var(--w-prose) }
 
 /* -- a column with something beside it -----------------------------------------
    Checkout, the cart and the account page are all one long column with a

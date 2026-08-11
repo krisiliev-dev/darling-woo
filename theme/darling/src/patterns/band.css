@@ -16,9 +16,12 @@
 .d-band{
 	display:grid;
 	grid-template-columns:
-		[full-start] minmax(var(--gutter), 1fr)
-		[content-start] min(var(--page-max), 100% - var(--gutter) * 2) [content-end]
-		minmax(var(--gutter), 1fr) [full-end];
+		[full-start] 1fr
+		/* the SAME column as .d-shell, so a band's heading and a page's heading
+		   start on one line. It was min(--page-max, 100% - gutter*2), which is
+		   the double inset again in grid form. */
+		[content-start] min(var(--w-body), 100% - var(--edge-min) * 2) [content-end]
+		1fr [full-end];
 	padding-block:var(--band-y);
 	background:var(--surface-band);
 	color:var(--ink-on-dark);
@@ -27,7 +30,7 @@
 .d-band > .d-band__full{ grid-column:full }
 
 .d-band__title{ font:var(--type-band); color:inherit }
-.d-band__body{ color:inherit; max-width:var(--measure-lede) }
+.d-band__body{ color:inherit; max-width:var(--w-prose) }
 
 /* The one divider the finish is allowed to draw: a plywood rule between
    sections. --grain-size is explicit because a 3px-tall element has no type to

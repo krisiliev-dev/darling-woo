@@ -32,7 +32,10 @@
 	vertical-align:middle;
 }
 .woocommerce div.product{ position:relative }   /* the gallery's zoom is absolute */
-.woocommerce div.product p.stock{ font-size:var(--fs-meta) }
+/* *** p.stock LEFT THIS FILE. *** It was `font-size:var(--fs-meta)` here, which
+   is a second and much poorer opinion about an element patterns/product.css
+   already owns as .d-product__stock. Woo's three state classes are on that
+   component's selector lists now. See the note there. */
 
 /* -- the catalogue ordering dropdown -----------------------------------------
    It floated right, which is how it ended up beside the results count by

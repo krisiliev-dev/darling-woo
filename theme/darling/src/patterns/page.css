@@ -28,7 +28,7 @@
 
 .d-prose,
 main .entry-content{
-	max-width:var(--measure-lede);
+	max-width:var(--w-prose);
 	margin-inline:auto;
 }
 /* *** A MEASURE IS FOR PROSE, AND A SHOP SURFACE IS NOT PROSE. ***
@@ -50,7 +50,7 @@ main .entry-content{
 main .entry-content:has(.woocommerce),
 main .entry-content:has(#customer_login),
 main .entry-content:has([class*="wp-block-woocommerce-"]){
-	max-width:var(--page-max);
+	max-width:var(--w-body);
 }
 /* AND THE SECOND CAP, because there were two. With the measure lifted the
    account forms still only reached 688px: WordPress's own constrained layout

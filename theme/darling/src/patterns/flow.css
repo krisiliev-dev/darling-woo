@@ -211,7 +211,7 @@
 	max-width:var(--measure-page);
 	margin-inline:auto;
 }
-.is-layout-constrained > .alignwide{ max-width:var(--page-max) }
+.is-layout-constrained > .alignwide{ max-width:var(--w-wide) }
 .is-layout-constrained > .alignfull{ max-width:none }
 .is-layout-constrained > .aligncenter{ margin-inline:auto }
 /* Floated alignments clear their own inline space. --space-l rather than core's

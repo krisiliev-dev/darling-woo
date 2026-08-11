@@ -80,12 +80,14 @@
    way to reach the edge of the page. */
 .d-hero-band{
 	display:grid;
-	grid-template-columns:1fr min(var(--page-max), 100%) 1fr;
+	grid-template-columns:1fr min(var(--w-body), 100% - var(--edge-min) * 2) 1fr;
 	background:var(--surface-band);
 }
 .d-hero-band > *{ grid-column:2 }
 .d-hero-band .d-hero{
-	padding:var(--space-2xl) var(--gutter) calc(var(--space-2xl) + var(--space-2xs));
+	/* the grid column above already places this; padding here inset it twice */
+	padding-block:var(--space-2xl) calc(var(--space-2xl) + var(--space-2xs));
+	padding-inline:0;
 	max-width:none;
 }
 .d-hero--red .d-hero__title{

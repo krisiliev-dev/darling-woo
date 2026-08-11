@@ -44,6 +44,14 @@
    One ruleset for every text-like control plus select and textarea. They differ
    in behaviour, not in appearance, and a select that does not match the input
    beside it is the most common way a form looks homemade. */
+/* *** AND WOO'S CATALOGUE ORDERING SELECT IS ON THIS LIST, NOT IN A FILE OF ITS
+   OWN. *** The owner, on the tail specimen: "The tail has a dropdown menu, which
+   again we have already made and have a component for." Right, and what was
+   drawing it was fallback.css - the net, whose whole job is to stop an unclaimed
+   Woo control looking like raw browser chrome. A control that reaches the net is
+   a control nobody claimed; it comes out CLOSE to the component and not equal to
+   it, which is exactly how the quantity stepper ended up looking different on
+   two pages. Same diagnosis, same cure: name it here, once. */
 .d-field__control,
 .d-field input[type="text"],
 .d-field input[type="email"],
@@ -52,6 +60,7 @@
 .d-field input[type="password"],
 .d-field input[type="search"],
 .d-field select,
+.woocommerce .woocommerce-ordering select.orderby,
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -160,7 +169,7 @@
 
 /* -- select: the arrow is ours, because appearance:none removes theirs ------ */
 .d-field select,
-.d-select{
+:is(.d-select, .woocommerce-ordering select.orderby){
 	padding-right:2.4em;
 	background-image:
 		linear-gradient(45deg, transparent 50%, var(--ink-quiet) 50% 62%, transparent 62%),
@@ -185,9 +194,9 @@
    control itself is styled either way - only the open list changes. */
 @supports (appearance: base-select){
 	.d-field select,
-	.d-select,
+	:is(.d-select, .woocommerce-ordering select.orderby),
 	.d-field select::picker(select),
-	.d-select::picker(select){
+	:is(.d-select, .woocommerce-ordering select.orderby)::picker(select){
 		appearance:base-select;
 	}
 	/* *** base-select MAKES THE SELECT A FLEX CONTAINER. ***
@@ -198,14 +207,14 @@
 	   rather than centred. These four lines put it back on the same line as
 	   every other control. */
 	.d-field select,
-	.d-select{
+	:is(.d-select, .woocommerce-ordering select.orderby){
 		align-items:center;
 		justify-content:flex-start;
 		min-height:2.9em;
 		line-height:var(--lh-flush);
 	}
 	.d-field select::picker(select),
-	.d-select::picker(select){
+	:is(.d-select, .woocommerce-ordering select.orderby)::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
 		border:1px solid var(--edge-field);
@@ -221,7 +230,7 @@
 	   14 - 4 lands on --radius-s. That is arithmetic, not taste - if the picker
 	   padding changes, this has to move with it. */
 	.d-field option,
-	.d-select option{
+	:is(.d-select, .woocommerce-ordering select.orderby) option{
 		padding:.52em .7em;
 		border-radius:var(--radius-s);
 		color:var(--c-cocoa);
@@ -232,19 +241,19 @@
 	   under a cocoa word is 3.1:1 and fails, and the row you are hovering is the
 	   one you most need to be able to read. */
 	.d-field option:hover,
-	.d-select option:hover{
+	:is(.d-select, .woocommerce-ordering select.orderby) option:hover{
 		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
 	}
 	.d-field option:checked,
-	.d-select option:checked{
+	:is(.d-select, .woocommerce-ordering select.orderby) option:checked{
 		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
 		font-weight:var(--fw-medium);
 	}
 	/* base-select draws its own arrow; ours is the background gradient above. */
 	.d-field select::picker-icon,
-	.d-select::picker-icon{ display:none }
+	:is(.d-select, .woocommerce-ordering select.orderby)::picker-icon{ display:none }
 	.d-field select::checkmark,
-	.d-select::checkmark{ display:none }
+	:is(.d-select, .woocommerce-ordering select.orderby)::checkmark{ display:none }
 }
 
 /* -- checkbox and radio -----------------------------------------------------
@@ -263,7 +272,20 @@
 
    Written on every family that has a control in front of text, because the
    whole point of --control was that these three stop disagreeing. */
-.d-check{
+/* *** WOOCOMMERCE'S OWN CHECKBOX LABEL JOINS THIS LIST RATHER THAN GETTING A
+   SECOND IMPLEMENTATION. *** The owner, looking at the tranche 6 specimen:
+   "the Запомни ме checkmark is not using our checkmark component, whereas it
+   should be." It was not, and nothing was going to give it to it: Woo prints
+   `<label class="woocommerce-form__label-for-checkbox"><input type=checkbox>
+   <span>…</span></label>`, which is EXACTLY .d-check's shape - a control and
+   then a line of text, two grid children - under a different name.
+
+   So the name joins the list. The alternative, a rule in adopted/ that restates
+   the box, the tick, the checked fill and the focus ring against Woo's class, is
+   how the product card came to exist twice and how the quantity stepper came to
+   exist twice. scripts/dupes.js exists to catch that after the fact; a shared
+   selector list means there is nothing to catch. */
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme){
 	display:grid;
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
@@ -272,7 +294,7 @@
 	cursor:pointer;
 	font-size:var(--fs-meta);
 }
-.d-check input{
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input{
 	appearance:none;
 	/* *** ONE WIDTH FOR EVERY CONTROL THAT SITS IN FRONT OF TEXT. ***
 	   This was 1.18em - and em, so it changed size with whatever font-size the
@@ -292,8 +314,8 @@
 	transition:background var(--dur-ui) var(--ease-float),
 	           border-color var(--dur-ui) var(--ease-float);
 }
-.d-check input[type="radio"]{ border-radius:var(--radius-circle) }
-.d-check input::before{
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input[type="radio"]{ border-radius:var(--radius-circle) }
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input::before{
 	content:"";
 	/* The mark is a proportion of the box, not a second measurement - change
 	   --control and the tick still fits. */
@@ -304,14 +326,14 @@
 	background:var(--action-ink);
 	clip-path:polygon(14% 52%, 8% 60%, 38% 88%, 92% 26%, 84% 18%, 38% 70%);
 }
-.d-check input[type="radio"]::before{
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input[type="radio"]::before{
 	clip-path:none;
 	border-radius:var(--radius-circle);
 	width:calc(var(--control) * .44); height:calc(var(--control) * .44);
 }
-.d-check input:checked{ background:var(--action); border-color:var(--action) }
-.d-check input:checked::before{ transform:scale(1) }
-.d-check input:focus-visible{
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input:checked{ background:var(--action); border-color:var(--action) }
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input:checked::before{ transform:scale(1) }
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme) input:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;
 }

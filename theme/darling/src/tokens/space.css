@@ -83,16 +83,51 @@
 	--tap:           2.75rem;   /* 44px - WCAG 2.5.5 Enhanced   */
 	--tap-min:       1.75rem;   /* 28px - clears 2.5.8 Minimum  */
 
-	/* -- the page column -----------------------------------------------------
-	   How wide the readable column of a full-bleed band is allowed to get. Not
-	   a measure: --measure-lede and --measure-hero are about how far an eye
-	   tracks a line of prose, this is about how far a LAYOUT spreads. */
-	/* *** PERCENTAGES, AT THE OWNER'S CALL, AFTER SEEING THEM FULL WIDTH. ***
-	   "alignwide should cover 95 percent of the whole width, default 90% and
-	   .d-prose 60%." These were 1120px / 966.67px / 44ch. The trade a percentage
-	   makes: it tracks the window instead of capping, so on a 2560px monitor the
-	   page rail is 2432px and a line of prose is 1536px - far past the 45-75
-	   characters an eye tracks comfortably. If that turns out to matter, the fix
-	   is a cap - min(95%, 1600px) - not a return to fixed widths. */
-	--page-max: 95%;
+	/* == THE FOUR WIDTHS =======================================================
+	   The owner, asked which of two rails the page frame should sit on:
+
+	     "The percentages I have given you are what I want the different insets
+	      to be. Our banners are end to end so they are 100%, the default one is
+	      what we would use for the main body, the narrower one for prose and
+	      long text, and we have the wide one for some variance where we need it.
+	      ... shouldn't we have these as tokens? Are they already tokens?"
+
+	   They were tokens. That was not the problem. The problem is that they were
+	   TWO HALF-FAMILIES IN TWO FILES, named after where each one came from
+	   rather than after what it is:
+
+	     --page-max      95%   space.css   a "max"
+	     --measure-page  80%   type.css    a "measure"
+	     --measure-lede  60%   type.css    a "measure"
+	     (100%)                nowhere     never named at all
+
+	   Three names, three shapes, two files, and no way to see that they are one
+	   scale. So .d-shell reached for --page-max and the block editor's default
+	   reached for --measure-page, and the page acquired two rails 108px apart
+	   with nobody having decided that. It is the same failure layout.css already
+	   records for --gutter and --space-s: a scale that is not written down as a
+	   scale gets picked from by guess.
+
+	   *** AND A PERCENTAGE IS AN INSET, NOT A CAP, WHICH IS THE OTHER HALF. ***
+	   `max-width:95%` on a box that ALSO has `padding-inline:var(--gutter)`
+	   insets twice: 2.5% for the width, then 60px again for the padding. That is
+	   where the 27px aligngate has been failing on came from. Under this family a
+	   column's width IS its inset and nothing pads on top of it - see .d-shell.
+
+	   One number per width, one place, one shape. --edge-min is the only other
+	   number in the arithmetic and it is a safety floor, not a rail: at 1440 it
+	   never binds; at 320 it stops the wide column touching the glass. */
+	--w-bleed:  100%;   /* a band, a hero - edge to edge                     */
+	--w-wide:    95%;   /* .alignwide, and chrome - "some variance"          */
+	--w-body:    80%;   /* THE PAGE RAIL. .d-shell, and the editor's default */
+	--w-prose:   60%;   /* long copy, where the eye is the constraint        */
+	--edge-min:  1rem;  /* never closer than this to the glass               */
+
+	/* The old names, kept for one commit so nothing breaks silently while the
+	   consumers move over. *** THESE ARE DUE FOR DELETION, NOT FOR USE. *** An
+	   alias that outlives its migration is just the second name that started
+	   this. grep for them before the next commit; there should be none. */
+	--page-max:     var(--w-wide);
+	--measure-page: var(--w-body);
+	--measure-lede: var(--w-prose);
 }

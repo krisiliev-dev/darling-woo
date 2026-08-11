@@ -36,24 +36,29 @@ h2{ font:var(--type-section) }
 h3{ font:var(--fw-bold) var(--fs-lede)/var(--lh-title) var(--font-display) }
 h4{ font:var(--fw-bold) var(--fs-body)/var(--lh-title) var(--font-display) }
 
-p{ margin:0 0 var(--stack); max-width:var(--measure-lede) }
+/* *** THE MEASURE CAME OFF THE PARAGRAPH, AND IT BELONGED ON THE COLUMN. ***
+   This was `max-width:var(--measure-lede)`, and when that token became 60% -
+   percentages, at the owner's call - it stopped being a measure and became a
+   proportion of WHATEVER BOX THE PARAGRAPH LANDED IN. A sentence in a 300px
+   card was capped to 180px. A hint under a form field, to 60% of the field. The
+   card did not get more readable; it got a ragged right edge and 40% of itself
+   unused.
+
+   A measure is a property of a COLUMN OF PROSE, not of the element that happens
+   to hold the words. .d-shell--prose is 60% and .d-band__body is 60%, and a
+   paragraph inside either of them is already measured by being in there. Outside
+   one, the container is the answer and the paragraph should fill it.
+
+   The proof this was wrong before anybody noticed: the rule underneath used to
+   be `p:has(input, textarea, select){ max-width:none }` - an escape hatch, added
+   because the comment form and the classic checkout wrap every field in a <p>
+   and a 676px card was rendering a 380px textarea. That hatch existed to undo
+   this cap for one case. There were more cases; they just had no textarea in
+   them to make the damage obvious.
+
+   THE RULE, then: a column decides the measure, an element never does. */
+p{ margin:0 0 var(--stack) }
 p:last-child{ margin-bottom:0 }
-/* *** A PARAGRAPH HOLDING A CONTROL IS A ROW, NOT A SENTENCE. ***
-   The measure above is right for prose and wrong for the <p> that WordPress's
-   comment form and WooCommerce's CLASSIC checkout wrap around every field:
-   <p class="form-row form-row-wide">. Measured in the review form - a 676px
-   card with a 380px textarea in it, 380px being 44ch at 16px. No rule in
-   adopted/field.css can fix that from the input, because the input already IS
-   width:100%; of a parent the base layer has capped.
-
-   Asking what the paragraph CONTAINS beats listing the classes that happen to
-   be form rows today - the next plugin brings its own. :has() is Chrome 105+
-   and the floor here is 141.
-
-   Deliberately NOT including <a>: p.stars is five anchors and is an inline-flex
-   row of masks about 110px wide, so the cap costs it nothing, while a paragraph
-   of prose with a link in it is still prose. */
-p:has(input, textarea, select){ max-width:none }
 
 a{ color:inherit; text-underline-offset:.18em }
 

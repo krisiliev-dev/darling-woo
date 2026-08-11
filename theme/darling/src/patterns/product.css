@@ -249,9 +249,31 @@
 }
 
 /* Stock. In stock is not news and is hidden - the buy button being enabled says
-   it. Low stock and backorder ARE news, so they are notices. */
-.d-product__stock{ margin:0; font-size:var(--fs-meta) }
-.d-product__stock--in{ display:none }
+   it. Low stock and backorder ARE news, so they are notices.
+
+   *** WOO'S `p.stock` IS THIS COMPONENT UNDER ANOTHER NAME, AND FOR ONE COMMIT
+   IT HAD A SECOND, WORSE OPINION. *** The owner, on the tail specimen: "It also
+   has a stock line which also exists on the product page section." He is right,
+   and the tail was the guilty party: patterns/woo-tail.css claimed
+   `.woocommerce div.product p.stock{font-size:var(--fs-meta)}` - a font size and
+   nothing else - while this file already decided that in-stock is hidden, low
+   stock is a gold mark and out-of-stock is a quiet chip. Two rules, one line of
+   text, and the tail's version would have rendered "In stock" as plain small
+   text on the very page this component was written for.
+
+   It came from the method rather than from carelessness: an ablation asks "what
+   moves when the sheet goes", woocommerce.css sets a font-size on p.stock, and
+   so a font-size is what got written down. The measurement cannot know the
+   element already has an owner. Only the gallery, with both on one page, can.
+
+   Woo's three state classes map one to one, so they join the lists:
+     .in-stock -> --in     .available-on-backorder -> --backorder
+     .out-of-stock -> --out    (there is no Woo class for low; the theme's own
+     template computes it, which is why --low keeps only our name) */
+.d-product__stock,
+.woocommerce div.product p.stock{ margin:0; font-size:var(--fs-meta) }
+.d-product__stock--in,
+.woocommerce div.product p.stock.in-stock{ display:none }
 .d-product__stock--low{
 	display:flex;
 	align-items:center;
@@ -260,13 +282,22 @@
 	font-weight:var(--fw-medium);
 }
 .d-product__stock--backorder,
-.d-product__stock--out{
+.d-product__stock--out,
+.woocommerce div.product p.stock.available-on-backorder,
+.woocommerce div.product p.stock.out-of-stock{
 	padding:var(--space-2xs) var(--space-xs);
 	border-radius:var(--radius-m);
 	background:var(--tint-gold);
 	color:var(--ink);
 }
-.d-product__stock--out{ background:var(--tint-grey-quiet); color:var(--ink-quiet) }
+.d-product__stock--out,
+.woocommerce div.product p.stock.out-of-stock{
+	background:var(--tint-grey-quiet);
+	color:var(--ink-quiet);
+}
+/* an out-of-stock chip should not stretch to the column - it is a label */
+.woocommerce div.product p.stock.available-on-backorder,
+.woocommerce div.product p.stock.out-of-stock{ width:fit-content }
 
 /* The add-to-cart row: quantity stepper, then the button, and the button takes
    the rest of the line. Both come from their own patterns; this only lays them

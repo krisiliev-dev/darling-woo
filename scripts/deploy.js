@@ -140,6 +140,14 @@ function get(url) {
 			['namegate.js', 'every control, link and image announces itself', false],
 			['srgate.js', 'hidden text stays hidden with the Woo sheets off', true],
 			['dupes.js', 'no NEW near-duplicate rules', false, ['--gate']],
+			/* *** THIS ONE WAS RED FOR DAYS AND NOBODY KNEW. ***
+			 * aligngate.js has existed since the page-frame refactor and was never
+			 * on this list, so it only ran when somebody remembered. It was failing
+			 * on twelve assertions, all 27px, from the moment --page-max became a
+			 * percentage while .d-shell still padded on top of it - the exact
+			 * "two rails" defect the gate was written to catch. A gate that is not
+			 * in the deploy is a comment. */
+			['aligngate.js', 'every component sits on its own width token', false],
 		];
 		for (const [file, what, needsMirror, args] of GATES) {
 			const g = path.join(ROOT, 'scripts', file);

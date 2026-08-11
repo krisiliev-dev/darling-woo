@@ -792,7 +792,11 @@ A('<p class="note"><b>Twenty small things belonging to no component, on six '
 A('<p class="note"><b>The ordering dropdown floated right</b>, which is how it '
   'came to sit beside the results count at all: nobody placed them together, the '
   'float did. <code>.d-toolbar</code> places them now and the float only had to '
-  'stop.</p>')
+  'stop. And the <b>select is the field component</b>, not the fallback net: '
+  '<code>.woocommerce-ordering select.orderby</code> is on '
+  '<code>.d-field</code>&rsquo;s own selector lists, so it is the same control '
+  'as every other dropdown on the site &mdash; same box, same chevron, same '
+  'styled menu when you open it.</p>')
 A('<div class="woocommerce" style="max-width:44rem">'
   '<div class="wp-block-group d-toolbar">'
   '<p class="woocommerce-result-count">Показване '
@@ -806,9 +810,17 @@ A('<div class="woocommerce" style="max-width:44rem">'
 A('<p class="note"><b>The stock line</b> is meta, not body text, and the only '
   'thing that had ever said so was <code>woocommerce.css</code>.</p>')
 A('<div class="woocommerce" style="max-width:44rem"><div class="product">'
-  '<p class="stock in-stock">Наличност: 3 бр.</p>'
+  '<p class="stock in-stock">Наличен</p>'
+  '<p class="stock available-on-backorder">Доставка по заявка</p>'
   '<p class="stock out-of-stock">Изчерпано</p>'
   '</div></div>')
+A('<p class="note"><b>Three states, and the first one is not on the page.</b> '
+  '&ldquo;Наличен&rdquo; is hidden, because the '
+  'buy button being enabled already says it &mdash; that was decided for '
+  '<code>.d-product__stock</code> on the product page, and it applies here now '
+  'that Woo&rsquo;s <code>p.stock</code> is on the same selector lists instead of '
+  'having its own font-size in <code>woo-tail.css</code>. Backorder is the gold '
+  'chip, out of stock the quiet one, and neither stretches to the column.</p>')
 A('<p class="note"><b>And the cap on the account page&rsquo;s title goes.</b> '
   '<code>patterns/flow.css</code> decides how wide a page column is; a second '
   'opinion from a plugin is how the site ended up with two rails in the first '
@@ -3189,10 +3201,10 @@ its own token.</p>
 
 <p class="lbl">1 &middot; THE PAGE RAIL &mdash; header, section title and grid, all in <code>.d-shell</code></p>
 <div class="algn"><div class="algn-page">
-<i class="gl gl--low" style="left:var(--gutter)"><b>page rail &mdash; --gutter</b></i>
-<i class="gl" style="left:auto;right:var(--gutter)"></i>
-<i class="gl gl--bar" style="left:var(--gutter-bar)"><b>bar rail &mdash; --gutter-bar</b></i>
-<i class="gl gl--was" style="left:var(--space-s)"><b>where the header used to start, by accident</b></i>
+<i class="gl gl--low" style="left:calc((100% - var(--w-body)) / 2)"><b>page rail &mdash; --w-body, 80%</b></i>
+<i class="gl" style="left:auto;right:calc((100% - var(--w-body)) / 2)"></i>
+<i class="gl gl--bar" style="left:calc((100% - var(--w-wide)) / 2)"><b>bar rail &mdash; --w-wide, 95%</b></i>
+<i class="gl gl--was" style="left:calc((100%% - var(--w-wide)) / 2 + var(--gutter))"><b>where content started while --page-max was a max-width AND --gutter a padding</b></i>
 <header class="d-header" style="position:relative;border-radius:var(--radius-m) var(--radius-m) 0 0">
   <div class="d-header__inner d-shell d-shell--bar">
     <a class="d-header__logo" href="#">&#x414;&#x430;&#x440;&#x43B;&#x438;&#x43D;&#x433;</a>
@@ -3227,8 +3239,8 @@ that and this is that <code>--gutter-bar</code> is named, is one number, and
 
 <p class="lbl">2 &middot; A COLUMN WITH SOMETHING BESIDE IT &mdash; <code>.d-split</code></p>
 <div class="algn"><div class="algn-page">
-<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
-<i class="gl gl--right" style="left:auto;right:var(--gutter)"><b>and the aside ends on it</b></i>
+<i class="gl" style="left:calc((100% - var(--w-body)) / 2)"><b>page rail</b></i>
+<i class="gl gl--right" style="left:auto;right:calc((100% - var(--w-body)) / 2)"><b>and the aside ends on it</b></i>
 <div class="d-shell" style="padding-block:var(--space-m)">
 <div class="d-split">
   <div class="d-split__main d-stack">
@@ -3274,9 +3286,9 @@ not a component we have agreed on.</p>
 
 <p class="lbl">3 &middot; THE CONTROL COLUMN &mdash; a tick, a radio and Woo&rsquo;s own checkbox, one text rail</p>
 <div class="algn"><div class="algn-page">
-<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
-<i class="gl gl--bar" style="left:calc(var(--gutter) + var(--inline))"><b>control rail</b></i>
-<i class="gl gl--low" style="left:calc(var(--gutter) + var(--inline) + var(--control) + var(--inline))"><b>text rail</b></i>
+<i class="gl" style="left:calc((100% - var(--w-body)) / 2)"><b>page rail</b></i>
+<i class="gl gl--bar" style="left:calc(calc((100% - var(--w-body)) / 2) + var(--inline))"><b>control rail</b></i>
+<i class="gl gl--low" style="left:calc((100% - var(--w-body)) / 2 + var(--inline) + var(--control) + var(--inline))"><b>text rail</b></i>
 <div class="d-shell d-stack d-stack--tight" style="padding-block:var(--space-m)">
 <label class="d-check"><input type="checkbox" checked><span>&#x418;&#x441;&#x43A;&#x430;&#x43C; &#x444;&#x430;&#x43A;&#x442;&#x443;&#x440;&#x430; &#x437;&#x430; &#x444;&#x438;&#x440;&#x43C;&#x430;</span></label>
 <label class="d-check"><input type="radio" name="alg-r" checked><span>&#x421;&#x43F;&#x438;&#x434;&#x438; &#x43E;&#x444;&#x438;&#x441;</span></label>
@@ -3306,7 +3318,7 @@ up with the headings and fields above it.</p>
 
 <p class="lbl">4 &middot; RHYTHM &mdash; <code>.d-stack</code>, and why the gap is not a margin</p>
 <div class="algn"><div class="algn-page">
-<i class="gl" style="left:var(--gutter)"><b>page rail</b></i>
+<i class="gl" style="left:calc((100% - var(--w-body)) / 2)"><b>page rail</b></i>
 <div class="d-shell" style="padding-block:var(--space-m)">
 <div class="d-stack">
   <h3 style="font:var(--type-section);margin:0">&#x414;&#x43E;&#x441;&#x442;&#x430;&#x432;&#x43A;&#x430;</h3>
