@@ -312,6 +312,16 @@ html.d-a11y .d-fab{ text-decoration:none }
    ========================================================================== */
 .d-vh,
 .screen-reader-text,
+/* *** THE CONTACT FORM'S LABELS ARE HIDDEN, NOT DELETED. ***
+   Four of them repeated their field's placeholder character for character and
+   the owner asked for the outer one to go. A placeholder is NOT a label - it
+   vanishes on the first keystroke, it is not announced as a name by every
+   screen reader, and it fails 3:1 contrast in most palettes including ours. So
+   deleting the <label> would leave four fields with no accessible name. They
+   come here instead, which is where everything that must be heard and not seen
+   already lives. */
+.darling-contact-form__row > label,
+.darling-contact-form > p > label,
 /* A radio or checkbox that is drawn by its own label - .d-choice paints the box,
    so the real control must be unseeable and still focusable, checkable and
    announced. Listed here rather than repeating the recipe in field.css. */

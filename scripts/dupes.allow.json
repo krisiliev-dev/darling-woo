@@ -3,9 +3,10 @@
  "seeded": 203,
  "allow": [
   {
-   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details))::before",
+   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
    "shared": 16,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before  ==  patterns/product.css|.d-gallery__zoom::before",
@@ -44,9 +45,10 @@
    "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
-   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::after  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::after",
+   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::after  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary), :where(.entry-content details > summary))::after",
    "shared": 11,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li img.avatar  ==  patterns/product.css|.d-review__avatar",
@@ -54,9 +56,10 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/vh.css|.wc-block-components-address-form__darling-office-id,\n.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input  ==  patterns/a11y.css|.d-vh,\n.screen-reader-text,\n\n.d-choice input",
+   "pair": "adopted/vh.css|.wc-block-components-address-form__darling-office-id,\n.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input  ==  patterns/a11y.css|.d-vh,\n.screen-reader-text,\n\n.darling-contact-form__row > label,\n.darling-contact-form > p > label,\n\n.d-choice input",
    "shared": 11,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
@@ -76,9 +79,10 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::before  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))::before",
+   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::before  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary), :where(.entry-content details > summary))::before",
    "shared": 10,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/rating.css|.wc-block-components-product-rating-stars,\n.wc-block-components-product-rating__stars,\n.star-rating  ==  patterns/rating.css|.d-rating",
@@ -296,9 +300,10 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details))",
+   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))",
    "shared": 7,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/product.css|.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before  ==  patterns/mappick.css|.d-mappick__pin::before",
@@ -458,9 +463,10 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary))",
+   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary), :where(.entry-content details > summary))",
    "shared": 6,
-   "why": "CROSS-ORIGIN"
+   "why": "CROSS-ORIGIN",
+   "rekeyed": "selector list widened to carry Woo markup; same debt"
   },
   {
    "pair": "adopted/product.css|.woocommerce div.product div.images .flex-control-thumbs  ==  patterns/product.css|.d-gallery__thumbs",

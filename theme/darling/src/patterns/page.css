@@ -264,3 +264,85 @@ main .entry-content > .woocommerce{
    one - it would inset twice. */
 .d-archive .d-section-title,
 .d-carousel .d-section-title{ max-width:none; padding-inline:0 }
+
+/* =============================================================================
+   THE CONTENT PAGES — Контакти, Помощ, За нас
+
+   Three pages nobody had ever styled as a group, reviewed by the owner in one
+   go: "the title needs to be centered... the body of the text can also be
+   centered up until the form... the body has panels which are not our panel
+   components... About us page needs a centered title similarly to the rest."
+   ========================================================================== */
+
+/* -- the title ----------------------------------------------------------------
+   A CONTENT page announces itself; a SHOP page gets on with it. Контакти,
+   Помощ and За нас are the first, and their title is the only thing above the
+   fold - centred it reads as a masthead. The cart, the checkout and the account
+   are the second: their title is a label on a working surface and centring it
+   would put it somewhere the eye has to travel to.
+
+   Excluded by the classes WooCommerce itself puts on <body>, rather than by
+   naming the three pages. A fourth content page added next month should get
+   this without anybody remembering to add it, and a fifth Woo surface should
+   not. */
+body:not(.woocommerce-page):not(.woocommerce-account):not(.woocommerce-cart):not(.woocommerce-checkout)
+	:is(.wp-block-post-title, .entry-content > h1){
+	text-align:center;
+}
+
+/* -- and the copy above a form ------------------------------------------------
+   "The body of the text can also be centered up until the form." Exactly that,
+   and stated as the relationship rather than as a list of elements: anything
+   inside the content that has the contact form as a LATER SIBLING is the
+   introduction to it. `:has(~ …)` says so in one selector and keeps saying it
+   when a paragraph is added or removed.
+
+   The form itself is left alone. Centred labels over left-aligned fields is the
+   worst of both, and a form is a column of controls, not prose. */
+.entry-content > *:has(~ .darling-contact-form){
+	text-align:center;
+	margin-inline:auto;
+}
+
+/* -- the honeypot, which was VISIBLE -------------------------------------------
+   *** THE FIRST FIELD ON THE CONTACT FORM WAS A SPAM TRAP AND EVERYONE COULD
+   SEE IT. *** Measured on the live page: `<label for="dcf-website">Уебсайт</label>`
+   with a real input beside it, 63x20, first in the form, carrying tabindex="-1"
+   and autocomplete="off" - the signature of a honeypot. It is wrapped in
+   `.darling-hp`, which nothing styled, so the trap meant to catch bots was
+   asking customers for a website.
+
+   display:none rather than the visually-hidden recipe, deliberately. Hidden text
+   is normally kept in the accessibility tree because a screen reader user should
+   hear it; this is the one case where the opposite is true - a field that exists
+   only to be left empty must not be announced to anybody, or the people using a
+   screen reader are the ones who fill it in and get their message rejected. */
+.darling-hp{ display:none }
+
+/* -- a label that repeats its own placeholder ---------------------------------
+   "The fields on the form have labels that duplicate, one inside them and one
+   outside them, the one outside needs to disappear." Measured: four of them, and
+   the label text is character-for-character the placeholder - "Име"/"Име",
+   "Имейл адрес *"/"Имейл адрес *", "Телефон", "Коментар *".
+
+   *** THE LABEL IS HIDDEN, NOT DELETED, AND THAT IS NOT A TECHNICALITY. ***
+   A placeholder is not a label: it disappears the moment somebody types, it is
+   not announced as a name by every screen reader, and it fails at 3:1 contrast
+   in most palettes including ours. Removing the <label> to stop seeing it twice
+   would leave the field with no accessible name at all. So it goes where the
+   skip link goes - clipped, one pixel, still in the tree - and the visible
+   duplicate disappears exactly as asked.
+
+   The selector list lives in patterns/a11y.css beside .d-vh and
+   .screen-reader-text, NOT here. The first version of this rule restated the
+   whole recipe - position, 1px, negative margin, clip-path, nowrap - and
+   dupes.js flagged it against that utility within one build. Fifth time this
+   session that reaching for the component beat writing it again, and the gate
+   caught every one of them. */
+
+/* -- the help page's disclosures are panels -----------------------------------
+   Eight bare <details> at 494x26, no surface, no radius, no arrow of ours. The
+   panel component already reaches `.d-prose .wp-block-details` - the block
+   editor's version of the same object - and these are the hand-written one.
+   They join that list in panel.css rather than getting a second definition
+   here; see the note there. */
