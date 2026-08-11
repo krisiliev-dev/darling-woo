@@ -91,7 +91,22 @@
 	   too, which is the gap. margin-block also stops the shorthand cancelling
 	   margin-inline:auto if this band is ever put inside a shell. */
 	margin-block:var(--section-y) 0;
-	padding:var(--space-m) var(--gutter);
+	/* *** IT IS A BAND, NOT A BLEED. ***
+	   The owner: "the promise band might be better to have as not an edge to
+	   edge item but one of our narrower bands like the seasonal band." It was
+	   running to the glass because it is a direct child of main - a grid item
+	   stretches by default - and its only inset was --gutter, which no longer
+	   decides a rail.
+
+	   So it sits on the page rail like everything else on the page, and gets a
+	   radius, because a surface that stops short of the edge has corners and a
+	   surface that bleeds does not. --w-body is the same token the section
+	   titles and the card grids above it resolve to, so the promise band now
+	   starts on the same vertical line they do rather than 65px outside it. */
+	width:min(var(--w-body), 100% - var(--edge-min) * 2);
+	margin-inline:auto;
+	padding:var(--space-m);
+	border-radius:var(--radius-l);
 	background:var(--surface-quiet);
 	list-style:none;
 }

@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 204,
+ "seeded": 203,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details))::before",
@@ -219,11 +219,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/drawer.css|.d-drawer__line__rm  ==  patterns/wipe.css|.d-wipe__clear",
-   "shared": 8,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/footer.css|.d-footflair__s  ==  patterns/header.css|.d-mega__link::before,\n.d-mega__link::after",
    "shared": 8,
    "why": "SAME ORIGIN"
@@ -349,11 +344,6 @@
    "pair": "patterns/drawer.css|.d-drawer__close  ==  patterns/drawer.css|.d-drawer__line__rm",
    "shared": 7,
    "why": "SAME FILE"
-  },
-  {
-   "pair": "patterns/drawer.css|.d-drawer__close  ==  patterns/wipe.css|.d-wipe__clear",
-   "shared": 7,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after  ==  patterns/footer.css|.d-footflair__s",
@@ -1033,6 +1023,12 @@
    "pair": "patterns/progress.css|.d-progress__native  ==  patterns/progress.css|.d-progress__track",
    "shared": 4,
    "why": "SAME FILE"
+  },
+  {
+   "pair": "patterns/cart.css|.d-trustbar  ==  patterns/page.css|.d-postlist",
+   "shared": 7,
+   "why": "CROSS-COMPONENT",
+   "reason": "The constrained-surface idiom - width:min(--w-body, 100% - edge), margin-inline:auto, padding, radius, a quiet fill - now written twice. A promise band and a post list are NOT one component and folding their selector lists would be a lie; what they share is the page rail, which wants a utility (.d-surface, or .d-shell gaining a surface variant) rather than a shared rule. That is a deliberate refactor across every component that sits on the rail, not a rename, so it is recorded here instead of improvised at the end of a session."
   }
  ]
 }

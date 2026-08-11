@@ -62,10 +62,19 @@
    whole component in adopted/table.css and dupes.js flagged it against this rule
    AND against the password eye at 64% overlap. Three implementations of one
    idea, caught before it shipped. table.css now writes only the delta: a smaller
-   box, a softer radius and the destructive hover. */
+   box, a softer radius and the destructive hover.
+
+   *** AND .d-wipe__clear MAKES FOUR. *** Giving it padding:0 and min-width:0 to
+   stop it rendering as an ellipse also made it, finally, exactly this component:
+   a grid, centred, no chrome, a circle, a quiet ink and a pointer. dupes.js
+   flagged it the moment it became honest about itself. wipe.css keeps only its
+   own deltas - a 1.75rem box rather than a tap target, the gold-tint hover, and
+   the appear/disappear on :placeholder-shown, which is the only part of it that
+   is about a search field rather than about an icon button. */
 .d-icon-btn,
 .d-heart,
-.wc-block-cart-item__remove-link{
+.wc-block-cart-item__remove-link,
+.d-wipe__clear{
 	display:grid;
 	place-items:center;
 	width:var(--tap);

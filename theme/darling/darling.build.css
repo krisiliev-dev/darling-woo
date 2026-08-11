@@ -775,7 +775,8 @@ svg{ max-width:100% }
 
 .d-icon-btn,
 .d-heart,
-.wc-block-cart-item__remove-link{
+.wc-block-cart-item__remove-link,
+.d-wipe__clear{
 	display:grid;
 	place-items:center;
 	width:var(--tap);
@@ -2730,18 +2731,15 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 }
 
 .d-wipe__clear{
+
 	position:relative;
 	z-index:2;
-	display:grid;
-	place-items:center;
 	width:1.75rem;
 	height:1.75rem;
+	min-width:0;
+	padding:0;
 	flex:none;
-	border:0;
-	border-radius:var(--radius-circle);
-	background:none;
 	color:var(--ink-quiet);
-	cursor:pointer;
 	transition:color var(--dur-ui) var(--ease-float),
 	           background var(--dur-ui) var(--ease-float);
 }
@@ -5106,7 +5104,11 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	gap:var(--space-s);
 
 	margin-block:var(--section-y) 0;
-	padding:var(--space-m) var(--gutter);
+
+	width:min(var(--w-body), 100% - var(--edge-min) * 2);
+	margin-inline:auto;
+	padding:var(--space-m);
+	border-radius:var(--radius-l);
 	background:var(--surface-quiet);
 	list-style:none;
 }
@@ -5186,6 +5188,9 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 }
 
 .d-footer > *{ min-width:0 }
+
+.d-footer__pledge,
+.d-footer__map{ margin-block-end:var(--space-s) }
 
 @media (min-width: 881px){
 

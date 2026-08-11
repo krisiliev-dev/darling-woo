@@ -82,6 +82,22 @@
    grid with it. Three columns of text is exactly where that happens. */
 .d-footer > *{ min-width:0 }
 
+/* *** AND THE BLOCKS INSIDE A COLUMN WERE SPACED LIKE SECTIONS. ***
+   Measured on the tallest column - 343px of a 392px footer:
+
+     head    24 + 14.9 margin
+     pledge 104 + 29.7 margin
+     map     28 + 29.7 margin
+     policies 112
+
+   Two --space-m margins, 59.4px, between four blocks that are all one subject:
+   who we are, where we are, how to reach us, what the terms are. --space-m is
+   the air between SECTIONS of a page; inside one footer column it is a third of
+   the height. --space-s, which is what a stack uses between blocks that belong
+   together. */
+.d-footer__pledge,
+.d-footer__map{ margin-block-end:var(--space-s) }
+
 @media (min-width: 881px){
 	/* The last column reads back towards the middle, so the footer is symmetric
 	   about the flair rather than left-aligned three times. */

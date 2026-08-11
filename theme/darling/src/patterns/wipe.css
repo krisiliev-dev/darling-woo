@@ -74,19 +74,35 @@
 /* The button rides the same number. --wipe-travel is how far it has to go: the
    field's width less its own box, set by the shim because CSS cannot measure a
    sibling. */
+/* *** IT WAS AN ELLIPSE ON THE LIVE SITE AND A CIRCLE IN THE GALLERY. ***
+   The owner: "when hovered it looks to be in a bit of an ellipse highlight
+   rather than a circle." Measured on the live home page: 39.6 x 28, with
+   border-radius 50% - which on a non-square box is an ellipse by definition.
+
+   `width:1.75rem` was declared and IGNORED, and the mechanism is worth writing
+   down. This is a flex item, and a flex item's `min-width` defaults to `auto`,
+   which resolves to its MIN-CONTENT size - and min-content includes padding. It
+   was picking up 9.9px/19.8px of padding from a button default the component
+   never declared, so min-content came to 39.6px, and min-width beat width.
+   min-width can only ever enlarge, which is why the box got wider than the
+   number written on it rather than narrower.
+
+   Two declarations, and both are the component finishing its own job: padding:0
+   because a 28px icon button has no padding, and min-width:0 because a component
+   that states its width means it. Same incompleteness the quantity stepper had
+   with its radius - a value left unsaid is a value somebody else says. */
 .d-wipe__clear{
+	/* the component draws the rest - see patterns/icon.css. These are the deltas:
+	   a 1.75rem box rather than a 44px tap target, because it sits INSIDE a field
+	   and a target that fills the field is not a target, it is a second control. */
 	position:relative;
 	z-index:2;
-	display:grid;
-	place-items:center;
 	width:1.75rem;
 	height:1.75rem;
+	min-width:0;
+	padding:0;
 	flex:none;
-	border:0;
-	border-radius:var(--radius-circle);
-	background:none;
 	color:var(--ink-quiet);
-	cursor:pointer;
 	transition:color var(--dur-ui) var(--ease-float),
 	           background var(--dur-ui) var(--ease-float);
 }
