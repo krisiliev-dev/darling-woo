@@ -60,7 +60,27 @@
    one, `.d-btn:hover` at (0,2,0) beats `.d-finish` at (0,1,0), and the finish
    already has its own pointer response through --glow-hover. */
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
-.single_add_to_cart_button:not(.d-finish):hover{
+.single_add_to_cart_button:not(.d-finish):hover,
+/* *** FOUR THINGS ON THIS SITE ARE A CHERRY BUTTON AND ONLY ONE WAS .d-btn. ***
+   The owner, testing the gallery: "some are now darkening on hover, but others
+   aren't, like the ones under Catalogue filters and Може би ще харесате." He is
+   describing four separate declarations of the same object - measured by walking
+   every control with a cherry fill:
+
+     .d-card__cta                          patterns/card.css   x15
+     .wp-block-button__link (upsell)       adopted/card.css     x4
+     .wc-block-product-filters__apply      adopted/filters.css  x2
+     .d-btn                                patterns/button.css  x1
+
+   Each carries its own `background: var(--action-cart)` or `var(--action)` under
+   a different roof, so a change to one reached none of the others - which is
+   exactly what he saw. Folding their LAYOUT into .d-btn is a bigger move than
+   this commit (each sits in a grid of its own), but the cherry surface and its
+   response are one decision and belong in one place. Listed here, so the day the
+   hover changes it changes for all four. */
+.d-card__cta:hover,
+li.wc-block-grid__product .wp-block-button__link:hover,
+.wc-block-product-filters__apply:hover{
 	background:var(--action-hover);
 }
 

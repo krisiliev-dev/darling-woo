@@ -1,3 +1,16 @@
+/* *** `:not(.d-qty)` ON EVERY SELECTOR HERE, AND THAT IS THE WHOLE POINT. ***
+   darling-ui.js upgrades WooCommerce's bare `div.quantity > input.qty` into the
+   real stepper by adding `.d-qty` and inserting the two buttons - the component
+   the gallery shows under "Quantity, badge". Once it has done that, patterns/
+   quantity.css owns the thing, and these rules must get out of the way: they are
+   (0,2,0) and unlayered, so without the :not() they beat `.d-qty` (0,1,0) and the
+   upgraded field kept this file's flex row instead of the component's grid.
+
+   They stay as the no-JS floor. If the script never runs, a Woo quantity is still
+   a field that looks like ours - just without the buttons. Same rule as the card
+   accent and the finish: an upgrade, never a dependency.
+   ========================================================================== */
+
 /* =============================================================================
    ADOPTED / quantity
    *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
@@ -74,7 +87,7 @@
 }
 
 /* the classic quantity box, on the product page */
-.woocommerce .quantity input.qty{
+.woocommerce .quantity:not(.d-qty) input.qty{
 	width:4.4em;
 	min-height:2.9em;
 	padding:.5em;

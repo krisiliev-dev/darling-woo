@@ -4712,7 +4712,27 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
    one, `.d-btn:hover` at (0,2,0) beats `.d-finish` at (0,1,0), and the finish
    already has its own pointer response through --glow-hover. */
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
-.single_add_to_cart_button:not(.d-finish):hover{
+.single_add_to_cart_button:not(.d-finish):hover,
+/* *** FOUR THINGS ON THIS SITE ARE A CHERRY BUTTON AND ONLY ONE WAS .d-btn. ***
+   The owner, testing the gallery: "some are now darkening on hover, but others
+   aren't, like the ones under Catalogue filters and Може би ще харесате." He is
+   describing four separate declarations of the same object - measured by walking
+   every control with a cherry fill:
+
+     .d-card__cta                          patterns/card.css   x15
+     .wp-block-button__link (upsell)       adopted/card.css     x4
+     .wc-block-product-filters__apply      adopted/filters.css  x2
+     .d-btn                                patterns/button.css  x1
+
+   Each carries its own `background: var(--action-cart)` or `var(--action)` under
+   a different roof, so a change to one reached none of the others - which is
+   exactly what he saw. Folding their LAYOUT into .d-btn is a bigger move than
+   this commit (each sits in a grid of its own), but the cherry surface and its
+   response are one decision and belong in one place. Listed here, so the day the
+   hover changes it changes for all four. */
+.d-card__cta:hover,
+li.wc-block-grid__product .wp-block-button__link:hover,
+.wc-block-product-filters__apply:hover{
 	background:var(--action-hover);
 }
 
@@ -8032,9 +8052,14 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	margin-block:var(--space-2xs) var(--space-l);
 	padding:0;
 }
+/* *** NO `display` HERE ANY MORE. *** This rule made Woo's bare quantity a flex
+   row, which was right when that was all it was. darling-ui.js now upgrades it
+   into the real `.d-qty` stepper, and this selector is (0,3,1) against .d-qty's
+   (0,1,0) in the same layer - so it beat the component and the upgraded field
+   kept a flex row instead of the component's inline-grid. What is left here is
+   only what the FORM needs from its child: no float, no margin, no inline
+   baseline. The component decides what it is. */
 .wp-block-woocommerce-add-to-cart-form form.cart .quantity{
-	display:flex;
-	align-items:stretch;
 	float:none;          /* woocommerce.css floats it; the grid places it */
 	margin:0;
 	vertical-align:baseline;
@@ -11364,6 +11389,19 @@ li.wc-block-grid__product .d-card__accent{
 	width:100%;
 }
 
+/* *** THE HOVER HAS TO BE WHERE THE ORIGIN IS. *** patterns/button.css lists
+   every cherry-filled control in one hover rule, and it reached .d-card__cta but
+   not this one: that rule is layered, this file is unlayered, and unlayered beats
+   every layer. The VALUE stays single-sourced as --action-hover; only the
+   declaration is repeated, one copy per origin - the same trade adopted/vh.css
+   records. It folds into the layered rule the day these sheets are dequeued. */
+li.product .wc-block-components-product-button__button:hover,
+li.product .wp-block-button__link:hover,
+li.wc-block-grid__product .wc-block-components-product-button__button:hover,
+li.wc-block-grid__product .wp-block-button__link:hover{
+	background:var(--action-hover);
+}
+
 
 /* ==== adopted/field.css ==== */
 /* =============================================================================
@@ -12941,6 +12979,19 @@ body.woocommerce-checkout .wc-block-components-panel::before,
 body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 
 /* ==== adopted/quantity.css ==== */
+/* *** `:not(.d-qty)` ON EVERY SELECTOR HERE, AND THAT IS THE WHOLE POINT. ***
+   darling-ui.js upgrades WooCommerce's bare `div.quantity > input.qty` into the
+   real stepper by adding `.d-qty` and inserting the two buttons - the component
+   the gallery shows under "Quantity, badge". Once it has done that, patterns/
+   quantity.css owns the thing, and these rules must get out of the way: they are
+   (0,2,0) and unlayered, so without the :not() they beat `.d-qty` (0,1,0) and the
+   upgraded field kept this file's flex row instead of the component's grid.
+
+   They stay as the no-JS floor. If the script never runs, a Woo quantity is still
+   a field that looks like ours - just without the buttons. Same rule as the card
+   accent and the finish: an upgrade, never a dependency.
+   ========================================================================== */
+
 /* =============================================================================
    ADOPTED / quantity
    *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
@@ -13017,7 +13068,7 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 
 /* the classic quantity box, on the product page */
-.woocommerce .quantity input.qty{
+.woocommerce .quantity:not(.d-qty) input.qty{
 	width:4.4em;
 	min-height:2.9em;
 	padding:.5em;
@@ -14362,6 +14413,16 @@ select.orderby:focus-visible{
 /* -- the money path and the plain mode ---------------------------------------- */
 html.d-a11y .wc-block-product-filters__overlay,
 html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
+
+/* *** THE HOVER HAS TO BE WHERE THE ORIGIN IS. *** patterns/button.css lists
+   every cherry-filled control in one hover rule, and it reached .d-card__cta but
+   not this one: that rule is layered, this file is unlayered, and unlayered beats
+   every layer. The VALUE stays single-sourced as --action-hover; only the
+   declaration is repeated, one copy per origin - the same trade adopted/vh.css
+   records. It folds into the layered rule the day these sheets are dequeued. */
+.wc-block-product-filters__apply:hover{
+	background:var(--action-hover);
+}
 
 
 /* ==== adopted/checkout.css ==== */
@@ -16019,7 +16080,7 @@ still not enough separation.</div></section><section class="sec" id="button"><h2
 <code>.d-finish</code> for the plywood surface, but <code>.d-btn</code> alone still
 renders a solid amber button &mdash; a pattern that goes transparent when someone
 forgets a second class will eventually ship transparent. Two amber buttons side by
-side means neither is the answer, so the second choice is outlined.</p><div class="on-dark"><div class="row" style="gap:26px;align-items:center"><a class="d-btn d-finish" href="#">Разгледай всичко</a><a class="d-btn d-btn--lg d-finish" href="#">Купи сега</a><a class="d-btn d-btn--sm d-finish" href="#">Добави</a></div><p class="lbl">amber &mdash; small / default / large</p></div><div class="row" style="margin-top:18px;align-items:center"><a class="d-btn d-finish" href="#">Купи сега</a><a class="d-btn d-btn--quiet" href="#">Още детайли</a><a class="d-btn d-btn--text" href="#">Откажи</a></div><p class="lbl">primary / quiet / text</p></section><section class="sec" id="band"><h2>Pattern</h2><h3>Band</h3><p class="note">Full bleed is the default, not a modifier &mdash; the colour runs
+side means neither is the answer, so the second choice is outlined.</p><div class="on-dark"><div class="row" style="gap:26px;align-items:center"><a class="d-btn" href="#">Cherry &mdash; the base .d-btn</a><a class="d-btn d-finish" href="#">Разгледай всичко</a><a class="d-btn d-btn--lg d-finish" href="#">Купи сега</a><a class="d-btn d-btn--sm d-finish" href="#">Добави</a></div><p class="lbl">amber &mdash; small / default / large</p></div><div class="row" style="margin-top:18px;align-items:center"><a class="d-btn d-finish" href="#">Купи сега</a><a class="d-btn d-btn--quiet" href="#">Още детайли</a><a class="d-btn d-btn--text" href="#">Откажи</a></div><p class="lbl">primary / quiet / text</p></section><section class="sec" id="band"><h2>Pattern</h2><h3>Band</h3><p class="note">Full bleed is the default, not a modifier &mdash; the colour runs
 edge to edge and the <em>content</em> takes the gutter. Built on a grid rather than
 negative margins, because a negative margin has to cancel whatever padding its
 wrapper happens to have, and when it over-cancels you get a horizontal scrollbar at
@@ -16875,6 +16936,7 @@ that is the next component.</div>
 	function init(root) {
 		cardAccents(root);
 		primaryButtons(root);
+		quantitySteppers(root);
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
 		});
@@ -17181,6 +17243,63 @@ that is the next component.</div>
 	   Idempotent, and it runs again on wc-blocks re-render like everything else
 	   here. If the script never runs, the card is exactly what it was before:
 	   the accent is an upgrade, never a dependency. */
+	/* -- WooCommerce's quantity becomes OUR stepper ------------------------------
+	   The owner: "the field next to the button is not the same as the stepper
+	   field we have on the Product page section. The field we are supposed to have
+	   has its own section called Quantity, badge."
+
+	   Woo prints `div.quantity > label.screen-reader-text + input.qty` - a bare
+	   number field. `.d-qty` is a wrapper with a button either side. CSS cannot
+	   add the buttons, and drawing them as pseudo-elements would give something
+	   that looks like a stepper and cannot be clicked, which is worse than not
+	   having one. So the real controls are inserted here.
+
+	   The <label> stays exactly where it is: it is the field's accessible name and
+	   moving it would break the association. The buttons get their own labels and
+	   `type="button"` so they never submit the form they sit in.
+
+	   Both `input` and `change` are dispatched after a step, because Woo listens
+	   for one and the block cart for the other, and a value nobody hears about is
+	   a quantity that silently does not update. */
+	function quantitySteppers(root) {
+		var wraps = (root || document).querySelectorAll('.quantity');
+		for (var i = 0; i < wraps.length; i++) {
+			var wrap = wraps[i];
+			if (wrap.dataset.dQty) { continue; }
+			var input = wrap.querySelector('input.qty, input[type="number"]');
+			if (!input) { continue; }
+			wrap.dataset.dQty = '1';
+			wrap.classList.add('d-qty');
+			input.classList.add('d-qty__input');
+
+			var step = function (dir) {
+				return function () {
+					var cur = parseFloat(input.value);
+					var by = parseFloat(input.step) || 1;
+					var min = input.min === '' ? -Infinity : parseFloat(input.min);
+					var max = input.max === '' ? Infinity : parseFloat(input.max);
+					if (isNaN(cur)) { cur = isFinite(min) ? min : 0; }
+					var next = Math.min(max, Math.max(min, cur + dir * by));
+					if (next === cur) { return; }
+					input.value = String(next);
+					input.dispatchEvent(new Event('input', { bubbles: true }));
+					input.dispatchEvent(new Event('change', { bubbles: true }));
+				};
+			};
+			var mk = function (label, text, dir, before) {
+				var b = document.createElement('button');
+				b.type = 'button';
+				b.className = 'd-qty__button';
+				b.setAttribute('aria-label', label);
+				b.textContent = text;
+				b.addEventListener('click', step(dir));
+				wrap.insertBefore(b, before);
+			};
+			mk('\u041f\u043e-\u043c\u0430\u043b\u043a\u043e', '\u2212', -1, input);
+			mk('\u041f\u043e\u0432\u0435\u0447\u0435', '+', 1, input.nextSibling);
+		}
+	}
+
 	/* -- the product page's add-to-cart is the FINISH button ---------------------
 	   The owner, comparing tranche 5's specimen with the product page section:
 	   "we should have it the way it looks on our product page, since there we are
@@ -17263,7 +17382,7 @@ pointing them at a mask would be a second implementation of a solved thing.<br><
 <b>Windows High Contrast strips background images</b>, and this mark <em>is</em> a
 background &mdash; so without a <code>forced-colors</code> rule every icon would
 vanish silently, still 1em, still taking space, painting nothing. There is one.</div>
-</section><section class="sec" id="chrome"><h2>Patterns</h2><h3>Header, nav, mega menu, search</h3>
+</section><section class="sec" id="chrome"><h2>Patterns</h2><h3>Header, nav, mega menu, search, drawer</h3>
 <p class="note">Ported from <code>style.css</code>, and the port is not a copy.
 <code>--d-honey-light</code> became <code>--tint-gold</code>, so a hovered nav link
 and a hovered panel row are now the same colour <em>by token</em> rather than by
@@ -17276,10 +17395,78 @@ touch screen that does not emulate hover. Both are kept, and a real
 <code>&lt;button aria-expanded&gt;</code> is added alongside. And the current page is
 now <em>underlined</em> as well as coloured, because colour alone is the one cue a
 colour-blind visitor does not get.</p>
-<div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
-' + HEADER_SPECIMEN + '
+<div style="border:1px solid var(--hairline);border-radius:var(--radius-l)"><header class="d-header" style="position:relative" role="banner">
+	<div class="d-header__inner d-shell d-shell--bar">
+
+		<!-- Serif wordmark, exactly as the live site: Latin "Darling" in Playfair.
+		     The old Cyrillic logo + bow moved out per the slice-4 parity sweep. -->
+		<a class="d-header__logo" href="/" aria-label="Darling &mdash; начало">Darling</a>
+
+		<nav class="d-nav" aria-label="Основна навигация">
+			<ul>
+				<li class="d-nav__mega">
+					<!-- *** A BUTTON, NOT A LINK WITH aria-haspopup. ***
+					     The panel used to open on :hover and :focus-within only, which
+					     leaves out every touch visitor. The link to /shop/ is not lost:
+					     it is the first item inside the panel. -->
+					<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
+					<div class="d-mega">
+						<ul class="d-mega__list d-shell d-shell--bar">
+							<li><a class="d-mega__link" href="/shop/">Всички продукти</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-kuhnyata/">За кухнята</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-banyata/">За банята</a></li>
+							<li><a class="d-mega__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-gradinata/">За градината</a></li>
+							<li><a class="d-mega__link" href="/product-category/pochistvane/">Почистване</a></li>
+							<li><a class="d-mega__link" href="/product-category/parti/">Парти и празници</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-decata/">За децата</a></li>
+							<li><a class="d-mega__link" href="/product-category/podaraci/">Подаръци</a></li>
+							<li><a class="d-mega__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
+							<li><a class="d-mega__link" href="/product-category/promocii/">Промоции</a></li>
+						</ul>
+					</div>
+				</li>
+				<li><a href="/za-nas/">За нас</a></li>
+				<li><a href="/pomosht/">Помощ</a></li>
+				<li><a href="/kontakti/">Контакти</a></li>
+			</ul>
+		</nav>
+
+		<!-- The always-visible search bar from the live header. GET keeps it
+		     cache-safe and crawlable; post_type pins product results. .d-wipe adds
+		     the clear button and its sweep - darling-ui.js wires any .d-wipe. -->
+		<form class="d-search d-wipe" role="search" action="/" method="get">
+			<span class="d-icon d-icon--search" aria-hidden="true"></span>
+			<input class="d-wipe__input" type="search" name="s" placeholder="Какво търсиш, darling?" aria-label="Търсене" autocomplete="off">
+			<button class="d-wipe__clear" type="button" aria-label="Изчисти">
+				<span class="d-icon d-icon--close" aria-hidden="true"></span></button>
+			<input type="hidden" name="post_type" value="product">
+		</form>
+
+		<div class="d-header__actions">
+			<a class="d-icon-btn d-header__search-sm" href="/?s=&amp;post_type=product" aria-label="Търсене">
+				<span class="d-icon d-icon--search" aria-hidden="true"></span>
+			</a>
+			<a class="d-icon-btn" href="/my-account/" aria-label="Профил">
+				<span class="d-icon d-icon--user" aria-hidden="true"></span>
+			</a>
+			<!-- The count is filled in by header.js from the Store API, so a cached
+			     page never ships a stale number baked into the HTML. It hides itself
+			     at data-count="0" - icon.css owns that, not the JS. -->
+			<a class="d-icon-btn" href="/cart/" aria-label="Количка" data-cart-button
+			   data-darling-cart-open aria-haspopup="dialog">
+				<span class="d-icon d-icon--cart" aria-hidden="true"></span>
+				<span class="d-icon-btn__count" data-darling-cart-count data-count="0">0</span>
+			</a>
+			<button class="d-icon-btn d-header__burger" type="button"
+			        aria-label="Меню" aria-expanded="false" aria-controls="darling-menu-drawer">
+				<span class="d-icon d-icon--menu" aria-hidden="true"></span>
+			</button>
+		</div>
+	</div>
+</header>
 <div style="padding:26px;background:var(--surface-page);color:var(--ink-quiet);
-  font-size:var(--fs-meta)">Hover <b>Категории</b> to open the mega menu &mdash; the
+  font-size:var(--fs-meta)">Click <b>Продукти</b> to open the mega menu &mdash; the
   two stars on each link are masks, not the <code>&#x2726;</code> and
   <code>&#x2727;</code> dingbats the old rule used. Those are missing from Inter and
   fall back to whatever the system has, which on Windows is a different weight and

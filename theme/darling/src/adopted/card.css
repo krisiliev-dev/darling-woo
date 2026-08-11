@@ -182,3 +182,16 @@ li.wc-block-grid__product .d-card__accent{
 	grid-column:1 / -1;
 	width:100%;
 }
+
+/* *** THE HOVER HAS TO BE WHERE THE ORIGIN IS. *** patterns/button.css lists
+   every cherry-filled control in one hover rule, and it reached .d-card__cta but
+   not this one: that rule is layered, this file is unlayered, and unlayered beats
+   every layer. The VALUE stays single-sourced as --action-hover; only the
+   declaration is repeated, one copy per origin - the same trade adopted/vh.css
+   records. It folds into the layered rule the day these sheets are dequeued. */
+li.product .wc-block-components-product-button__button:hover,
+li.product .wp-block-button__link:hover,
+li.wc-block-grid__product .wc-block-components-product-button__button:hover,
+li.wc-block-grid__product .wp-block-button__link:hover{
+	background:var(--action-hover);
+}

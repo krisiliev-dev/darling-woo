@@ -409,3 +409,13 @@ select.orderby:focus-visible{
 /* -- the money path and the plain mode ---------------------------------------- */
 html.d-a11y .wc-block-product-filters__overlay,
 html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
+
+/* *** THE HOVER HAS TO BE WHERE THE ORIGIN IS. *** patterns/button.css lists
+   every cherry-filled control in one hover rule, and it reached .d-card__cta but
+   not this one: that rule is layered, this file is unlayered, and unlayered beats
+   every layer. The VALUE stays single-sourced as --action-hover; only the
+   declaration is repeated, one copy per origin - the same trade adopted/vh.css
+   records. It folds into the layered rule the day these sheets are dequeued. */
+.wc-block-product-filters__apply:hover{
+	background:var(--action-hover);
+}

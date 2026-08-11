@@ -669,6 +669,12 @@ renders a solid amber button &mdash; a pattern that goes transparent when someon
 forgets a second class will eventually ship transparent. Two amber buttons side by
 side means neither is the answer, so the second choice is outlined.</p>''')
 A('<div class="on-dark"><div class="row" style="gap:26px;align-items:center">')
+# *** THE CHERRY BUTTON WAS NOT IN THE BUTTON SECTION. *** Every specimen here
+# wore .d-finish, so the base .d-btn - the solid cherry one, which is what a
+# .d-card__cta and the filters' Apply actually are - could not be reviewed at
+# all. The owner found it by hovering things elsewhere and noticing they behaved
+# differently.
+A('<a class="d-btn" href="#">Cherry &mdash; the base .d-btn</a>')
 A('<a class="d-btn d-finish" href="#">Разгледай всичко</a>')
 A('<a class="d-btn d-btn--lg d-finish" href="#">Купи сега</a>')
 A('<a class="d-btn d-btn--sm d-finish" href="#">Добави</a>')
@@ -1300,7 +1306,7 @@ vanish silently, still 1em, still taking space, painting nothing. There is one.<
 </section>''')
 
 # -------------------------------------------------------------- header/drawer ---
-A('''<section class="sec" id="chrome"><h2>Patterns</h2><h3>Header, nav, mega menu, search</h3>
+A('''<section class="sec" id="chrome"><h2>Patterns</h2><h3>Header, nav, mega menu, search, drawer</h3>
 <p class="note">Ported from <code>style.css</code>, and the port is not a copy.
 <code>--d-honey-light</code> became <code>--tint-gold</code>, so a hovered nav link
 and a hovered panel row are now the same colour <em>by token</em> rather than by
@@ -1313,10 +1319,9 @@ touch screen that does not emulate hover. Both are kept, and a real
 <code>&lt;button aria-expanded&gt;</code> is added alongside. And the current page is
 now <em>underlined</em> as well as coloured, because colour alone is the one cue a
 colour-blind visitor does not get.</p>
-<div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">
-' + HEADER_SPECIMEN + '
+<div style="border:1px solid var(--hairline);border-radius:var(--radius-l)">''' + HEADER_SPECIMEN + '''
 <div style="padding:26px;background:var(--surface-page);color:var(--ink-quiet);
-  font-size:var(--fs-meta)">Hover <b>Категории</b> to open the mega menu &mdash; the
+  font-size:var(--fs-meta)">Click <b>Продукти</b> to open the mega menu &mdash; the
   two stars on each link are masks, not the <code>&#x2726;</code> and
   <code>&#x2727;</code> dingbats the old rule used. Those are missing from Inter and
   fall back to whatever the system has, which on Windows is a different weight and

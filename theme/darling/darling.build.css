@@ -4710,7 +4710,27 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
    one, `.d-btn:hover` at (0,2,0) beats `.d-finish` at (0,1,0), and the finish
    already has its own pointer response through --glow-hover. */
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
-.single_add_to_cart_button:not(.d-finish):hover{
+.single_add_to_cart_button:not(.d-finish):hover,
+/* *** FOUR THINGS ON THIS SITE ARE A CHERRY BUTTON AND ONLY ONE WAS .d-btn. ***
+   The owner, testing the gallery: "some are now darkening on hover, but others
+   aren't, like the ones under Catalogue filters and Може би ще харесате." He is
+   describing four separate declarations of the same object - measured by walking
+   every control with a cherry fill:
+
+     .d-card__cta                          patterns/card.css   x15
+     .wp-block-button__link (upsell)       adopted/card.css     x4
+     .wc-block-product-filters__apply      adopted/filters.css  x2
+     .d-btn                                patterns/button.css  x1
+
+   Each carries its own `background: var(--action-cart)` or `var(--action)` under
+   a different roof, so a change to one reached none of the others - which is
+   exactly what he saw. Folding their LAYOUT into .d-btn is a bigger move than
+   this commit (each sits in a grid of its own), but the cherry surface and its
+   response are one decision and belong in one place. Listed here, so the day the
+   hover changes it changes for all four. */
+.d-card__cta:hover,
+li.wc-block-grid__product .wp-block-button__link:hover,
+.wc-block-product-filters__apply:hover{
 	background:var(--action-hover);
 }
 
@@ -8030,9 +8050,14 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	margin-block:var(--space-2xs) var(--space-l);
 	padding:0;
 }
+/* *** NO `display` HERE ANY MORE. *** This rule made Woo's bare quantity a flex
+   row, which was right when that was all it was. darling-ui.js now upgrades it
+   into the real `.d-qty` stepper, and this selector is (0,3,1) against .d-qty's
+   (0,1,0) in the same layer - so it beat the component and the upgraded field
+   kept a flex row instead of the component's inline-grid. What is left here is
+   only what the FORM needs from its child: no float, no margin, no inline
+   baseline. The component decides what it is. */
 .wp-block-woocommerce-add-to-cart-form form.cart .quantity{
-	display:flex;
-	align-items:stretch;
 	float:none;          /* woocommerce.css floats it; the grid places it */
 	margin:0;
 	vertical-align:baseline;
@@ -11362,6 +11387,19 @@ li.wc-block-grid__product .d-card__accent{
 	width:100%;
 }
 
+/* *** THE HOVER HAS TO BE WHERE THE ORIGIN IS. *** patterns/button.css lists
+   every cherry-filled control in one hover rule, and it reached .d-card__cta but
+   not this one: that rule is layered, this file is unlayered, and unlayered beats
+   every layer. The VALUE stays single-sourced as --action-hover; only the
+   declaration is repeated, one copy per origin - the same trade adopted/vh.css
+   records. It folds into the layered rule the day these sheets are dequeued. */
+li.product .wc-block-components-product-button__button:hover,
+li.product .wp-block-button__link:hover,
+li.wc-block-grid__product .wc-block-components-product-button__button:hover,
+li.wc-block-grid__product .wp-block-button__link:hover{
+	background:var(--action-hover);
+}
+
 
 /* ==== adopted/field.css ==== */
 /* =============================================================================
@@ -12939,6 +12977,19 @@ body.woocommerce-checkout .wc-block-components-panel::before,
 body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 
 /* ==== adopted/quantity.css ==== */
+/* *** `:not(.d-qty)` ON EVERY SELECTOR HERE, AND THAT IS THE WHOLE POINT. ***
+   darling-ui.js upgrades WooCommerce's bare `div.quantity > input.qty` into the
+   real stepper by adding `.d-qty` and inserting the two buttons - the component
+   the gallery shows under "Quantity, badge". Once it has done that, patterns/
+   quantity.css owns the thing, and these rules must get out of the way: they are
+   (0,2,0) and unlayered, so without the :not() they beat `.d-qty` (0,1,0) and the
+   upgraded field kept this file's flex row instead of the component's grid.
+
+   They stay as the no-JS floor. If the script never runs, a Woo quantity is still
+   a field that looks like ours - just without the buttons. Same rule as the card
+   accent and the finish: an upgrade, never a dependency.
+   ========================================================================== */
+
 /* =============================================================================
    ADOPTED / quantity
    *** THIS FILE IS DELIBERATELY NOT IN A CASCADE LAYER. ***
@@ -13015,7 +13066,7 @@ body.woocommerce-order-received .wc-block-components-panel::before{ opacity:0 }
 }
 
 /* the classic quantity box, on the product page */
-.woocommerce .quantity input.qty{
+.woocommerce .quantity:not(.d-qty) input.qty{
 	width:4.4em;
 	min-height:2.9em;
 	padding:.5em;
@@ -14360,6 +14411,16 @@ select.orderby:focus-visible{
 /* -- the money path and the plain mode ---------------------------------------- */
 html.d-a11y .wc-block-product-filters__overlay,
 html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
+
+/* *** THE HOVER HAS TO BE WHERE THE ORIGIN IS. *** patterns/button.css lists
+   every cherry-filled control in one hover rule, and it reached .d-card__cta but
+   not this one: that rule is layered, this file is unlayered, and unlayered beats
+   every layer. The VALUE stays single-sourced as --action-hover; only the
+   declaration is repeated, one copy per origin - the same trade adopted/vh.css
+   records. It folds into the layered rule the day these sheets are dequeued. */
+.wc-block-product-filters__apply:hover{
+	background:var(--action-hover);
+}
 
 
 /* ==== adopted/checkout.css ==== */

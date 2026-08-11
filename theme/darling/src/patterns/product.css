@@ -646,9 +646,14 @@
 	margin-block:var(--space-2xs) var(--space-l);
 	padding:0;
 }
+/* *** NO `display` HERE ANY MORE. *** This rule made Woo's bare quantity a flex
+   row, which was right when that was all it was. darling-ui.js now upgrades it
+   into the real `.d-qty` stepper, and this selector is (0,3,1) against .d-qty's
+   (0,1,0) in the same layer - so it beat the component and the upgraded field
+   kept a flex row instead of the component's inline-grid. What is left here is
+   only what the FORM needs from its child: no float, no margin, no inline
+   baseline. The component decides what it is. */
 .wp-block-woocommerce-add-to-cart-form form.cart .quantity{
-	display:flex;
-	align-items:stretch;
 	float:none;          /* woocommerce.css floats it; the grid places it */
 	margin:0;
 	vertical-align:baseline;

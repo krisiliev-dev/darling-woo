@@ -440,6 +440,7 @@
 	function init(root) {
 		cardAccents(root);
 		primaryButtons(root);
+		quantitySteppers(root);
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
 		});
@@ -746,6 +747,63 @@
 	   Idempotent, and it runs again on wc-blocks re-render like everything else
 	   here. If the script never runs, the card is exactly what it was before:
 	   the accent is an upgrade, never a dependency. */
+	/* -- WooCommerce's quantity becomes OUR stepper ------------------------------
+	   The owner: "the field next to the button is not the same as the stepper
+	   field we have on the Product page section. The field we are supposed to have
+	   has its own section called Quantity, badge."
+
+	   Woo prints `div.quantity > label.screen-reader-text + input.qty` - a bare
+	   number field. `.d-qty` is a wrapper with a button either side. CSS cannot
+	   add the buttons, and drawing them as pseudo-elements would give something
+	   that looks like a stepper and cannot be clicked, which is worse than not
+	   having one. So the real controls are inserted here.
+
+	   The <label> stays exactly where it is: it is the field's accessible name and
+	   moving it would break the association. The buttons get their own labels and
+	   `type="button"` so they never submit the form they sit in.
+
+	   Both `input` and `change` are dispatched after a step, because Woo listens
+	   for one and the block cart for the other, and a value nobody hears about is
+	   a quantity that silently does not update. */
+	function quantitySteppers(root) {
+		var wraps = (root || document).querySelectorAll('.quantity');
+		for (var i = 0; i < wraps.length; i++) {
+			var wrap = wraps[i];
+			if (wrap.dataset.dQty) { continue; }
+			var input = wrap.querySelector('input.qty, input[type="number"]');
+			if (!input) { continue; }
+			wrap.dataset.dQty = '1';
+			wrap.classList.add('d-qty');
+			input.classList.add('d-qty__input');
+
+			var step = function (dir) {
+				return function () {
+					var cur = parseFloat(input.value);
+					var by = parseFloat(input.step) || 1;
+					var min = input.min === '' ? -Infinity : parseFloat(input.min);
+					var max = input.max === '' ? Infinity : parseFloat(input.max);
+					if (isNaN(cur)) { cur = isFinite(min) ? min : 0; }
+					var next = Math.min(max, Math.max(min, cur + dir * by));
+					if (next === cur) { return; }
+					input.value = String(next);
+					input.dispatchEvent(new Event('input', { bubbles: true }));
+					input.dispatchEvent(new Event('change', { bubbles: true }));
+				};
+			};
+			var mk = function (label, text, dir, before) {
+				var b = document.createElement('button');
+				b.type = 'button';
+				b.className = 'd-qty__button';
+				b.setAttribute('aria-label', label);
+				b.textContent = text;
+				b.addEventListener('click', step(dir));
+				wrap.insertBefore(b, before);
+			};
+			mk('\u041f\u043e-\u043c\u0430\u043b\u043a\u043e', '\u2212', -1, input);
+			mk('\u041f\u043e\u0432\u0435\u0447\u0435', '+', 1, input.nextSibling);
+		}
+	}
+
 	/* -- the product page's add-to-cart is the FINISH button ---------------------
 	   The owner, comparing tranche 5's specimen with the product page section:
 	   "we should have it the way it looks on our product page, since there we are
