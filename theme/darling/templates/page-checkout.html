@@ -7,7 +7,55 @@
      is a conversion decision, not a bug. This gives assistive tech the heading
      without changing what anyone sees. Note there is no footer and no theme nav in
      this template; that is WooCommerce intent and is left alone. -->
-<!-- wp:template-part {"slug":"checkout-header","theme":"woocommerce/woocommerce","tagName":"header"} /-->
+<!-- wp:html -->
+<!-- CHECKOUT HEADER — inline, and deliberately NOT a template part.
+
+     WooCommerce's own `checkout-header` part is built from core blocks, so
+     patterns/header.css - which keys everything off .d-header - never reached a
+     node of it, and core's flex layout was the only thing putting the wordmark
+     and the cart on one line. The cutover render showed both stacked at the left
+     edge the moment that sheet went.
+
+     *** THE FIRST ATTEMPT AT THIS SHIPPED A THEME PART OF THE SAME SLUG AND
+     BLANKED THE CHECKOUT ON A LIVE SHOP FOR ~20 MINUTES. *** The template
+     rendered its header and footer and no checkout block at all. Two candidates
+     were never separated: the {"theme":"darling"} reference failing to resolve,
+     or the part file opening with a long HTML comment before any block markup.
+
+     So the question is removed rather than answered. Inline markup in a wp:html
+     block has no slug to resolve, no second file to find and no theme attribute
+     to be wrong about - and the checkout header is used on exactly one template,
+     which is the case where a part buys nothing anyway. If it is ever needed on
+     a second template, that is the moment to make it a part, with a rendered
+     check on the page it is added to.
+
+     It stays MINIMAL because that was WooCommerce's decision and a good one: no
+     nav, no search, no mega menu, nothing that leads out of the funnel. The
+     wordmark is the way back if somebody changes their mind; the cart is the
+     number they came to pay.
+
+     .d-shell--bar is the same rail the site header sits on, so the wordmark
+     lands on the same vertical line here as on every other page and aligngate
+     covers it without a new assertion.
+
+     .d-header__actions carries the flex, the gap and the margin-inline-start
+     that pushes the cart to the end - a first draft invented .d-header__basket
+     and restated all three. data-cart-button is not decoration: header.css hides
+     every .d-icon-btn in that row on a narrow screen except the burger, the
+     small search and anything with that attribute, so without it the only route
+     back to the cart vanishes on a phone. -->
+<header class="d-header d-header--checkout" role="banner">
+	<div class="d-header__inner d-shell d-shell--bar">
+		<a class="d-header__logo" href="/" aria-label="Darling &mdash; начало">Darling</a>
+		<div class="d-header__actions">
+			<a class="d-icon-btn" data-cart-button href="/cart/"
+			   aria-label="Количка">
+				<span class="d-icon d-icon--cart" aria-hidden="true"></span>
+			</a>
+		</div>
+	</div>
+</header>
+<!-- /wp:html -->
 <!-- wp:woocommerce/page-content-wrapper {"page":"checkout"} -->
 <!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
 <main class="wp-block-group">
