@@ -22,7 +22,8 @@
    Everything below styles markup we do not emit. Keep it to this block so that
    when a Woo update renames a class there is one place to look. */
 li.wp-block-post.product,
-li.product{
+li.product,
+li.wc-block-grid__product{
 	position:relative;
 	display:grid;
 	grid-template-columns:1fr auto;
@@ -36,8 +37,10 @@ li.product{
 	overflow:hidden;
 	transition:box-shadow var(--dur-ui) var(--ease-float);
 }
-li.product:hover{ box-shadow:var(--shadow-card-hover) }
-li.product .wc-block-components-product-image{
+li.product:hover,
+li.wc-block-grid__product:hover{ box-shadow:var(--shadow-card-hover) }
+li.product .wc-block-components-product-image,
+li.wc-block-grid__product .wc-block-components-product-image{
 	grid-column:1 / -1;
 	aspect-ratio:4 / 3;
 	border-radius:var(--radius-s);
@@ -45,17 +48,20 @@ li.product .wc-block-components-product-image{
 	overflow:hidden;
 	margin:0;
 }
-li.product .wc-block-components-product-image img{
+li.product .wc-block-components-product-image img,
+li.wc-block-grid__product .wc-block-components-product-image img{
 	width:100%; height:100%; object-fit:contain;
 	transition:transform 420ms var(--ease-float), filter 420ms var(--ease-float);
 }
-li.product:hover .wc-block-components-product-image img{
+li.product:hover .wc-block-components-product-image img,
+li.wc-block-grid__product:hover .wc-block-components-product-image img{
 	transform:scale(1.06);
 	filter:
 		drop-shadow(0 0 6px hsl(from var(--g-light) h s l / .75))
 		drop-shadow(0 0 22px hsl(from var(--g-core)  h s l / .55));
 }
-li.product .wp-block-post-title{
+li.product .wp-block-post-title,
+li.wc-block-grid__product .wc-block-grid__product-title{
 	grid-column:1;
 	font:var(--fw-medium) var(--fs-ui)/var(--lh-title) var(--font-ui);
 	margin:0;
@@ -65,9 +71,12 @@ li.product .wp-block-post-title{
 	-webkit-box-orient:vertical;
 	overflow:hidden;
 }
-li.product .wp-block-post-title a{ text-decoration:none; color:inherit }
-li.product .wp-block-woocommerce-product-price{ grid-column:2; margin:0 }
-li.product .wc-block-components-product-price{
+li.product .wp-block-post-title a,
+li.wc-block-grid__product .wc-block-grid__product-title a{ text-decoration:none; color:inherit }
+li.product .wp-block-woocommerce-product-price,
+li.wc-block-grid__product .wp-block-woocommerce-product-price{ grid-column:2; margin:0 }
+li.product .wc-block-components-product-price,
+li.wc-block-grid__product .wc-block-components-product-price{
 	display:grid;
 	justify-items:end;
 	text-align:right;
@@ -77,10 +86,12 @@ li.product .wc-block-components-product-price{
 	color:var(--price);
 	white-space:nowrap;
 }
-li.product .wc-block-components-product-price del{
+li.product .wc-block-components-product-price del,
+li.wc-block-grid__product .wc-block-components-product-price del{
 	font-size:.74em; font-weight:var(--fw-regular); color:var(--ink-quiet);
 }
-li.product .wp-block-button.wc-block-components-product-button{ grid-column:1 / -1; margin:0 }
+li.product .wp-block-button.wc-block-components-product-button,
+li.wc-block-grid__product .wp-block-button.wc-block-components-product-button{ grid-column:1 / -1; margin:0 }
 /* *** ONE OF THE TWO SELECTORS THAT BEAT US IN THE LAYER TEST. ***
    Woo sets display, padding, width, line-height, font-size, font-weight,
    background and colour on this from an unlayered sheet, so these are the
@@ -88,7 +99,11 @@ li.product .wp-block-button.wc-block-components-product-button{ grid-column:1 / 
    wc-blocks-style-all-products is dequeued. Everything else here wins from
    inside the layer - verified on the live grid. */
 li.product .wc-block-components-product-button__button,
-li.product .wp-block-button__link{
+li.product .wp-block-button__link,
+li.wc-block-grid__product .wc-block-components-product-button__button,
+li.wc-block-grid__product .wp-block-button__link{
+	/* the block grid's CTA is an <a>, not a <button>, so it arrives underlined */
+	text-decoration:none;
 	display:inline-flex;
 	align-items:center;
 	justify-content:center;
@@ -102,4 +117,68 @@ li.product .wp-block-button__link{
 	background:var(--action-cart);
 	color:var(--action-cart-ink);
 	cursor:pointer;
+}
+
+
+/* =============================================================================
+   THE SAME CARD, THE OTHER GRID, AND THE ACCENT BOTH WERE MISSING
+
+   *** THE OWNER ASKED THE RIGHT QUESTION: "are you using our component or did
+   you make a duplicate?" *** A duplicate. patterns/grid.css had grown a parallel
+   copy of everything above - surface, radius, shadow, hover lift, image glow,
+   clamped title, tabular price - for `li.wc-block-grid__product`. That is the
+   exact failure this session has spent all day naming: a recipe written twice
+   will disagree with itself, and this one disagreed within the hour. My own
+   tranche-4 reset, `ul.wc-block-grid__products > li.wc-block-grid__product`
+   at (0,2,2) with `padding:0`, beat my own card rule at (0,1,1) - so the card
+   had no padding, the image sat on the edge, and the button sat on the edge.
+   The owner saw it immediately.
+
+   So the selector lists above now carry both grids and the duplicate is gone.
+   Only the pieces whose CLASS NAMES differ need anything extra, and there is one:
+   the block grid wraps its image and title in a single link.
+
+   *** AND NEITHER GRID EVER HAD THE ACCENT. *** He said "our cards also have an
+   accent line below the image", and .d-card does - `.d-card__accent`, a real
+   element in OUR markup. WooCommerce prints no such element, so neither
+   li.product on the live shop nor the upsell has ever had one: the component in
+   the gallery and the component that ships had quietly diverged. It is drawn
+   here as a pseudo-element, from the same tokens, so all three finally agree.
+   ========================================================================== */
+
+/* the block grid's image+title live inside one <a>, so the link becomes the
+   card's top row rather than the children being lifted out with
+   `display:contents` - which removes the anchor's box, and with it the focus
+   outline that has to wrap the whole target */
+li.wc-block-grid__product .wc-block-grid__product-link{
+	grid-column:1 / -1;
+	display:grid;
+	gap:var(--stack-tight);
+	text-decoration:none;
+	color:inherit;
+}
+
+/* *** THE ACCENT IS A REAL ELEMENT, INSERTED BY darling-ui.js. ***
+   It was a ::after here first, filled with a flat --g-core, and that was wrong
+   twice over: it is a FLAT approximation of the plywood finish, and it is a
+   second copy of a treatment we already own. `.d-finish` cannot be applied to a
+   pseudo-element at all - the finish uses its own ::before and ::after for the
+   grain and the fireflies, and a pseudo-element cannot have pseudo-elements.
+   So the script inserts `<div class="d-card__accent d-finish">` after the image,
+   which is exactly what .d-card carries in its own markup, and nothing about the
+   finish is reproduced anywhere. Verified in the gallery: both accents resolve
+   to the same radial-gradient, height, radius and shadow.
+   If the script never runs the card is what it was before - the accent is an
+   upgrade, never a dependency.
+
+   *** AND IT NEEDS ITS PLACEMENT RESET. *** `.d-card__accent` is
+   `grid-area:accent`, which is a named area that exists in .d-card's template and
+   in no other grid. Dropped into these cards it addressed lines that do not
+   exist, was placed in an implicit track, and measured 0 x 3px - present,
+   correct in every other respect, and invisible. */
+li.product > .d-card__accent,
+li.wc-block-grid__product .d-card__accent{
+	grid-area:auto;
+	grid-column:1 / -1;
+	width:100%;
 }

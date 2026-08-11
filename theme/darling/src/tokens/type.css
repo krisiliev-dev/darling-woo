@@ -52,7 +52,7 @@
 	   and it resolves to 966.67px today. Written as the arithmetic so that moving
 	   either end moves it with them - a literal 967px here would be a third
 	   number to keep in step with two others by hand. */
-	--measure-page: 90%;
+	--measure-page: 80%;
 	--measure-lede:60%;
 
 	/* -- roles --------------------------------------------------------------- */

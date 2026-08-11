@@ -35,17 +35,23 @@
    "edge to edge" means. Same split as .d-band. */
 .d-footer{
 	display:grid;
-	/* *** IT STACKS WHEN THE CONTAINER RUNS OUT, NOT WHEN THE VIEWPORT DOES. ***
-	   The owner: "the moment it changes over to the sections being one under
-	   another should be when the screen is narrower than the 3 sections width
-	   summed up. Or is there another way?" There is, and it is the one
-	   layout.css already argues for on .d-split: ask the CONTAINER. A media
-	   query only ever knows the viewport, so the footer stayed in three columns
-	   inside any narrow container on a wide screen - which is exactly where it
-	   was overlapping. auto-fit with a 14rem floor wraps at 3x14rem plus the
-	   gaps, roughly 752px of container, and it is right at every width without
-	   anybody choosing a number. */
-	grid-template-columns:repeat(auto-fit, minmax(14rem, 1fr));
+	/* *** THREE COLUMNS OR ONE, AND auto-fit CANNOT SAY THAT. ***
+	   The owner asked for the switch to happen "when the screen is narrower than
+	   the 3 sections width summed up", and asked whether there was another way. I
+	   tried the container-driven one this codebase prefers -
+	   `repeat(auto-fit, minmax(14rem, 1fr))` - and it produced exactly the state
+	   he was complaining about: TWO columns at 700px, with the wordmark stranded
+	   in the left one. auto-fit fits as many as will fit; it has no way to
+	   express "three or one", and two is the arrangement that looks broken.
+
+	   So it is his number after all, and it is measured rather than guessed:
+	   3 x 14rem of column + 2 x --space-l of gap + 2 x --gutter of page inset
+	   = 872px. The switch is at 880.
+
+	   The usual objection to a media query - that it knows the viewport and not
+	   the container - does not bite here: the footer is always the full width of
+	   the page, so for this one component the two are the same thing. */
+	grid-template-columns:1fr auto 1fr;
 	gap:var(--space-l);
 	align-items:start;
 	padding:var(--space-l) var(--gutter) var(--space-m);
@@ -57,7 +63,7 @@
    grid with it. Three columns of text is exactly where that happens. */
 .d-footer > *{ min-width:0 }
 
-@media (min-width: 850px){
+@media (min-width: 881px){
 	/* The last column reads back towards the middle, so the footer is symmetric
 	   about the flair rather than left-aligned three times. */
 	.d-footer > :last-child{ justify-self:end; text-align:end }
@@ -65,11 +71,11 @@
 	.d-footer > :last-child .d-footer__policies,
 	.d-footer > :last-child .d-footer__pledge{ margin-inline-start:auto }
 }
-@media (max-width: 849px){
-	/* the columns take care of themselves now; this is only the phone ORDER -
-	   the wordmark and the social row are what the footer is FOR on a narrow
-	   screen, and three columns of text before them is three screens of scroll */
-	.d-footer{ gap:var(--space-xl) }
+@media (max-width: 880px){
+	/* One column below the measured three-column minimum. And the ORDER: the
+	   wordmark and the social row are what the footer is FOR on a narrow screen,
+	   and three columns of text before them is three screens of scroll. */
+	.d-footer{ grid-template-columns:1fr; gap:var(--space-xl) }
 	.d-footflair{ order:-1 }
 }
 
@@ -208,7 +214,12 @@
    order-received, which is where an idling footer would be a distraction.
    ========================================================================== */
 
-.d-footflair{ text-align:center }
+/* *** CENTRED EXPLICITLY, BECAUSE THE COLUMNS ARE EQUAL NOW. *** With
+   `1fr auto 1fr` the middle column shrink-wrapped, so the flair LOOKED centred
+   without ever being told to be. auto-fit makes all three 1fr and the wordmark
+   went to the left edge of its column - centred by accident before, centred on
+   purpose now. */
+.d-footflair{ justify-self:center; text-align:center }
 
 /* The plywood rule. Not a second divider - see patterns/band.css, where the one
    set of declarations carries both names. */

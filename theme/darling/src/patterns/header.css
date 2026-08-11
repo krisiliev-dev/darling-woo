@@ -162,7 +162,19 @@
 	border-bottom:1px solid var(--hairline);
 	box-shadow:var(--shadow-card);
 }
-.d-nav__mega:hover > .d-mega,
+/* *** IT OPENS ON CLICK, AND NO LONGER ON HOVER. *** The owner: "our Каталог
+   mega menu opens on hover but does not stay open... I actually like this
+   behaviour but I am not sure if this will be confusing." What was there was not
+   a behaviour, it was a bug: `:hover` on the <li> opened a panel that closed the
+   moment the pointer left the trigger, so a mouse user could see the menu and
+   never reach it. Hover-open you cannot hover into is strictly worse than either
+   alternative.
+   Click is what already worked, and it is the same gesture on a mouse, a
+   touchscreen and a keyboard. Hover menus fire by accident when a pointer
+   crosses the header, are unreachable on touch, and punish anyone with a tremor
+   or a head pointer.
+   :focus-within stays as the no-JS path: without the script there is no
+   aria-expanded to toggle, and tabbing to the trigger must still open it. */
 .d-nav__mega:focus-within > .d-mega,
 .d-nav__trigger[aria-expanded="true"] + .d-mega{ display:block }
 /* The same story one level down, and worse: this one centred on --page-max with

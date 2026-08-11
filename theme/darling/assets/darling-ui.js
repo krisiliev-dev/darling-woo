@@ -438,6 +438,7 @@
 	}
 
 	function init(root) {
+		cardAccents(root);
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
 		});
@@ -726,6 +727,43 @@
 				}
 			}
 		}).observe(document.body, { childList: true, subtree: true });
+	}
+
+
+	/* -- the card accent, which CSS could not draw -------------------------------
+	   *** THE GALLERY IS THE SOURCE OF TRUTH, AND .d-card HAS AN ACCENT. ***
+	   `.d-card` puts a real element under its image - `<div class="d-card__accent
+	   d-finish">` - and that plywood rule is part of the component. WooCommerce's
+	   product markup has no such element, so both Woo grids were missing it.
+
+	   It cannot be a pseudo-element. `.d-finish` uses its OWN ::before and ::after
+	   for the grain and the fireflies, and a pseudo-element cannot have pseudo-
+	   elements, so `::after { the finish }` can only ever be a flat approximation
+	   of it - and a flat copy is the duplication this system keeps paying for.
+	   A real element carries the real class and nothing is reproduced.
+
+	   Idempotent, and it runs again on wc-blocks re-render like everything else
+	   here. If the script never runs, the card is exactly what it was before:
+	   the accent is an upgrade, never a dependency. */
+	function cardAccents(root) {
+		var cards = (root || document).querySelectorAll(
+			'li.product, li.wc-block-grid__product');
+		for (var i = 0; i < cards.length; i++) {
+			var card = cards[i];
+			/* *** NOT `:scope > .d-card__accent`. *** The accent goes in beside the
+			   image, and in the block grid the image's parent is the product LINK,
+			   not the card - so a direct-child test never found it and every
+			   re-render added another. Measured: 92 accents in a four-product grid
+			   before this line was widened. */
+			if (card.querySelector('.d-card__accent')) { continue; }
+			var img = card.querySelector('.wc-block-components-product-image');
+			if (!img) { continue; }
+			var acc = document.createElement('div');
+			acc.className = 'd-card__accent d-finish';
+			acc.setAttribute('aria-hidden', 'true');
+			/* after the image in source order, which is where .d-card puts it */
+			(img.parentNode || card).insertBefore(acc, img.nextSibling);
+		}
 	}
 
 	/* WooCommerce blocks mount late and re-render; anything we styled can appear
