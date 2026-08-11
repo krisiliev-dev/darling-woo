@@ -128,7 +128,21 @@
    means touching both patterns and the templates that use them, and that is a
    change to make deliberately rather than in passing. */
 .wp-site-blocks > main:has(> :first-child:is(.d-hero-band, .d-band)){ padding-block-start:0 }
-.wp-site-blocks > main:has(> :last-child:is(.d-hero-band, .d-band)){ padding-block-end:0 }
+/* *** A <script> AT THE END OF main DEFEATED THIS, AND THE SYMPTOM WAS A GAP
+   ABOVE THE FOOTER. *** The owner: "the newsletter band shouldn't have a gap
+   with the footer." It is a .d-band and it IS the last thing anybody sees, so
+   this rule should have fired - but the home page ends with a <script> node
+   after it, so `:last-child` matched the script and the page kept its bottom
+   padding. Measured: a 59.4px band of page background between the claret band
+   and the footer.
+
+   `:nth-last-child(1 of :not(script))` asks the question that was always meant:
+   the last child THAT RENDERS. Chrome 111+, and the floor here is 141.
+   :first-child above is left alone - nothing is ever inserted before the hero,
+   and a selector that has never been wrong does not need rewriting. */
+.wp-site-blocks > main:has(> :nth-last-child(1 of :not(script)):is(.d-hero-band, .d-band)){
+	padding-block-end:0;
+}
 /* *** THE ONE PLACE THE TWO MECHANISMS COULD DOUBLE. *** main is itself often
    `.is-layout-constrained`, so without this its children would take the gap AND
    the child margin below - which is precisely the doubling the model exists to

@@ -672,7 +672,10 @@ svg{ max-width:100% }
 }
 
 .wp-site-blocks > main:has(> :first-child:is(.d-hero-band, .d-band)){ padding-block-start:0 }
-.wp-site-blocks > main:has(> :last-child:is(.d-hero-band, .d-band)){ padding-block-end:0 }
+
+.wp-site-blocks > main:has(> :nth-last-child(1 of :not(script)):is(.d-hero-band, .d-band)){
+	padding-block-end:0;
+}
 
 .wp-site-blocks > main > *{ margin-block:0 }
 
@@ -5176,7 +5179,9 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	grid-template-columns:repeat(auto-fit, minmax(14rem, 1fr));
 	gap:var(--space-l);
 	align-items:start;
-	padding:var(--space-l) var(--gutter) var(--space-m);
+
+	padding-block:var(--space-m) var(--space-s);
+	padding-inline:calc((100% - var(--w-body)) / 2);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }

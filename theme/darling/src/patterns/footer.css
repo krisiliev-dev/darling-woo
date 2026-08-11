@@ -57,7 +57,23 @@
 	grid-template-columns:repeat(auto-fit, minmax(14rem, 1fr));
 	gap:var(--space-l);
 	align-items:start;
-	padding:var(--space-l) var(--gutter) var(--space-m);
+	/* *** THE FOOTER WAS ON A DIFFERENT RAIL FROM THE PAGE, AND STILL TOO TALL. ***
+	   Measured on the live home page after the width rewire: page content starts
+	   at 124px (10% of 1240, which is --w-body at 80% centred) and the footer's
+	   content started at 59.4px, because this padding was --gutter and --gutter
+	   is no longer what decides a rail. Two rails again, in the one component
+	   that runs under every page.
+
+	   And the height: the owner asked for this months ago - "the footer has too
+	   much padding on the top and bottom of all of the text, it can be almost 2x
+	   smaller" - and what I fixed then was the space around the TEXT: the line
+	   height, the gap between links, the tap targets. All correct, all applied,
+	   and none of it this. The box's own padding was --space-l/--space-m and had
+	   never been touched, which is why it still read as too tall and why it
+	   looked to him like the changes had not landed. They had; I had changed the
+	   wrong number. --space-m/--space-s is the halving he asked for. */
+	padding-block:var(--space-m) var(--space-s);
+	padding-inline:calc((100% - var(--w-body)) / 2);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
