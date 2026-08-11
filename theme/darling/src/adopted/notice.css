@@ -101,14 +101,4 @@
 .woocommerce-message::before,
 .wc-block-components-notice-banner.is-success::before{ background:var(--g-core) }
 
-.woocommerce-store-notice,
-.demo_store{
-	display:block;
-	padding:var(--space-2xs) var(--gutter);
-	margin:0;
-	text-align:center;
-	background:var(--surface-band);
-	color:var(--ink-on-dark);
-	font-size:var(--fs-fine);
-	border-radius:0;
-}
+

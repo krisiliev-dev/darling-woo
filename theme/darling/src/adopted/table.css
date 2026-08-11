@@ -27,12 +27,7 @@
    only, which is correct and stays. Selectors are doubled because Woo styles
    these completely and the field pattern already proved that unlayered alone
    does not win - its rules carry an extra ancestor. */
-.wc-block-cart-items.wc-block-cart-items{
-	width:100%;
-	border-collapse:collapse;
-	font-size:var(--fs-meta);
-	color:var(--ink);
-}
+
 .wc-block-cart-items.wc-block-cart-items th{
 	text-align:left;
 	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);

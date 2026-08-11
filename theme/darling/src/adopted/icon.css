@@ -33,36 +33,7 @@
    ========================================================================== */
 
 /* The shared shape. Every rule below only picks a mark. */
-.woocommerce .woocommerce-customer-details--email::before,
-.woocommerce .woocommerce-customer-details--phone::before,
-.woocommerce-account ul.digital-downloads li::before,
-.woocommerce .widget_layered_nav_filters ul li a::before,
-.woocommerce .widget_rating_filter ul li.chosen a::before,
-.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,
-.woocommerce-message::before,
-.woocommerce-error::before,
-.woocommerce-info::before,
-.woocommerce .cart-collaterals .shipping-calculator-button::after{
-	content:"";
-	display:inline-block;
-	flex:none;
-	width:1.05em;
-	height:1.05em;
-	vertical-align:-.18em;
-	margin-inline-end:.45em;
-	/* *** THE FONT DECLARATIONS HAVE TO BE UNSET, NOT JUST OVERPAINTED. ***
-	   Woo sets font-family:WooCommerce on these. If the sheet is still enqueued
-	   while we are testing, an un-reset font-family plus an empty content is a
-	   zero-width nothing in some of them and a stray glyph in others. */
-	font-family:inherit;
-	background:currentColor;
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	mask-position:center;
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	-webkit-mask-position:center;
-}
+
 .woocommerce .woocommerce-customer-details--email::before{ mask-image:var(--icon-mail); -webkit-mask-image:var(--icon-mail) }
 .woocommerce .woocommerce-customer-details--phone::before{ mask-image:var(--icon-phone); -webkit-mask-image:var(--icon-phone) }
 .woocommerce-account ul.digital-downloads li::before{ mask-image:var(--icon-download); -webkit-mask-image:var(--icon-download) }

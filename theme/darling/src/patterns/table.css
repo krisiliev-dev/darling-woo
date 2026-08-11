@@ -29,7 +29,8 @@
    the adopted section, which are forced on us by the markup rather than chosen.
    ========================================================================== */
 
-.d-table{
+.d-table,
+.wc-block-cart-items.wc-block-cart-items{
 	/* The four knobs. Default: two greys that are BOTH different from the page,
 	   one lighter and one darker, so a striped table reads as a distinct object
 	   rather than as the page showing through every other row. */

@@ -18,7 +18,9 @@
    paragraphs.
    ========================================================================== */
 
-.d-skeleton{
+.d-skeleton,
+.wc-block-components-skeleton__element,
+.wc-block-components-skeleton .wc-block-components-skeleton__element{
 	position:relative;
 	display:block;
 	overflow:hidden;

@@ -258,7 +258,9 @@
    The only notice that IS a solid block, because it is not reporting on an
    action - it is the shop talking. No stars: it is present on every page, and
    motion that is always there stops being a flourish and becomes a tic. */
-.d-notice--bar{
+.d-notice--bar,
+.woocommerce-store-notice,
+.demo_store{
 	display:block;
 	border-radius:0;
 	box-shadow:none;
@@ -267,6 +269,10 @@
 	background:var(--surface-band);
 	color:var(--ink-on-dark);
 	font-size:var(--fs-fine);
+}
+.woocommerce-store-notice,
+.demo_store{
+	margin:0;
 }
 .d-notice--bar::before,
 .d-notice--bar::after{ content:none }

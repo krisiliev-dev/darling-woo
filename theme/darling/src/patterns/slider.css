@@ -104,7 +104,9 @@
    itself is the full height, so the tappable area is 44px even though the dot
    is small. A 24px dot with a 24px target is the single most-missed control on
    a phone. */
-.d-slider__input::-webkit-slider-thumb{
+.d-slider__input::-webkit-slider-thumb,
+.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,
+.wc-block-price-filter .ui-slider .ui-slider-handle{
 	-webkit-appearance:none;
 	appearance:none;
 	width:var(--thumb);
@@ -115,6 +117,15 @@
 	background:var(--sl-thumb);
 	box-shadow:var(--shadow-card);
 	transition:transform var(--dur-ui) var(--ease-float);
+}
+.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,
+.wc-block-price-filter .ui-slider .ui-slider-handle{
+	position:absolute;
+	top:50%;
+	margin-inline-start:calc(var(--thumb) / -2);
+	transform:translateY(-50%);
+	cursor:ew-resize;
+	outline:none;
 }
 .d-slider__input::-moz-range-thumb{
 	width:var(--thumb);

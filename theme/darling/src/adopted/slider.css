@@ -47,21 +47,7 @@
 	background:var(--sl-fill);
 	display:block;
 }
-.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,
-.wc-block-price-filter .ui-slider .ui-slider-handle{
-	position:absolute;
-	top:50%;
-	width:var(--thumb);
-	height:var(--thumb);
-	margin-inline-start:calc(var(--thumb) / -2);
-	border:2px solid var(--c-grey-050);
-	border-radius:var(--radius-circle);
-	background:var(--sl-thumb);
-	box-shadow:var(--shadow-card);
-	transform:translateY(-50%);
-	cursor:ew-resize;
-	outline:none;
-}
+
 .woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle:focus-visible,
 .wc-block-price-filter .ui-slider .ui-slider-handle:focus-visible{
 	outline:2px solid var(--focus-ring);

@@ -288,7 +288,17 @@
 	position:relative;
 	background:none;
 }
-.d-icon--cart::before{
+.d-icon--cart::before,
+.woocommerce .woocommerce-customer-details--email::before,
+.woocommerce .woocommerce-customer-details--phone::before,
+.woocommerce-account ul.digital-downloads li::before,
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,
+.woocommerce-message::before,
+.woocommerce-error::before,
+.woocommerce-info::before,
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
 	content:"";
 	position:absolute;
 	inset:0;
@@ -304,6 +314,24 @@
 	/* the axle of the back wheel, so the tip pivots on the thing touching the
 	   ground rather than on the middle of the picture */
 	transform-origin:39.5% 83%;   /* the back axle, in the frame's own grid */
+}
+.woocommerce .woocommerce-customer-details--email::before,
+.woocommerce .woocommerce-customer-details--phone::before,
+.woocommerce-account ul.digital-downloads li::before,
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,
+.woocommerce-message::before,
+.woocommerce-error::before,
+.woocommerce-info::before,
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
+	display:inline-block;
+	flex:none;
+	width:1.05em;
+	height:1.05em;
+	vertical-align:-.18em;
+	margin-inline-end:.45em;
+	font-family:inherit;
 }
 .d-icon--cart::after{
 	content:"";

@@ -19,13 +19,7 @@
    ========================================================================== */
 
 /* -- ADOPTED: WooCommerce's loading states ---------------------------------- */
-.wc-block-components-skeleton__element,
-.wc-block-components-skeleton .wc-block-components-skeleton__element{
-	position:relative;
-	overflow:hidden;
-	border-radius:var(--radius-s);
-	background:var(--c-grey-300);
-}
+
 /* Woo dims a whole region while it refreshes. Dim it, do not hide it: the
    numbers underneath are still the last true ones and hiding them makes a cart
    feel like it lost the order. */
