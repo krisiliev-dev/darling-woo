@@ -251,7 +251,35 @@
 
    min-width:0 on a column is the one that would bite hardest: without it a long
    unbroken string in one column widens the whole grid. patterns/layout.css
-   records the same fix for .d-footer's children. */
+   records the same fix for .d-footer's children.
+
+   *** AND THE WRAPPER WAS MISSING, WHICH THE MEASUREMENT COULD NOT SEE. ***
+   The first version of this block claimed `.wp-block-column` and not
+   `.wp-block-columns`, because that is what the ablation reported: the live
+   pages carry their columns inside a `wp-container-*` hashed layout rule, so
+   disabling core's sheet moved the CHILD and left the parent looking untouched.
+   Rendering a plain two-column block in the gallery - which loads no core CSS -
+   showed what the diff could not: the two columns stacked, full width, one under
+   the other. Two declarations were doing the work and neither was claimed.
+
+     .wp-block-columns          display:flex, and flex-wrap:nowrap over 782px
+     > .wp-block-column         flex-basis:0 over 782px
+
+   flex-basis is the load-bearing one and it is easy to misread. `flex-grow:1`
+   alone does nothing when the base size is `auto`, because auto means max-content
+   - so a column holding a long URL asks for the whole row, the line overflows,
+   and flex-wrap puts the second column on a line of its own. `flex-basis:0` is
+   what makes the columns divide the row instead of claiming it. That is also why
+   min-width:0 looked untested: the columns were never on the same line to
+   compete. Third time an absence has been found by rendering rather than by
+   measuring, so it is written down here rather than in a commit message. */
+.wp-block-columns{
+	display:flex;
+	flex-wrap:wrap;
+	align-items:normal;
+	box-sizing:border-box;
+	gap:var(--space-l);
+}
 .wp-block-column{
 	flex-grow:1;
 	min-width:0;          /* a long URL may not widen the row */
@@ -259,13 +287,31 @@
 	word-break:normal;    /* break-word breaks INSIDE words; overflow-wrap is enough */
 }
 /* Core stacks columns below 782px by making each one full width. Kept, because
-   two 50% columns on a phone is two unreadable columns. */
+   two 50% columns on a phone is two unreadable columns. Over 782 the line may
+   not wrap and each column starts from zero, which is what divides the row. */
 @media (max-width: 781px){
 	.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column{
 		flex-basis:100%;
 		flex-grow:1;
 	}
 }
+@media (min-width: 782px){
+	.wp-block-columns{ flex-wrap:nowrap }
+	.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column{
+		flex-basis:0;
+	}
+	/* an author-set width wins: the editor writes it as an inline flex-basis, and
+	   a column that has been given a width must not also grow past it */
+	.wp-block-columns > .wp-block-column[style*="flex-basis"]{ flex-grow:0 }
+}
+/* the editor's own vertical-alignment classes, which core sets and we did not */
+.wp-block-columns.are-vertically-aligned-top{ align-items:flex-start }
+.wp-block-columns.are-vertically-aligned-center{ align-items:center }
+.wp-block-columns.are-vertically-aligned-bottom{ align-items:flex-end }
+.wp-block-column.is-vertically-aligned-top{ align-self:flex-start }
+.wp-block-column.is-vertically-aligned-center{ align-self:center }
+.wp-block-column.is-vertically-aligned-bottom{ align-self:flex-end }
+.wp-block-column.is-vertically-aligned-stretch{ align-self:stretch }
 .wp-block-post-title{ word-break:normal; overflow-wrap:break-word }
 .wp-block-post-title :where(a){ display:inline }
 .wp-block-post-content{ display:flow-root }   /* contains its children's margins */

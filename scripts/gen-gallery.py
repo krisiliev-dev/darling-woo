@@ -225,6 +225,21 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 .nsldemo{ max-width:22rem; background:var(--surface-raised,#fff);
   border-radius:var(--radius-l); padding:var(--space-m);
   box-shadow:inset 0 0 0 1px color-mix(in oklab, currentColor 12%, transparent) }
+/* GALLERY ONLY - TRANCHE 6's BEFORE. These are woocommerce.css's own six values,
+   restored on the left column so the owner can see what patterns/forms.css
+   replaces. Nothing here ships; the class is applied by a button. */
+.t6-woo .col-1 .form-row{ display:block; padding:3px; margin:0 }
+.t6-woo .col-1 .form-row-wide{ clear:both }
+.t6-woo .col-1 .form-row .input-text{ display:inline-block; width:auto }
+.t6-woo .col-1 .password-input{ display:flex; flex-direction:column;
+  justify-content:center }
+.t6-woo .col-1 .show-password-input{ position:relative; inset:auto;
+  transform:translateY(-15.2px); translate:none; margin-inline-start:auto }
+.t6-woo .col-1 .woocommerce-form-login__submit{ float:left; margin-right:1em }
+/* GALLERY ONLY. The gallery caps its prose at a measure, which is right for a
+   note and wrong for an alignment specimen - has-text-align-right aligned to the
+   end of the MEASURE and read as broken. The box is the ruler here. */
+.algdemo p{ max-width:none }
 .vhdemo{ background:var(--surface-raised,#fff); border-radius:var(--radius-m);
   padding:var(--space-s); box-shadow:inset 0 0 0 1px var(--hairline,#0002) }
 .vhdemo--reveal .screen-reader-text{
@@ -605,6 +620,217 @@ A('<div class="nsldemo woocommerce" style="max-width:26rem">'
   '<a class="star-1" href="#">1</a><a class="star-2" href="#">2</a>'
   '<a class="star-3" href="#">3</a><a class="star-4" href="#">4</a>'
   '<a class="star-5" href="#">5</a></span></p></div>')
+A('</section>')
+
+# --------------------------------------------------------------- account ---
+# TRANCHE 6. Same problem as #hidden: what the tranche REMOVES is invisible
+# once it is removed, because the gallery loads no WooCommerce CSS at all. So
+# the form is shown twice - as it ships, and with a gallery-only class that
+# reinstates Woo's own six values, so the owner can see what is being replaced
+# rather than take the diff on trust.
+A('<section class="sec" id="account"><h2>Dequeue tranche 6</h2>'
+  '<h3>Account forms, and the password reveal</h3>')
+A('<p class="note"><b>The whole tranche is floats and a 3px padding.</b> '
+  'Woo&rsquo;s classic forms predate flexbox: a row is a block with '
+  '<code>padding:3px</code>, a wide row clears, the submit floats with a 1em '
+  'margin, and the reveal button is hauled into place with '
+  '<code>transform:translateY(-15.2px)</code> against a column-direction flex '
+  'parent &mdash; a position expressed as an apology. Thirteen declarations, and '
+  'the only reason to write any of them down is that removing them moves 48 form '
+  'rows on /my-account/ and the classic checkout.</p>')
+A('<p class="note"><b>Toggle below reinstates Woo&rsquo;s six values on the left '
+  'column only</b>, so the two columns are the before and the after side by '
+  'side. Nothing in the toggle ships; it is a gallery-only class.</p>')
+A('<p><button type="button" class="d-btn d-btn--quiet" '
+  'onclick="document.getElementById(\'t6\').classList.toggle(\'t6-woo\')">'
+  'Покажи старото '
+  'поведение</button></p>')
+
+def _acctform(kind, heading):
+	# The real shapes, from woocommerce/templates/myaccount/form-login.php.
+	# `.woocommerce-form` is on both forms; adopted/account.css needs it to
+	# reach (0,3,1), so a specimen without it would be testing a different rule.
+	o = []
+	o.append(u'<div class="col-%s">' % ('1' if kind == 'login' else '2'))
+	o.append(u'<h2>%s</h2>' % heading)
+	o.append(u'<form class="woocommerce-form woocommerce-form-%s %s" method="post">'
+	         % (kind, kind))
+	uid = 'username' if kind == 'login' else 'reg_email'
+	o.append(u'<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">'
+	         u'<label for="%s">%s&nbsp;<span class="required" aria-hidden="true">*</span>'
+	         u'<span class="screen-reader-text">Задължително</span>'
+	         u'</label>'
+	         u'<input type="%s" class="woocommerce-Input woocommerce-Input--text input-text" '
+	         u'name="%s" id="%s" autocomplete="%s" value="">'
+	         u'</p>'
+	         % (uid,
+	            (u'Потребителско име или имейл'
+	             if kind == 'login' else u'Имейл адрес'),
+	            'text' if kind == 'login' else 'email', uid, uid,
+	            'username' if kind == 'login' else 'email'))
+	pid = 'password' if kind == 'login' else 'reg_password'
+	o.append(u'<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">'
+	         u'<label for="%s">Парола&nbsp;'
+	         u'<span class="required" aria-hidden="true">*</span></label>'
+	         u'<span class="password-input">'
+	         u'<input class="woocommerce-Input woocommerce-Input--text input-text" '
+	         u'type="password" name="%s" id="%s" autocomplete="%s">'
+	         u'<button type="button" class="show-password-input" '
+	         u'aria-label="Покажи паролата"></button>'
+	         u'</span>%s</p>'
+	         % (pid, pid, pid,
+	            'current-password' if kind == 'login' else 'new-password',
+	            (u'<div class="woocommerce-password-strength good">'
+	             u'Силата на паролата: добра</div>'
+	             u'<div class="woocommerce-password-hint">Поне 8 знака, '
+	             u'с големи и малки букви.</div>')
+	            if kind == 'register' else u''))
+	o.append(u'<p class="form-row">')
+	if kind == 'login':
+		o.append(u'<label class="woocommerce-form__label woocommerce-form__label-for-checkbox '
+		         u'woocommerce-form-login__rememberme">'
+		         u'<input class="woocommerce-form__input woocommerce-form__input-checkbox" '
+		         u'name="rememberme" type="checkbox" value="forever">'
+		         u'<span>Запомни ме</span></label>')
+	o.append(u'<button type="submit" class="woocommerce-button button d-btn '
+	         u'woocommerce-form-%s__submit" name="%s">%s</button>'
+	         % (kind, kind,
+	            u'Вход' if kind == 'login'
+	            else u'Регистрация'))
+	o.append(u'</p>')
+	if kind == 'login':
+		o.append(u'<p class="woocommerce-LostPassword lost_password">'
+		         u'<a href="#account">Забравена '
+		         u'парола?</a></p>')
+	o.append(u'</form></div>')
+	return u''.join(o)
+
+A('<div class="woocommerce" id="t6"><div class="u-columns col2-set" id="customer_login">')
+A(_acctform('login', u'Вход'))
+A(_acctform('register', u'Регистрация'))
+A('</div></div>')
+A('<p class="note"><b>What to look for.</b> The gap between a label and its field '
+  'is <code>--stack-tight</code> and the gap between rows is <code>--space-s</code>, '
+  'both from the form rather than 3px of padding on each row. The input fills the '
+  'row. The eye sits at the field&rsquo;s inline end, placed by the row, and stays '
+  'there at any width &mdash; drag the window. &ldquo;Запомни '
+  'ме&rdquo; and the submit are two rows now, not a float and whatever '
+  'landed beside it.</p>')
+A('</section>')
+
+# --------------------------------------------------------------- columns ---
+# TRANCHE 8's other half. #flow shows the rhythm; this shows the block
+# primitives, and it exists because the tranche was written against a
+# measurement and never rendered.
+A('<section class="sec" id="columns"><h2>Dequeue tranche 8</h2>'
+  '<h3>Block columns, and content flow</h3>')
+A('<p class="note"><b>Seventeen declarations, and not one of them is a component '
+  'anybody designed</b> &mdash; they are the primitives the block editor emits. '
+  'They live in <code>patterns/flow.css</code> beside the layout supports because '
+  'that file is where WordPress&rsquo;s own structure is claimed.</p>')
+A('<p class="note"><b><code>min-width:0</code> is the one that bites hardest.</b> '
+  'A flex item&rsquo;s automatic minimum size is its content, so one unbroken '
+  'string in one column widens the whole row and pushes its neighbour off. '
+  '<code>patterns/layout.css</code> records the same fix for the footer&rsquo;s '
+  'children. The second column below holds a URL with no break opportunity in '
+  'it; if the row scrolls sideways, the rule is gone.</p>')
+A('<div class="wp-block-columns">'
+  '<div class="wp-block-column">'
+  '<p>Две колони, както '
+  'ги изписва редакторът. '
+  'Тази има обикновен '
+  'текст.</p></div>'
+  '<div class="wp-block-column">'
+  '<p>А тази има адрес '
+  'без място за пренасяне:</p>'
+  '<p><a href="#columns">https://darlinghome.bg/product-category/'
+  'kuhnya-i-trapezariya-keramika-porcelan-i-stuklo-servizi</a></p></div>'
+  '</div>')
+A('<p class="note"><b>The wrapper was missing, and rendering it is what found '
+  'that.</b> The tranche shipped with <code>.wp-block-column</code> claimed and '
+  '<code>.wp-block-columns</code> not, because the ablation reported only the '
+  'child &mdash; the live pages hold their columns inside a '
+  '<code>wp-container-*</code> hashed layout rule, so disabling core&rsquo;s sheet '
+  'moved the child and left the parent looking untouched. The first render of this '
+  'specimen came out stacked, full width, one under the other. Two declarations '
+  'were doing the work: <code>display:flex</code> on the wrapper and '
+  '<code>flex-basis:0</code> on the child over 782px. '
+  '<code>flex-grow</code> alone does nothing while the base size is '
+  '<code>auto</code>, because auto means max-content &mdash; so the column holding '
+  'the URL asked for the whole row and the other one wrapped. That is also why '
+  '<code>min-width:0</code> looked fine: the two were never on one line to '
+  'compete. Third time an absence has been found by rendering rather than by '
+  'measuring.</p>')
+A('<p class="note"><b><code>display:flow-root</code> on the post content</b> makes '
+  'it contain its children&rsquo;s margins instead of letting the first one escape '
+  'through the top. The box below is outlined; its paragraph has a 2rem top margin. '
+  'If the outline starts BELOW the gap rather than above it, the margin has '
+  'escaped.</p>')
+A('<div class="wp-block-post-content" style="box-shadow:inset 0 0 0 1px '
+  'color-mix(in oklab, currentColor 25%, transparent);border-radius:var(--radius-m)">'
+  '<p style="margin-block-start:2rem">Първият '
+  'параграф има '
+  'горно поле от 2rem.</p></div>')
+A('<p class="note"><b>The three alignment classes</b>, which core writes and we '
+  'now write, at <code>:root</code> specificity so a layered rule cannot lose to '
+  'a block&rsquo;s own inline layout.</p>')
+A('<div class="algdemo" style="box-shadow:inset 0 0 0 1px color-mix(in oklab, '
+  'currentColor 25%, transparent);border-radius:var(--radius-m);'
+  'padding:var(--space-s)">'
+  '<p class="has-text-align-left">has-text-align-left</p>'
+  '<p class="has-text-align-center">has-text-align-center</p>'
+  '<p class="has-text-align-right">has-text-align-right</p></div>')
+A('</section>')
+
+# ------------------------------------------------------------------ tail ---
+A('<section class="sec" id="tail"><h2>Dequeue tranches 7 and 9</h2>'
+  '<h3>The tail</h3>')
+A('<p class="note"><b>Twenty small things belonging to no component, on six '
+  'pages.</b> Each is here because removing its sheet moves something. They are '
+  'unglamorous by definition &mdash; a float, a font size, two margins and a cap '
+  '&mdash; and every one of them is on a page a customer reaches.</p>')
+A('<p class="note"><b>The ordering dropdown floated right</b>, which is how it '
+  'came to sit beside the results count at all: nobody placed them together, the '
+  'float did. <code>.d-toolbar</code> places them now and the float only had to '
+  'stop.</p>')
+A('<div class="woocommerce" style="max-width:44rem">'
+  '<div class="wp-block-group d-toolbar">'
+  '<p class="woocommerce-result-count">Показване '
+  'на 1&ndash;12 от 48 резултата</p>'
+  '<form class="woocommerce-ordering" method="get">'
+  '<select name="orderby" class="orderby" aria-label="Подреждане">'
+  '<option value="popularity">По популярност</option>'
+  '<option value="date">По новост</option>'
+  '<option value="price">Цена: ниска към висока</option>'
+  '</select></form></div></div>')
+A('<p class="note"><b>The stock line</b> is meta, not body text, and the only '
+  'thing that had ever said so was <code>woocommerce.css</code>.</p>')
+A('<div class="woocommerce" style="max-width:44rem"><div class="product">'
+  '<p class="stock in-stock">Наличност: 3 бр.</p>'
+  '<p class="stock out-of-stock">Изчерпано</p>'
+  '</div></div>')
+A('<p class="note"><b>And the cap on the account page&rsquo;s title goes.</b> '
+  '<code>patterns/flow.css</code> decides how wide a page column is; a second '
+  'opinion from a plugin is how the site ended up with two rails in the first '
+  'place. Below, the same title with the cap reinstated and without it.</p>')
+A('<div class="woocommerce-account">'
+  '<h1 class="wp-block-post-title" style="max-width:474px">'
+  'Моята сметка &mdash; '
+  'с тяхната шапка</h1>'
+  '<h1 class="wp-block-post-title">'
+  'Моята сметка &mdash; '
+  'без нея</h1></div>')
+A('<p class="note"><b>One correction to what the commit message said.</b> '
+  '<code>.wp-block-woocommerce-cart{container-type:inline-size}</code> is claimed '
+  'and it is correct to claim it, but the reason given was too strong. It said '
+  'dropping it would silently stop every <code>@container</code> rule inside the '
+  'cart from matching. There are, today, <b>zero</b> such rules of ours &mdash; '
+  '<code>grep</code> finds one <code>@container</code> in the whole system and it '
+  'is in <code>media-fail.css</code>. Woo&rsquo;s own cart container queries go '
+  'out with Woo&rsquo;s own sheet. So it protects nothing right now; it is kept '
+  'because it costs one declaration and the alternative is discovering the need '
+  'for it from a broken narrow cart. There is nothing here to render, which is '
+  'why this is a paragraph and not a specimen.</p>')
 A('</section>')
 
 # --------------------------------------------------------------------- card ---
@@ -3468,6 +3694,9 @@ NAV_LABEL = {
 	'flow':      u'Rhythm',
 	'hidden':    u'Hidden text',
 	'social':    u'Social login',
+	'account':   u'Account forms',
+	'columns':   u'Block columns',
+	'tail':      u'The tail',
 	'season':    u'Season',
 	'upsell':    u'Upsell grid',
 	'addcart':   u'Add to cart',

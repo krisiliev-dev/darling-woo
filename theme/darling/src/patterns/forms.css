@@ -61,11 +61,38 @@
 	inset-inline-end:var(--space-2xs);
 	transform:none;
 }
+/* *** THE METER AND HINT ARE GRID ITEMS NOW, AND A GRID CHILD'S MARGIN ADDS TO
+   THE CONTAINER'S GAP. *** adopted/account.css gives both a margin-block-start
+   because in Woo's world they are blocks in normal flow with nothing above them
+   but a collapsed margin. Inside this row they are tracks, and the row already
+   owns the space between tracks - keeping the margin spaces them twice. Fourth
+   time this exact trap has been hit in this codebase, so it is stated rather
+   than silently corrected: THE PARENT OWNS THE GAP, the child owns nothing. */
+.woocommerce form .form-row > .woocommerce-password-strength,
+.woocommerce form .form-row > .woocommerce-password-hint{
+	margin-block-start:0;
+}
 
 /* -- the submit --------------------------------------------------------------
    It floated, so the "Remember me" checkbox sat beside it by accident of source
-   order. The form is a grid; the button is a row in it. */
-.woocommerce .woocommerce-form-login .woocommerce-form-login__submit{
+   order. The form is a grid; the button is a row in it.
+
+   *** AND IT HAD TO COVER THE REGISTER FORM TOO, WHICH THE RENDER FOUND. ***
+   The first version named only `.woocommerce-form-login__submit`, because that
+   is the only submit woocommerce.css FLOATS and the ablation reports what moves.
+   But the row is now a grid, and a grid item with no justification stretches -
+   so the button Woo never floated came out full width while the one it did
+   floated came out shrink-wrapped. The two forms sat side by side in the gallery
+   with two different buttons. A measurement of what CHANGES cannot see that,
+   because nothing changed: the register button was stretched before and after.
+
+   So the rule is about what a submit IS, not about which one Woo floated. Both
+   named explicitly rather than by a `[type=submit]` net, because the checkout's
+   place-order button is full width on purpose and must not be caught. */
+.woocommerce .woocommerce-form-login .woocommerce-form-login__submit,
+.woocommerce .woocommerce-form-register .woocommerce-form-register__submit,
+.woocommerce-form-login__submit,
+.woocommerce-form-register__submit{
 	float:none;
 	margin-inline-end:0;
 	justify-self:start;
