@@ -286,6 +286,13 @@
 	color:var(--ink-placeholder);
 	opacity:1;   /* Firefox dims placeholders by default; the token already is dim */
 }
+/* *** TWO CLEAR BUTTONS APPEARED THE MOMENT THE SPECIMEN USED THE REAL MARKUP. ***
+   parts/header.html ships `type="search"` inside a `.d-wipe`, and .d-wipe has its
+   OWN clear button - the one with the wipe animation. Chrome's native cancel
+   button was being restyled into a matching close icon by the rule below, so the
+   field showed two. Where .d-wipe owns a clear, the native one goes; the rule
+   below still serves any search field that has no wipe. */
+.d-wipe input[type="search"]::-webkit-search-cancel-button{ appearance:none; display:none }
 .d-search input::-webkit-search-cancel-button{
 	appearance:none;
 	width:.9em;
