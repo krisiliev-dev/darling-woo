@@ -577,7 +577,11 @@ A('<p class="note"><b>Woo lays this form out two ways at once and we had claimed
   'button. One rule replaces both idioms &mdash; <code>auto 1fr</code>, quantity '
   'then button, with the float explicitly cleared so nothing of the old one is '
   'left to leak.</p>')
-A('<div class="nsldemo" style="max-width:26rem">'
+# *** THE WRAPPER NEEDS `.woocommerce`. *** adopted/quantity.css styles
+# `.woocommerce .quantity input.qty`, and the first version of this specimen had
+# no such ancestor - so the field rendered as a bare browser input and looked
+# nothing like the product page. The real page has it; the specimen must too.
+A('<div class="nsldemo woocommerce" style="max-width:26rem">'
   '<div class="wp-block-woocommerce-add-to-cart-form">'
   '<form class="cart" action="#" method="post">'
   '<div class="quantity">'

@@ -88,6 +88,11 @@
 	/* -- action: claret is a surface, cherry is a decision ------------------ */
 	--action:     var(--c-cherry);
 	--action-ink: var(--c-cream);
+	/* The owner: "our cherry button variant doesn't have a hover change." It did
+	   not - .d-btn had no :hover rule at all, only .d-btn--quiet did. cherry-deep
+	   is the darker cherry already in the ramp, and already the price colour, so
+	   the hover is a shade of the same red rather than a new one. */
+	--action-hover: var(--c-cherry-deep);
 	--price:      var(--c-cherry-deep);
 
 	/* -- an absent image is still designed: a ramp, never a flat fill ------- */

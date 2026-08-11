@@ -439,6 +439,7 @@
 
 	function init(root) {
 		cardAccents(root);
+		primaryButtons(root);
 		(root || document).querySelectorAll('.d-slider__input').forEach(function (el) {
 			if (!el.dataset.dInit) { el.dataset.dInit = '1'; slider(el); }
 		});
@@ -745,6 +746,22 @@
 	   Idempotent, and it runs again on wc-blocks re-render like everything else
 	   here. If the script never runs, the card is exactly what it was before:
 	   the accent is an upgrade, never a dependency. */
+	/* -- the product page's add-to-cart is the FINISH button ---------------------
+	   The owner, comparing tranche 5's specimen with the product page section:
+	   "we should have it the way it looks on our product page, since there we are
+	   using our field and our golden button." The gallery's own product buy column
+	   is `.d-btn.d-finish` - gold - and WooCommerce prints
+	   `.single_add_to_cart_button` with no way for CSS to add a class. So the
+	   class is added here, for the same reason the card accent is: the finish is a
+	   real treatment with its own ::before and ::after, and reproducing it in a
+	   rule would be a copy that drifts. */
+	function primaryButtons(root) {
+		var btns = (root || document).querySelectorAll('.single_add_to_cart_button');
+		for (var i = 0; i < btns.length; i++) {
+			if (!btns[i].classList.contains('d-finish')) { btns[i].classList.add('d-finish'); }
+		}
+	}
+
 	function cardAccents(root) {
 		var cards = (root || document).querySelectorAll(
 			'li.product, li.wc-block-grid__product');

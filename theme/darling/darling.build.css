@@ -211,6 +211,11 @@ table[class*="woocommerce-"] {
 	/* -- action: claret is a surface, cherry is a decision ------------------ */
 	--action:     var(--c-cherry);
 	--action-ink: var(--c-cream);
+	/* The owner: "our cherry button variant doesn't have a hover change." It did
+	   not - .d-btn had no :hover rule at all, only .d-btn--quiet did. cherry-deep
+	   is the darker cherry already in the ramp, and already the price colour, so
+	   the hover is a shade of the same red rather than a new one. */
+	--action-hover: var(--c-cherry-deep);
 	--price:      var(--c-cherry-deep);
 
 	/* -- an absent image is still designed: a ramp, never a flat fill ------- */
@@ -4692,9 +4697,22 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 
 	background:var(--action);
 	color:var(--action-ink);
-	transition:transform var(--dur-ui) var(--ease-float);
+	transition:transform var(--dur-ui) var(--ease-float),
+	           background-color var(--dur-ui) var(--ease-float);
 }
 .d-btn:active{ transform:translateY(1px) }
+/* *** THE HOVER BELONGS TO THE SOLID CHERRY BUTTON AND TO NOTHING ELSE. ***
+   The first version was `.d-btn:not(.d-finish):hover`, and testing every variant
+   caught what that meant: .d-btn--text is a link that behaves like a button, and
+   it grew a cherry FILL on hover. .d-btn--quiet has its own hover and would have
+   been a coin toss on source order.
+   .d-finish is excluded for a different reason - a gold button is not a cherry
+   one, `.d-btn:hover` at (0,2,0) beats `.d-finish` at (0,1,0), and the finish
+   already has its own pointer response through --glow-hover. */
+.d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
+.single_add_to_cart_button:not(.d-finish):hover{
+	background:var(--action-hover);
+}
 
 .d-btn--sm{ font-size:var(--fs-badge); padding:.52em 1.05em }
 .d-btn--lg{ font-size:var(--fs-lede);  padding:.8em 1.9em }
