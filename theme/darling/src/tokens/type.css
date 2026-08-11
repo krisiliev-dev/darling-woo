@@ -52,8 +52,8 @@
 	   and it resolves to 966.67px today. Written as the arithmetic so that moving
 	   either end moves it with them - a literal 967px here would be a third
 	   number to keep in step with two others by hand. */
-	--measure-page: calc(var(--measure-hero) + (var(--page-max) - var(--measure-hero)) * 2 / 3);
-	--measure-lede:44ch;
+	--measure-page: 90%;
+	--measure-lede:60%;
 
 	/* -- roles --------------------------------------------------------------- */
 	--type-hero:    var(--fw-bold) var(--fs-hero)/var(--lh-hero) var(--font-display);

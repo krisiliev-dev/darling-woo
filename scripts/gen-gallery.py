@@ -237,37 +237,25 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
 # The header markup, hoisted so the flow specimen can show the REAL header
 # rather than a box labelled 'header'. It was already written out twice in this
 # file before this; now it is written once.
-HEADER_SPECIMEN = '''<header class="d-header" style="position:relative">
-  <div class="d-header__inner d-shell d-shell--bar">
-    <a class="d-header__logo" href="#">Дарлинг</a>
-    <nav class="d-nav"><ul>
-					<li class="d-nav__mega">
-						<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
-					</li>
-					<li><a href="#">За нас</a></li>
-					<li><a href="#">Помощ</a></li>
-					<li><a href="#">Контакти</a></li>
-				</ul></div></li>
-      <li><a href="#">Промоции</a></li>
-      <li><a href="#">За нас</a></li>
-    </ul></nav>
-    <div class="d-search d-wipe">
-      <span class="d-icon d-icon--search"></span>
-      <input class="d-wipe__input" type="text" value="керамична купа"
-             placeholder="Какво търсиш, darling?" aria-label="Търсене">
-      <button class="d-wipe__clear" type="button" aria-label="Изчисти">
-        <span class="d-icon d-icon--close"></span></button>
-    </div>
-    <div class="d-header__actions">
-      <button class="d-icon-btn" aria-label="Профил"><span class="d-icon d-icon--user"></span></button>
-      <input type="checkbox" class="d-heart" aria-label="Добави в любими">
-      <button class="d-icon-btn" aria-label="Количка" data-cart-button><span class="d-icon d-icon--cart"></span>
-        <span class="d-icon-btn__count">2</span></button>
-      <button class="d-icon-btn d-header__search-sm" aria-label="Търсене"><span class="d-icon d-icon--search"></span></button>
-      <button class="d-icon-btn d-header__burger" aria-label="Меню"><span class="d-icon d-icon--menu"></span></button>
-    </div>
-  </div>
-</header>'''
+# *** THE HEADER SPECIMEN IS READ FROM parts/header.html, NOT COPIED. ***
+# It was a copy, and it drifted: the gallery advertised Начало / Категории /
+# Промоции / За нас while the part ships a Продукти mega trigger plus За нас,
+# Помощ, Контакти. Three of the four did not exist on the site. Patching the copy
+# then broke it outright - a non-greedy `.*?</ul>` stopped at the mega panel's
+# INNER </ul> and left orphan </div></li> behind, which closed the header early
+# and collapsed it into a column. That is the same non-greedy trap HANDOFF.md
+# already records from b1shell.js, made twice now.
+#
+# So it is no longer a copy. The part is the source; the gallery shows what
+# ships, and cannot say otherwise.
+_part = open(os.path.join(THEME, 'parts', 'header.html'), encoding='utf-8').read()
+_m = re.search(r'<header\b.*?</header>', _part, re.S)
+if not _m:
+    sys.stderr.write('gen-gallery: no <header> in parts/header.html\n')
+    raise SystemExit(1)
+HEADER_SPECIMEN = (_m.group(0)
+                   # the specimen sits inside the page rather than at its top
+                   .replace('<header class="d-header"', '<header class="d-header" style="position:relative"', 1))
 
 PRODUCTS = [
     ('Керамична купа', '26,40', None, None),
@@ -516,6 +504,59 @@ A('<p class="note"><b>A defect the plugin ships, found while measuring this.</b>
   'axe passes it, because a name exists; <code>scripts/namegate.js</code> now also '
   'fails a name that contains markup. It is the plugin&rsquo;s bug and it needs a '
   'filter on its output, not CSS. The specimen above uses the corrected name.</p>')
+A('</section>')
+
+# ------------------------------------------------------------------ upsell ---
+# TRANCHE 4. The other product grid - Woo's older block grid, which the cart and
+# checkout pages use for "you may also like" and which nothing of ours had ever
+# touched. The markup is Woo's, copied from the live cart.
+def UPSELL(name, price, badge):
+    return ('<li class="wc-block-grid__product">'
+            '<a href="#" class="wc-block-grid__product-link">'
+            # NO NESTED <a>. The first draft wrapped the image in its own link
+            # inside the product link - invalid HTML, and it left the outer link
+            # with no accessible name because the inner one swallowed the title.
+            # scripts/namegate.js failed the build on it, which is the whole
+            # point of the gate: it caught this in the spec page, not on the site.
+            '<div class="wc-block-components-product-image">'
+            '<img src="%s" alt=""></div>'
+            '<div class="wc-block-grid__product-title">%s</div></a>'
+            '<div class="wc-block-grid__product-price wc-block-components-product-price">'
+            '<span class="wc-block-components-product-price__value">%s лв.</span></div>'
+            '<div class="wp-block-button wc-block-grid__product-add-to-cart '
+            'wc-block-components-product-button">'
+            '<a href="#" class="wp-block-button__link">Добави</a>'
+            '</div></li>' % (CUTOUT, name, price))
+
+A('<section class="sec" id="upsell"><h2>Dequeue tranche 4</h2>'
+  '<h3>&bdquo;Може би ще харесате&ldquo; '
+  '&mdash; the second product grid</h3>')
+A('<p class="note"><b>There are two product grids on this site and they share '
+  'nothing.</b> The shop, home and 404 use '
+  '<code>ul.wp-block-post-template &gt; li.wp-block-post.product</code>, which '
+  '<code>adopted/card.css</code> dresses. The cart and checkout pages use this one '
+  '&mdash; <code>ul.wc-block-grid__products &gt; li.wc-block-grid__product</code> '
+  '&mdash; and it was wearing WooCommerce&rsquo;s clothes end to end and nothing of '
+  'ours. <b>Not the cart drawer</b>, which is a different component and was already '
+  'ours.</p>')
+A('<p class="note"><b>Both grids are <code>&lt;ul&gt;</code>, and that is the '
+  'loudest thing in the tranche.</b> With the sheets off, this one went '
+  '<code>display:flex &rarr; block</code>, <code>padding-left 0 &rarr; 40px</code> '
+  'and <code>list-style none &rarr; disc</code>: a product grid with bullets down '
+  'the left. The list <em>semantics</em> stay &mdash; &ldquo;list, 4 items&rdquo; is '
+  'how somebody knows how many products are there &mdash; only the marker and the '
+  'indent go.</p>')
+A('<p class="note">Woo lays it out as flex with <code>margin:0 -8px</code> and a '
+  'transparent 16px border on each card standing in for the gap, the pre-'
+  '<code>gap</code> idiom. It is replaced with the same auto-fill arithmetic as '
+  '<code>.d-grid</code>, so the two product grids finally agree about how wide a '
+  'product is and how far apart they sit. <b>This is what it looks like after the '
+  'dequeue</b> &mdash; the gallery loads no WooCommerce CSS, so what you see here '
+  'is our rules alone.</p>')
+A('<ul class="wc-block-grid__products">')
+for name, price, was, badge in PRODUCTS:
+    A(UPSELL(name, price, badge))
+A('</ul>')
 A('</section>')
 
 # --------------------------------------------------------------------- card ---
@@ -3375,6 +3416,7 @@ NAV_LABEL = {
 	'hidden':    u'Hidden text',
 	'social':    u'Social login',
 	'season':    u'Season',
+	'upsell':    u'Upsell grid',
 	'footer':    u'Footer',
 	'hero':      u'Hero',
 	'catalogue': u'Catalogue',

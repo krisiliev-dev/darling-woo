@@ -87,5 +87,12 @@
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye
 	   tracks a line of prose, this is about how far a LAYOUT spreads. */
-	--page-max: 1120px;
+	/* *** PERCENTAGES, AT THE OWNER'S CALL, AFTER SEEING THEM FULL WIDTH. ***
+	   "alignwide should cover 95 percent of the whole width, default 90% and
+	   .d-prose 60%." These were 1120px / 966.67px / 44ch. The trade a percentage
+	   makes: it tracks the window instead of capping, so on a 2560px monitor the
+	   page rail is 2432px and a line of prose is 1536px - far past the 45-75
+	   characters an eye tracks comfortably. If that turns out to matter, the fix
+	   is a cap - min(95%, 1600px) - not a return to fixed widths. */
+	--page-max: 95%;
 }

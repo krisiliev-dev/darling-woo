@@ -43,20 +43,19 @@ const type = tokens(read('tokens/type.css'));
 const space = tokens(read('tokens/space.css'));
 const radius = tokens(read('tokens/radius.css'));
 
-/* --measure-page is authored as `calc(--measure-hero + (--page-max - --measure-hero) * 2/3)`
- * so the relationship survives a change to either end. theme.json has no calc(),
- * so the two ends are read and the arithmetic is done once, here. If either
- * token stops being a plain px value this throws rather than emitting nonsense. */
-const px = (name, map) => {
+/* contentSize and wideSize are read straight from the tokens now. They used to
+ * be px and --measure-page was computed here from the two ends; the owner moved
+ * all three to percentages after seeing them at full width, so there is nothing
+ * left to compute and a px-only parser would have thrown. Any CSS length works
+ * in theme.json, percentages included - what matters is that the number lives in
+ * the token file and not in two places. */
+const lengthOf = (name, map, fallback) => {
   const v = (map.get(name) || '').trim();
-  const m = /^(\d+(?:\.\d+)?)px$/.exec(v);
-  if (!m) throw new Error('gen-theme-json: ' + name + ' is not a plain px value: "' + v + '"');
-  return parseFloat(m[1]);
+  if (!v) { console.log('   gen-theme-json: ' + name + ' missing, using ' + fallback); return fallback; }
+  if (/^(calc|var)\(/.test(v)) throw new Error('gen-theme-json: theme.json cannot hold a calc()/var(): ' + name + ' = ' + v);
+  return v;
 };
-const MEASURE_PAGE = (() => {
-  const lo = px('--measure-hero', type), hi = px('--page-max', space);
-  return Math.round((lo + (hi - lo) * 2 / 3) * 100) / 100 + 'px';
-})();
+const MEASURE_PAGE = lengthOf('--measure-page', type, '90%');
 
 // ---- palette ---------------------------------------------------------------
 // The --c-* primitives and nothing else. Primitives name the VALUE, semantics
@@ -177,7 +176,7 @@ const theme = {
       // about how wide a page column is. It is a calc() in the token file; the
       // resolved value is written here because theme.json cannot hold one.
       contentSize: MEASURE_PAGE,
-      wideSize: space.get('--page-max') || '1120px'
+      wideSize: lengthOf('--page-max', space, '95%')
     },
     spacing: {
       units: ['px', 'em', 'rem', '%'],

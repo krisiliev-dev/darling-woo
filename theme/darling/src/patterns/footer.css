@@ -68,7 +68,15 @@
 .d-footer__links{
 	display:flex;
 	flex-direction:column;
-	gap:0;
+	/* *** min-height CANNOT SEPARATE A WRAPPED ITEM. *** line-height:1.2 fixed the
+	   single-line case, and the owner found the one it did not: "except for some
+	   reason on 'Връщане и замяна' and 'Често задавани въпроси'". Those are the
+	   two that wrap. A one-line link is 28px tall against 16.8px of text, so the
+	   spare 11.2px reads as the gap between items - but a WRAPPED link is taller
+	   than min-height, the spare vanishes, and consecutive wrapped items touch at
+	   0px while their own lines sit 2.8px apart. Separation between items has to
+	   be a gap, which does not depend on how tall the item happens to be. */
+	gap:var(--space-2xs);
 	justify-self:start;
 }
 .d-footer__links a,

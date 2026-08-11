@@ -355,8 +355,8 @@ table[class*="woocommerce-"] {
 	   and it resolves to 966.67px today. Written as the arithmetic so that moving
 	   either end moves it with them - a literal 967px here would be a third
 	   number to keep in step with two others by hand. */
-	--measure-page: calc(var(--measure-hero) + (var(--page-max) - var(--measure-hero)) * 2 / 3);
-	--measure-lede:44ch;
+	--measure-page: 90%;
+	--measure-lede:60%;
 
 	/* -- roles --------------------------------------------------------------- */
 	--type-hero:    var(--fw-bold) var(--fs-hero)/var(--lh-hero) var(--font-display);
@@ -482,7 +482,14 @@ table[class*="woocommerce-"] {
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye
 	   tracks a line of prose, this is about how far a LAYOUT spreads. */
-	--page-max: 1120px;
+	/* *** PERCENTAGES, AT THE OWNER'S CALL, AFTER SEEING THEM FULL WIDTH. ***
+	   "alignwide should cover 95 percent of the whole width, default 90% and
+	   .d-prose 60%." These were 1120px / 966.67px / 44ch. The trade a percentage
+	   makes: it tracks the window instead of capping, so on a 2560px monitor the
+	   page rail is 2432px and a line of prose is 1536px - far past the 45-75
+	   characters an eye tracks comfortably. If that turns out to matter, the fix
+	   is a cap - min(95%, 1600px) - not a return to fixed widths. */
+	--page-max: 95%;
 }
 }
 
@@ -8181,7 +8188,15 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 .d-footer__links{
 	display:flex;
 	flex-direction:column;
-	gap:0;
+	/* *** min-height CANNOT SEPARATE A WRAPPED ITEM. *** line-height:1.2 fixed the
+	   single-line case, and the owner found the one it did not: "except for some
+	   reason on 'Връщане и замяна' and 'Често задавани въпроси'". Those are the
+	   two that wrap. A one-line link is 28px tall against 16.8px of text, so the
+	   spare 11.2px reads as the gap between items - but a WRAPPED link is taller
+	   than min-height, the spare vanishes, and consecutive wrapped items touch at
+	   0px while their own lines sit 2.8px apart. Separation between items has to
+	   be a gap, which does not depend on how tall the item happens to be. */
+	gap:var(--space-2xs);
 	justify-self:start;
 }
 .d-footer__links a,

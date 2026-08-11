@@ -356,8 +356,8 @@ table[class*="woocommerce-"] {
 	   and it resolves to 966.67px today. Written as the arithmetic so that moving
 	   either end moves it with them - a literal 967px here would be a third
 	   number to keep in step with two others by hand. */
-	--measure-page: calc(var(--measure-hero) + (var(--page-max) - var(--measure-hero)) * 2 / 3);
-	--measure-lede:44ch;
+	--measure-page: 90%;
+	--measure-lede:60%;
 
 	/* -- roles --------------------------------------------------------------- */
 	--type-hero:    var(--fw-bold) var(--fs-hero)/var(--lh-hero) var(--font-display);
@@ -483,7 +483,14 @@ table[class*="woocommerce-"] {
 	   How wide the readable column of a full-bleed band is allowed to get. Not
 	   a measure: --measure-lede and --measure-hero are about how far an eye
 	   tracks a line of prose, this is about how far a LAYOUT spreads. */
-	--page-max: 1120px;
+	/* *** PERCENTAGES, AT THE OWNER'S CALL, AFTER SEEING THEM FULL WIDTH. ***
+	   "alignwide should cover 95 percent of the whole width, default 90% and
+	   .d-prose 60%." These were 1120px / 966.67px / 44ch. The trade a percentage
+	   makes: it tracks the window instead of capping, so on a 2560px monitor the
+	   page rail is 2432px and a line of prose is 1536px - far past the 45-75
+	   characters an eye tracks comfortably. If that turns out to matter, the fix
+	   is a cap - min(95%, 1600px) - not a return to fixed widths. */
+	--page-max: 95%;
 }
 }
 
@@ -8183,7 +8190,15 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 .d-footer__links{
 	display:flex;
 	flex-direction:column;
-	gap:0;
+	/* *** min-height CANNOT SEPARATE A WRAPPED ITEM. *** line-height:1.2 fixed the
+	   single-line case, and the owner found the one it did not: "except for some
+	   reason on 'Връщане и замяна' and 'Често задавани въпроси'". Those are the
+	   two that wrap. A one-line link is 28px tall against 16.8px of text, so the
+	   spare 11.2px reads as the gap between items - but a WRAPPED link is taller
+	   than min-height, the spare vanishes, and consecutive wrapped items touch at
+	   0px while their own lines sit 2.8px apart. Separation between items has to
+	   be a gap, which does not depend on how tall the item happens to be. */
+	gap:var(--space-2xs);
 	justify-self:start;
 }
 .d-footer__links a,
@@ -15487,7 +15502,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
    rule the specimen exists to show - main is a grid now, and the furniture
    was quietly turning it back into a block. */
 </style></head><body><div class="wrap">
-<nav class="gnav"><a href="#flow">Rhythm</a><a href="#hidden">Hidden text</a><a href="#social">Social login</a><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header, mega, drawer</a><a href="#hero">Hero</a><a href="#season">Season</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
+<nav class="gnav"><a href="#flow">Rhythm</a><a href="#hidden">Hidden text</a><a href="#social">Social login</a><a href="#upsell">Upsell grid</a><a href="#card">Card</a><a href="#button">Button</a><a href="#band">Band</a><a href="#notice">Notice</a><a href="#rating">Rating</a><a href="#field">Field</a><a href="#table">Table</a><a href="#small">Quantity, badge</a><a href="#panel">Panel</a><a href="#last">Pagination, skeleton</a><a href="#slider">Slider, scrollbar</a><a href="#icon">Icons</a><a href="#chrome">Header, mega, drawer</a><a href="#hero">Hero</a><a href="#season">Season</a><a href="#catalogue">Catalogue</a><a href="#tabs">Tabs</a><a href="#product">Product page</a><a href="#cart">Cart furniture</a><a href="#footer">Footer</a><a href="#pages">Pages, a11y</a><a href="#checkout">Checkout add-ons</a><a href="#media">Failed image</a><a href="#mappick">Map picker</a><a href="#filters">Filters</a><a href="#primitives">Primitives</a><a href="#align">Alignment</a><a href="#matrix">Composition</a><a href="#rategrid">Choice table</a><a href="#next">Still to come</a></nav>
 <section class="sec" id="flow" style="max-width:none;padding-inline:0"><div class="wrap"><h2>Dequeue tranche 1</h2><h3>Page rhythm &mdash; the gaps between real things</h3><p class="note"><b>Every box below is a real component.</b> The first version of
 this specimen used dashed placeholders, and the owner was right that it proved
 nothing: a rhythm can only be judged between the things it separates.</p>
@@ -15498,36 +15513,75 @@ I said the vertical rhythm of every page had never been ours. That was too broad
 footer</em>, on every page. The home page&rsquo;s own section rhythm is already ours,
 set by <code>.d-section-title</code> and <code>.d-carousel</code>. What was never
 ours is smaller than I said, and more structural.</p>
-<p class="lbl">.wp-site-blocks &gt; * &mdash; header, page, footer</p><div class="flowpage wp-site-blocks"><header class="d-header" style="position:relative">
-  <div class="d-header__inner d-shell d-shell--bar">
-    <a class="d-header__logo" href="#">Дарлинг</a>
-    <nav class="d-nav"><ul>
-					<li class="d-nav__mega">
-						<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
-					</li>
-					<li><a href="#">За нас</a></li>
-					<li><a href="#">Помощ</a></li>
-					<li><a href="#">Контакти</a></li>
-				</ul></div></li>
-      <li><a href="#">Промоции</a></li>
-      <li><a href="#">За нас</a></li>
-    </ul></nav>
-    <div class="d-search d-wipe">
-      <span class="d-icon d-icon--search"></span>
-      <input class="d-wipe__input" type="text" value="керамична купа"
-             placeholder="Какво търсиш, darling?" aria-label="Търсене">
-      <button class="d-wipe__clear" type="button" aria-label="Изчисти">
-        <span class="d-icon d-icon--close"></span></button>
-    </div>
-    <div class="d-header__actions">
-      <button class="d-icon-btn" aria-label="Профил"><span class="d-icon d-icon--user"></span></button>
-      <input type="checkbox" class="d-heart" aria-label="Добави в любими">
-      <button class="d-icon-btn" aria-label="Количка" data-cart-button><span class="d-icon d-icon--cart"></span>
-        <span class="d-icon-btn__count">2</span></button>
-      <button class="d-icon-btn d-header__search-sm" aria-label="Търсене"><span class="d-icon d-icon--search"></span></button>
-      <button class="d-icon-btn d-header__burger" aria-label="Меню"><span class="d-icon d-icon--menu"></span></button>
-    </div>
-  </div>
+<p class="lbl">.wp-site-blocks &gt; * &mdash; header, page, footer</p><div class="flowpage wp-site-blocks"><header class="d-header" style="position:relative" role="banner">
+	<div class="d-header__inner d-shell d-shell--bar">
+
+		<!-- Serif wordmark, exactly as the live site: Latin "Darling" in Playfair.
+		     The old Cyrillic logo + bow moved out per the slice-4 parity sweep. -->
+		<a class="d-header__logo" href="/" aria-label="Darling &mdash; начало">Darling</a>
+
+		<nav class="d-nav" aria-label="Основна навигация">
+			<ul>
+				<li class="d-nav__mega">
+					<!-- *** A BUTTON, NOT A LINK WITH aria-haspopup. ***
+					     The panel used to open on :hover and :focus-within only, which
+					     leaves out every touch visitor. The link to /shop/ is not lost:
+					     it is the first item inside the panel. -->
+					<button class="d-nav__trigger" type="button" aria-expanded="false">Продукти</button>
+					<div class="d-mega">
+						<ul class="d-mega__list d-shell d-shell--bar">
+							<li><a class="d-mega__link" href="/shop/">Всички продукти</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-kuhnyata/">За кухнята</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-banyata/">За банята</a></li>
+							<li><a class="d-mega__link" href="/product-category/dekoraciya-za-doma/">Декорация за дома</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-gradinata/">За градината</a></li>
+							<li><a class="d-mega__link" href="/product-category/pochistvane/">Почистване</a></li>
+							<li><a class="d-mega__link" href="/product-category/parti/">Парти и празници</a></li>
+							<li><a class="d-mega__link" href="/product-category/za-decata/">За децата</a></li>
+							<li><a class="d-mega__link" href="/product-category/podaraci/">Подаръци</a></li>
+							<li><a class="d-mega__link" href="/product-category/izborat-na-lady-d/">Изборът на Lady D</a></li>
+							<li><a class="d-mega__link" href="/product-category/promocii/">Промоции</a></li>
+						</ul>
+					</div>
+				</li>
+				<li><a href="/za-nas/">За нас</a></li>
+				<li><a href="/pomosht/">Помощ</a></li>
+				<li><a href="/kontakti/">Контакти</a></li>
+			</ul>
+		</nav>
+
+		<!-- The always-visible search bar from the live header. GET keeps it
+		     cache-safe and crawlable; post_type pins product results. .d-wipe adds
+		     the clear button and its sweep - darling-ui.js wires any .d-wipe. -->
+		<form class="d-search d-wipe" role="search" action="/" method="get">
+			<span class="d-icon d-icon--search" aria-hidden="true"></span>
+			<input class="d-wipe__input" type="search" name="s" placeholder="Какво търсиш, darling?" aria-label="Търсене" autocomplete="off">
+			<button class="d-wipe__clear" type="button" aria-label="Изчисти">
+				<span class="d-icon d-icon--close" aria-hidden="true"></span></button>
+			<input type="hidden" name="post_type" value="product">
+		</form>
+
+		<div class="d-header__actions">
+			<a class="d-icon-btn d-header__search-sm" href="/?s=&amp;post_type=product" aria-label="Търсене">
+				<span class="d-icon d-icon--search" aria-hidden="true"></span>
+			</a>
+			<a class="d-icon-btn" href="/my-account/" aria-label="Профил">
+				<span class="d-icon d-icon--user" aria-hidden="true"></span>
+			</a>
+			<!-- The count is filled in by header.js from the Store API, so a cached
+			     page never ships a stale number baked into the HTML. It hides itself
+			     at data-count="0" - icon.css owns that, not the JS. -->
+			<a class="d-icon-btn" href="/cart/" aria-label="Количка" data-cart-button
+			   data-darling-cart-open aria-haspopup="dialog">
+				<span class="d-icon d-icon--cart" aria-hidden="true"></span>
+				<span class="d-icon-btn__count" data-darling-cart-count data-count="0">0</span>
+			</a>
+			<button class="d-icon-btn d-header__burger" type="button"
+			        aria-label="Меню" aria-expanded="false" aria-controls="darling-menu-drawer">
+				<span class="d-icon d-icon--menu" aria-hidden="true"></span>
+			</button>
+		</div>
+	</div>
 </header><main>
   <div class="d-hero-band"><div class="d-hero d-hero--red d-shell">
     <div class="d-hero__copy"><p class="d-hero__eyebrow">Сезонна селекция</p>
@@ -15695,7 +15749,7 @@ measure &mdash; the search results grid rendered at 374px instead of 714px. A
 measure belongs on running text, never on a grid or a cart.
 <code>--measure-hero</code> is the same token <code>gen-theme-json.js</code> feeds
 to theme.json&rsquo;s <code>contentSize</code>, so the two cannot drift.</p>
-</div></section><section class="sec" id="hidden"><h2>Dequeue tranche 2</h2><h3>Visually hidden text</h3><p class="note"><b>Three sheets we are about to remove set <code>.screen-reader-text</code>, and we set nothing.</b> wc-blocks.css, woocommerce.css and wp-block-library. Four distinct nodes wear the class on this site and two of them are words a customer would read &mdash; a stray &ldquo;количество за&nbsp;&hellip;&rdquo; label beside the quantity control, and &ldquo;Задължително&rdquo; beside every required field on /my-account/. Hidden text going visible is the loudest dequeue regression and the easiest to miss, because it does not look like a CSS bug &mdash; it looks like somebody added stray text.</p><p class="note"><b>It may not be <code>display:none</code>.</b> That removes the element from the accessibility tree, which is the opposite of the job &mdash; this text exists <em>for</em> a screen reader. It stays rendered and becomes impossible to see: a 1px box, clipped, its 1px pulled back out of the flow by a negative margin.</p><p class="lbl">As it ships &mdash; the hidden text is present, and invisible</p><div class="vhdemo"><p class="d-shell">Количество <span class="screen-reader-text">количество за Керамична купа</span></p><p class="d-shell">Имейл <span class="screen-reader-text">Задължително</span></p></div><p class="lbl">The same markup with the utility switched off &mdash; this is what the dequeue would put on the page</p><div class="vhdemo vhdemo--reveal"><p class="d-shell">Количество <span class="screen-reader-text">количество за Керамична купа</span></p><p class="d-shell">Имейл <span class="screen-reader-text">Задължително</span></p></div><p class="lbl">Focusable &mdash; the skip link. Tab into the box below.</p><div class="vhdemo" style="min-height:5.5rem"><a class="screen-reader-text" href="#hidden">Към съдържанието</a><p class="d-shell"><small>The link above is invisible until it takes focus, then it becomes a real control. <code>:focus</code> and not <code>:focus-visible</code>: the element is only reachable by keyboard anyway, and <code>:focus-visible</code> would leave a programmatic <code>focus()</code> silent.</small></p></div><p class="note"><b>And the recipe now has a name.</b> The same seven declarations were typed out by hand in <code>field.css</code>, <code>table.css</code>, <code>patterns/table.css</code> and <code>checkout.css</code> twice &mdash; seven copies, none of them named. <code>.d-vh</code> is the name; folding the five existing copies into it is a sweep, not this commit.</p></section><section class="sec" id="social"><h2>Dequeue tranche 3</h2><h3>Social login &mdash; the tranche where we do the least</h3><p class="note"><b>41 declarations, 12 selectors, one inline &lt;style&gt; the plugin prints with no id.</b> The biggest tranche after the product grid, and the one we deliberately leave mostly alone. The brand fills arrive on the element itself &mdash; <code>style="background-color:#1877F2"</code> &mdash; so they beat every author rule that is not <code>!important</code>. That is the right outcome: a &ldquo;Continue with Google&rdquo; button is Google&rsquo;s mark on our page, and its colour, logo and wording are governed by their brand terms rather than by our tokens.</p><p class="note"><b>So this takes the layout and leaves the brand.</b> How the two stack, how wide they are, how they sit in the card&rsquo;s rhythm, the type inside them, a 44px tap target (<code>--tap</code>), and a focus ring &mdash; which the plugin does not draw at all, so a keyboard user had no idea where they were in the login card.</p><p class="note"><b>And one thing must be replaced rather than dropped.</b> The Google button is <code>#fff</code> on a card that is also near-white; the plugin gives it its edge with a 1px box-shadow. Dequeue without replacing that and the button does not look unstyled &mdash; it disappears.</p><p class="lbl">In the login card</p><div class="nsldemo"><div class="nsl-container nsl-container-block" data-align="left"><div class="nsl-container-buttons"><a href="#" rel="nofollow" aria-label="Продължи с Facebook" data-plugin="nsl" data-action="connect" data-provider="facebook"><div class="nsl-button nsl-button-default nsl-button-facebook" data-skin="dark" style="background-color:#1877F2;"><div class="nsl-button-svg-container"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg></div><div class="nsl-button-label-container">Продължи с <b>Facebook</b></div></div></a><a href="#" rel="nofollow" aria-label="Продължи с Google" data-plugin="nsl" data-action="connect" data-provider="google"><div class="nsl-button nsl-button-default nsl-button-google" data-skin="light" style="background-color:#fff;"><div class="nsl-button-svg-container"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8h-4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.4 14.3a7.1 7.1 0 0 1 0-4.6v-3.1h-4a12 12 0 0 0 0 10.8l4-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5A12 12 0 0 0 1.4 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg></div><div class="nsl-button-label-container">Продължи с <b>Google</b></div></div></a></div></div></div><p class="note"><b>A defect the plugin ships, found while measuring this.</b> On the live page the accessible name is literally <code>Продължи с &lt;b&gt;Facebook&lt;/b&gt;</code> &mdash; the markup is in the attribute, so a screen reader announces the tags. axe passes it, because a name exists; <code>scripts/namegate.js</code> now also fails a name that contains markup. It is the plugin&rsquo;s bug and it needs a filter on its output, not CSS. The specimen above uses the corrected name.</p></section><section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
+</div></section><section class="sec" id="hidden"><h2>Dequeue tranche 2</h2><h3>Visually hidden text</h3><p class="note"><b>Three sheets we are about to remove set <code>.screen-reader-text</code>, and we set nothing.</b> wc-blocks.css, woocommerce.css and wp-block-library. Four distinct nodes wear the class on this site and two of them are words a customer would read &mdash; a stray &ldquo;количество за&nbsp;&hellip;&rdquo; label beside the quantity control, and &ldquo;Задължително&rdquo; beside every required field on /my-account/. Hidden text going visible is the loudest dequeue regression and the easiest to miss, because it does not look like a CSS bug &mdash; it looks like somebody added stray text.</p><p class="note"><b>It may not be <code>display:none</code>.</b> That removes the element from the accessibility tree, which is the opposite of the job &mdash; this text exists <em>for</em> a screen reader. It stays rendered and becomes impossible to see: a 1px box, clipped, its 1px pulled back out of the flow by a negative margin.</p><p class="lbl">As it ships &mdash; the hidden text is present, and invisible</p><div class="vhdemo"><p class="d-shell">Количество <span class="screen-reader-text">количество за Керамична купа</span></p><p class="d-shell">Имейл <span class="screen-reader-text">Задължително</span></p></div><p class="lbl">The same markup with the utility switched off &mdash; this is what the dequeue would put on the page</p><div class="vhdemo vhdemo--reveal"><p class="d-shell">Количество <span class="screen-reader-text">количество за Керамична купа</span></p><p class="d-shell">Имейл <span class="screen-reader-text">Задължително</span></p></div><p class="lbl">Focusable &mdash; the skip link. Tab into the box below.</p><div class="vhdemo" style="min-height:5.5rem"><a class="screen-reader-text" href="#hidden">Към съдържанието</a><p class="d-shell"><small>The link above is invisible until it takes focus, then it becomes a real control. <code>:focus</code> and not <code>:focus-visible</code>: the element is only reachable by keyboard anyway, and <code>:focus-visible</code> would leave a programmatic <code>focus()</code> silent.</small></p></div><p class="note"><b>And the recipe now has a name.</b> The same seven declarations were typed out by hand in <code>field.css</code>, <code>table.css</code>, <code>patterns/table.css</code> and <code>checkout.css</code> twice &mdash; seven copies, none of them named. <code>.d-vh</code> is the name; folding the five existing copies into it is a sweep, not this commit.</p></section><section class="sec" id="social"><h2>Dequeue tranche 3</h2><h3>Social login &mdash; the tranche where we do the least</h3><p class="note"><b>41 declarations, 12 selectors, one inline &lt;style&gt; the plugin prints with no id.</b> The biggest tranche after the product grid, and the one we deliberately leave mostly alone. The brand fills arrive on the element itself &mdash; <code>style="background-color:#1877F2"</code> &mdash; so they beat every author rule that is not <code>!important</code>. That is the right outcome: a &ldquo;Continue with Google&rdquo; button is Google&rsquo;s mark on our page, and its colour, logo and wording are governed by their brand terms rather than by our tokens.</p><p class="note"><b>So this takes the layout and leaves the brand.</b> How the two stack, how wide they are, how they sit in the card&rsquo;s rhythm, the type inside them, a 44px tap target (<code>--tap</code>), and a focus ring &mdash; which the plugin does not draw at all, so a keyboard user had no idea where they were in the login card.</p><p class="note"><b>And one thing must be replaced rather than dropped.</b> The Google button is <code>#fff</code> on a card that is also near-white; the plugin gives it its edge with a 1px box-shadow. Dequeue without replacing that and the button does not look unstyled &mdash; it disappears.</p><p class="lbl">In the login card</p><div class="nsldemo"><div class="nsl-container nsl-container-block" data-align="left"><div class="nsl-container-buttons"><a href="#" rel="nofollow" aria-label="Продължи с Facebook" data-plugin="nsl" data-action="connect" data-provider="facebook"><div class="nsl-button nsl-button-default nsl-button-facebook" data-skin="dark" style="background-color:#1877F2;"><div class="nsl-button-svg-container"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg></div><div class="nsl-button-label-container">Продължи с <b>Facebook</b></div></div></a><a href="#" rel="nofollow" aria-label="Продължи с Google" data-plugin="nsl" data-action="connect" data-provider="google"><div class="nsl-button nsl-button-default nsl-button-google" data-skin="light" style="background-color:#fff;"><div class="nsl-button-svg-container"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8h-4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.4 14.3a7.1 7.1 0 0 1 0-4.6v-3.1h-4a12 12 0 0 0 0 10.8l4-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5A12 12 0 0 0 1.4 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8z"/></svg></div><div class="nsl-button-label-container">Продължи с <b>Google</b></div></div></a></div></div></div><p class="note"><b>A defect the plugin ships, found while measuring this.</b> On the live page the accessible name is literally <code>Продължи с &lt;b&gt;Facebook&lt;/b&gt;</code> &mdash; the markup is in the attribute, so a screen reader announces the tags. axe passes it, because a name exists; <code>scripts/namegate.js</code> now also fails a name that contains markup. It is the plugin&rsquo;s bug and it needs a filter on its output, not CSS. The specimen above uses the corrected name.</p></section><section class="sec" id="upsell"><h2>Dequeue tranche 4</h2><h3>&bdquo;Може би ще харесате&ldquo; &mdash; the second product grid</h3><p class="note"><b>There are two product grids on this site and they share nothing.</b> The shop, home and 404 use <code>ul.wp-block-post-template &gt; li.wp-block-post.product</code>, which <code>adopted/card.css</code> dresses. The cart and checkout pages use this one &mdash; <code>ul.wc-block-grid__products &gt; li.wc-block-grid__product</code> &mdash; and it was wearing WooCommerce&rsquo;s clothes end to end and nothing of ours. <b>Not the cart drawer</b>, which is a different component and was already ours.</p><p class="note"><b>Both grids are <code>&lt;ul&gt;</code>, and that is the loudest thing in the tranche.</b> With the sheets off, this one went <code>display:flex &rarr; block</code>, <code>padding-left 0 &rarr; 40px</code> and <code>list-style none &rarr; disc</code>: a product grid with bullets down the left. The list <em>semantics</em> stay &mdash; &ldquo;list, 4 items&rdquo; is how somebody knows how many products are there &mdash; only the marker and the indent go.</p><p class="note">Woo lays it out as flex with <code>margin:0 -8px</code> and a transparent 16px border on each card standing in for the gap, the pre-<code>gap</code> idiom. It is replaced with the same auto-fill arithmetic as <code>.d-grid</code>, so the two product grids finally agree about how wide a product is and how far apart they sit. <b>This is what it looks like after the dequeue</b> &mdash; the gallery loads no WooCommerce CSS, so what you see here is our rules alone.</p><ul class="wc-block-grid__products"><li class="wc-block-grid__product"><a href="#" class="wc-block-grid__product-link"><div class="wc-block-components-product-image"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="wc-block-grid__product-title">Керамична купа</div></a><div class="wc-block-grid__product-price wc-block-components-product-price"><span class="wc-block-components-product-price__value">26,40 лв.</span></div><div class="wp-block-button wc-block-grid__product-add-to-cart wc-block-components-product-button"><a href="#" class="wp-block-button__link">Добави</a></div></li><li class="wc-block-grid__product"><a href="#" class="wc-block-grid__product-link"><div class="wc-block-components-product-image"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="wc-block-grid__product-title">Дървена дъска за рязане с дръжка</div></a><div class="wc-block-grid__product-price wc-block-components-product-price"><span class="wc-block-components-product-price__value">31,90 лв.</span></div><div class="wp-block-button wc-block-grid__product-add-to-cart wc-block-components-product-button"><a href="#" class="wp-block-button__link">Добави</a></div></li><li class="wc-block-grid__product"><a href="#" class="wc-block-grid__product-link"><div class="wc-block-components-product-image"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="wc-block-grid__product-title">Ленена кърпа</div></a><div class="wc-block-grid__product-price wc-block-components-product-price"><span class="wc-block-components-product-price__value">22,00 лв.</span></div><div class="wp-block-button wc-block-grid__product-add-to-cart wc-block-components-product-button"><a href="#" class="wp-block-button__link">Добави</a></div></li><li class="wc-block-grid__product"><a href="#" class="wc-block-grid__product-link"><div class="wc-block-components-product-image"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Cpath d='M40 62 h120 a8 8 0 0 1 8 8 c0 30 -26 52 -68 52 s-68 -22 -68 -52 a8 8 0 0 1 8 -8 z' fill='%23c9b9a6'/%3E%3Cellipse cx='100' cy='62' rx='60' ry='11' fill='%23e0d3c2'/%3E%3C/svg%3E" alt=""></div><div class="wc-block-grid__product-title">Стъклена кана</div></a><div class="wc-block-grid__product-price wc-block-components-product-price"><span class="wc-block-components-product-price__value">42,00 лв.</span></div><div class="wp-block-button wc-block-grid__product-add-to-cart wc-block-components-product-button"><a href="#" class="wp-block-button__link">Добави</a></div></li></ul></section><section class="sec" id="card"><h2>Pattern</h2><h3>Card</h3><p class="note"><b>Hover a card.</b> The whole card is the target, not the
 title &mdash; the shadow lifts, the image zooms 6%, and the product itself glows.
 That last one works because <code>filter: drop-shadow</code> reads the alpha
 channel and traces the actual silhouette rather than the box, so a cut-out PNG
