@@ -202,7 +202,27 @@
 	text-align:center;
 	color:var(--ink-quiet);
 }
-.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
+
+
+/* *** THE EMPTY DRAWER'S BUTTON SAT AT THE LEFT EDGE, OUTSIDE THE PADDING. ***
+   The owner: "on an empty cart, the drawer has a button that isn't aligned
+   properly, it needs to be centered." Measured with the drawer open and the
+   cart empty: the drawer is 352 wide, everything in the filled state runs
+   20..332, and the empty state's button ran 0..213 - flush to the glass and
+   two thirds of the way across.
+
+   Both halves of that are one cause: the empty block is not the body, so it
+   never got the body's padding, and a .d-btn is inline-flex, so with nothing
+   telling it otherwise it sat where the text flow put it. A grid that centres
+   its children states both at once - the paragraph was already centred by its
+   own text-align and stays where it is. */
+.d-drawer__empty{
+	display:grid;
+	justify-items:center;
+	gap:var(--space-s);
+	padding:var(--space-l) var(--space-s);
+	text-align:center;
+}.d-drawer__empty .d-icon{ width:2.4rem; height:2.4rem; color:var(--c-grey-400) }
 
 /* -- reduced motion ----------------------------------------------------------
    motion.css kills animations, not transitions, and this drawer is transitions

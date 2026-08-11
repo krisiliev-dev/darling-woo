@@ -172,7 +172,36 @@
    Deleted rather than tuned. Grid's default justify-self is stretch, which is
    what every other child of main wants anyway; the one child that wants
    something else now says so itself. */
-.wp-site-blocks > main > *{ margin-block:0 }
+/* *** AND REMOVING width:100% BROKE THE CART. I REMOVED IT. ***
+   The note below records why it was there: a grid item with `margin-inline:auto`
+   does NOT stretch - auto margins beat stretch, per spec - so main's children
+   shrink to fit. Core's `.is-layout-constrained > *` gives every one of them
+   `margin-left:auto; margin-right:auto`, so that applies to ALL of them, not
+   just to .d-shell.
+
+   When .d-shell became an explicit width I deleted width:100% on the reasoning
+   that "a grid item with a definite width does not shrink to content". True of
+   .d-shell. Not true of .entry-content, or the page title, or the store-notices
+   slot - none of which declare a width, all of which kept the auto margins, and
+   all of which quietly became shrink-to-fit.
+
+   On a page of text that is invisible: the text fills the box. On /cart/ it was
+   catastrophic. The cart block carries `container-type:inline-size`, and an
+   inline-size container reports a min-content of ZERO by definition - it is not
+   allowed to look at its own contents to size itself. So shrink-to-fit gave
+   .entry-content a width of 0, and the whole empty cart rendered as a column of
+   one-word lines. Measured live: entry-content 0px, the h1 210px (its text), the
+   notices slot 0px. Setting container-type:normal gave it 320; setting
+   width:100% gave it 992, which is the right answer.
+
+   *** SO THE MARGINS GO, NOT THE WIDTH. *** main is a ONE-COLUMN grid; centring
+   an item in a single column is a no-op for anything full width, and actively
+   wrong for anything that is not. Zeroing them lets grid's own stretch do the
+   job it was always meant to do, and the components that size themselves ask
+   for their centring back by name on the next line. */
+.wp-site-blocks > main > *{ margin-block:0; margin-inline:0 }
+/* the ones that declare a width still centre themselves within the column */
+.wp-site-blocks > main > :is(.d-shell, .d-trustbar){ margin-inline:auto }
 /* *** AND A GRID ITEM WITH `margin-inline:auto` SHRINKS TO FIT. ***
    .d-shell is `max-width:--page-max; margin-inline:auto`, which in normal flow
    means "as wide as the container, up to the cap, centred". As a GRID ITEM an
