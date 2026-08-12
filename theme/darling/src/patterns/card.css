@@ -122,7 +122,18 @@ li.wc-block-grid__product .wc-block-grid__product-title{
 	margin:0;
 	color:var(--ink);
 	/* Two lines then ellipsis: a three-line title beside a one-line one makes a
-	   row look broken, and truncating is kinder than letting the row grow. */
+	   row look broken, and truncating is kinder than letting the row grow.
+
+	   *** getComputedStyle REPORTS flow-root HERE AND THE CLAMP STILL WORKS. ***
+	   A card title is a grid ITEM, and Chromium blockifies -webkit-box on one, so
+	   the computed display reads flow-root rather than what this rule asked for.
+	   That looks exactly like a broken clamp and is not one: measured with a title
+	   long enough to run to eight lines, the box is 41px against a 20.3px line -
+	   two lines, which is what -webkit-line-clamp:2 asked for.
+
+	   Written down because it cost twenty minutes and a live-site scare: the only
+	   way to tell a blockified box from a dead clamp is to overflow it and count
+	   the lines. scripts/_clampcheck.js does exactly that. */
 	display:-webkit-box;
 	-webkit-line-clamp:2;
 	-webkit-box-orient:vertical;
