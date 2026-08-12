@@ -2444,10 +2444,10 @@ A('''</ol>
       <p class="d-trust__ship">Еконт и Спиди &middot; до адрес или до офис &middot;
         безплатна доставка над 77&nbsp;&euro;</p>
       <details class="d-panel d-panel--gold"><summary class="d-panel__summary">Доставка</summary>
-        <div class="d-panel__body"><p>Изпращаме с Еконт или Спиди &mdash; ти избираш
+        <div class="d-panel__content"><p>Изпращаме с Еконт или Спиди &mdash; ти избираш
         при поръчката. Обикновено тръгва в рамките на един работен ден.</p></div></details>
       <details class="d-panel d-panel--gold"><summary class="d-panel__summary">Връщане и замяна</summary>
-        <div class="d-panel__body"><p>14 дни за връщане без причина, стига опаковката
+        <div class="d-panel__content"><p>14 дни за връщане без причина, стига опаковката
         да е запазена.</p></div></details>
     </div>
   </div>
@@ -2853,7 +2853,7 @@ quiet panel</p>
 <p class="lbl" style="margin-top:26px">GPSR &mdash; a panel and a notice, not a
 third disclosure and a fourth notice</p>
 <details class="d-panel d-gpsr"><summary class="d-panel__summary">Безопасност и производител</summary>
-  <div class="d-panel__body">
+  <div class="d-panel__content">
     <p><strong>Производител:</strong> Дарлинг 7 ООД, ул. Пример 12, София 1000</p>
     <p class="d-gpsr__warn">Не е играчка. Ръбовете могат да се нащърбят при удар.</p>
   </div>

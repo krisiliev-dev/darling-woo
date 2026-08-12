@@ -4393,6 +4393,30 @@ body.woocommerce-order-received .d-slider__wake{ opacity:0 }
 	to  { top:calc(100% - var(--sc-ratio) * 100%) }
 }
 
+.d-scrollframe--page{
+	position:fixed;
+	inset-block:0;
+	inset-inline-end:0;
+	width:calc(var(--sc-w) + var(--sc-pad) * 2);
+
+	z-index:9999;
+
+	pointer-events:none;
+
+	border:0;
+	border-radius:0;
+	background:none;
+	overflow:visible;
+}
+.d-scrollframe--page .d-scrollframe__rail{ pointer-events:auto }
+
+.d-scrollframe--page .d-scrollframe__thumb{ animation-timeline: scroll(root block) }
+
+@media (pointer: fine){
+	html.d-pagebar-on{ scrollbar-width:none }
+	html.d-pagebar-on::-webkit-scrollbar{ display:none }
+}
+
 @property --sc-lag{ syntax:"<number>"; inherits:true; initial-value:0 }
 .d-scrollframe{
 	--sc-pos: 0;
@@ -4690,7 +4714,7 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 .d-qty--compact,
 .wc-block-cart-item__quantity .wc-block-components-quantity-selector{
 	grid-template-columns:auto 2.2em auto;
-	border-radius:var(--radius-s);
+
 }
 .d-qty--compact .d-qty__button,
 .wc-block-cart-item__quantity .wc-block-components-quantity-selector__button{

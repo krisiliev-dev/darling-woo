@@ -70,7 +70,18 @@
 .d-qty--compact,
 .wc-block-cart-item__quantity .wc-block-components-quantity-selector{
 	grid-template-columns:auto 2.2em auto;
-	border-radius:var(--radius-s);
+	/* *** A SIZE MODIFIER MAY NOT CHANGE THE SHAPE. ***
+	   This used to also say `border-radius:var(--radius-s)`, which made the
+	   drawer and cart steppers 10px rounded rectangles while the product page's
+	   stayed a pill. The owner, twice: "the stepper there isn't our stepper
+	   component" and "the stepper in the cart drawer still does not look like
+	   our other steppers." He was reading the corner, and he was right - measured
+	   96x34 radius 10px in the drawer against 146x48 radius 999px on the product
+	   page. Two shapes is two components however much CSS they share.
+
+	   --compact is allowed to change the SIZE, which is what the owner picked
+	   (the drawer's 2rem) and what the paragraph above is about. The pill is the
+	   component's signature and now comes from the base rule for all three. */
 }
 .d-qty--compact .d-qty__button,
 .wc-block-cart-item__quantity .wc-block-components-quantity-selector__button{

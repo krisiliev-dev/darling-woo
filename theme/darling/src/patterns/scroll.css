@@ -248,6 +248,98 @@
 	to  { top:calc(100% - var(--sc-ratio) * 100%) }
 }
 
+/* -- level two, APPLIED TO THE PAGE -----------------------------------------
+   *** THE OWNER WAS NEVER ASKING FOR A RECOLOURED NATIVE BAR. ***
+   "We have a scrollbar in the gallery that is ours and one that is native. Ours
+   might not be supported by all the browsers so it is supposed to fall back to
+   the native one, which is just styled with our colours. Ours leaves a trail
+   animation and looks different, which wasn't possible on a native scrollbar."
+
+   So the ordering has three rungs, not two, and the first two commits only built
+   the bottom two:
+
+     .d-scrollframe   OURS. Drawn, with the trail.        <- the default
+     ::-webkit-*      the native bar, in our colours      <- fallback
+     scrollbar-color  the native bar, two colours only    <- fallback's fallback
+
+   *** IT DOES NOT TAKE OVER THE DOCUMENT SCROLLER, AND THAT IS DELIBERATE. ***
+   The obvious way to put .d-scrollframe on a page is to make the document stop
+   scrolling - html,body{overflow:hidden} - and put everything inside a
+   .d-scroll. On a shop that takes money that is a bad trade: it breaks the
+   mobile URL-bar collapse, WooCommerce's own window.scrollTo calls (checkout
+   error focus, the cart's scroll-to-notice), in-page anchors, browser scroll
+   restoration on back, and find-in-page scrolling.
+
+   So the page keeps scrolling exactly as it does now, its native bar is hidden,
+   and the rail is a POSITION:FIXED overlay whose thumb is driven by
+   'scroll(root block)' - the document's own scroll timeline. Nothing about how
+   the page scrolls changes; only what is painted on top of it.
+
+   *** POINTER:FINE ONLY. *** On a phone the native bar is a transient overlay
+   that appears while your thumb is moving and gets out of the way. A permanent
+   rail pinned to the right edge of a 390px screen is clutter, and there is
+   nothing to drag it with. Touch keeps the native branded bar.
+
+   *** AND IT IS DECORATIVE, aria-hidden, ON PURPOSE. *** A role="scrollbar"
+   owes the assistive-tech tree aria-controls, aria-valuenow and keyboard
+   operation, and it would be announcing a second control for a document that is
+   already perfectly scrollable by keyboard, wheel and touch. Ours adds a mouse
+   affordance and a trail; it does not replace the page's real scrolling, so it
+   says nothing to a screen reader. */
+.d-scrollframe--page{
+	position:fixed;
+	inset-block:0;
+	inset-inline-end:0;
+	width:calc(var(--sc-w) + var(--sc-pad) * 2);
+	/* Above the sticky header and the filters overlay. NOT above a <dialog> -
+	   the drawer is in the top layer and outranks any z-index by construction,
+	   which is the correct order: a modal covers the page, bar and all. */
+	z-index:9999;
+	/* The frame is a hit-testing hole; only the rail itself takes the pointer,
+	   so a 14px strip down the side of every page does not eat clicks on
+	   anything sitting under it. */
+	pointer-events:none;
+	/* The base rule draws a framed, clipping box. The page is not a box. */
+	border:0;
+	border-radius:0;
+	background:none;
+	overflow:visible;
+}
+.d-scrollframe--page .d-scrollframe__rail{ pointer-events:auto }
+/* The one real difference: the base thumb rides --d-scroll, which is the
+   timeline a .d-scroll child publishes. There is no child here - the scroller is
+   the document - so it rides the document's own. */
+.d-scrollframe--page .d-scrollframe__thumb{ animation-timeline: scroll(root block) }
+
+/* *** THE NATIVE BAR IS HIDDEN ONLY WHERE OURS IS ACTUALLY DRAWN. ***
+   .d-pagebar-on is added by darling-ui.js AFTER it has checked that
+   animation-timeline is supported and the pointer is fine, and only once the
+   element is in the DOM. So the hide can never outlive the thing it makes room
+   for: no JS, no support, or a touch screen means no class, and the native
+   branded bar above stays exactly as it is. That is the fallback, and it is
+   wired the safe way round - the enhancement removes the default, rather than
+   the default assuming the enhancement.
+
+   *** AND THE PAGE DOES GET 10px WIDER, WHICH scrollbar-gutter CANNOT PREVENT.
+   *** The first version of this rule also said `scrollbar-gutter:stable` with a
+   comment claiming it kept the space the native bar used to occupy. Measured:
+   window.innerWidth - documentElement.clientWidth is 0 with the class on, so it
+   keeps nothing. The property is specified to reserve no gutter when
+   scrollbar-width is none - there is no scrollbar to stabilise - so the two
+   declarations cancel and only the hiding survives. Removed rather than left in
+   as decoration with a false comment over it.
+
+   So the content column does widen by the 10px the bar used to take, once, on
+   load. That is the correct trade for an overlay bar and it is what every
+   overlay scrollbar on every platform does. The rail floats above the edge; at
+   our widths (--w-body 80%, --w-wide 95%) there is 60px+ of margin beside it on
+   a desktop viewport, so it overlaps nothing but full-bleed bands - which is
+   exactly where an overlay scrollbar is supposed to sit. */
+@media (pointer: fine){
+	html.d-pagebar-on{ scrollbar-width:none }
+	html.d-pagebar-on::-webkit-scrollbar{ display:none }
+}
+
 /* The wake. --sc-pos is the exact position, set by the shim; --sc-lag is the
    same number transitioned, which is the clock the scroll timeline cannot give
    us. Zero difference, zero wake - so with no shim this is invisible rather

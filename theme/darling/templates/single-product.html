@@ -42,15 +42,35 @@
 			     live „По поръчка" badge when a product is on backorder). -->
 			<!-- wp:woocommerce/add-to-cart-form {"className":"d-product__atc"} /-->
 
-			<!-- Live pdp-trust block, verbatim copy from the storefront capture
+			<!-- *** THE GALLERY IS THE SPEC AND THIS BLOCK WAS IGNORING IT. ***
+			     These two disclosures shipped as bare <details><summary><div> with
+			     no classes on them at all, so nothing in panel.css could reach
+			     them: the component's fallback nets only cover a <details> inside
+			     .d-prose .wp-block-details or .entry-content, and .d-trust is
+			     neither. Measured live: 481x22, no padding, no surface, no chevron
+			     - the browser's own disclosure triangle on a gold card. The owner:
+			     "there is a notice on the product page under the Add to cart
+			     buttons which ... has a panel inside it that isn't our panel."
+
+			     patterns/product.css has said what to do since the gold-variant
+			     fix - "THE PANELS IN HERE MUST CARRY .d-panel--gold, AND THAT IS
+			     MARKUP" - and the markup never got it. It has it now.
+
+			     The slot class is __content, not __body. panel.css defines
+			     .d-panel__content and nothing defines .d-panel__body; the gallery
+			     had drifted to the second name in three places, which is the same
+			     two-names-for-one-thing this codebase keeps finding. Fixed in
+			     gen-gallery.py in the same commit.
+
+			     Live pdp-trust block, from the storefront capture
 			     (_scratch_woo/slice8/live_product.html). Classes belong to the
 			     ported darling.css — feed its contract. -->
 			<!-- wp:html -->
 			<div class="d-trust">
-				<p class="d-trust__cod"><strong>Наложен платеж</strong> — плати при получаване. Отвори и виж, преди да платиш, darling.</p>
+				<p class="d-trust__cod"><span class="d-icon d-icon--shield" aria-hidden="true"></span><strong>Наложен платеж</strong> — плати при получаване. Отвори и виж, преди да платиш, darling.</p>
 				<p class="d-trust__ship">Еконт и Спиди · до адрес или до офис · Поръчай до 15:00 и изпращаме още същия работен ден.</p>
-				<details><summary>Доставка</summary><div><p>Изпращаме с Еконт или Спиди — ти избираш при поръчка. Поръчки над €77 / 150,60 лв. пътуват безплатно. Плащане при получаване (наложен платеж) или с карта.</p></div></details>
-				<details><summary>Връщане и замяна</summary><div><p>14 дни право на връщане, без излишни въпроси. Подробности на страницата <a href="/pomosht/">Помощ</a>.</p></div></details>
+				<details class="d-panel d-panel--gold"><summary class="d-panel__summary">Доставка</summary><div class="d-panel__content"><p>Изпращаме с Еконт или Спиди — ти избираш при поръчка. Поръчки над €77 / 150,60 лв. пътуват безплатно. Плащане при получаване (наложен платеж) или с карта.</p></div></details>
+				<details class="d-panel d-panel--gold"><summary class="d-panel__summary">Връщане и замяна</summary><div class="d-panel__content"><p>14 дни право на връщане, без излишни въпроси. Подробности на страницата <a href="/pomosht/">Помощ</a>.</p></div></details>
 			</div>
 			<!-- /wp:html -->
 

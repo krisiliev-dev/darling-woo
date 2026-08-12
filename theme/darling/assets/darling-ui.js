@@ -51,7 +51,14 @@
 	}
 
 	function scroller(frame) {
-		var sc = frame.querySelector(':scope > .d-scroll');
+		/* The page variant has no .d-scroll child - the scroller IS the document.
+		   Everything below reads scrollTop/scrollHeight/clientHeight/scrollBy,
+		   which document.scrollingElement answers exactly like any other element;
+		   the only thing that differs is who fires the scroll event, because the
+		   document's goes to window rather than to the element. */
+		var isPage = frame.classList.contains('d-scrollframe--page');
+		var sc = isPage ? document.scrollingElement : frame.querySelector(':scope > .d-scroll');
+		var onScroll = isPage ? window : sc;
 		var rail = frame.querySelector('.d-scrollframe__rail');
 		var thumb = frame.querySelector('.d-scrollframe__thumb');
 		if (!sc) return;
@@ -66,14 +73,16 @@
 			frame.toggleAttribute('data-noscroll', max <= 0);
 		}
 		publish();
-		sc.addEventListener('scroll', publish, { passive: true });
+		onScroll.addEventListener('scroll', publish, { passive: true });
 		if (window.ResizeObserver) {
 			/* Content can change height without anyone scrolling - a panel opens,
 			   an image loads. Without this the thumb is the right length only
 			   until the first thing changes. */
 			var ro = new ResizeObserver(publish);
-			ro.observe(sc);
-			if (sc.firstElementChild) ro.observe(sc.firstElementChild);
+			/* document.scrollingElement is <html>, whose box does not grow with the
+			   content; <body> does, so that is what has to be watched on the page. */
+			ro.observe(isPage ? document.body : sc);
+			if (!isPage && sc.firstElementChild) ro.observe(sc.firstElementChild);
 		}
 
 		if (!thumb || !rail) return;
@@ -437,7 +446,36 @@
 		p.appendChild(a);
 	}
 
+	/* *** THE PAGE SCROLLBAR. ***
+	   Injected rather than put in a template, for one reason: the markup must not
+	   exist unless it is going to work. The class it adds to <html> is what hides
+	   the native bar, so if any check here fails - no CSS.supports, no scroll
+	   timelines, a touch pointer - nothing is added, nothing is hidden, and the
+	   page keeps the native branded bar. The enhancement removes the default; the
+	   default never assumes the enhancement.
+
+	   Body, not <html>: position:fixed does not care which it is, and appending to
+	   <html> puts a stray element beside <body> that some blocks walk over. */
+	function pageBar() {
+		if (document.querySelector('.d-scrollframe--page')) return;
+		if (!window.CSS || !CSS.supports || !CSS.supports('animation-timeline', 'scroll()')) return;
+		if (!window.matchMedia || !matchMedia('(pointer: fine)').matches) return;
+		if (!document.body) return;
+		var f = document.createElement('div');
+		f.className = 'd-scrollframe d-scrollframe--page';
+		/* Decorative. See the long note in patterns/scroll.css. */
+		f.setAttribute('aria-hidden', 'true');
+		f.innerHTML = '<div class="d-scrollframe__rail">' +
+			'<div class="d-scrollframe__wake"></div>' +
+			'<div class="d-scrollframe__thumb"></div></div>';
+		document.body.appendChild(f);
+		document.documentElement.classList.add('d-pagebar-on');
+		f.dataset.dInit = '1';
+		scroller(f);
+	}
+
 	function init(root) {
+		if (!root) pageBar();
 		cardAccents(root);
 		primaryButtons(root);
 		quantitySteppers(root);
