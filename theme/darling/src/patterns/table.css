@@ -29,7 +29,30 @@
    the adopted section, which are forced on us by the markup rather than chosen.
    ========================================================================== */
 
+/* *** SEVEN TABLES, ONE BASE, AND SIX OF THEM ARE WOO'S MARKUP. ***
+   adopted/table.css carried a second copy of this for shop_table, the orders
+   list, order-details and customer-details, and a third for shop_attributes.
+   Same width, same collapse, same meta size, same ink. The block cart was
+   already on this list - it has been since the file was written - so the
+   precedent for a Woo selector living here is this rule's own first line.
+
+   They can come home for the reason the buttons could: since the dequeue there
+   is nothing unlayered left for an adopted-layer copy to beat, and every rule
+   in adopted/table.css that still names these tables is BELOW this one and
+   still wins.
+
+   border:0 and border-radius:0 came with them and are inert for .d-table - a
+   table has no border and no radius until something gives it one, and the
+   modifiers that do (--ruled, --warm) are declared after this rule. They are
+   kept because they are what the Woo copies actually said, and dropping a
+   declaration during a merge is how a merge becomes a change. */
 .d-table,
+.wc-block-cart-items.wc-block-cart-items,
+.woocommerce table.shop_table,
+.woocommerce-orders-table,
+.woocommerce-table--order-details,
+.woocommerce-table--customer-details,
+.woocommerce table.shop_attributes,
 .wc-block-cart-items.wc-block-cart-items{
 	/* The four knobs. Default: two greys that are BOTH different from the page,
 	   one lighter and one darker, so a striped table reads as a distinct object
@@ -40,7 +63,9 @@
 	--table-rule-row: transparent;         /* between rows - off by default */
 
 	width:100%;
+	border:0;
 	border-collapse:collapse;
+	border-radius:0;
 	font-size:var(--fs-meta);
 	color:var(--ink);
 }
@@ -78,13 +103,32 @@
 	color:var(--ink-quiet);
 	padding-bottom:var(--space-2xs);
 }
-.d-table th{
+/* *** AND THE HEADER CELL, WHICH THE LEDGER HAS BEEN POINTING AT SINCE BATCH 3.
+   *** The four Woo header cells were merged into one rule last commit and that
+   rule immediately scored against this one - correctly, because they ARE the
+   same cell: left, medium, fine, quiet, ruled underneath, and the font
+   shorthand is character-for-character identical in both.
+
+   What is NOT shared is deliberately not shared. .d-table th pads
+   3xs/2xs and the Woo cells pad 0 2xs 3xs with no top padding; .d-table th also
+   letterspaces and refuses to wrap. Those three stay on .d-table th alone, so
+   this merge changes the computed style of nothing - it just stops the four
+   agreed declarations from being written in two places. Making a Woo header
+   look EXACTLY like ours is a design decision and it is still open. */
+.d-table th,
+.wc-block-cart-items.wc-block-cart-items th,
+.woocommerce table.shop_table th,
+.woocommerce-orders-table th,
+.woocommerce-table--order-details th{
 	text-align:left;
 	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
 	color:var(--ink-quiet);
+	border:0;
+	border-bottom:1px solid var(--hairline);
+}
+.d-table th{
 	letter-spacing:.04em;
 	padding:var(--space-3xs) var(--space-2xs);
-	border-bottom:1px solid var(--hairline);
 	white-space:nowrap;
 }
 .d-table td{

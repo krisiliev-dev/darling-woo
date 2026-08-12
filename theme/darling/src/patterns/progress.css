@@ -75,12 +75,22 @@
 	vertical-align:-.15em;
 }
 
-.d-progress__track{
-	position:relative;
+/* *** THE TRACK IS THE TRACK WHETHER WE DREW IT OR THE BROWSER DID. ***
+   .d-progress__track is the div our bar runs in; .d-progress__native is a real
+   <progress> with its chrome taken off. Both are a pill of --pr-h in --pr-track
+   that clips whatever is inside - four declarations, written twice, sixty lines
+   apart, and the whole point of --pr-h and --pr-track is that the two agree.
+   Now they cannot disagree. */
+.d-progress__track,
+.d-progress__native{
 	overflow:hidden;
 	height:var(--pr-h);
 	border-radius:var(--radius-pill);
 	background:var(--pr-track);
+}
+/* Ours holds an absolutely positioned bar. */
+.d-progress__track{
+	position:relative;
 }
 .d-progress__bar{
 	/* *** THE SHEEN WAS ESCAPING THE FILL, WHICH IS THE ONE THING THIS
@@ -135,16 +145,14 @@
    engine. It gets the track and the fill; it does NOT get the sheen, because
    ::-webkit-progress-value cannot own a pseudo-element of its own. That is a
    real limitation and the reason the div version exists at all. */
+/* The native one's delta is entirely about being an element the browser has
+   opinions about: strip the chrome, make it a block, let it fill its column. */
 .d-progress__native{
 	appearance:none;
 	-webkit-appearance:none;
 	display:block;
 	width:100%;
-	height:var(--pr-h);
 	border:0;
-	border-radius:var(--radius-pill);
-	background:var(--pr-track);
-	overflow:hidden;
 }
 .d-progress__native::-webkit-progress-bar{
 	background:var(--pr-track);

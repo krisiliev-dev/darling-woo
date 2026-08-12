@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 112,
+ "seeded": 109,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -106,11 +106,6 @@
    "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .woocommerce-review__verified  ==  patterns/product.css|.d-review__verified",
    "shared": 7,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "patterns/pagination.css|.d-pagination__item  ==  patterns/pagination.css|.d-pagination__step",
-   "shared": 7,
-   "why": "SAME FILE"
   },
   {
    "pair": "adopted/account.css|.woocommerce-password-strength  ==  adopted/notice.css|.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info",
@@ -368,16 +363,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/table.css|.woocommerce table.shop_attributes  ==  adopted/table.css|.woocommerce table.shop_table,\n.woocommerce-orders-table,\n.woocommerce-table--order-details,\n.woocommerce-table--customer-details",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/table.css|.woocommerce table.shop_table,\n.woocommerce-orders-table,\n.woocommerce-table--order-details,\n.woocommerce-table--customer-details  ==  patterns/table.css|.d-table,\n.wc-block-cart-items.wc-block-cart-items",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "patterns/card.css|.d-card__title a::after  ==  patterns/progress.css|.d-progress__bar::after",
    "shared": 4,
    "why": "SAME ORIGIN"
@@ -495,7 +480,7 @@
   {
    "pair": "patterns/layout.css|.d-frame  ==  patterns/skeleton.css|.d-skeleton,\n.wc-block-components-skeleton__element,\n.wc-block-components-skeleton .wc-block-components-skeleton__element",
    "shared": 4,
-   "why": "SAME ORIGIN"
+   "why": "REFUSED, AND THIS IS THE DECISION THE PLAN ASKED FOR. The merge plan listed \"the ratio box\" as a batch 4 item: .d-frame and .d-skeleton share position:relative, display:block, overflow:hidden and border-radius:var(--radius-s). That is the generic \"a block that clips its contents\", not an object. .d-frame is the box a PICTURE sits in and carries --ratio and aspect-ratio, which a skeleton must never inherit; a skeleton is a placeholder that shimmers and is grey. Merging them would mean the next change to how photographs are clipped arrives inside the loading state. The honest version of this is markup, not CSS - a skeleton that stands in for a frame should BE a .d-frame with a skeleton modifier, and then the shared four come for free. Two members and no third is also exactly the case the triage refused for .d-cluster: it fixes 2 of 2 and names no object."
   },
   {
    "pair": "patterns/media-fail.css|.d-media-fail  ==  patterns/table.css|.d-ratehead",
@@ -523,11 +508,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/progress.css|.d-progress__native  ==  patterns/progress.css|.d-progress__track",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
    "pair": "adopted/icon.css|.woocommerce button.button.loading::after,\n.woocommerce input.button.loading::after,\n.woocommerce a.button.loading::after,\n.woocommerce button.button.added::after,\n.woocommerce a.button.added::after  ==  patterns/icon.css|.d-icon",
    "shared": 4,
    "why": "CROSS-ORIGIN, AND IT REPLACES TWO ENTRIES RATHER THAN ADDING ONE. The Woo loading spinner and added tick used to be two rules, each recorded against .d-icon's geometry half (display:inline-block, 1em square, currentColor, font-family:inherit). Merging them into one trailing-state-mark rule merged their two ledger entries into this one. It still cannot fold into .d-icon: adopted is a LATER layer than patterns, so a patterns rule loses to it however it is spelt - the same trap the checkout picker recorded. It folds in on the day those selectors no longer need an adopted-layer rule at all. Note the masking is ALREADY shared: this pair is the box, not the plumbing."
@@ -553,14 +533,19 @@
    "why": "COINCIDENCE, AND IT ONLY APPEARED BECAUSE THE SWOOP GOT SHORTER. A panel's edge wash and a flying star are both \"an absolutely positioned decorative pseudo that is not in the flow and starts invisible\" - content, position, top, left, pointer-events, opacity. That is a SHAPE, not an object. The overlap was always there; it crossed 60% only because folding the swoop into one rule took it from fourteen declarations to nine. Merging them would file a panel's wash under the star flourish and send the next change to one into the other."
   },
   {
-   "pair": "adopted/table.css|.wc-block-cart-items.wc-block-cart-items th,\n.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th  ==  adopted/table.css|.woocommerce table.shop_attributes th",
+   "pair": "adopted/table.css|.woocommerce table.shop_attributes th  ==  patterns/table.css|.d-table th,\n.wc-block-cart-items.wc-block-cart-items th,\n.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th",
    "shared": 4,
-   "why": "COINCIDENCE. .woocommerce table.shop_attributes th is a ROW LABEL, not a column header - the left column of a spec sheet. It shares text-align:left, the quiet ink, border:0 and the hairline under it with the real header cell, and differs on both of the things that decide what a cell IS: the type is fs-meta/lh-body against fs-fine/lh-title, and the padding is asymmetric because the label hangs off the left edge of the table. Same clothes, different job."
+   "why": "COINCIDENCE, RE-RECORDED BECAUSE THE OTHER SIDE OF THE PAIR CHANGED. .woocommerce table.shop_attributes th is a ROW LABEL - the left column of a spec sheet - not a column header. It shares text-align:left, the quiet ink, border:0 and the hairline under it with the real header cell, and differs on both things that decide what a cell IS: fs-meta/lh-body against fs-fine/lh-title, and an asymmetric padding because the label hangs off the left edge of the table."
   },
   {
-   "pair": "adopted/table.css|.wc-block-cart-items.wc-block-cart-items th,\n.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th  ==  patterns/table.css|.d-table th",
+   "pair": "patterns/notice.css|.d-notice__dismiss  ==  patterns/pagination.css|.d-pagination__item",
    "shared": 4,
-   "why": "CROSS-ORIGIN, AND IT IS THE NEXT BATCH'S ITEM RATHER THAN AN EXCUSE. Now that the four Woo header cells are one rule, that rule scores against our own .d-table th - correctly: they are the same cell. They are not identical, though. .d-table th pads var(--space-3xs) var(--space-2xs), the Woo one pads 0 var(--space-2xs) var(--space-3xs) with no top padding, and .d-table th also carries letter-spacing and white-space:nowrap. Unifying them is a decision about whether a WooCommerce table header should be exactly our table header, which is worth making deliberately - it is the \"Woo table base\" item in batch 4 of the merge plan, not something to fold in silently at the end of batch 3."
+   "why": "COINCIDENCE, AND IT ONLY EXISTS BECAUSE THE PAGINATOR CELL GOT SHORTER. A notice's dismiss button and a paginator number now share exactly four declarations - position:relative, z-index:2, cursor:pointer and a colour transition - which is \"a small control that lifts above its neighbour and fades its ink\", a shape rather than an object. One closes a message and one goes to page four. Worth noting separately: .d-notice__dismiss carries the icon-button signature (appearance:none, border:0, background:none, padding:0, cursor:pointer) without being on the .d-icon-btn family list, but it draws its cross with a FONT rather than a mask and is radius-xs rather than a circle, so joining that family is a component change and not a merge."
+  },
+  {
+   "pair": "patterns/progress.css|.d-progress__native  ==  patterns/slider.css|.d-slider__input",
+   "shared": 4,
+   "why": "REAL, AND DELIBERATELY NOT MERGED AT THE END OF A BATCH. .d-progress__native and .d-slider__input are one object - a native form control with the browser's chrome taken off, filling its column: appearance:none twice, display:block, width:100%. The pair appeared only because this commit shortened the progress rule, which is how it should surface. It is not merged because there is no honest home for it yet: the two live in different pattern files, so putting the base in either one couples a slider to a progress bar, and the right answer is a base-layer rule for \"a native control we draw ourselves\" that does not exist. Inventing a file in the last five minutes of a batch is how a system gains one nobody remembers. Candidate for the same pass as patterns/wake.css in batch 6."
   }
  ]
 }

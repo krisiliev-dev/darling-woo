@@ -41,16 +41,14 @@
    every other `th` rule in this file (tfoot, shop_attributes) is below both and
    still wins. Moving it later would have been the same bet in the direction
    that is harder to check. */
+/* The cell itself is .d-table th in patterns/table.css now. All that is left of
+   a Woo header is the padding: no top gap, because these tables sit tight under
+   a heading rather than inside a card. */
 .wc-block-cart-items.wc-block-cart-items th,
 .woocommerce table.shop_table th,
 .woocommerce-orders-table th,
 .woocommerce-table--order-details th{
-	text-align:left;
-	font:var(--fw-medium) var(--fs-fine)/var(--lh-title) var(--font-ui);
-	color:var(--ink-quiet);
 	padding:0 var(--space-2xs) var(--space-3xs);
-	border:0;
-	border-bottom:1px solid var(--hairline);
 }
 .wc-block-cart-items.wc-block-cart-items td{
 	padding:var(--space-xs) var(--space-2xs);
@@ -234,17 +232,8 @@
 /* -- the classic tables: cart, orders, order details, addresses -------------
    These DO carry data-title on every cell, which is what makes a labelled
    stacked layout possible. */
-.woocommerce table.shop_table,
-.woocommerce-orders-table,
-.woocommerce-table--order-details,
-.woocommerce-table--customer-details{
-	width:100%;
-	border:0;
-	border-collapse:collapse;
-	border-radius:0;
-	font-size:var(--fs-meta);
-	color:var(--ink);
-}
+/* These four are on the table base in patterns/table.css with .d-table and the
+   block cart. Nothing was left over. */
 /* The header cell for these three is at the top of this file, with the block
    cart's - it was the same five declarations twice. */
 .woocommerce table.shop_table td,
@@ -303,11 +292,9 @@
    46rem is the same measure the review form uses. A table of short facts reads
    like a list, and a list wants a column, not a page. */
 .woocommerce table.shop_attributes{
+	/* The base is in patterns/table.css. The measure is this table's own, and it
+	   is the same 46rem the review form uses. */
 	max-width:46rem;
-	width:100%;
-	border:0;
-	border-collapse:collapse;
-	font-size:var(--fs-meta);
 }
 .woocommerce table.shop_attributes th{
 	width:34%;

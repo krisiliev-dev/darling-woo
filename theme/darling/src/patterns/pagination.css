@@ -122,9 +122,18 @@
    ring in the same place and made the first test harness click the wrong page. */
 .d-pagination__strip > li{ position:relative; flex:none; width:var(--cell) }
 
-.d-pagination__item{
-	position:relative;
-	z-index:2;
+/* *** A NUMBER AND AN ARROW ARE THE SAME CELL. ***
+   .d-pagination__item and .d-pagination__step were seven declarations apart at
+   78%: a circle of --cell, centred contents, the paginator ink, no underline.
+   One of them holds a page number and the other holds a chevron, and that is
+   the whole difference in what they ARE.
+
+   The base is here, at the earlier of the two, so each keeps its own deltas by
+   coming after. Both transitions stay with their owners: the number fades its
+   INK and the arrow fades its BACKGROUND, which is not a copy of one thing but
+   two different answers. */
+.d-pagination__item,
+.d-pagination__step{
 	display:grid;
 	place-items:center;
 	width:var(--cell);
@@ -132,10 +141,15 @@
 	border-radius:var(--radius-circle);
 	color:var(--pg-ink);
 	text-decoration:none;
+}
+/* The number: it sits above the marker, it is clickable, and its digits have to
+   be the same width or the strip jitters as the page changes. */
+.d-pagination__item{
+	position:relative;
+	z-index:2;
 	cursor:pointer;
 	font-variant-numeric:tabular-nums;
 	transition:color var(--dur-ui) var(--ease-float);
-
 }
 .d-pagination__item:hover{ color:var(--pg-mark) }
 .d-pagination__item:focus-visible{
@@ -262,14 +276,9 @@
    Drawn chevrons rather than glyphs, for the same reason the stars are drawn:
    an arrow character is missing from more fonts than people expect and falls
    back to a box. */
+/* The arrow: the cell is above, and these two are the step's own - it must not
+   be squeezed by the strip, and it responds with a fill rather than with ink. */
 .d-pagination__step{
-	display:grid;
-	place-items:center;
-	width:var(--cell);
-	height:var(--cell);
-	border-radius:var(--radius-circle);
-	color:var(--pg-ink);
-	text-decoration:none;
 	flex:none;
 	transition:background var(--dur-ui) var(--ease-float);
 }
