@@ -342,12 +342,9 @@
 	width:.75rem;
 	height:.75rem;
 	background:var(--g-core);
-	-webkit-mask-image:var(--icon-star-4);
-	        mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	/* The mask itself comes from the shared rule in patterns/icon.css; this
+	   only says WHICH mark. Six declarations used to live here. */
+	--icon: var(--icon-star-4);
 	animation:d-twinkle 2.8s var(--ease-float) infinite;
 }
 .d-footflair__s:nth-of-type(1){ top:-8px;    inset-inline-start:-20px }

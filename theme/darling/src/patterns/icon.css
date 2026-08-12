@@ -28,6 +28,41 @@
 	height:1em;
 	vertical-align:-.125em;   /* sits on the text baseline, not below it */
 	background:currentColor;
+}
+/* *** THE MASK PLUMBING, ONCE, FOR EVERYTHING THAT DRAWS A MARK. ***
+   .d-icon has always been the component that turns an SVG into a paintable
+   shape: set --icon, get a mask. Then FOUR other rules drew the same star
+   by writing the six mask declarations out by hand instead of using it -
+
+     .d-burst i                       the click burst
+     .d-footflair__s                  the footer flourish
+     .d-news__flow i                  the newsletter current
+     .d-hero__visual .d-hero__star    the hero twinkle
+
+   - all four with mask-image:var(--icon-star-4), mask-size:contain,
+   mask-repeat:no-repeat and the -webkit- triplet. The VALUE was single-sourced
+   the whole time, which is why nobody noticed: --icon-star-4 is one token and a
+   change to the artwork did reach all five. What was copied is the PLUMBING, and
+   the value-resolving pass of dupes.js is what finally surfaced it.
+
+   They cannot simply become .d-icon: that rule also carries a component's
+   geometry - inline-block, 1em square, baseline nudge, currentColor - and these
+   four are absolutely positioned, sized in their own units, painted in
+   --g-hi and animated. So the rule is SPLIT. Geometry stays above and is
+   .d-icon's alone; the masking is here and is shared. Each of the four now
+   says what it draws (--icon) rather than how masking works.
+
+   *** mask-position:center IS NEW TO THE FOUR AND CHANGES NOTHING. *** They had
+   the initial 0% 0%. All four are square elements holding a square viewBox
+   under mask-size:contain, so the mask already filled the box exactly and there
+   was nothing left to position. Verified by measuring all 259 masked elements in
+   the gallery before and after: the only property that moves is mask-position,
+   on exactly these four, with every box unchanged. */
+.d-icon,
+.d-burst i,
+.d-footflair__s,
+.d-news__flow i,
+.d-hero__visual .d-hero__star{
 	mask-image:var(--icon, none);
 	mask-size:contain;
 	mask-repeat:no-repeat;

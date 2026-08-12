@@ -159,12 +159,9 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 	width:.9rem;
 	height:.9rem;
 	background:var(--g-hi);
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+	/* The mask itself comes from the shared rule in patterns/icon.css; this
+	   only says WHICH mark. Six declarations used to live here. */
+	--icon: var(--icon-star-4);
 	animation:d-twinkle 2.8s var(--ease-float) infinite;
 	pointer-events:none;
 }

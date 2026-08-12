@@ -763,6 +763,13 @@ svg{ max-width:100% }
 	height:1em;
 	vertical-align:-.125em;
 	background:currentColor;
+}
+
+.d-icon,
+.d-burst i,
+.d-footflair__s,
+.d-news__flow i,
+.d-hero__visual .d-hero__star{
 	mask-image:var(--icon, none);
 	mask-size:contain;
 	mask-repeat:no-repeat;
@@ -1931,12 +1938,8 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 	width:.9rem;
 	height:.9rem;
 	background:var(--g-hi);
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+
+	--icon: var(--icon-star-4);
 	animation:d-twinkle 2.8s var(--ease-float) infinite;
 	pointer-events:none;
 }
@@ -2121,12 +2124,8 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	scale:0;
 	opacity:0;
 	background:var(--burst-colour, var(--g-hi));
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+
+	--icon: var(--icon-star-4);
 
 	transition:translate 170ms var(--ease-float),
 	           scale     170ms var(--ease-float),
@@ -5541,12 +5540,8 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	width:.75rem;
 	height:.75rem;
 	background:var(--g-core);
-	-webkit-mask-image:var(--icon-star-4);
-	        mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+
+	--icon: var(--icon-star-4);
 	animation:d-twinkle 2.8s var(--ease-float) infinite;
 }
 .d-footflair__s:nth-of-type(1){ top:-8px;    inset-inline-start:-20px }
