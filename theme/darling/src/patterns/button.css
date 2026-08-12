@@ -38,9 +38,47 @@
    it renders a <button> or an <a>, so naming it here catches both. It joins the
    list rather than getting its own rule for the same reason the ordering select
    and the cart's trash button did: one definition. */
+/* *** AND NOW THE OTHER FIVE, BECAUSE THE CONDITION THIS FILE WROTE DOWN HAS
+   BEEN MET. *** Two comments above said it in as many words - "adopted/
+   checkout.css still carries its own copy for the place-order button, because
+   that one has to win TODAY; it folds in here the day the checkout sheets are
+   dequeued", and "they fold into this rule the day those two files can be
+   layered". The sheets are dequeued: the live page loads darling.build.css,
+   Stripe and PhotoSwipe, and global-styles is 77 custom properties. There is
+   nothing unlayered left for an adopted-layer copy to beat.
+
+   So the five hand-written copies of this shape come home. What was in them:
+
+     adopted/card.css      the upsell and grid CTAs   13 declarations
+     adopted/filters.css   the apply button           11
+     adopted/filters.css   the overlay opener         14
+     adopted/checkout.css  the place-order button     14
+     patterns/card.css     the card CTA               16
+
+   Each keeps only its delta - a width, a padding, a different fill - and the
+   shape is declared once. The owner saw the cost of this directly, in the
+   comment two blocks below: four cherry buttons, four declarations, and only
+   some of them darkening on hover.
+
+   *** THE ONE THING THAT WAS CHECKED BEFORE MOVING THEM. *** A rule that
+   leaves adopted for patterns keeps its declarations and can still lose them,
+   so every other rule in the build that names these selectors was listed with
+   its layer first. There are three, and none of them collides: grid.css's
+   .wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link is
+   (0,3,0) and wins on specificity as it always did; flow.css sets align-content
+   only, and is imported before this file anyway; print.css hides the lot behind
+   !important, which is the point of print.css. */
 .d-btn,
 .single_add_to_cart_button,
-.wc-block-cart__submit-button{
+.wc-block-cart__submit-button,
+.wc-block-components-button.wc-block-components-checkout-place-order-button,
+.wc-block-product-filters__apply,
+.wc-block-product-filters__open-overlay,
+li.product .wc-block-components-product-button__button,
+li.product .wp-block-button__link,
+li.wc-block-grid__product .wc-block-components-product-button__button,
+li.wc-block-grid__product .wp-block-button__link,
+.d-card__cta{
 	display:inline-flex;
 	align-items:center;
 	justify-content:center;
@@ -68,9 +106,25 @@
    only one of them ever had a transform to transition - so Add to Cart, on every
    product page, and the cart's own checkout button did not move under a press
    while the button beside them did. */
+/* *** AND THE EIGHT NEW MEMBERS ARE ON THIS LIST TOO, WHICH IS A CHANGE. ***
+   The trap above is that the base transitions `transform` for everything on it
+   and only the members of THIS list have a transform to transition - so a
+   button that joins the base and not this one sits still under a press while
+   its neighbour moves. That was the bug the last two members were added to
+   fix; adding five copies to the base without fixing it again would have been
+   the same bug at five times the size. Every cherry button on the site now
+   presses. */
 .d-btn:active,
 .single_add_to_cart_button:active,
-.wc-block-cart__submit-button:active{ transform:translateY(1px) }
+.wc-block-cart__submit-button:active,
+.wc-block-components-button.wc-block-components-checkout-place-order-button:active,
+.wc-block-product-filters__apply:active,
+.wc-block-product-filters__open-overlay:active,
+li.product .wc-block-components-product-button__button:active,
+li.product .wp-block-button__link:active,
+li.wc-block-grid__product .wc-block-components-product-button__button:active,
+li.wc-block-grid__product .wp-block-button__link:active,
+.d-card__cta:active{ transform:translateY(1px) }
 /* *** THE HOVER BELONGS TO THE SOLID CHERRY BUTTON AND TO NOTHING ELSE. ***
    The first version was `.d-btn:not(.d-finish):hover`, and testing every variant
    caught what that meant: .d-btn--text is a link that behaves like a button, and

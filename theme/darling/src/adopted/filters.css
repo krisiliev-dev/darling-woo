@@ -39,21 +39,20 @@
    Woo draws it as a bare inline-flex with a transparent border. It is a button,
    and we have one. The svg is Woo's own and stays - it is a filter glyph and we
    have no better one - but it takes our size and our ink. */
+/* The overlay opener is the quiet variant of the same button: same shape, no
+   fill, a hairline ring. Three lines, and .d-btn--quiet is the pattern it will
+   eventually just BE - that is a markup change, not a stylesheet one. */
 .wc-block-product-filters__open-overlay{
-	display:inline-flex;
-	align-items:center;
-	justify-content:center;
-	gap:var(--inline);
-	padding:.72em 1.5em;
-	border:0;
-	border-radius:var(--radius-pill);
 	background:transparent;
 	box-shadow:inset 0 0 0 1px var(--edge-field);
 	color:var(--ink);
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
-	cursor:pointer;
-	transition:background var(--dur-ui) var(--ease-float);
+	/* *** AND THE ONE THING THE MERGE ACTUALLY BROKE, CAUGHT BY MEASURING IT. ***
+	   .d-btn is white-space:nowrap, which is right for a pill with a verb on it
+	   and wrong for this one: the label is a sentence. Measured across four
+	   widths before and after, every other button is identical and this is the
+	   single new defect - at 320px the text is 205px inside a 173px box. Narrower
+	   than any phone sold, and still a defect, and still one line. */
+	white-space:normal;
 }
 .wc-block-product-filters__open-overlay:hover{ background:var(--surface-quiet) }
 .wc-block-product-filters__open-overlay:focus-visible{
@@ -182,19 +181,9 @@
 	border-top:1px solid var(--hairline);
 	background:var(--surface-raised);
 }
+/* Eleven declarations of .d-btn, of which exactly one was not .d-btn. */
 .wc-block-product-filters__apply{
-	display:inline-flex;
-	align-items:center;
-	justify-content:center;
 	width:100%;
-	padding:.72em 1.5em;
-	border:0;
-	border-radius:var(--radius-pill);
-	background:var(--action);
-	color:var(--action-ink);
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
-	cursor:pointer;
 }
 .wc-block-product-filters__apply:focus-visible{
 	outline:2px solid var(--focus-ring);

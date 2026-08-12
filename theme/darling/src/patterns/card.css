@@ -148,23 +148,20 @@
 /* The basket button. Cherry, not amber: amber is "look at this", cherry is
    "put it in the basket", and a card should never show both. z-index clears the
    title link's ::after so the button stays clickable. */
+/* The card CTA IS .d-btn - the shape is declared once, in patterns/button.css,
+   and what is left here is what a card adds to it: a place in the card grid, a
+   full-width box, a tighter padding and the cart fill rather than the action
+   one. The transition goes with the shape; it was `background ... --ease-ui`
+   here and is `transform, background-color ... --ease-float` there, which is
+   what every other button on the site already uses. */
 .d-card__cta{
 	grid-area:cta;
 	position:relative;
 	z-index:3;
-	display:inline-flex;
-	align-items:center;
-	justify-content:center;
 	width:100%;
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
 	padding:.62em 1.2em;
-	border:0;
-	border-radius:var(--radius-pill);
 	background:var(--action-cart);
 	color:var(--action-cart-ink);
-	cursor:pointer;
-	transition:background var(--dur-ui) var(--ease-ui);
 }
 /* *** THE CARD CTA'S HOVER IS NOT HERE ANY MORE. ***
    It was `background:var(--c-cherry-deep)` - the raw primitive, not

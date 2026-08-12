@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 131,
+ "seeded": 118,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -23,11 +23,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
-   "shared": 11,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::after  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary), :where(.entry-content details > summary))::after",
    "shared": 11,
    "why": "CROSS-ORIGIN"
@@ -35,31 +30,6 @@
   {
    "pair": "adopted/vh.css|.wc-block-components-address-form__darling-office-id,\n.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input  ==  patterns/a11y.css|.d-vh,\n.screen-reader-text,\n\n\n.visually-hidden,\n\n.d-choice input",
    "shared": 11,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  adopted/filters.css|.wc-block-product-filters__apply",
-   "shared": 10,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
-   "shared": 10,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
-   "shared": 10,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/filters.css|.wc-block-product-filters__open-overlay  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
-   "shared": 10,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  patterns/card.css|.d-card__cta",
-   "shared": 10,
    "why": "CROSS-ORIGIN"
   },
   {
@@ -73,24 +43,9 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  adopted/filters.css|.wc-block-product-filters__open-overlay",
-   "shared": 9,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  adopted/filters.css|.wc-block-product-filters__apply",
-   "shared": 9,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "adopted/checkout.css|.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__option  ==  patterns/field.css|.d-choice",
    "shared": 9,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  adopted/filters.css|.wc-block-product-filters__open-overlay",
-   "shared": 9,
-   "why": "SAME FILE"
   },
   {
    "pair": "adopted/notice.css|.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info  ==  patterns/notice.css|.d-notice",
@@ -98,19 +53,9 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button  ==  patterns/card.css|.d-card__cta",
-   "shared": 9,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "adopted/card.css|li.product .wc-block-components-product-price,\nli.wc-block-grid__product .wc-block-components-product-price  ==  patterns/card.css|.d-card__price",
    "shared": 8,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.d-guest-account  ==  adopted/filters.css|.wc-block-product-filters__open-overlay",
-   "shared": 8,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type=\"checkbox\"]  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent) input",
@@ -313,11 +258,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "adopted/checkout.css|.wc-block-components-address-card  ==  adopted/checkout.css|.wc-block-components-checkout-step__heading",
    "shared": 4,
    "why": "SAME FILE"
@@ -359,16 +299,6 @@
   },
   {
    "pair": "adopted/checkout.css|.wc-block-checkout__guest-checkout-notice  ==  patterns/product.css|.d-product__atc",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/grid.css|.wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link",
    "shared": 4,
    "why": "CROSS-ORIGIN"
   },
@@ -491,11 +421,6 @@
    "pair": "patterns/card.css|.d-card__price  ==  tokens/type.css|.u-price",
    "shared": 4,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "patterns/card.css|.d-card__cta  ==  patterns/hero.css|.d-hero__visual",
-   "shared": 4,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "patterns/cart.css|.d-trustbar span,\n.d-trustbar p  ==  patterns/hero.css|.d-empty__sub",
@@ -656,6 +581,16 @@
    "pair": "adopted/icon.css|.woocommerce button.button.loading::after,\n.woocommerce input.button.loading::after,\n.woocommerce a.button.loading::after,\n.woocommerce button.button.added::after,\n.woocommerce a.button.added::after  ==  patterns/icon.css|.d-icon",
    "shared": 4,
    "why": "CROSS-ORIGIN, AND IT REPLACES TWO ENTRIES RATHER THAN ADDING ONE. The Woo loading spinner and added tick used to be two rules, each recorded against .d-icon's geometry half (display:inline-block, 1em square, currentColor, font-family:inherit). Merging them into one trailing-state-mark rule merged their two ledger entries into this one. It still cannot fold into .d-icon: adopted is a LATER layer than patterns, so a patterns rule loses to it however it is spelt - the same trap the checkout picker recorded. It folds in on the day those selectors no longer need an adopted-layer rule at all. Note the masking is ALREADY shared: this pair is the box, not the plumbing."
+  },
+  {
+   "pair": "adopted/checkout.css|a.wc-block-components-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button,\n.wc-block-components-button.wc-block-components-checkout-place-order-button,\n.wc-block-product-filters__apply,\n.wc-block-product-filters__open-overlay,\nli.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link,\n.d-card__cta",
+   "shared": 4,
+   "why": "CROSS-ORIGIN, AND IT IS A NET RATHER THAN A COPY. a.wc-block-components-button is the catch-all for any anchor WooCommerce calls a button on a surface we have not reached yet. It shares display:inline-flex, align-items, justify-content and text-decoration with .d-btn - and the same four minus one with patterns/grid.css's block-grid CTA - because that is simply what \"make this anchor behave like a button\" means. It must NOT join .d-btn, which would paint every unnamed anchor cherry, and it cannot be reduced: an element the net catches is by definition not on .d-btn, so it inherits nothing from it. Measured at ZERO matches on the gallery and on the live cart, checkout and account - and kept anyway, because the cart was empty and an empty cart renders no submit button, which is the very element the rule was written for. The honest fix is a named \"anchor that behaves like a button\" object in patterns/button.css holding this and the grid CTA together; that is a candidate for a later batch, not a silent widening now."
+  },
+  {
+   "pair": "adopted/checkout.css|a.wc-block-components-button  ==  patterns/grid.css|.wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link",
+   "shared": 4,
+   "why": "CROSS-ORIGIN, AND IT IS A NET RATHER THAN A COPY. a.wc-block-components-button is the catch-all for any anchor WooCommerce calls a button on a surface we have not reached yet. It shares display:inline-flex, align-items, justify-content and text-decoration with .d-btn - and the same four minus one with patterns/grid.css's block-grid CTA - because that is simply what \"make this anchor behave like a button\" means. It must NOT join .d-btn, which would paint every unnamed anchor cherry, and it cannot be reduced: an element the net catches is by definition not on .d-btn, so it inherits nothing from it. Measured at ZERO matches on the gallery and on the live cart, checkout and account - and kept anyway, because the cart was empty and an empty cart renders no submit button, which is the very element the rule was written for. The honest fix is a named \"anchor that behaves like a button\" object in patterns/button.css holding this and the grid CTA together; that is a candidate for a later batch, not a silent widening now."
   }
  ]
 }

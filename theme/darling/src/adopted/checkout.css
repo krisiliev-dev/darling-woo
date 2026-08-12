@@ -810,8 +810,24 @@
 
    inline-flex, which is what every other button in this system is. Placed here
    with the checkout's because the family is shared; it moves to the cart's own
-   adopted file the day that file exists. */
-.wc-block-components-button.wc-block-cart__submit-button,
+   adopted file the day that file exists.
+
+   *** THE NAMED HALF OF THIS RULE IS GONE AND THE NET IS NOT. ***
+   .wc-block-cart__submit-button is on .d-btn now, in patterns/button.css, and
+   .d-btn already says inline-flex, centred, no underline - so naming it here as
+   well was a second answer to a settled question. What is left is the NET: any
+   anchor Woo calls a button, on a surface nobody has reached yet.
+
+   *** AND THE NET STAYS EVEN THOUGH IT MATCHES NOTHING TODAY. *** Measured on
+   the gallery and on the live cart, checkout and account: zero elements. That
+   is not evidence it is dead. The cart was EMPTY when it was measured, and an
+   empty cart does not render a submit button - which is the exact element this
+   rule was written for, after the owner reported a cherry pill that had come
+   apart into two half-circles. The ablation cannot see an absence, and a
+   missing cart STATE is the fourth kind of absence this project has been
+   caught by. It costs five declarations and it stays until a seeded cart says
+   otherwise. If it ever does fire, the fix is to name that element on .d-btn,
+   not to widen this. */
 a.wc-block-components-button{
 	display:inline-flex;
 	align-items:center;
@@ -819,21 +835,13 @@ a.wc-block-components-button{
 	text-align:center;
 	text-decoration:none;
 }
+/* The biggest button on the site, and it was fourteen declarations of .d-btn
+   with one number changed. background-image:none went with the rest: .d-btn
+   sets the `background` SHORTHAND, which resets the image on its own - the
+   long-hand pair here was written when a Woo gradient still had to be argued
+   with. */
 .wc-block-components-button.wc-block-components-checkout-place-order-button{
-	display:inline-flex;
-	align-items:center;
-	justify-content:center;
-	gap:var(--inline);
 	padding:.86em 1.7em;
-	border:0;
-	border-radius:var(--radius-pill);
-	background-color:var(--action);
-	background-image:none;
-	color:var(--action-ink);
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
-	cursor:pointer;
-	transition:background-color var(--dur-ui) var(--ease-float);
 }
 .wc-block-components-button.wc-block-components-checkout-place-order-button--full-width{
 	width:100%;

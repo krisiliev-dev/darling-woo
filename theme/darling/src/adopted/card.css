@@ -102,21 +102,16 @@ li.product .wc-block-components-product-button__button,
 li.product .wp-block-button__link,
 li.wc-block-grid__product .wc-block-components-product-button__button,
 li.wc-block-grid__product .wp-block-button__link{
-	/* the block grid's CTA is an <a>, not a <button>, so it arrives underlined */
-	text-decoration:none;
-	display:inline-flex;
-	align-items:center;
-	justify-content:center;
+	/* The shape - and text-decoration:none, which this rule used to carry for the
+	   block grid's <a> - is on .d-btn in patterns/button.css now. This is the
+	   delta: a full-width box, a flush line, a tighter padding and the cart fill.
+	   It stays in the adopted layer because that is where the hover is, and the
+	   hover is a later commit. */
 	width:100%;
-	font:var(--type-ui);
-	font-weight:var(--fw-medium);
 	line-height:var(--lh-flush);
 	padding:.62em 1.2em;
-	border:0;
-	border-radius:var(--radius-pill);
 	background:var(--action-cart);
 	color:var(--action-cart-ink);
-	cursor:pointer;
 }
 
 

@@ -17,8 +17,9 @@ const { PNG }=require('pngjs');
 const _pm=require('pixelmatch');const pixelmatch=_pm.default||_pm;
 const THEME=path.join(path.dirname(__dirname),'theme','darling');
 const OUT=process.argv[2];
+const SPECARG=process.argv.indexOf('--specimens');
 const AG=process.argv.indexOf('--against')>-1?process.argv[process.argv.indexOf('--against')+1]:null;
-const SPECIMENS=['.d-header__inner','.d-mega','.d-drawer__nav','.d-drawer__list','.d-trustbar',
+const SPECIMENS=SPECARG>-1?process.argv[SPECARG+1].split(',').map(x=>x.trim()).filter(Boolean):['.d-header__inner','.d-mega','.d-drawer__nav','.d-drawer__list','.d-trustbar',
  '.d-mappick','.d-news','.d-footflair','.fgrid','.wc-block-product-filters__overlay-content',
  '.d-icon--spinner','.d-icon-btn','.d-scrollframe--page'];
 
