@@ -6336,7 +6336,8 @@ html.d-a11y .d-mappick__office{ transition:none }
 	font-style:normal;
 	line-height:1;
 	opacity:0;
-	color:var(--g-hi, var(--g-core));
+
+	color:var(--star-ink, var(--g-hi, var(--g-core)));
 	animation:d-star var(--ease-star) forwards;
 
 	animation-duration:clamp(var(--star-life-min), var(--dur, 8s), var(--star-life-max));

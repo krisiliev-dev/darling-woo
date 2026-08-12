@@ -66,7 +66,19 @@
 	font-style:normal;
 	line-height:1;
 	opacity:0;
-	color:var(--g-hi, var(--g-core));
+	/* *** THE STAR READS ITS COLOUR OFF A SLOT. ***
+	   assets/ambient.js sets --star-ink to var(--star-ink-N) for a random N; the
+	   slots are declared on the layer above, four gold and two cherry, and that
+	   ratio is what decides the mix.
+
+	   *** THIS LINE IS THE WHOLE FEATURE AND IT SHIPPED WITHOUT IT. *** The commit
+	   that added the slots, the palette and the picker changed everything except
+	   this declaration: the patch that carried it hit an unrelated failure, refused
+	   to write anything - which is what it is for - and the rewrite left this one
+	   out because it had already reported ok in the run that wrote nothing. Six
+	   slots resolving correctly on every star, and a colour property that never
+	   asked for them. Caught by measuring the live page: 27 stars, one colour. */
+	color:var(--star-ink, var(--g-hi, var(--g-core)));
 	animation:d-star var(--ease-star) forwards;
 	/* *** THE RANGE IS ENFORCED HERE, NOT TRUSTED FROM THE SCRIPT. ***
 	   ambient.js picks a duration and writes it to --dur. The token declares
