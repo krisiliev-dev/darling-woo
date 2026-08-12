@@ -19,6 +19,10 @@ const OUT=process.argv[2];
    nothing and reports nothing, which reads exactly like a clean result. */
 const SEL=(process.argv[3]||'').split(';').map(s=>s.trim()).filter(Boolean);
 const AG=process.argv.indexOf('--against')>-1?process.argv[process.argv.indexOf('--against')+1]:null;
+/* some rules only exist inside a media query - a census taken at one width
+   cannot see them, which is the same blindness as a missing page. */
+const WARG=process.argv.indexOf('--width');
+const W=WARG>-1?parseInt(process.argv[WARG+1],10):1300;
 const PROPS=['display','position','width','height','padding','margin','border','borderRadius',
  'backgroundColor','backgroundImage','color','font','fontWeight','lineHeight','gap','alignItems',
  'justifyContent','textAlign','textDecorationLine','whiteSpace','boxShadow','cursor','opacity',
@@ -36,7 +40,7 @@ function serve(){const srv=http.createServer((q,r)=>{let p=decodeURIComponent(q.
 (async()=>{
  const {srv,port}=await serve();
  const b=await chromium.launch();
- const pg=await b.newPage({viewport:{width:1300,height:900},reducedMotion:'reduce'});
+ const pg=await b.newPage({viewport:{width:W,height:900},reducedMotion:'reduce'});
  await pg.goto('http://127.0.0.1:'+port+'/gallery.html',{waitUntil:'load'});
  await pg.addStyleTag({content:'*,*::before,*::after{animation:none !important;transition:none !important}'});
  await pg.waitForTimeout(1200);
@@ -57,7 +61,7 @@ function serve(){const srv=http.createServer((q,r)=>{let p=decodeURIComponent(q.
   return out;},[SEL,PROPS]);
  await b.close();srv.close();
  fs.writeFileSync(OUT,JSON.stringify(rows,null,1));
- console.log('matched '+rows.length+' element(s) across '+SEL.length+' selector(s) -> '+OUT);
+ console.log('at '+W+'px: matched '+rows.length+' element(s) across '+SEL.length+' selector(s) -> '+OUT);
  if(AG){
   const old=JSON.parse(fs.readFileSync(AG,'utf8'));
   const m=new Map(old.map(r=>[r.k,r]));let ch=0,nw=0,gn=0;

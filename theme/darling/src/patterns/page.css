@@ -64,12 +64,11 @@ main .entry-content > .woocommerce{
 /* The card treatment is for a standalone PAGE, not for every .entry-content on
    the site - a product description is also .entry-content and must not grow a
    white box inside a tab. */
+/* The surface is in layout.css with the other seven. A measure, a generous pad
+   and a lift are this one's own. */
 .d-prose--card{
 	max-width:46rem;
 	padding:clamp(1.6rem, 4vw, 3.25rem);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
 	box-shadow:var(--shadow-card);
 }
 .d-prose h2{ margin:var(--space-l) 0 var(--space-2xs); font:var(--type-section) }
@@ -109,11 +108,11 @@ main .entry-content > .woocommerce{
 	margin-inline:auto;
 }
 .d-postlist > li{ margin:0; list-style:none }
+/* The surface is in layout.css. A post pads itself and lifts on hover, which is
+   why it transitions the two properties the surface owns rather than setting
+   them. */
 .d-post{
 	padding:var(--space-s);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
 	transition:box-shadow var(--dur-ui) var(--ease-float),
 	           border-color var(--dur-ui) var(--ease-float);
 }
@@ -184,9 +183,6 @@ main .entry-content > .woocommerce{
 	inset-inline-start:var(--fab-inset, 1.125rem);
 	max-width:24rem;
 	padding:var(--space-s);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
 	color:var(--ink);
 	font-size:var(--fs-meta);
 	box-shadow:var(--shadow-card-hover);

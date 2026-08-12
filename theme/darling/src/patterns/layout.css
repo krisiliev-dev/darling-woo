@@ -298,6 +298,47 @@
 	border:1px solid var(--hairline);
 	border-radius:var(--radius-l);
 }
+/* -- the outlined raised surface, which was written out EIGHT times ------------
+   *** THE MODIFIERS ABOVE ARE THIS, AND NOTHING USES THEM. ***
+   .d-box--raised gives a raised background and a radius; .d-box--outline gives
+   the same radius and a hairline. A card with a hairline on a raised surface is
+   the two together, minus the shadow - and eight components spell it out by
+   hand instead:
+
+     .d-prose--card        patterns/page.css      a document in a card
+     .d-post               patterns/page.css      a blog index entry
+     .d-consent            patterns/page.css      the cookie card
+     .d-review + Woo's     patterns/product.css   a single review
+     .d-reviews__form      patterns/product.css   the write-a-review card
+     #respond x2           adopted/product.css    the same card, Woo's markup
+     .d-intake/.d-courier  patterns/checkout.css  the VAT and courier blocks
+
+   dupes.js scored five pairs inside that list. The surface is one decision -
+   how a raised card is edged - and it now has one place to be made.
+
+   *** WHY A SELECTOR LIST AND NOT THE MODIFIER PAIR. *** Because reaching for
+   .d-box--raised.d-box--outline means putting three classes on eight elements,
+   and two of the eight are WooCommerce's #respond, which has no class of ours
+   to give. The markup version is better and it is a template change; any member
+   that ever becomes a real .d-box drops off this list on the day it does.
+
+   No shadow here. Three of the eight have one and they disagree on which
+   (--shadow-card, --shadow-card-hover, none at all), so it stays a delta until
+   somebody decides. */
+.d-prose--card,
+.d-post,
+.d-consent,
+.d-review,
+.woocommerce #reviews #comments ol.commentlist li .comment_container,
+.d-reviews__form,
+.woocommerce #review_form_wrapper #review_form #respond,
+.woocommerce #reviews #review_form #respond,
+.d-intake,
+.d-courier{
+	border:1px solid var(--hairline);
+	border-radius:var(--radius-l);
+	background:var(--surface-raised);
+}
 
 /* -- n columns, or one, with no breakpoint --------------------------------------
    *** A BREAKPOINT IS A GUESS ABOUT THE WINDOW; THIS IS A FACT ABOUT THE BOX. ***

@@ -398,14 +398,13 @@
    ========================================================================== */
 .woocommerce #review_form_wrapper #review_form #respond,
 .woocommerce #reviews #review_form #respond{
+	/* The surface is on the shared rule in patterns/layout.css. What is left is
+	   what Woo's #respond needs undone: it arrives positioned and sized. */
 	position:static;
 	width:auto;
 	max-width:46rem;
 	margin:var(--space-m) 0 0;
 	padding:var(--space-m);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
 }
 .woocommerce #review_form #respond::before,
 .woocommerce #review_form #respond::after{ content:none }

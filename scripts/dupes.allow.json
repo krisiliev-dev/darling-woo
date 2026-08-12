@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 109,
+ "seeded": 100,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -19,11 +19,6 @@
   },
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button::after  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary), :where(.entry-content details > summary))::after",
-   "shared": 11,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/vh.css|.wc-block-components-address-form__darling-office-id,\n.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input  ==  patterns/a11y.css|.d-vh,\n.screen-reader-text,\n\n\n.visually-hidden,\n\n.d-choice input",
    "shared": 11,
    "why": "CROSS-ORIGIN"
   },
@@ -198,11 +193,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #review_form_wrapper #review_form #respond,\n.woocommerce #reviews #review_form #respond  ==  patterns/product.css|.d-reviews__form",
-   "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "patterns/catalogue.css|.d-carousel__tile  ==  patterns/hero.css|.d-collection",
    "shared": 5,
    "why": "SAME ORIGIN"
@@ -348,11 +338,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #review_form_wrapper #review_form #respond,\n.woocommerce #reviews #review_form #respond  ==  patterns/page.css|.d-prose--card",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/product.css|.woocommerce #review_form #respond .comment-form-rating  ==  patterns/product.css|.d-reviews__rating",
    "shared": 4,
    "why": "CROSS-ORIGIN"
@@ -433,16 +418,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/footer.css|.d-news__hp  ==  patterns/pagination.css|.d-pagination__radio",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/footer.css|.d-news__hp  ==  patterns/rating.css|.d-rating-input input",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/header.css|.d-nav > ul  ==  patterns/pagination.css|.d-pagination__strip",
    "shared": 4,
    "why": "SAME ORIGIN"
@@ -484,26 +459,6 @@
   },
   {
    "pair": "patterns/media-fail.css|.d-media-fail  ==  patterns/table.css|.d-ratehead",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/page.css|.d-prose--card  ==  patterns/product.css|.d-reviews__form",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/page.css|.d-consent  ==  patterns/page.css|.d-post",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "patterns/page.css|.d-post  ==  patterns/product.css|.d-review,\n.woocommerce #reviews #comments ol.commentlist li .comment_container",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/pagination.css|.d-pagination__radio  ==  patterns/rating.css|.d-rating-input input",
    "shared": 4,
    "why": "SAME ORIGIN"
   },

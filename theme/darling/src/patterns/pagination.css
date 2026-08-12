@@ -195,10 +195,10 @@
 }
 /* The radios exist so the gallery is clickable with no script. On the real
    shop these are links and the whole strip is server-rendered. */
+/* Hidden by the shared recipe in patterns/a11y.css. pointer-events:none stays:
+   the cell above it is the target, and a stray hit on a 1px box that happens to
+   sit under a number would check the wrong page. */
 .d-pagination__radio{
-	position:absolute;
-	width:1px; height:1px;
-	opacity:0;
 	pointer-events:none;
 }
 

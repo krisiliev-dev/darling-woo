@@ -154,7 +154,6 @@
    change reported 90 raw differences and ONE outside the control, which was a
    sparkle mid-cycle. 504 rules changed origin and nothing moved.
    ========================================================================== */
-@import url("adopted/vh.css") layer(adopted);
 @import url("adopted/social.css") layer(adopted);
 @import url("adopted/blocklayout.css") layer(adopted);
 @import url("adopted/icon.css") layer(adopted);

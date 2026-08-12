@@ -69,12 +69,11 @@
 	cursor:pointer;
 	line-height:0;
 }
+/* Hidden by the shared recipe in patterns/a11y.css - the same one .d-choice
+   input uses. appearance:none stays here because it is about the control being
+   a radio, not about it being hidden. */
 .d-rating-input input{
 	appearance:none;
-	position:absolute;
-	width:1px; height:1px;
-	margin:0;
-	opacity:0;
 }
 .d-rating-input__star{
 	display:block;

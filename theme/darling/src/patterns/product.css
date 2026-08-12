@@ -563,10 +563,6 @@
 	grid-template-columns:2.5rem 1fr;
 	gap:var(--space-2xs) var(--space-xs);
 	padding:var(--space-s);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
-
 	align-items:start;
 }
 .d-review__avatar,
@@ -645,12 +641,11 @@
 /* -- the review form ---------------------------------------------------------
    The fields are the field pattern; this is the card around them and the two
    rows that are not ordinary fields (the star picker and the consent line). */
+/* The surface is in layout.css, and Woo's #respond is on that list beside this
+   one - the same card, twice in the markup, once in the stylesheet. */
 .d-reviews__form{
 	max-width:46rem;
 	padding:var(--space-m);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
 }
 .d-reviews__form-title{
 	margin:0 0 var(--space-xs);

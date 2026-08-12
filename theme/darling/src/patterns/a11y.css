@@ -331,7 +331,44 @@ html.d-a11y .d-fab{ text-decoration:none }
 /* A radio or checkbox that is drawn by its own label - .d-choice paints the box,
    so the real control must be unseeable and still focusable, checkable and
    announced. Listed here rather than repeating the recipe in field.css. */
-.d-choice input{
+.d-choice input,
+/* *** AND THE SAME THING HAD A SECOND RECIPE, IN TWO OTHER FILES. ***
+   .d-rating-input input and .d-pagination__radio were hidden with a 1px box at
+   opacity 0 instead - the same idea, spelt differently, in patterns/rating.css
+   and patterns/pagination.css, and dupes.js scored them against each other and
+   against the newsletter honeypot. One recipe, and it is this one, because this
+   one is the accessible spelling: clip-path removes the box from the page
+   without removing it from the accessibility tree, and it is what .d-vh and
+   .screen-reader-text above already use.
+
+   *** clip-path IS NOT THE SAME AS opacity FOR HIT-TESTING, AND THAT WAS THE
+   RISK. *** A transparent box still catches a click; a clipped one has no area
+   to catch it. Every one of these controls is driven by a LABEL, so it should
+   not matter - and "should not" is not a measurement. scripts/_hiddenctl.js
+   clicks the label of all 50 of them and asks whether the input checked: 5 of 5
+   rating radios, 36 of 36 paginator radios, 9 of 9 choice controls, before and
+   after, all still focusable. The choice controls were already on this recipe
+   and were the control group.
+
+   The newsletter honeypot is NOT here and must not be: it is the one 1px box on
+   this site that has to be hidden FROM the accessibility tree, not exposed to
+   it. Same shape, opposite intent - the triage refused that merge and so does
+   this. */
+.d-rating-input input,
+.d-pagination__radio,
+/* *** AND adopted/vh.css IS GONE, BECAUSE IT SAID IT WOULD BE. ***
+   That file existed for one reason and wrote it at the top: "these four
+   selectors could not join it: they dress WooCommerce's own markup and have to
+   beat WooCommerce's own rules, and a layered declaration loses to an unlayered
+   one whatever its specificity... The day the WooCommerce sheets are dequeued,
+   this file merges into patterns/a11y.css and the duplication goes with it."
+
+   The sheets are dequeued. The file is deleted, its import is out of index.css,
+   and its two rules are here - these two controls, and the stacking table heads
+   in the media query below. That is a whole file removed from the build by a
+   decision made months earlier and written down where it would be found. */
+.wc-block-components-address-form__darling-office-id,
+.wc-block-components-radio-control[data-d-rategrid] .wc-block-components-radio-control__input{
 	position:absolute;
 	width:1px;
 	height:1px;
@@ -371,4 +408,30 @@ html.d-a11y .d-fab{ text-decoration:none }
 	box-shadow:var(--shadow-card), inset 0 0 0 1px var(--hairline);
 	font:var(--type-ui);
 	text-decoration:none;
+}
+
+/* -- a table that stops being a table ---------------------------------------
+   Below 600px every cell becomes its own line, so the column heads have nothing
+   left to head. They are hidden rather than removed because they are still what
+   a screen reader uses to say which value it is reading - `display:none` here
+   would take the row's meaning with it.
+
+   All three stacking tables in one rule: our own .d-table--stack, the block
+   cart, and the classic responsive/orders tables. They were three copies of the
+   same idea in two files. */
+@media (max-width: 600px){
+	.d-table--stack thead,
+	.wc-block-cart-items.wc-block-cart-items thead,
+	.woocommerce table.shop_table_responsive thead,
+	.woocommerce-orders-table thead{
+		position:absolute;
+		width:1px;
+		height:1px;
+		margin:-1px;
+		padding:0;
+		border:0;
+		overflow:hidden;
+		clip-path:inset(50%);
+		white-space:nowrap;
+	}
 }

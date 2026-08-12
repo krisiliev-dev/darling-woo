@@ -27,13 +27,13 @@
    that looks alive. Do not add one and then debug why it does not run.
    ========================================================================== */
 
+/* The surface these two sit on is the shared one in patterns/layout.css, with
+   the review card, the consent card and the rest. Their own share of it is the
+   room they take in the checkout column. */
 .d-intake,
 .d-courier{
 	margin-block:var(--space-s) var(--space-m);
 	padding:var(--space-s) var(--space-m);
-	border:1px solid var(--hairline);
-	border-radius:var(--radius-l);
-	background:var(--surface-raised);
 }
 
 /* The toggle that reveals each block. .d-check does the box and the tick; this
