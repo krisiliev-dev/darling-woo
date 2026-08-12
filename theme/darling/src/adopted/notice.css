@@ -36,22 +36,21 @@
    there is one shape for "notice" across both families rather than a tick from
    WooCommerce on one and a star from us on the other. */
 .wc-block-components-notice-banner > svg{ display:none }
+/* The notice IS .d-notice now - the surface, the grid, the padding, the tint and
+   the ring are all in patterns/notice.css with ours. Four things are Woo's own:
+
+     a THREE-column grid, because their icon is a real element in the markup
+     rather than our ::before, so the row is icon / text / dismiss;
+     a bottom margin, because these are printed into the page flow;
+     border:0 and list-style:none, because two of the four are <ul>s and one
+     arrives with a border from nowhere in particular. */
 .wc-block-components-notice-banner,
 .woocommerce-message,
 .woocommerce-error,
 .woocommerce-info{
-	display:grid;
 	grid-template-columns:auto 1fr auto;
-	align-items:start;
-	gap:var(--space-2xs);
-	padding:var(--space-2xs) var(--space-xs);
 	margin:0 0 var(--stack);
 	border:0;
-	border-radius:var(--radius-m);
-	background:color-mix(in oklab, var(--notice-info-edge) 9%, var(--surface-raised));
-	box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--notice-info-edge) 22%, transparent);
-	color:var(--ink);
-	font-size:var(--fs-meta);
 	list-style:none;
 }
 /* *** justify-self ON THE LINK DID NOTHING, BECAUSE ITS PARENT IS NOT A GRID.

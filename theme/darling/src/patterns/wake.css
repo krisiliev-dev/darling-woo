@@ -1,0 +1,77 @@
+/* =============================================================================
+   PATTERN / WAKE  -  the trail a moving thing leaves behind
+
+   *** TWO OF THESE WERE BYTE-IDENTICAL APART FROM ONE VARIABLE NAME. ***
+   The paginator's marker and the price slider's thumb both drag a trail: six
+   sparks at fixed offsets, a spindle that is brightest in the middle and fades
+   to nothing at both ends, and a vertical mask so the whole thing thins out
+   top and bottom instead of ending in a hard edge. Twenty-one lines each, in
+   patterns/pagination.css and patterns/slider.css, differing only in whether
+   they said --pg-trail or --sl-trail. Verified by diffing the two through a
+   rename before writing this: zero lines apart.
+
+   So the paint is here once and reads --wake-trail, and each component says
+   which colour it is dragging. That is also the whole reason it is worth doing:
+   the next change to how a trail looks - one more spark, a longer fade - is now
+   one edit rather than two that will not stay in step.
+
+   *** THE SEARCH WIPE IS ON THE SHAPE RULE AND NOT ON THE PAINT ONE. ***
+   .d-wipe::after is the same idea at a third of the size and it is painted
+   differently on purpose: THREE sparks, not six, and a shorter fade, because it
+   is .55rem tall and six sparks in that box is a smudge. It shares the shape -
+   absolutely positioned, centred on its line, pill-ended, untouchable, starting
+   invisible - and nothing else. Two rules rather than one is the honest split.
+
+   *** background-repeat HAS TO COME AFTER background, AND THAT DECIDED THE
+   SPLIT. *** `background` is a shorthand: it resets every background-* longhand,
+   including repeat. Putting background-repeat:no-repeat in the shape rule and
+   leaving the paint in each component would have silently switched the trails
+   back to repeating, because the component rule comes later. It lives with the
+   paint, and .d-wipe::after keeps its own after its own background.
+   ========================================================================== */
+
+/* -- the horizontal wake -------------------------------------------------------
+   Shape and paint in one rule, and that is a correction. The first version of
+   this file split them, so that .d-wipe::after could share the SHAPE - five
+   declarations of "absolutely positioned, centred on its line, pill-ended,
+   untouchable, starting invisible". dupes.js immediately scored that rule
+   against a panel's edge wash, an icon button's hover glow and the scrollbar's
+   own trail, and the pair count went UP by three. It was right to: five
+   declarations of pure shape name no object, which is the same thing this
+   project refused for .d-cluster and for the ratio box. The wipe keeps its own
+   shape; what these two share is a trail, and a trail is paint.
+
+   --wake-trail is the one colour the whole thing is drawn from. */
+.d-pagination__wake,
+.d-slider__wake{
+	position:absolute;
+	top:50%;
+	border-radius:var(--radius-pill);
+	pointer-events:none;
+	background:
+		radial-gradient(circle at 14% 62%, var(--wake-trail) 0 .9px, transparent 2.2px),
+		radial-gradient(circle at 27% 34%, color-mix(in oklab, var(--wake-trail) 80%, transparent) 0 .7px, transparent 1.8px),
+		radial-gradient(circle at 41% 70%, color-mix(in oklab, var(--wake-trail) 90%, transparent) 0 1.2px, transparent 2.6px),
+		radial-gradient(circle at 58% 28%, var(--wake-trail) 0 .8px, transparent 2px),
+		radial-gradient(circle at 72% 66%, color-mix(in oklab, var(--wake-trail) 75%, transparent) 0 1px, transparent 2.4px),
+		radial-gradient(circle at 87% 40%, color-mix(in oklab, var(--wake-trail) 85%, transparent) 0 .7px, transparent 1.9px),
+		linear-gradient(90deg,
+			transparent 0%,
+			color-mix(in oklab, var(--wake-trail) 18%, transparent) 14%,
+			color-mix(in oklab, var(--wake-trail) 62%, transparent) 30%,
+			color-mix(in oklab, var(--wake-trail) 92%, transparent) 40%,
+			var(--wake-trail) 45%,
+			var(--wake-trail) 55%,
+			color-mix(in oklab, var(--wake-trail) 92%, transparent) 60%,
+			color-mix(in oklab, var(--wake-trail) 62%, transparent) 70%,
+			color-mix(in oklab, var(--wake-trail) 18%, transparent) 86%,
+			transparent 100%);
+	background-repeat:no-repeat;
+	mask-image:linear-gradient(180deg, transparent 0%, #000 24%, #000 76%, transparent 100%);
+	/* The first of each pair, here and in both components, is the fallback for a
+	   browser without abs(): a trail with no width and no opacity, which is the
+	   right thing to show when we cannot work out how far the marker has moved. */
+	width:0;
+	opacity:0;
+}
+

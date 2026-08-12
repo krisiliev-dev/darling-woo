@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 100,
+ "seeded": 97,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -38,11 +38,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/notice.css|.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info  ==  patterns/notice.css|.d-notice",
-   "shared": 9,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/card.css|li.product .wc-block-components-product-price,\nli.wc-block-grid__product .wc-block-components-product-price  ==  patterns/card.css|.d-card__price",
    "shared": 8,
    "why": "CROSS-ORIGIN"
@@ -54,11 +49,6 @@
   },
   {
    "pair": "patterns/icon.css|.d-icon--cart::before,\n.woocommerce .woocommerce-customer-details--email::before,\n.woocommerce .woocommerce-customer-details--phone::before,\n.woocommerce-account ul.digital-downloads li::before,\n.woocommerce .widget_layered_nav_filters ul li a::before,\n.woocommerce .widget_rating_filter ul li.chosen a::before,\n.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,\n.woocommerce-message::before,\n.woocommerce-error::before,\n.woocommerce-info::before,\n.woocommerce .cart-collaterals .shipping-calculator-button::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 8,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/slider.css|.d-slider__wake  ==  patterns/wipe.css|.d-wipe::after",
    "shared": 8,
    "why": "SAME ORIGIN"
   },
@@ -103,16 +93,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/account.css|.woocommerce-password-strength  ==  adopted/notice.css|.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info",
-   "shared": 6,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/account.css|.woocommerce-password-strength  ==  patterns/notice.css|.d-notice",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/checkout.css|.wc-block-components-sidebar-layout .wc-block-components-sidebar,\n.wc-block-components-sidebar,\n.wc-block-checkout__sidebar  ==  patterns/catalogue.css|.d-archive__side",
    "shared": 6,
    "why": "CROSS-ORIGIN"
@@ -126,11 +106,6 @@
    "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  adopted/field.css|.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option",
    "shared": 6,
    "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/notice.css|.d-notice",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
   },
   {
    "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent)",
@@ -194,11 +169,6 @@
   },
   {
    "pair": "patterns/catalogue.css|.d-carousel__tile  ==  patterns/hero.css|.d-collection",
-   "shared": 5,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/drawer.css|.d-drawer__line  ==  patterns/notice.css|.d-notice",
    "shared": 5,
    "why": "SAME ORIGIN"
   },
@@ -501,6 +471,21 @@
    "pair": "patterns/progress.css|.d-progress__native  ==  patterns/slider.css|.d-slider__input",
    "shared": 4,
    "why": "REAL, AND DELIBERATELY NOT MERGED AT THE END OF A BATCH. .d-progress__native and .d-slider__input are one object - a native form control with the browser's chrome taken off, filling its column: appearance:none twice, display:block, width:100%. The pair appeared only because this commit shortened the progress rule, which is how it should surface. It is not merged because there is no honest home for it yet: the two live in different pattern files, so putting the base in either one couples a slider to a progress bar, and the right answer is a base-layer rule for \"a native control we draw ourselves\" that does not exist. Inventing a file in the last five minutes of a batch is how a system gains one nobody remembers. Candidate for the same pass as patterns/wake.css in batch 6."
+  },
+  {
+   "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/notice.css|.d-notice,\n.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info,\n\n.woocommerce-password-strength",
+   "shared": 4,
+   "why": "COINCIDENCE. A checkbox label and a notice are both a start-aligned grid with a gap and a meta-sized line, which is what \"an icon or a box beside some text\" looks like in every component that has one. The notice has a surface - a tint, a ring, a radius, padding - and the label has none of it; merging would file a form control under messaging."
+  },
+  {
+   "pair": "patterns/wake.css|.d-pagination__wake,\n.d-slider__wake  ==  patterns/wipe.css|.d-wipe::after",
+   "shared": 4,
+   "why": "REAL, AND THE HONEST RESIDUE OF THE MERGE THAT JUST HAPPENED. The paginator's trail and the slider's are now one rule in patterns/wake.css - twenty-one lines of paint that used to be written twice. .d-wipe::after is the same idea at a third of the size and is painted DIFFERENTLY on purpose: three sparks rather than six and a shorter fade, because it is .55rem tall and six sparks in that box is a smudge. It shares the shape - absolutely positioned, centred on its line, pill-ended, untouchable, starting invisible - and sharing THAT was tried in the first version of wake.css: a five-declaration shape rule immediately scored against a panel's edge wash, an icon button's hover glow and the scrollbar's trail, and the pair count went UP by three. Shape is not an object. Note the count did not move for this one either: collapsing two copies into one rule leaves that one rule still resembling a third thing. The duplication went; the pair did not."
+  },
+  {
+   "pair": "patterns/drawer.css|.d-drawer__line  ==  patterns/notice.css|.d-notice,\n.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info,\n\n.woocommerce-password-strength",
+   "shared": 4,
+   "why": "COINCIDENCE, and the triage already refused its sibling. A cart row and a notice share position:relative, display:grid, align-items:start, a gap and a meta size. The drawer line is a four-track row built around a 3.25rem photograph; the notice is a two-track message with a surface. The same reasoning that kept .d-drawer__head out of .d-drawer__line__foot applies: the next change to the cart row must not arrive inside every notice on the site."
   }
  ]
 }

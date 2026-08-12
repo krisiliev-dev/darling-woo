@@ -32,7 +32,31 @@
    time. The finish is a leaf, not a mixin.
    ========================================================================== */
 
-.d-notice{
+/* *** AND WOO'S FOUR NOTICES ARE THIS NOTICE. *** adopted/notice.css carried a
+   second copy of everything below - grid, start-aligned, the same gap, the same
+   padding, the same radius, the same tinted surface, the same inset ring, the
+   same ink and the same meta size. Nine declarations against nine.
+
+   They can join for the reason the buttons, the tables and adopted/vh.css could:
+   since the dequeue there is nothing unlayered left for an adopted-layer copy to
+   beat, and adopted/notice.css is still a LATER layer, so the four things that
+   really are Woo's - a three-column grid because their icon is a real element,
+   a bottom margin, a border reset and a list-style reset - still win from there. */
+.d-notice,
+.wc-block-components-notice-banner,
+.woocommerce-message,
+.woocommerce-error,
+.woocommerce-info,
+/* *** AND THE PASSWORD METER IS A NOTICE TOO, WHICH IS WHY IT LOOKED LIKE ONE.
+   *** adopted/account.css painted .woocommerce-password-strength with this
+   exact surface by hand: the same padding, the same radius, the same meta size,
+   the same ink, the same tinted background and the same inset ring, six
+   declarations copied. It is a notice - it tells you something about what you
+   just typed - and it says so now by being one.
+
+   It keeps display:block rather than taking the grid: it has one line of text
+   and no dismiss button, so a two-column grid would be a track it never uses. */
+.woocommerce-password-strength{
 	position:relative;
 	display:grid;
 	grid-template-columns:1fr auto;

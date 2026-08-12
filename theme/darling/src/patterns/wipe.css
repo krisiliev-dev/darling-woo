@@ -129,6 +129,12 @@
 	rotate:calc((1 - var(--wipe)) * -220deg);
 }
 /* The streak, between the button and its ghost. */
+/* *** NOT ON THE SHARED WAKE RULE, AND THAT WAS TRIED. *** This is the same
+   idea at a third of the size and it is painted differently on purpose: THREE
+   sparks, not six, and a shorter fade, because it is .55rem tall and six sparks
+   in that box is a smudge. Sharing the five declarations of SHAPE it has in
+   common with the other two put a rule in the report against three unrelated
+   things. Shape is not an object. */
 .d-wipe::after{
 	content:"";
 	position:absolute;

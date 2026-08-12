@@ -87,6 +87,7 @@
 @import url("patterns/social.css") layer(patterns);
 @import url("generated/category-banners.css") layer(patterns);
 @import url("patterns/progress.css") layer(patterns);
+@import url("patterns/wake.css")     layer(patterns);
 @import url("patterns/wipe.css")     layer(patterns);
 @import url("patterns/button.css")  layer(patterns);
 @import url("patterns/card.css")    layer(patterns);
