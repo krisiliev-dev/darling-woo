@@ -99,6 +99,7 @@
 @import url("patterns/slider.css") layer(patterns);
 @import url("patterns/scroll.css") layer(patterns);
 @import url("patterns/panel.css")      layer(patterns);
+@import url("patterns/contact.css")    layer(patterns);
 @import url("patterns/badge.css")      layer(patterns);
 @import url("patterns/quantity.css")   layer(patterns);
 @import url("patterns/product.css") layer(patterns);

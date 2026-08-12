@@ -790,6 +790,8 @@ svg{ max-width:100% }
 	place-items:center;
 	width:var(--tap);
 	height:var(--tap);
+
+	min-width:0;
 	padding:0;
 	border:0;
 	border-radius:var(--radius-circle);
@@ -2768,8 +2770,7 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	z-index:2;
 	width:1.75rem;
 	height:1.75rem;
-	min-width:0;
-	padding:0;
+
 	flex:none;
 
 	color:var(--ink-quiet);
@@ -3408,6 +3409,9 @@ select.orderby,
 .woocommerce form .form-row textarea,
 .woocommerce form .form-row select,
 .woocommerce-page form .form-row input.input-text,
+
+.darling-contact-form input:not([type="hidden"]),
+.darling-contact-form textarea,
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -3428,6 +3432,8 @@ select.orderby,
 .woocommerce form .form-row input.input-text::placeholder,
 .woocommerce form .form-row textarea::placeholder,
 .woocommerce-page form .form-row input.input-text::placeholder,
+.darling-contact-form input:not([type="hidden"])::placeholder,
+.darling-contact-form textarea::placeholder,
 .d-field textarea::placeholder{ color:var(--ink-placeholder) }
 
 .d-field__control:hover,
@@ -3440,6 +3446,8 @@ select.orderby,
 .woocommerce form .form-row textarea:hover,
 .woocommerce form .form-row select:hover,
 .woocommerce-page form .form-row input.input-text:hover,
+.darling-contact-form input:not([type="hidden"]):hover,
+.darling-contact-form textarea:hover,
 .d-field textarea:hover{ border-color:var(--c-mauve-light) }
 
 .d-field__control:focus,
@@ -3452,6 +3460,8 @@ select.orderby,
 .woocommerce form .form-row textarea:focus,
 .woocommerce form .form-row select:focus,
 .woocommerce-page form .form-row input.input-text:focus,
+.darling-contact-form input:not([type="hidden"]):focus,
+.darling-contact-form textarea:focus,
 .d-field textarea:focus{
 	outline:none;
 	border-color:var(--focus-ring);
@@ -4612,6 +4622,27 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 body.woocommerce-cart :is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before,
 body.woocommerce-checkout :is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before,
 body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before{ opacity:0 }
+}
+
+@layer patterns{
+
+.darling-contact-form{
+	display:grid;
+	gap:var(--space-s);
+}
+
+.darling-contact-form > p,
+.darling-contact-form__row > p{ margin:0 }
+
+.darling-contact-form__row{
+	display:grid;
+	gap:var(--space-s);
+	grid-template-columns:1fr 1fr;
+}
+@media (max-width:640px){
+	.darling-contact-form__row{ grid-template-columns:1fr }
+}
+
 }
 
 @layer patterns{
@@ -6343,8 +6374,7 @@ html.d-a11y .d-fab{ text-decoration:none }
 .d-vh,
 .screen-reader-text,
 
-.darling-contact-form__row > label,
-.darling-contact-form > p > label,
+.visually-hidden,
 
 .d-choice input{
 	position:absolute;

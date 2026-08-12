@@ -99,8 +99,8 @@
 	z-index:2;
 	width:1.75rem;
 	height:1.75rem;
-	min-width:0;
-	padding:0;
+	/* min-width:0 and padding:0 were here; they are on the component now, where
+	   the cart's remove button needed them too. */
 	flex:none;
 	/* a quieter resting ink than the component's, because this one sits inside a
 	   filled field and must not compete with the text it clears. The transition

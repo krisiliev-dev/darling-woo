@@ -1,0 +1,66 @@
+/* =============================================================================
+   PATTERN / THE CONTACT FORM
+
+   The one form on this site that is entirely OURS - our PHP emits it, our
+   handler receives it - and it was the only form running on browser defaults.
+   Not the component, and not even fallback.css: the net is scoped to
+   WooCommerce's prefixes, and `darling-contact-form` is not one.
+
+   Measured on the live page before this file existed:
+
+     the two labels in the row   31x17 and 109x17, VISIBLE, display:inline
+     every input                 185x21, white, the browser's `size` width
+     the row                     528px wide holding two 185px fields
+     row -> phone field          NO gap at all
+
+   The owner, on all three at once: "I still see Име and Имейл адрес as labels...
+   The form gets misaligned because of those labels, because they sit on the left
+   of the fields for some reason instead of on top of them... Also the actual
+   fields should probably be wider, spanning the width of the container they are
+   in. There is also for some reason no padding between Имейл адрес and Телефон."
+
+   Every one of those is the same root cause and they are fixed in three places,
+   which is worth spelling out because none of them is here:
+
+     the labels   patterns/a11y.css now hides `.visually-hidden`, the class the
+                  markup actually carries. The old selectors keyed off the DOM's
+                  shape and one of them matched nothing.
+     the box      patterns/field.css now names these inputs, so they are the same
+                  control as every other field on the site. One definition.
+     the layout   here, and only the layout.
+
+   *** THE PARENT OWNS THE GAP. *** Sixth time this rule has come up on this
+   project. The gap between the row and the phone field was missing because the
+   row's last <p> had margin-bottom 0 and the row itself had none, so there was
+   nothing between them - while OTHER paragraphs carried 28.7px from .d-prose.
+   Two different spacings on one form, neither of them chosen. So the form is a
+   grid with one gap, every child's margin is zeroed, and the row is a grid with
+   the same gap. Nothing here sets a margin on anything.
+   ========================================================================== */
+
+.darling-contact-form{
+	display:grid;
+	gap:var(--space-s);
+}
+/* zeroed, not tuned: .d-prose gives every <p> a bottom margin and the grid gap
+   would be added to it. The container decides the rhythm. */
+.darling-contact-form > p,
+.darling-contact-form__row > p{ margin:0 }
+
+/* Name and email share a line on a wide screen because they are short and
+   related; below 640px two 250px fields is worse than one 500px one. */
+.darling-contact-form__row{
+	display:grid;
+	gap:var(--space-s);
+	grid-template-columns:1fr 1fr;
+}
+@media (max-width:640px){
+	.darling-contact-form__row{ grid-template-columns:1fr }
+}
+
+/* *** THE HONEYPOT IS display:none AND MUST STAY THAT WAY. ***
+   It is in page.css as well; repeated here as a comment rather than as a second
+   rule. Visually-hiding it instead would ANNOUNCE it to a screen reader, whose
+   user would then fill in the field that exists to catch robots and have their
+   message silently rejected. A honeypot is the one thing that must be hidden
+   from everybody, not just from sight. */

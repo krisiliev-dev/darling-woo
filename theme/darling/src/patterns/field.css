@@ -73,6 +73,13 @@ select.orderby,
 .woocommerce form .form-row textarea,
 .woocommerce form .form-row select,
 .woocommerce-page form .form-row input.input-text,
+/* *** OUR OWN CONTACT FORM'S FIELDS REACHED NOTHING AT ALL. *** Not the
+   component, not even fallback.css - the net is scoped to Woo's prefixes and
+   these are ours. Measured against the live markup: 185x21 raw browser inputs,
+   white fill, on a 528px row. The one form on the site we emit ourselves was the
+   only one running on browser defaults. */
+.darling-contact-form input:not([type="hidden"]),
+.darling-contact-form textarea,
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -93,6 +100,8 @@ select.orderby,
 .woocommerce form .form-row input.input-text::placeholder,
 .woocommerce form .form-row textarea::placeholder,
 .woocommerce-page form .form-row input.input-text::placeholder,
+.darling-contact-form input:not([type="hidden"])::placeholder,
+.darling-contact-form textarea::placeholder,
 .d-field textarea::placeholder{ color:var(--ink-placeholder) }
 
 /* *** THE STATE LISTS MUST CARRY EVERY MEMBER OF THE BASE LIST. ***
@@ -113,6 +122,8 @@ select.orderby,
 .woocommerce form .form-row textarea:hover,
 .woocommerce form .form-row select:hover,
 .woocommerce-page form .form-row input.input-text:hover,
+.darling-contact-form input:not([type="hidden"]):hover,
+.darling-contact-form textarea:hover,
 .d-field textarea:hover{ border-color:var(--c-mauve-light) }
 
 /* Focus is a RING plus a colour, never a colour alone - and never the browser
@@ -143,6 +154,8 @@ select.orderby,
 .woocommerce form .form-row textarea:focus,
 .woocommerce form .form-row select:focus,
 .woocommerce-page form .form-row input.input-text:focus,
+.darling-contact-form input:not([type="hidden"]):focus,
+.darling-contact-form textarea:focus,
 .d-field textarea:focus{
 	outline:none;
 	border-color:var(--focus-ring);
