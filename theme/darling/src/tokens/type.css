@@ -78,7 +78,25 @@
 /* -- the two type rules from the playbook that are rules, not values --------
    A PRICE IS A NUMBER, NOT AN ORNAMENT: tabular figures so columns of prices
    line up and a changing price does not reflow its own row. */
-.u-price{
+/* *** A PRICE IS A PRICE, AND THERE ARE THREE PLACES THAT SAY SO. ***
+   .u-price is the utility you can put on any number that is money. The card's
+   price says the same four things in patterns/card.css, and Woo's says them in
+   its own markup - and the card cannot simply WEAR the utility, because two of
+   the three are WooCommerce's <span> and we cannot add a class to it.
+
+   So the four type declarations are here, in the file that owns type, on all
+   three; what a price in a CARD adds - the grid, the right edge, the refusal to
+   wrap - stays in card.css, because that is about the row it sits in and not
+   about being money.
+
+   This is the tokens layer, which is weaker than everything except fallback and
+   wc. Nothing declares a font-family or a colour on these three elsewhere, so
+   there is nothing to lose to - checked by measuring all 134 of them before and
+   after rather than by reading. */
+.u-price,
+.d-card__price,
+li.product .wc-block-components-product-price,
+li.wc-block-grid__product .wc-block-components-product-price{
 	font-family:var(--font-ui);
 	font-weight:var(--fw-bold);
 	font-variant-numeric:tabular-nums;

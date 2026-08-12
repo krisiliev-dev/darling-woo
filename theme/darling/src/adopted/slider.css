@@ -1,6 +1,17 @@
 /* =============================================================================
    ADOPTED / SLIDER   -   the WooCommerce price filter
-   UNLAYERED ON PURPOSE. See index.css.
+
+   *** THE HEADER ABOVE USED TO SAY "UNLAYERED ON PURPOSE" AND IT WAS FALSE. ***
+   Every one of the 71 imports in index.css carries layer(); this file is in
+   layer(adopted) and has been since the layering pass. The line was written
+   when it was true, survived the change that made it false, and then said the
+   opposite of the cascade to anyone who read it - in a project where the
+   comments ARE the documentation, which makes it worse than no comment.
+
+   What is still true is the SPECIFICITY half, where the file says so.
+   Measured, not assumed: scripts/_layerablate.js moves layer(adopted) below
+   layer(patterns) and 0 of 5665 elements in the gallery change. The layer is
+   the honest home for selectors we do not own; its PRIORITY is unused.
 
    MEASURED 2026-08-08: the price filter is NOT currently rendered anywhere on
    darlinghome.bg - no .price_slider, no .ui-slider, no .wc-block-price-filter

@@ -1,15 +1,10 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 84,
+ "seeded": 77,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
    "shared": 16,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/card.css|.d-card__cta",
-   "shared": 12,
    "why": "CROSS-ORIGIN"
   },
   {
@@ -38,11 +33,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-price,\nli.wc-block-grid__product .wc-block-components-product-price  ==  patterns/card.css|.d-card__price",
-   "shared": 8,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-checkbox__input.wc-block-components-checkbox__input[type=\"checkbox\"]  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent) input",
    "shared": 8,
    "why": "CROSS-ORIGIN"
@@ -51,11 +41,6 @@
    "pair": "patterns/icon.css|.d-icon--cart::before,\n.woocommerce .woocommerce-customer-details--email::before,\n.woocommerce .woocommerce-customer-details--phone::before,\n.woocommerce-account ul.digital-downloads li::before,\n.woocommerce .widget_layered_nav_filters ul li a::before,\n.woocommerce .widget_rating_filter ul li.chosen a::before,\n.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,\n.woocommerce-message::before,\n.woocommerce-error::before,\n.woocommerce-info::before,\n.woocommerce .cart-collaterals .shipping-calculator-button::after  ==  patterns/mappick.css|.d-mappick__pin::before",
    "shared": 8,
    "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wp-block-post-title,\nli.wc-block-grid__product .wc-block-grid__product-title  ==  patterns/card.css|.d-card__title",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
   },
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))",
@@ -129,21 +114,6 @@
   },
   {
    "pair": "adopted/account.css|.password-input  ==  patterns/hero.css|.d-hero__visual",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-image,\nli.wc-block-grid__product .wc-block-components-product-image  ==  patterns/card.css|.d-card__media",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-image img,\nli.wc-block-grid__product .wc-block-components-product-image img  ==  patterns/card.css|.d-card__media img",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-price,\nli.wc-block-grid__product .wc-block-components-product-price  ==  tokens/type.css|.u-price",
    "shared": 4,
    "why": "CROSS-ORIGIN"
   },
@@ -256,11 +226,6 @@
    "pair": "patterns/card.css|.d-card__title a::after  ==  patterns/progress.css|.d-progress__bar::after",
    "shared": 4,
    "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/card.css|.d-card__price  ==  tokens/type.css|.u-price",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
   },
   {
    "pair": "patterns/cart.css|.d-trustbar span,\n.d-trustbar p  ==  patterns/hero.css|.d-empty__sub",

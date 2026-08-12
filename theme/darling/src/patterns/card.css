@@ -60,15 +60,26 @@
 }
 .d-card:hover{ box-shadow:var(--shadow-card-hover) }
 
-.d-card__media{
-	grid-area:media;
-	position:relative;
+.d-card__media,
+li.product .wc-block-components-product-image,
+li.wc-block-grid__product .wc-block-components-product-image{
 	aspect-ratio:4 / 3;
 	border-radius:var(--radius-s);
 	background:var(--placeholder-product);
 	overflow:hidden;
 }
-.d-card__media img{
+/* Ours holds absolutely positioned chips and a hover wash, so it establishes a
+   containing block; Woo's holds an image and nothing else. */
+.d-card__media{
+	grid-area:media;
+	position:relative;
+}
+/* Byte for byte what adopted/card.css had for Woo's image. One picture, one
+   rule: contain rather than cover, because a product shot on a pale plate must
+   not be cropped, and the zoom is the card's hover response. */
+.d-card__media img,
+li.product .wc-block-components-product-image img,
+li.wc-block-grid__product .wc-block-components-product-image img{
 	width:100%;
 	height:100%;
 	object-fit:contain;
@@ -104,8 +115,9 @@
 	--firefly-reach:0em;
 }
 
-.d-card__title{
-	grid-area:title;
+.d-card__title,
+li.product .wp-block-post-title,
+li.wc-block-grid__product .wc-block-grid__product-title{
 	font:var(--fw-medium) var(--fs-ui)/var(--lh-title) var(--font-ui);
 	margin:0;
 	color:var(--ink);
@@ -116,6 +128,11 @@
 	-webkit-box-orient:vertical;
 	overflow:hidden;
 }
+/* grid-area names a track on OUR template; Woo's li has none to name, so it is
+   placed by column number in adopted/card.css. */
+.d-card__title{
+	grid-area:title;
+}
 /* No underline. The owner: "The text when hovered gets an underline, but I
    don't want it to." The card's shadow and the image are the hover feedback. */
 .d-card__title a{ text-decoration:none; color:inherit }
@@ -124,17 +141,34 @@
    On a discount the old price stays on the right and the new one sits below it,
    so the right-hand column always starts at the same baseline as the title
    whether or not there is a discount. */
-.d-card__price{
-	grid-area:price;
+/* *** THE PRODUCT CARD IS WRITTEN TWICE: ONCE FOR OUR MARKUP AND ONCE FOR
+   WOO'S. *** adopted/card.css carries a second copy of the price, the title,
+   the media box and the image inside it - four rules, thirty-odd declarations,
+   the same object in a different DOM. Each pair differs only in how it is
+   placed: ours by grid-area on a named template, theirs by grid-column, because
+   Woo's li has no template to name.
+
+   They fold for the reason the buttons, tables, notices and fields did, and now
+   for a measured one rather than an argued one: scripts/_layerablate.js moves
+   the adopted layer below patterns and 0 of 5665 elements change, so nothing in
+   that file is winning anything it needs to keep winning.
+
+   margin:0 stays ours alone: our price is a <p> in content that gives
+   paragraphs a bottom margin, and theirs is a <span>. */
+.d-card__price,
+li.product .wc-block-components-product-price,
+li.wc-block-grid__product .wc-block-components-product-price{
+	/* The type is .u-price's, in tokens/type.css, with the utility itself. What
+	   is left is what a price does in a CARD: it is the right-hand end of a row
+	   and it does not wrap. */
 	display:grid;
 	justify-items:end;
 	text-align:right;
-	margin:0;
-	font-family:var(--font-ui);
-	font-weight:var(--fw-bold);
-	font-variant-numeric:tabular-nums;
-	color:var(--price);
 	white-space:nowrap;
+}
+.d-card__price{
+	grid-area:price;
+	margin:0;
 }
 .d-card__price del{
 	font-size:.74em;
@@ -154,14 +188,26 @@
    one. The transition goes with the shape; it was `background ... --ease-ui`
    here and is `transform, background-color ... --ease-float` there, which is
    what every other button on the site already uses. */
-.d-card__cta{
-	grid-area:cta;
-	position:relative;
-	z-index:3;
+/* *** AND THE LAST OF THE CARD: THE CTA'S DELTA WAS ALSO WRITTEN TWICE. ***
+   Batch 2 put the button SHAPE on .d-btn and left each DOM its own delta - and
+   the two deltas turned out to be the same four declarations: full width, a
+   tighter pad than a standalone button, and the cart fill rather than the
+   action one. A card CTA is a card CTA in either markup. */
+.d-card__cta,
+li.product .wc-block-components-product-button__button,
+li.product .wp-block-button__link,
+li.wc-block-grid__product .wc-block-components-product-button__button,
+li.wc-block-grid__product .wp-block-button__link{
 	width:100%;
 	padding:.62em 1.2em;
 	background:var(--action-cart);
 	color:var(--action-cart-ink);
+}
+/* Ours sits in a named track and above the card's hover wash. */
+.d-card__cta{
+	grid-area:cta;
+	position:relative;
+	z-index:3;
 }
 /* *** THE CARD CTA'S HOVER IS NOT HERE ANY MORE. ***
    It was `background:var(--c-cherry-deep)` - the raw primitive, not
