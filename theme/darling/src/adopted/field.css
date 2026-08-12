@@ -576,22 +576,27 @@
 	font:var(--fw-medium) var(--fs-fine)/1.3 var(--font-ui);
 	color:var(--ink);
 }
-/* The consent line is a checkbox and a sentence, not a field and a label, so it
-   is the one row here that is not the pattern above. */
-#review_form .comment-form-cookies-consent label{
-	display:inline;
-	margin:0;
-	font:var(--type-body);
-	font-size:var(--fs-meta);
-	color:var(--ink-quiet);
-}
-#review_form .comment-form input[type="checkbox"]{
-	width:1.15rem;
-	height:1.15rem;
-	margin:.15rem 0 0;
-	accent-color:var(--action);
-	flex:none;
-}
+/* *** THE CONSENT CHECKBOX WAS THE ONLY RAW BROWSER CHECKBOX LEFT ON THE SITE.
+   *** Measured in the reviews tab: 18.39px, appearance:auto - the platform
+   control - no border, no radius, no drawn tick, tinted by accent-color, and its
+   row had no inset. Every other checkbox on the site is a drawn 16x16 box with a
+   1px edge, a 3px radius and a clip-path mark. Two components away, the
+   "Zapomni me" row renders the drawn one; the screenshots show them side by side.
+
+   It is a FOURTH 1.15rem control, which matters because tokens/space.css:57-62
+   names three and says they were converted to var(--control). All three were.
+   This one was written later, when the review form was first styled, and never
+   got the memo - so the comment counted to three, and the count is what made
+   this look already handled.
+
+   The row joins .d-check's lists in patterns/field.css now. THREE EDITS HAD TO
+   LAND TOGETHER: the flex:none below was the only thing keeping the control from
+   stretching in the flex row removed from adopted/product.css, so deleting
+   either one on its own leaves a visibly broken control.
+
+   The label's own rules go too - .d-check sets the type on the row and the label
+   is its second grid child. `display:inline` on a grid item is blockified
+   anyway, so that line was never doing anything. */
 
 /* -- a rate row is a name and a price, and the price belongs at the far end ---
    *** MEASURED WITH AN ADDRESS IN THE FORM, WHICH IS THE ONLY WAY TO SEE IT. ***

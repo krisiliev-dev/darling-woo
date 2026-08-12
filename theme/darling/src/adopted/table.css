@@ -130,34 +130,29 @@
 	gap:var(--space-2xs);
 }
 
-/* *** AND SMALLER, BECAUSE A CART ROW IS NOT A PRODUCT PAGE. ***
-   The stepper is the same component either way - adopted/quantity.css draws it
-   once - but the product page's is a primary control you press before you buy,
-   and this one is an adjustment to something already chosen. --tap-min is the
-   AA floor (28px) and applies here rather than --tap, under the same
-   `pointer: fine` reasoning footer.css already records: a 44px target is for a
-   finger, and this row is a table that only exists on a pointer device at this
-   width. Below 600px the row restacks and the full target comes back. */
-/* *** AND IT HAS TO OUT-SPECIFY THE COMPONENT, WHICH DOUBLES ITS OWN CLASS. ***
-   adopted/quantity.css writes `.wc-block-components-quantity-selector__button
-   .wc-block-components-quantity-selector__button` - (0,2,0), doubled on purpose
-   to beat Woo. A descendant selector of mine is also (0,2,0), so it TIED and
-   lost on source order, and the first run of this came back at 49px unchanged.
-   Doubled here too. Not a fight with the component - a size for one context, and
-   the component still owns everything else about it. */
-@media (pointer: fine){
-	.wc-block-cart-item__quantity .wc-block-components-quantity-selector__button.wc-block-components-quantity-selector__button{
-		min-width:var(--tap-min);
-		min-height:var(--tap-min);
-		font-size:var(--fs-meta);
-	}
-	.wc-block-cart-item__quantity .wc-block-components-quantity-selector.wc-block-components-quantity-selector{
-		grid-template-columns:auto 2.2em auto;
-	}
-	.wc-block-cart-item__quantity .wc-block-components-quantity-selector__input.wc-block-components-quantity-selector__input{
-		font-size:var(--fs-meta);
-	}
-}
+/* *** THE CART ROW'S STEPPER IS THE COMPACT MODIFIER NOW, NOT A THIRD SIZE. ***
+   It was 28px buttons and a 2.2em track here, against the drawer's 2rem buttons
+   and the same track - one idea at two sizes, one page apart: 88.8 x 30 against
+   110.8 x 34. Both arguments were reasonable, so it was a decision rather than a
+   merge, and the owner made it: 2rem. patterns/quantity.css now carries the
+   modifier once and names this selector on it.
+
+   *** AND THE DOUBLED CLASSES ARE GONE, BECAUSE THE TIE THEY BROKE NO LONGER
+   EXISTS. *** The paragraph that used to be here explained at length that a
+   (0,2,0) descendant selector TIED with adopted/quantity.css's doubled class and
+   lost on source order, so it doubled its own. True when it was written and not
+   true now: this file and adopted/quantity.css are both in the adopted layer,
+   and the modifier now lives in patterns which the layer order settles outright.
+   Doubling a class to win a fight nobody is having is how a rule ends up looking
+   deliberate for the wrong reason.
+
+   *** ONE CORRECTION TO WHAT THE OLD COMMENT CLAIMED. *** "Below 600px the row
+   restacks and the full target comes back." The rule was bounded only by
+   `@media (pointer: fine)` with no width bound, so at 390px in a DESKTOP browser
+   the button stayed 28x28. On an actual phone the query does not match and the
+   44px target does return - so the sentence was right about phones and wrong
+   about a narrow desktop window, which is the width anyone testing this would
+   have used. */
 
 /* *** THE TRASH BUTTON IS .d-icon-btn, AND THE FIRST VERSION WROTE IT AGAIN. ***
    The owner: "The trash button needs a hover effect." True, and I answered it by

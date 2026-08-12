@@ -48,6 +48,40 @@
 	border-color:var(--focus-ring);
 	box-shadow:0 0 0 3px var(--focus-halo);
 }
+
+/* -- the compact modifier ----------------------------------------------------
+   *** ONE COMPACT SIZE, NOT TWO, AND THE OWNER PICKED THE NUMBER. ***
+   The drawer row asked for 2rem buttons and a 2.2em track; the cart row asked
+   for --tap-min (28px) and the same track. Same idea, one page apart, measured
+   at 110.8 x 34 against 88.8 x 30 - and both arguments were reasonable in
+   isolation, which is exactly why this had to be decided rather than merged.
+   Owner, asked before the change: the drawer's 2rem.
+
+   The 44px target on the base rule is about the PRODUCT page, where the stepper
+   is the control you use to decide. In a drawer row or a cart row it is a
+   correction to something already chosen, three of them stack in 200px of width,
+   and 2rem is still above the 24px Chrome's own audit asks of a secondary
+   control. The real stepper is one tap away on the cart page.
+
+   It lives here, under the base rule, because a modifier of a component belongs
+   with the component. In drawer.css it was two files and 22 import lines away
+   from the rule it modifies, at the same specificity, and lost half of itself to
+   source order without anyone noticing. */
+.d-qty--compact,
+.wc-block-cart-item__quantity .wc-block-components-quantity-selector{
+	grid-template-columns:auto 2.2em auto;
+	border-radius:var(--radius-s);
+}
+.d-qty--compact .d-qty__button,
+.wc-block-cart-item__quantity .wc-block-components-quantity-selector__button{
+	min-width:2rem;
+	min-height:2rem;
+	font-size:var(--fs-meta);
+}
+.d-qty--compact .d-qty__input,
+.wc-block-cart-item__quantity .wc-block-components-quantity-selector__input{
+	font-size:var(--fs-meta);
+}
 /* Same completeness point as .d-qty__input below: the pill is the wrapper's, so
    the buttons carry no corner of their own - and inside a WooCommerce container
    the fallback net gives every button --radius-m unless the component says

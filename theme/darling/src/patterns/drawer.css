@@ -432,24 +432,21 @@
 	gap:var(--space-2xs);
 	margin-top:.15rem;
 }
-/* *** THE COMPACT STEPPER IS A MODIFIER, NOT A SECOND STEPPER. ***
-   patterns/quantity.css sets a 44px target and says why - it is the smallest
-   thing anyone taps on the way to paying. That argument is about the product
-   page, where the stepper is the control you use to decide. In a drawer row it
-   is a correction, three of them are stacked in 200px of width, and 44px each
-   makes the list unreadable. 2rem, which is still above the 24px that Chrome's
-   own audit asks for on a secondary control, and the real stepper is one tap
-   away on the cart page.
-   Same markup, same pattern, one class - so a fix to the stepper is a fix to
-   both. */
-.d-qty--compact{ border-radius:var(--radius-s) }
-.d-qty--compact .d-qty__button{
-	min-width:2rem;
-	min-height:2rem;
-	font-size:var(--fs-meta);
-}
-.d-qty--compact{ grid-template-columns:auto 2.2em auto }
-.d-qty--compact .d-qty__input{ font-size:var(--fs-meta) }
+/* *** THE COMPACT STEPPER MOVED TO patterns/quantity.css, WHERE A MODIFIER
+   BELONGS - AND TWO OF ITS FOUR DECLARATIONS WERE DEAD HERE. ***
+   `.d-qty--compact{border-radius:var(--radius-s)}` and
+   `.d-qty--compact{grid-template-columns:auto 2.2em auto}` are both (0,1,0),
+   identical to `.d-qty` in quantity.css, and index.css imports drawer.css at 81
+   and quantity.css at 103. Later wins: the 10px radius rendered as a 999px pill
+   and the 2.2em track rendered at the component's 3.2em. Measured with the
+   drawer forced open - `32px 44.7969px 32px`, `border-radius: 999px`. The two
+   BUTTON rules were (0,2,0) and did land, which is why the buttons looked right
+   and the shape did not, and why nobody caught it by eye.
+
+   Half of it was already in our own probe output: work/beaten3.json logs the
+   grid-template-columns loss verbatim with ifWinnerGone "auto 30.8px auto". The
+   radius loss is not in it, because that probe tracks no radius property - a
+   reminder that a probe answers only the question it was given. */
 
 .d-drawer__line__price{
 	color:var(--price);
