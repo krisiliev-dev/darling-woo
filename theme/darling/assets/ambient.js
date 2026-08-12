@@ -37,9 +37,17 @@
 	'use strict';
 
 	var GLYPHS   = [ '✦', '✧' ];
-	var AREA_PER = 130000;  // px² of viewport per star — the density constant
-	var FLOOR    = 3;
-	var CEIL     = 14;
+	// DENSER, ON THE OWNER'S CALL (2026-08-12). He picked "denser" off a
+	// side-by-side render. 130000 gave 10 stars on a 1440x900 laptop, which he
+	// could not see; 45000 gives 29 there and 7 on a 390px phone - about three
+	// times as many at every size, with the density still constant across them,
+	// which was the point of deriving the budget from area in the first place.
+	//
+	//   390x844  -> 7      768x1024 -> 17     1440x900  -> 29
+	//   430x932  -> 9     1280x800  -> 23     1920x1080 -> 40 (the cap)
+	var AREA_PER = 45000;  // px² of viewport per star — the density constant
+	var FLOOR    = 6;
+	var CEIL     = 40;
 
 	var layer, timer, resizeTimer;
 	var budget = { max: 0, interval: 1200 };
@@ -93,14 +101,17 @@
 	// distribution - no quick twinkles at all, and the sky read as uniform. Read
 	// the tokens off the layer so the stylesheet stays the source of truth; fall
 	// back only if the stylesheet is not there at all.
-	function secs( name, fallback ) {
+	// Reads a NUMBER off the layer, not only a duration: the star-life range and
+	// the colour-slot count are both taken from the stylesheet through it rather
+	// than hardcoded here. It was named for seconds when seconds were all it read.
+	function num( name, fallback ) {
 		if ( ! layer ) { return fallback; }
 		var v = parseFloat( getComputedStyle( layer ).getPropertyValue( name ) );
 		return isNaN( v ) || v <= 0 ? fallback : v;
 	}
 	function starLife() {
-		var lo = secs( '--star-life-min', 1.6 );
-		var hi = secs( '--star-life-max', 11 );
+		var lo = num( '--star-life-min', 1.6 );
+		var hi = num( '--star-life-max', 11 );
 		// pow < 1 biases toward the top of the range: with 0.35, about three in
 		// four land above the 6s mark, which is the weighting the token asks for.
 		var t = Math.pow( Math.random(), 0.35 );
@@ -116,6 +127,13 @@
 		i.textContent = GLYPHS[ ( Math.random() * GLYPHS.length ) | 0 ];
 		i.style.setProperty( '--dur', dur );
 		i.style.setProperty( '--peak', ( 0.25 + Math.random() * 0.45 ).toFixed( 2 ) );
+
+		// THE COLOUR IS A SLOT, AND THE STYLESHEET OWNS WHAT IS IN IT. Same
+		// arrangement as the life range above: this file asks how many slots there
+		// are and picks one; src/patterns/ambient.css decides which are gold and
+		// which are cherry. Changing the mix is a stylesheet edit.
+		var inks = Math.max( 1, Math.round( num( '--star-inks', 6 ) ) );
+		i.style.setProperty( '--star-ink', 'var(--star-ink-' + ( 1 + ( Math.random() * inks | 0 ) ) + ')' );
 		// Inset from the edges: a star at 99% left overflowed the viewport and was
 		// counted as a real layout defect by the audit harness.
 		i.style.left     = ( 2 + Math.random() * 94 ).toFixed( 2 ) + '%';

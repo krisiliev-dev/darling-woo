@@ -379,7 +379,8 @@ table[class*="woocommerce-"] {
 
 	--float-cycle: 11s;
 	--float-up: 42%;
-	--float-travel: 96px;
+
+--float-travel: 48px;
 
 
 	--star-life-min: 1.6s;
@@ -633,6 +634,7 @@ svg{ max-width:100% }
 	border:1px solid var(--hairline);
 	border-radius:var(--radius-l);
 	background:var(--surface-raised);
+	box-shadow:var(--shadow-card-hover);
 }
 
 .d-switcher{
@@ -5839,7 +5841,6 @@ main .entry-content > .woocommerce{
 .d-prose--card{
 	max-width:46rem;
 	padding:clamp(1.6rem, 4vw, 3.25rem);
-	box-shadow:var(--shadow-card);
 }
 .d-prose h2{ margin:var(--space-l) 0 var(--space-2xs); font:var(--type-section) }
 .d-prose h3{ margin:var(--space-m) 0 var(--space-2xs) }
@@ -5860,11 +5861,10 @@ main .entry-content > .woocommerce{
 
 .d-post{
 	padding:var(--space-s);
-	transition:box-shadow var(--dur-ui) var(--ease-float),
-	           border-color var(--dur-ui) var(--ease-float);
+	transition:border-color var(--dur-ui) var(--ease-float);
 }
 
-.d-post:hover{ border-color:var(--tint-gold-edge); box-shadow:var(--shadow-card) }
+.d-post:hover{ border-color:var(--tint-gold-edge) }
 .d-post__title{
 	margin:0 0 var(--space-3xs);
 	font:var(--fw-bold) var(--fs-lede)/var(--lh-title) var(--font-display);
@@ -5911,7 +5911,6 @@ main .entry-content > .woocommerce{
 	padding:var(--space-s);
 	color:var(--ink);
 	font-size:var(--fs-meta);
-	box-shadow:var(--shadow-card-hover);
 	animation:d-consent-in 350ms var(--ease-float) both;
 }
 .d-consent[hidden]{ display:none }
@@ -6311,6 +6310,14 @@ html.d-a11y .d-mappick__office{ transition:none }
 @layer patterns{
 
 .d-ambient{
+
+	--star-inks: 6;
+	--star-ink-1: var(--g-hi);
+	--star-ink-2: var(--g-light);
+	--star-ink-3: var(--g-core);
+	--star-ink-4: var(--g-hi);
+	--star-ink-5: var(--trail-cherry);
+	--star-ink-6: var(--tint-cherry-edge);
 	position:fixed;
 	inset:0;
 	z-index:0;

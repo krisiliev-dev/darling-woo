@@ -1,5 +1,5 @@
 {
- "_built_sha256": "09f7e78715f496d9c09459f14016de3d64ea2c9c580bc86df3359a09f3a37b03",
+ "_built_sha256": "7472841016fe7d2fd57c3f94d011b59e68708a8b56c59c6c41a6595745d89f56",
  "--action": {
   "raw": "#D42A3C",
   "type": "colour",
@@ -204,9 +204,9 @@
   "computed": "11s"
  },
  "--float-travel": {
-  "raw": "96px",
+  "raw": "48px",
   "type": "length",
-  "computed": "96px"
+  "computed": "48px"
  },
  "--float-up": {
   "raw": "42%",

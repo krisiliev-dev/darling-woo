@@ -322,9 +322,21 @@
    to give. The markup version is better and it is a template change; any member
    that ever becomes a real .d-box drops off this list on the day it does.
 
-   No shadow here. Three of the eight have one and they disagree on which
-   (--shadow-card, --shadow-card-hover, none at all), so it stays a delta until
-   somebody decides. */
+   *** AND THE SHADOW IS SETTLED. *** Three of the eight had one and they
+   disagreed on which - --shadow-card, --shadow-card-hover, or none at all - so
+   it was left as a delta until somebody decided. The owner decided, off a
+   side-by-side render of the three: the strong one, "I want strong shadows".
+   So every card on this surface rests lifted, and the two per-component
+   shadows are gone.
+
+   *** THE TOKEN'S NAME IS NOW WRONG AND THAT IS WORTH SAYING. ***
+   --shadow-card-hover is the RESTING shadow of eight components and the hover
+   shadow of .d-card and three others. It is one value doing two jobs under a
+   name that only describes one of them. Renaming it to a step on a scale -
+   --shadow-1 / --shadow-2, or --shadow-card / --shadow-lift - is a mechanical
+   change across nine usages that the build's token check would catch if it
+   missed one. Not done here because this commit is the owner's three answers
+   and nothing else. */
 .d-prose--card,
 .d-post,
 .d-consent,
@@ -338,6 +350,7 @@
 	border:1px solid var(--hairline);
 	border-radius:var(--radius-l);
 	background:var(--surface-raised);
+	box-shadow:var(--shadow-card-hover);
 }
 
 /* -- n columns, or one, with no breakpoint --------------------------------------

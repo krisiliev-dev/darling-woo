@@ -29,7 +29,13 @@
 	   ambiguous for three rounds of review. This is the COMPLETE up-and-down. */
 	--float-cycle: 11s;   /* 4.6s rising, 6.4s falling */
 	--float-up: 42%;      /* the cycle rises for 42% and falls for 58% */
-	--float-travel: 96px; /* amplitude, one direction from centre */
+	/* Amplitude, one direction from centre - so the bow travels TWICE this far,
+   peak to peak. It was 96px, which is 192px of travel on a bow 75px tall, and
+   the owner picked 48px off a side-by-side render of 96 / 48 / 24: "48px".
+   96px peak to peak reads as breathing rather than as travelling, and it is
+   still four times the rise of d-bob, which is the generic 7px the footer and
+   empty-state bows use. */
+--float-travel: 48px;
 
 	/* -- stars --------------------------------------------------------------
 	   A RANGE, not a value. Most linger; the occasional one is a quick twinkle,

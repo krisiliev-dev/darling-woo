@@ -27,6 +27,20 @@
 /* The layer is out of flow entirely, so it can never contribute a band, a
    scrollbar or a hit target. `inset:0` on a fixed element is the viewport. */
 .d-ambient{
+	/* *** THE PALETTE AND THE MIX, BOTH DECIDED HERE. ***
+	   assets/ambient.js reads --star-inks to learn how many slots there are and
+	   picks one uniformly, so the PROPORTION of cherry to gold is set by how many
+	   slots each colour takes - four to two, a gold sky with cherry in it rather
+	   than a two-colour sky. Change the mix by changing which slot is which; add
+	   one by adding a slot and raising the count, and the script needs no edit.
+	   Same arrangement as --star-life-min/max, which the script already reads. */
+	--star-inks: 6;
+	--star-ink-1: var(--g-hi);
+	--star-ink-2: var(--g-light);
+	--star-ink-3: var(--g-core);
+	--star-ink-4: var(--g-hi);
+	--star-ink-5: var(--trail-cherry);
+	--star-ink-6: var(--tint-cherry-edge);
 	position:fixed;
 	inset:0;
 	z-index:0;

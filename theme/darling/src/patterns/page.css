@@ -69,7 +69,6 @@ main .entry-content > .woocommerce{
 .d-prose--card{
 	max-width:46rem;
 	padding:clamp(1.6rem, 4vw, 3.25rem);
-	box-shadow:var(--shadow-card);
 }
 .d-prose h2{ margin:var(--space-l) 0 var(--space-2xs); font:var(--type-section) }
 .d-prose h3{ margin:var(--space-m) 0 var(--space-2xs) }
@@ -111,14 +110,22 @@ main .entry-content > .woocommerce{
 /* The surface is in layout.css. A post pads itself and lifts on hover, which is
    why it transitions the two properties the surface owns rather than setting
    them. */
+/* *** AND THE HOVER LOST ITS SHADOW STEP, WHICH IS A CONSEQUENCE AND NOT AN
+   OVERSIGHT. *** A post used to rest flat and lift to --shadow-card on hover.
+   It now RESTS on --shadow-card-hover, which is the stronger of the two, so the
+   old hover would have made it sink. There is no third step to lift to, so the
+   hover is the gold edge alone and the box-shadow transition goes with it - a
+   transition on a property nothing changes is dead code that looks alive.
+
+   If cards should still lift on hover, the answer is a third shadow step, not
+   putting this line back. */
 .d-post{
 	padding:var(--space-s);
-	transition:box-shadow var(--dur-ui) var(--ease-float),
-	           border-color var(--dur-ui) var(--ease-float);
+	transition:border-color var(--dur-ui) var(--ease-float);
 }
 /* The whole card lifts, not the title - the same decision the product card
    made, for the same reason: the card is the target. */
-.d-post:hover{ border-color:var(--tint-gold-edge); box-shadow:var(--shadow-card) }
+.d-post:hover{ border-color:var(--tint-gold-edge) }
 .d-post__title{
 	margin:0 0 var(--space-3xs);
 	font:var(--fw-bold) var(--fs-lede)/var(--lh-title) var(--font-display);
@@ -185,7 +192,6 @@ main .entry-content > .woocommerce{
 	padding:var(--space-s);
 	color:var(--ink);
 	font-size:var(--fs-meta);
-	box-shadow:var(--shadow-card-hover);
 	animation:d-consent-in 350ms var(--ease-float) both;
 }
 .d-consent[hidden]{ display:none }
