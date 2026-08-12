@@ -80,6 +80,35 @@ select.orderby,
    the only one running on browser defaults. */
 .darling-contact-form input:not([type="hidden"]),
 .darling-contact-form textarea,
+/* *** AND THE REVIEW FORM WAS THE LAST FORM ON THE SITE WITH ITS OWN BOX. ***
+   adopted/field.css painted #review_form and #respond by hand: the same full
+   width, the same hairline, the same radius, the same raised fill, the same
+   body type and the same two-property transition. Seven declarations of this
+   rule, copied, and it is the third time that file has been asked the question
+   - the classic form rows and the price filter's inputs are already here.
+
+   They keep three deltas in adopted/field.css and take everything else from
+   here. The one thing that ARRIVES is min-height: a review field is now as tall
+   as every other field on the site, which is the point of there being one. */
+#review_form .comment-form input[type="text"],
+#review_form .comment-form input[type="email"],
+#review_form .comment-form input[type="url"],
+#review_form .comment-form textarea,
+#respond.comment-respond .comment-form input[type="text"],
+#respond.comment-respond .comment-form input[type="email"],
+#respond.comment-respond .comment-form textarea,
+/* *** AND THE BLOCK CHECKOUT'S FIELDS ARE THE SAME BOX WITH A LABEL FLOATING IN
+   IT. *** Seven of these nine declarations were written out again in
+   adopted/field.css for the checkout and the coupon form. What is genuinely
+   different is two numbers: the box is taller and the padding is lopsided,
+   because WooCommerce floats the label up INTO the field rather than putting it
+   above. Those two stay there; the box, the type, the ink and the two-property
+   transition are here, with every other field on the site. */
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="password"],
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;

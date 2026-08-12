@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 97,
+ "seeded": 91,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -58,22 +58,7 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]",
-   "shared": 7,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n\n.darling-contact-form input:not([type=\"hidden\"]),\n.darling-contact-form textarea,\n.d-field textarea",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent)",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n\n.darling-contact-form input:not([type=\"hidden\"]),\n.darling-contact-form textarea,\n.d-field textarea",
    "shared": 7,
    "why": "CROSS-ORIGIN"
   },
@@ -125,7 +110,7 @@
   {
    "pair": "patterns/slider.css|.d-slider__input::-moz-range-thumb  ==  patterns/slider.css|.d-slider__input::-webkit-slider-thumb,\n.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,\n.wc-block-price-filter .ui-slider .ui-slider-handle",
    "shared": 6,
-   "why": "SAME FILE"
+   "why": "REFUSED, AND IT IS A HARD CSS FACT RATHER THAN A JUDGEMENT. .d-slider__input::-webkit-slider-thumb and ::-moz-range-thumb are six declarations against six at 100% - the same thumb, twice, because there is no other way to write it. A selector list containing a pseudo-element the browser does not recognise is INVALID AS A WHOLE: Chromium drops the entire rule when it meets ::-moz-range-thumb, and Firefox drops it when it meets ::-webkit-slider-thumb. Merging them would leave the slider thumb unstyled in every browser at once - the one merge in this report that would break the thing it tidied. The values are single-sourced through the tokens either way, which is the part that has to hold."
   },
   {
    "pair": "adopted/badge.css|.wc-block-components-product-sale-badge.wc-block-components-product-sale-badge,\n.wc-block-grid__product-onsale,\n.woocommerce span.onsale  ==  patterns/card.css|.d-card__chip",
@@ -218,11 +203,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-checkout-order-summary__title-text  ==  adopted/checkout.css|.wc-block-components-checkout-step__title.wc-block-components-checkout-step__title",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
    "pair": "adopted/checkout.css|.wc-block-components-address-card address  ==  adopted/checkout.css|.wc-block-components-order-summary-item__description .wc-block-components-product-name",
    "shared": 4,
    "why": "SAME FILE"
@@ -244,21 +224,6 @@
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-totals-discount__coupon-list  ==  patterns/pagination.css|.d-pagination__strip",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container  ==  adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n\n.darling-contact-form input:not([type=\"hidden\"]),\n.darling-contact-form textarea,\n.d-field textarea",
    "shared": 4,
    "why": "CROSS-ORIGIN"
   },
@@ -486,6 +451,11 @@
    "pair": "patterns/drawer.css|.d-drawer__line  ==  patterns/notice.css|.d-notice,\n.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info,\n\n.woocommerce-password-strength",
    "shared": 4,
    "why": "COINCIDENCE, and the triage already refused its sibling. A cart row and a notice share position:relative, display:grid, align-items:start, a gap and a meta size. The drawer line is a four-track row built around a 3.25rem photograph; the notice is a two-track message with a surface. The same reasoning that kept .d-drawer__head out of .d-drawer__line__foot applies: the next change to the cart row must not arrive inside every notice on the site."
+  },
+  {
+   "pair": "adopted/field.css|.wc-block-components-form .wc-blocks-components-select__container.wc-blocks-components-select__container  ==  patterns/field.css|.d-field__control,\n.d-field input[type=\"text\"],\n.d-field input[type=\"email\"],\n.d-field input[type=\"tel\"],\n.d-field input[type=\"number\"],\n.d-field input[type=\"password\"],\n.d-field input[type=\"search\"],\n.d-field select,\nselect.orderby,\n\n.wc-block-product-filter-price-content input[type=\"text\"],\n.wc-block-product-filter-price-content input[type=\"number\"],\n\n.woocommerce form .form-row input.input-text,\n.woocommerce form .form-row textarea,\n.woocommerce form .form-row select,\n.woocommerce-page form .form-row input.input-text,\n\n.darling-contact-form input:not([type=\"hidden\"]),\n.darling-contact-form textarea,\n\n#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea,\n\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"],\n.d-field textarea",
+   "shared": 4,
+   "why": "CROSS-ORIGIN, AND IT IS THE SAME BOX ON A DIFFERENT KIND OF ELEMENT. .wc-blocks-components-select__container is a WRAPPER: WooCommerce draws its custom select as a div around a real <select>, and the div is what carries the hairline, the radius, the raised fill and the focus transition - four declarations it shares with the field box because it IS the field box. It cannot join .d-field__control's list, which also hands out width:100%, a min-height, padding, body type, ink and appearance:none - all of which belong to the CONTROL inside the wrapper, not to the wrapper. Folding it in would pad the box twice and set a height on something whose height is its child. The honest version is a named \"field box\" that both the control and this wrapper wear, which is a bigger change than a merge: it means splitting .d-field__control into a box half and a control half, the way .d-icon was split into geometry and mask plumbing. Worth doing; not worth doing at the end of a batch."
   }
  ]
 }

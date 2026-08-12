@@ -56,22 +56,18 @@
 
    Note also what currently holds the live site together: style.css does this
    with !important at (0,8,4). That is the thing being replaced. */
+/* The box is .d-field's, in patterns/field.css. Three deltas, and two of them
+   are the same fact: WooCommerce floats the label INTO the field, so the box is
+   taller than ours and the padding is lopsided to leave room for it above the
+   value. box-shadow:none is the third - these arrive with one. */
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="password"]{
-	width:100%;
 	min-height:3.2em;
 	padding:1.35em .9em .5em;   /* room for the floated label above the value */
-	font:var(--type-body);
-	color:var(--c-cocoa);
-	background:var(--surface-raised);
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
 	box-shadow:none;
-	transition:border-color var(--dur-ui) var(--ease-float),
-	           box-shadow var(--dur-ui) var(--ease-float);
 }
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus{
@@ -530,6 +526,10 @@
    should not depend on a filter existing. So they are matched on what they
    actually are.
    ========================================================================== */
+/* The box is .d-field's, in patterns/field.css, with every other field on the
+   site. Three deltas stay: this form is inside content that does not set
+   box-sizing for it, its padding is the comment form's rather than the
+   checkout's, and its ink is --ink because the label above it is too. */
 #review_form .comment-form input[type="text"],
 #review_form .comment-form input[type="email"],
 #review_form .comment-form input[type="url"],
@@ -538,15 +538,8 @@
 #respond.comment-respond .comment-form input[type="email"],
 #respond.comment-respond .comment-form textarea{
 	box-sizing:border-box;
-	width:100%;
 	padding:var(--space-2xs) var(--space-xs);
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
-	background:var(--surface-raised);
 	color:var(--ink);
-	font:var(--type-body);
-	transition:border-color var(--dur-ui) var(--ease-float),
-	           box-shadow var(--dur-ui) var(--ease-float);
 }
 #review_form .comment-form input[type="text"]:hover,
 #review_form .comment-form input[type="email"]:hover,

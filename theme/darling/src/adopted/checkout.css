@@ -272,7 +272,12 @@
 /* Theirs is .wc-block-components-title.wc-block-components-title - already
    doubled, at (0,2,0), and it points font-size at a WordPress preset. Ours has
    to be at least as heavy to be heard at all. */
-.wc-block-components-checkout-step__title.wc-block-components-checkout-step__title{
+/* *** THE TWO TITLES ON A CHECKOUT ARE ONE TITLE. *** A step heading and the
+   order summary's heading were four declarations against four at 100% - and the
+   same six-line comment, copied with them, 670 lines apart in this file. They
+   are the same object: the name of a section of the checkout. */
+.wc-block-components-checkout-step__title.wc-block-components-checkout-step__title,
+.wc-block-components-checkout-order-summary__title-text{
 	margin:0;
 	font:var(--type-section);
 	/* --fs-band is 30px, the size of a full-bleed band's heading. Five of those
@@ -942,14 +947,10 @@ a.wc-block-components-button{
 	margin:0 0 var(--space-xs);
 	cursor:default;
 }
+/* The title is above, with the step heading's. This one sits in a flex row with
+   a chevron and has to take the space. */
 .wc-block-components-checkout-order-summary__title-text{
-	margin:0;
 	flex:1 1 auto;
-	font:var(--type-section);
-	/* --fs-band is 30px, the size of a full-bleed band's heading. Five of those
-	   down a checkout is a poster, not a form. --fs-lede. */
-	font-size:var(--fs-lede);
-	color:var(--ink);
 }
 .wc-block-components-checkout-order-summary__title-price{
 	font-weight:var(--fw-medium);

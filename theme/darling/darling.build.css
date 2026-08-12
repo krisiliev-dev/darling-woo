@@ -3482,6 +3482,20 @@ select.orderby,
 
 .darling-contact-form input:not([type="hidden"]),
 .darling-contact-form textarea,
+
+#review_form .comment-form input[type="text"],
+#review_form .comment-form input[type="email"],
+#review_form .comment-form input[type="url"],
+#review_form .comment-form textarea,
+#respond.comment-respond .comment-form input[type="text"],
+#respond.comment-respond .comment-form input[type="email"],
+#respond.comment-respond .comment-form textarea,
+
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="text"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="email"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
+:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="password"],
 .d-field textarea{
 	width:100%;
 	min-height:2.9em;
@@ -7381,17 +7395,9 @@ li.wc-block-grid__product .wp-block-button__link:hover{
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="tel"],
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="number"],
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type="password"]{
-	width:100%;
 	min-height:3.2em;
 	padding:1.35em .9em .5em;
-	font:var(--type-body);
-	color:var(--c-cocoa);
-	background:var(--surface-raised);
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
 	box-shadow:none;
-	transition:border-color var(--dur-ui) var(--ease-float),
-	           box-shadow var(--dur-ui) var(--ease-float);
 }
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:hover{ border-color:var(--c-mauve-light) }
 :is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input:focus{
@@ -7682,15 +7688,8 @@ li.wc-block-grid__product .wp-block-button__link:hover{
 #respond.comment-respond .comment-form input[type="email"],
 #respond.comment-respond .comment-form textarea{
 	box-sizing:border-box;
-	width:100%;
 	padding:var(--space-2xs) var(--space-xs);
-	border:1px solid var(--edge-field);
-	border-radius:var(--radius-s);
-	background:var(--surface-raised);
 	color:var(--ink);
-	font:var(--type-body);
-	transition:border-color var(--dur-ui) var(--ease-float),
-	           box-shadow var(--dur-ui) var(--ease-float);
 }
 #review_form .comment-form input[type="text"]:hover,
 #review_form .comment-form input[type="email"]:hover,
@@ -9275,7 +9274,8 @@ html.d-a11y .wc-block-product-filters__overlay-dialog{ transition:none }
 	margin:0;
 }
 
-.wc-block-components-checkout-step__title.wc-block-components-checkout-step__title{
+.wc-block-components-checkout-step__title.wc-block-components-checkout-step__title,
+.wc-block-components-checkout-order-summary__title-text{
 	margin:0;
 	font:var(--type-section);
 
@@ -9647,13 +9647,9 @@ a.wc-block-components-button{
 	margin:0 0 var(--space-xs);
 	cursor:default;
 }
-.wc-block-components-checkout-order-summary__title-text{
-	margin:0;
-	flex:1 1 auto;
-	font:var(--type-section);
 
-	font-size:var(--fs-lede);
-	color:var(--ink);
+.wc-block-components-checkout-order-summary__title-text{
+	flex:1 1 auto;
 }
 .wc-block-components-checkout-order-summary__title-price{
 	font-weight:var(--fw-medium);
