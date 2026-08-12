@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 91,
+ "seeded": 84,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -58,11 +58,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent)",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))",
    "shared": 7,
    "why": "CROSS-ORIGIN"
@@ -79,21 +74,6 @@
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-sidebar-layout .wc-block-components-sidebar,\n.wc-block-components-sidebar,\n.wc-block-checkout__sidebar  ==  patterns/catalogue.css|.d-archive__side",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-validation-error::before  ==  patterns/field.css|.d-field__error:not(:empty)::before",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  adopted/field.css|.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option",
-   "shared": 6,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option  ==  patterns/field.css|:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent)",
    "shared": 6,
    "why": "CROSS-ORIGIN"
   },
@@ -129,16 +109,6 @@
   },
   {
    "pair": "adopted/checkout.css|.wc-block-components-totals-discount__coupon-list  ==  patterns/product.css|.d-tabs__list,\n.woocommerce div.product .woocommerce-tabs ul.tabs.wc-tabs",
-   "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-validation-error  ==  patterns/field.css|.d-field__error",
-   "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/drawer.css|.d-drawer__line",
    "shared": 5,
    "why": "CROSS-ORIGIN"
   },
@@ -436,11 +406,6 @@
    "pair": "patterns/progress.css|.d-progress__native  ==  patterns/slider.css|.d-slider__input",
    "shared": 4,
    "why": "REAL, AND DELIBERATELY NOT MERGED AT THE END OF A BATCH. .d-progress__native and .d-slider__input are one object - a native form control with the browser's chrome taken off, filling its column: appearance:none twice, display:block, width:100%. The pair appeared only because this commit shortened the progress rule, which is how it should surface. It is not merged because there is no honest home for it yet: the two live in different pattern files, so putting the base in either one couples a slider to a progress bar, and the right answer is a base-layer rule for \"a native control we draw ourselves\" that does not exist. Inventing a file in the last five minutes of a batch is how a system gains one nobody remembers. Candidate for the same pass as patterns/wake.css in batch 6."
-  },
-  {
-   "pair": "adopted/field.css|.wc-block-components-checkbox label  ==  patterns/notice.css|.d-notice,\n.wc-block-components-notice-banner,\n.woocommerce-message,\n.woocommerce-error,\n.woocommerce-info,\n\n.woocommerce-password-strength",
-   "shared": 4,
-   "why": "COINCIDENCE. A checkbox label and a notice are both a start-aligned grid with a gap and a meta-sized line, which is what \"an icon or a box beside some text\" looks like in every component that has one. The notice has a surface - a tint, a ring, a radius, padding - and the label has none of it; merging would file a form control under messaging."
   },
   {
    "pair": "patterns/wake.css|.d-pagination__wake,\n.d-slider__wake  ==  patterns/wipe.css|.d-wipe::after",

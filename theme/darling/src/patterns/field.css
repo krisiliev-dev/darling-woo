@@ -198,7 +198,14 @@ select.orderby,
 .d-field__hint{ font-size:var(--fs-fine); color:var(--ink-quiet) }
 
 /* -- the message, whose space is always reserved ---------------------------- */
-.d-field__error{
+/* *** AND WOO'S VALIDATION ERROR IS THIS ERROR. *** adopted/field.css wrote out
+   five of these seven by hand. Same row, same mark beside it, same red. It
+   keeps a top margin and a hair more leading, because it is printed under a
+   field rather than into a reserved slot - which is what the min-height here
+   is: the line is held open so the form does not jump when the message
+   arrives. */
+.d-field__error,
+.wc-block-components-validation-error{
 	display:flex;
 	align-items:center;
 	gap:.4em;
@@ -208,7 +215,12 @@ select.orderby,
 	color:var(--notice-error-edge);
 }
 .d-field__error:empty::before{ content:""; display:block }
-.d-field__error:not(:empty)::before{
+/* Byte for byte the same six declarations as Woo's, which is unsurprising - it
+   is one mark. Ours is behind :not(:empty) because our slot is always in the
+   markup and theirs is inserted when it fails, so only one of the two needs to
+   ask whether there is anything to point at. */
+.d-field__error:not(:empty)::before,
+.wc-block-components-validation-error::before{
 	content:"";
 	flex:0 0 auto;
 	width:.85em;
@@ -397,7 +409,20 @@ select.orderby,
    how the product card came to exist twice and how the quantity stepper came to
    exist twice. scripts/dupes.js exists to catch that after the fact; a shared
    selector list means there is nothing to catch. */
-:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent){
+/* *** AND THE BLOCK CHECKOUT WRITES THIS ROW OUT TWICE MORE. *** A checkbox
+   label and a radio option in Woo's form are the same two-column row this is:
+   control, gap, text, inset by the control's own width so the text lines up
+   with everything above it. Seven declarations and six, copied.
+
+   *** ONE OF THE TWO HAS BEEN DEAD SINCE IT WAS WRITTEN. *** The radio option
+   set padding-inline-start:var(--inline) and then, four lines later, the
+   padding SHORTHAND - which resets it. That inset has never applied. Moving it
+   here changes nothing, because the shorthand still comes after in a later
+   layer; it is written down rather than quietly fixed, because making it apply
+   would move every rate row on the checkout and that is a look, not a merge. */
+:is(.d-check, .woocommerce-form__label-for-checkbox, .woocommerce-form-login__rememberme, .comment-form-cookies-consent),
+.wc-block-components-checkbox label,
+.wc-block-components-form .wc-block-components-radio-control__option.wc-block-components-radio-control__option{
 	display:grid;
 	grid-template-columns:auto 1fr;
 	gap:var(--inline);
