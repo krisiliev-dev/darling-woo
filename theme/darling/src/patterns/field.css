@@ -215,7 +215,17 @@ select.orderby,
 }
 
 /* -- select: the arrow is ours, because appearance:none removes theirs ------ */
+/* *** THE CLASSIC ADDRESS SELECTS ARE ON THIS LIST TOO, AND THEY HAVE TO BE
+   BEFORE select2 GOES. *** With select2 enqueued the native <select> is hidden
+   behind a span stack, so nothing about it shows and nothing about it was
+   noticed. Turn select2 off - which is the plan, it is the last WooCommerce
+   stylesheet shipping - and the country and area fields become real selects
+   wearing our box with `appearance:none` and NO ARROW: a dropdown that looks
+   exactly like a text input. Measured by simulating the un-enqueued DOM in the
+   gallery before touching anything.
+   Harmless today, required the moment select2 leaves. */
 .d-field select,
+.woocommerce form .form-row select,
 :is(.d-select, select.orderby){
 	padding-right:2.4em;
 	background-image:
@@ -242,8 +252,10 @@ select.orderby,
 @supports (appearance: base-select){
 	.d-field select,
 	:is(.d-select, select.orderby),
+	.woocommerce form .form-row select,
 	.d-field select::picker(select),
 	:is(.d-select, select.orderby)::picker(select),
+	.woocommerce form .form-row select::picker(select),
 	.wc-block-components-form select::picker(select){
 		appearance:base-select;
 	}
@@ -266,6 +278,7 @@ select.orderby,
 	   every other control. */
 	.d-field select,
 	:is(.d-select, select.orderby),
+	.woocommerce form .form-row select,
 	.wc-block-components-form select{
 		align-items:center;
 		justify-content:flex-start;
@@ -279,6 +292,7 @@ select.orderby,
 	}
 	.d-field select::picker(select),
 	:is(.d-select, select.orderby)::picker(select),
+	.woocommerce form .form-row select::picker(select),
 	.wc-block-components-form select::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
@@ -296,6 +310,7 @@ select.orderby,
 	   padding changes, this has to move with it. */
 	.d-field option,
 	:is(.d-select, select.orderby) option,
+	.woocommerce form .form-row option,
 	.wc-block-components-form option{
 		padding:.52em .7em;
 		border-radius:var(--radius-s);
@@ -308,11 +323,13 @@ select.orderby,
 	   one you most need to be able to read. */
 	.d-field option:hover,
 	:is(.d-select, select.orderby) option:hover,
+	.woocommerce form .form-row option:hover,
 	.wc-block-components-form option:hover{
 		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
 	}
 	.d-field option:checked,
 	:is(.d-select, select.orderby) option:checked,
+	.woocommerce form .form-row option:checked,
 	.wc-block-components-form option:checked{
 		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
 		font-weight:var(--fw-medium);
@@ -320,6 +337,7 @@ select.orderby,
 	/* base-select draws its own arrow; ours is the background gradient above. */
 	.d-field select::picker-icon,
 	:is(.d-select, select.orderby)::picker-icon,
+	.woocommerce form .form-row select::picker-icon,
 	.wc-block-components-form select::picker-icon{ display:none }
 	.d-field select::checkmark,
 	:is(.d-select, select.orderby)::checkmark,
