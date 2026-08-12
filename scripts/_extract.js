@@ -80,6 +80,12 @@ const ACCOUNT_PAGES = [
   ['account-address-form', 'address-billing', '.woocommerce-MyAccount-content'],
   ['account-payment', 'payment-methods', '.woocommerce-MyAccount-content'],
   ['account-details', 'edit-account', '.woocommerce-MyAccount-content'],
+  /* Populated at last. There was one test order on the parity account on
+     2026-08-12 (#48, cancelled after), and filling its address populated the
+     addresses page too - so `account-orders` and `account-addresses` above are
+     no longer empty states, and this is the order's own page. Payment methods
+     stays empty: adding a card needs a real card. */
+  ['account-order-view', 'order-view', '.woocommerce-MyAccount-content'],
 ];
 
 /* Runs both in the page (as a string passed to evaluate) and here in node

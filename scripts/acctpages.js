@@ -47,6 +47,11 @@ const PAGES = [
   ['edit-account', '/my-account/edit-account/'],
 ];
 
+/* The single order's own page. Its id is not knowable in advance, so it is read
+   off the orders list rather than hard-coded - and if there are no orders yet,
+   it is skipped with a line rather than saved as a 404 under a real name. */
+const ORDER_PAGE = ['order-view', /\/my-account\/view-order\/(\d+)\//];
+
 /* nonces are per-session and must not land in the repo */
 const scrub = (h) => h
   .replace(/(_wpnonce=)[a-f0-9]+/gi, '$1REDACTED')
@@ -88,6 +93,25 @@ const scrub = (h) => h
       String(main.length).padStart(6) + ' bytes of <main>' +
       (isLogin ? '   <- THIS IS THE LOGIN FORM, NOT THE PAGE' : '') +
       (main ? '' : '   <- NO <main> AT ALL'));
+  }
+
+  /* -- the order page, if there is an order ------------------------------- */
+  await page.goto(SITE + '/my-account/orders/', { waitUntil: 'load' });
+  await page.waitForTimeout(500);
+  const orderHref = await page.evaluate(() => {
+    const a = [...document.querySelectorAll('a[href*="view-order"]')][0];
+    return a ? a.getAttribute('href') : null;
+  });
+  if (!orderHref) {
+    console.log('  order-view        -- no orders on this account, skipped');
+  } else {
+    const res = await page.goto(new URL(orderHref, SITE).href, { waitUntil: 'load' });
+    await page.waitForTimeout(500);
+    const html = await page.evaluate(() => document.documentElement.outerHTML);
+    const main = (html.match(/<main[\s\S]*?<\/main>/) || [''])[0];
+    fs.writeFileSync(path.join(OUT, 'order-view.html'), scrub(html));
+    console.log('  order-view       ' + String(res ? res.status() : 0).padEnd(4) +
+      String(main.length).padStart(6) + ' bytes of <main>   ' + orderHref);
   }
 
   await browser.close();

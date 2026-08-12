@@ -2832,6 +2832,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 @layer patterns{
 
 .d-btn,
+.woocommerce .button,
+.woocommerce input.button,
 .single_add_to_cart_button,
 .wc-block-cart__submit-button{
 	display:inline-flex;
@@ -2856,10 +2858,12 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 }
 
 .d-btn:active,
+.woocommerce .button:active,
 .single_add_to_cart_button:active,
 .wc-block-cart__submit-button:active{ transform:translateY(1px) }
 
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
+.woocommerce .button:not(.d-finish):hover,
 .single_add_to_cart_button:not(.d-finish):hover,
 
 .wc-block-cart__submit-button:not(.d-finish):hover,

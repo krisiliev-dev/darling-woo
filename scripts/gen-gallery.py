@@ -50,9 +50,28 @@ CSS = open(CSS_FILE, encoding='utf-8').read()
 # So the built sheet's hash goes into the page, and scripts/_fresh.js refuses to
 # measure a gallery whose stamp does not match the build on disk.
 CSS_STAMP = hashlib.md5(CSS.encode('utf-8')).hexdigest()
-CSS = CSS.replace('url("../assets/ply-grain.webp")',
-                  'url("data:image/webp;base64,%s")'
-                  % base64.b64encode(open(PLY_FILE, 'rb').read()).decode())
+# *** THE GRAIN IS INLINED, AND THIS USED TO SILENTLY NOT DO IT. ***
+# The gallery is a standalone file that gets handed around, so every asset it
+# needs has to be IN it. The plywood texture is the only binary one.
+#
+# This matched the literal string `url("../assets/ply-grain.webp")`. finish.css
+# now declares the token as `url("/wp-content/themes/darling/assets/ply-grain.webp")`
+# - an absolute, site-root path, which is correct for the live site - so the
+# replacement stopped matching and did NOTHING. No error: the guard above checks
+# the webp file EXISTS, never that the substitution happened. The gallery then
+# asked for /wp-content/... , which resolves to nothing outside WordPress, and
+# every .d-finish surface in it lost its grain. The owner spotted it by eye.
+# Live was never affected - only the page we review on, which is worse in its own
+# way: we were reviewing a finish the site does not have.
+#
+# So: match ANY url() that ends in the filename, and ASSERT it fired. Third time
+# tonight that a step which could quietly do nothing did quietly do nothing.
+_ply = 'url("data:image/webp;base64,%s")' % base64.b64encode(open(PLY_FILE, 'rb').read()).decode()
+CSS, _n = re.subn(r'url\(\s*["\']?[^)"\']*ply-grain\.webp["\']?\s*\)', lambda m: _ply, CSS)
+if not _n:
+	sys.stderr.write('gen-gallery: the plywood grain was NOT inlined - no url(...ply-grain.webp) in '
+	                 'darling.build.css. The gallery would ship without the finish texture.\n')
+	raise SystemExit(1)
 
 # The stylesheet is written ASCII-only (see FINISH_AND_LAYER_DECISIONS), so this
 # is belt and braces - it repairs UTF-8 that has been round-tripped through the
@@ -371,6 +390,7 @@ MY_ADDRESSES = _spec('account-addresses')
 MY_ADDRESS_FORM = _spec('account-address-form')
 MY_PAYMENT = _spec('account-payment')
 MY_DETAILS = _spec('account-details')
+MY_ORDER_VIEW = _spec('account-order-view')
 
 PRODUCTS = [
     ('Керамична купа', '26,40', None, None),
@@ -1104,20 +1124,51 @@ A('<p class="note">Two paragraphs of prose and the notice slot. Nothing to port,
   'visible at all.</p>')
 A('<div class="wcspec">' + MY_DASH + '</div>')
 
-A('<h3>Поръчки, and Методи за разплащане</h3>')
-A('<p class="note"><b>The two empty states, and they are the same shape.</b> A '
-  '<code>.wc-block-components-notice-banner.is-info</code> &mdash; the block '
-  'notice, which we already style &mdash; and then a bare '
-  '<code>&lt;a class="button"&gt;</code>. That class is WooCommerce&rsquo;s, not '
-  'ours: <code>patterns/button.css</code> does not name it, so both call-to-action '
-  'links here are running on the fallback net. Same defect as '
-  '&ldquo;Продължи към поръчката&rdquo; in the cart section above, which is the '
-  'argument for fixing it in <code>button.css</code> once rather than three '
-  'times.</p>')
+A('<h3>Поръчки &mdash; and this is what WooCommerce actually gives you</h3>')
+A('<p class="note"><b>Populated at last, with a real order.</b> There was a test '
+  'order on the parity account on 12 August (#48, cancelled straight after), so '
+  'this is the orders table with a row in it rather than the empty state. '
+  '<b>Read the columns, because they are the whole scoping question:</b> '
+  'Поръчка, Дата, Статут, Общо, Действия. That is WooCommerce&rsquo;s default '
+  '<code>myaccount/orders.php</code> and it is all of it.</p>')
+A('<p class="note"><b>What the owner asked for and what is here.</b> The ask was '
+  'address, date AND time, total, status, tracking, and a click-through to a '
+  'line-item breakdown with documents. Of those: <b>total</b> and <b>status</b> '
+  'are here; <b>time</b> is in the markup but not shown &mdash; the cell renders '
+  '&ldquo;12 август 2026&rdquo; while the <code>&lt;time datetime&gt;</code> '
+  'attribute beside it carries <code>2026-08-12T04:10:58+00:00</code>; '
+  '<b>address</b>, <b>tracking</b> and <b>documents</b> are not in this template '
+  'at all. Address is on the order, so it is a template change. Tracking and '
+  'documents have no source on this site &mdash; the only plugins on an account '
+  'page are WooCommerce, the Stripe gateway and our own <code>darling-checkout</code> '
+  '&mdash; so they come from Barsy or they do not exist yet.</p>')
 A('<div class="wcspec">' + MY_ORDERS + '</div>')
+
+A('<h3>The order&rsquo;s own page &mdash; the breakdown already exists</h3>')
+A('<p class="note"><b>This is the click-through, and it is most of what was '
+  'asked for.</b> A line-item table with the product and its total, a foot '
+  'carrying Междинна сума, Доставка (named: &ldquo;чрез Спиди &mdash; до адрес&rdquo;), '
+  'Общо and Начин на плащане, and both addresses underneath. Turning it into an '
+  'expanding row inside the table above is a presentation decision on top of data '
+  'that is already rendered &mdash; which is a much smaller job than it sounded '
+  'like, and worth knowing before anyone builds a second view of it.</p>')
+A('<div class="wcspec">' + MY_ORDER_VIEW + '</div>')
+
+A('<h3>Методи за разплащане</h3>')
+A('<p class="note"><b>Still the empty state, and it will stay that way here.</b> '
+  'Saving a card needs a real card, so this is the one page that cannot be '
+  'populated from a test account. The shape is the same as the old empty orders '
+  'page: a block notice and a bare <code>&lt;a class="button"&gt;</code> &mdash; '
+  'which is now our cherry button, along with Запази адреса and Запазване на '
+  'промените. All three were running on the fallback net.</p>')
 A('<div class="wcspec">' + MY_PAYMENT + '</div>')
 
 A('<h3>Адреси</h3>')
+A('<p class="note"><b>Populated too, because filling the checkout address filled '
+  'this.</b> Both cards now hold a real address instead of &ldquo;Все още не сте '
+  'попълнили този адрес&rdquo;. The owner wants these to become editable fields '
+  'in place rather than a label and a link out to a separate form &mdash; that is '
+  'a <code>myaccount/my-address.php</code> override, not CSS.</p>')
 A('<p class="note"><b>This one has a real two-column layout already.</b> '
   '<code>.u-columns.col2-set</code> with <code>.col-1</code> and '
   '<code>.col-2</code> is ported in <code>adopted/account.css</code> &mdash; '

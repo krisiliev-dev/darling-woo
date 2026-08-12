@@ -1,14 +1,51 @@
 <div class="woocommerce"><div class="woocommerce-MyAccount-content">
 	<div class="woocommerce-notices-wrapper"></div>
 
-	
-	<div class="wc-block-components-notice-banner is-info" role="status">
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
-			<path d="M12 3.2c-4.8 0-8.8 3.9-8.8 8.8 0 4.8 3.9 8.8 8.8 8.8 4.8 0 8.8-3.9 8.8-8.8 0-4.8-4-8.8-8.8-8.8zm0 16c-4 0-7.2-3.3-7.2-7.2C4.8 8 8 4.8 12 4.8s7.2 3.3 7.2 7.2c0 4-3.2 7.2-7.2 7.2zM11 17h2v-6h-2v6zm0-8h2V7h-2v2z"></path>
-		</svg>
-		<div class="wc-block-components-notice-banner__content">
-			Все още не е направена поръчка. <a class="woocommerce-Button wc-forward button wp-element-button" href="#">Преглед на продукти</a>		</div>
-	</div>
+	<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
+		<thead>
+			<tr>
+									<th scope="col" class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span class="nobr">Поръчка</span></th>
+									<th scope="col" class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr">Дата</span></th>
+									<th scope="col" class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span class="nobr">Статут</span></th>
+									<th scope="col" class="woocommerce-orders-table__header woocommerce-orders-table__header-order-total"><span class="nobr">Общо</span></th>
+									<th scope="col" class="woocommerce-orders-table__header woocommerce-orders-table__header-order-actions"><span class="nobr">Действия</span></th>
+							</tr>
+		</thead>
 
+		<tbody>
+							<tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-processing order">
+																		<th class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="Поръчка" scope="row">
+						
+																							<a href="#" aria-label="Преглед на поръчка 48">
+									№48								</a>
+
+							
+													</th>
+																								<td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Дата">
+						
+															<time datetime="2026-08-12T04:10:58+00:00">12 август 2026</time>
+
+							
+													</td>
+																								<td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status" data-title="Статут">
+						
+															Обработка
+							
+													</td>
+																								<td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Общо">
+						
+															 <span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">€</span>20.67</span> за 1 продукт
+							
+													</td>
+																								<td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-actions" data-title="Действия">
+						
+															<a href="#" class="woocommerce-button wp-element-button button view" aria-label="View order 48">Преглед</a>							
+													</td>
+															</tr>
+						</tbody>
+	</table>
+
+	
+	
 
 </div></div>
