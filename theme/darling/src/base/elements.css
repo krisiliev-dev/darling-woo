@@ -10,11 +10,24 @@
 *, *::before, *::after{ box-sizing:border-box }
 
 html{
-	/* The owner asked for the main scrollbar to get the darling treatment.
-	   Two standard properties. `thin` narrows the thumb, not the track, so
-	   there is no layout shift and no scrollbar-gutter needed. */
-	scrollbar-color: var(--c-mauve) var(--surface-quiet);
-	scrollbar-width: thin;
+	/* *** THE PAGE SCROLLBAR USED TO BE DECLARED HERE TOO, AND IN A DIFFERENT
+	   COLOUR. *** This was the first answer to "give the main scrollbar the
+	   darling treatment": mauve on surface-quiet, two standard properties.
+	   patterns/scroll.css later answered the same request properly - our own
+	   10px bar with a pill thumb and a 2px track border, drawn with the WebKit
+	   pseudo-elements, with the standard properties kept as the Firefox
+	   fallback behind an @supports guard.
+
+	   Two definitions of one bar, in two layers, disagreeing on the colour. And
+	   this one won in Chrome without ever being seen to: a non-auto
+	   scrollbar-color makes Chromium ignore every ::-webkit-scrollbar rule on
+	   the page, so this line was what the owner meant by "the scroller is still
+	   the normal one instead of ours". The bar he was looking at was this
+	   fallback, recoloured mauve - the designed bar had never rendered.
+
+	   Deleted rather than moved. The bar is defined once, in scroll.css, and
+	   the colour it uses is --sc-thumb / --sc-track. If mauve is wanted back it
+	   is those two tokens that change, and both dialects follow. */
 	-webkit-text-size-adjust:100%;
 }
 

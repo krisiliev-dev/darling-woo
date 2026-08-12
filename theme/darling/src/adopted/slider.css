@@ -78,8 +78,11 @@
 .wc-block-components-shipping-rates-control,
 .wc-block-mini-cart__items,
 .wc-block-components-order-summary__content{
-	scrollbar-width:thin;
-	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+	/* The two standard scrollbar properties used to be restated here. They
+	   were removed: scrollbar-color INHERITS from the :root declaration in
+	   patterns/scroll.css, so this copy did nothing - except in Chromium,
+	   where any non-auto value switches OFF ::-webkit-scrollbar for this
+	   scroller, so the copy was disabling our own 10px bar right here. */
 }
 .wc-block-components-shipping-rates-control::-webkit-scrollbar,
 .wc-block-mini-cart__items::-webkit-scrollbar,

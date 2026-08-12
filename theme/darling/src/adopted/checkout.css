@@ -72,8 +72,11 @@
 	top:5rem;
 	max-height:calc(100vh - 6rem);
 	overflow:auto;
-	scrollbar-width:thin;
-	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+	/* The two standard scrollbar properties used to be restated here. They
+	   were removed: scrollbar-color INHERITS from the :root declaration in
+	   patterns/scroll.css, so this copy did nothing - except in Chromium,
+	   where any non-auto value switches OFF ::-webkit-scrollbar for this
+	   scroller, so the copy was disabling our own 10px bar right here. */
 	padding:var(--space-s);
 	border-radius:var(--radius-l);
 	background:var(--surface-raised);

@@ -166,8 +166,11 @@
 	gap:var(--space-s);
 	overflow-y:auto;
 	padding:var(--space-s);
-	scrollbar-width:thin;
-	scrollbar-color:var(--c-grey-400) var(--tint-grey);
+	/* The two standard scrollbar properties used to be restated here. They
+	   were removed: scrollbar-color INHERITS from the :root declaration in
+	   patterns/scroll.css, so this copy did nothing - except in Chromium,
+	   where any non-auto value switches OFF ::-webkit-scrollbar for this
+	   scroller, so the copy was disabling our own 10px bar right here. */
 }
 .wc-block-product-filters__overlay-content > :first-child{ margin-top:0 }
 
