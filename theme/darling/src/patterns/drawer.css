@@ -453,20 +453,23 @@
 	font-variant-numeric:tabular-nums;
 	white-space:nowrap;
 }
+/* *** A THIRD ICON BUTTON, IN THE SAME FILE AS THE ONE ALREADY FOUND. ***
+   .d-drawer__close was a complete copy of .d-icon-btn and dupes.js scored it 55%
+   because it spelt var(--tap) as 2.75rem. This one sat eight lines further down
+   and scored 64% for the same reason - grid, place-items, no border, a circle,
+   no background, a pointer, the same two-property transition - and neither was
+   reported until the gate was taught to resolve values before comparing them.
+   It found this the first time it ran with that change.
+
+   What is actually the drawer line's: it sits at the end of its grid row, it is
+   nudged onto the first line of the title, it is SMALLER than a tap target
+   because three of them stack in a 300px column, and it rests quieter. */
 .d-drawer__line__rm{
 	justify-self:end;
 	margin-top:.2em;
 	width:1.9rem;
 	height:1.9rem;
-	display:grid;
-	place-items:center;
-	border:0;
-	border-radius:var(--radius-circle);
-	background:none;
 	color:var(--ink-quiet);
-	cursor:pointer;
-	transition:color var(--dur-ui) var(--ease-float),
-	           background var(--dur-ui) var(--ease-float);
 }
 .d-drawer__line__rm:hover{ color:var(--c-claret); background:var(--tint-gold) }
 .d-drawer__line__rm .d-icon{ width:.85rem; height:.85rem }

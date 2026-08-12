@@ -50,7 +50,7 @@
 @property --glow-hover{   syntax:"<number>"; inherits:false; initial-value:1 }
 
 :root{
-	/* ABSOLUTE, like every other url() in src/. This was `../assets/â€¦`, which is
+	/* ABSOLUTE, like every other url() in src/. This was `../assets/Ã¢â‚¬Â¦`, which is
 	   correct relative to THIS file and wrong relative to the built sheet: the
 	   build concatenates src/*.css into theme/darling/darling.build.css, one
 	   directory up, so `../assets/` resolved to /wp-content/themes/assets/ and
@@ -217,7 +217,7 @@
    Every layer is positioned by background-position rather than by `at x y`
    inside the gradient, because a position inside a gradient function cannot be
    animated and a background-position list can. */
-.d-finish,
+.d-finish::before,
 .single_add_to_cart_button::before{
 	content:"";
 	position:absolute;
@@ -281,7 +281,7 @@
    100% 100%, so it follows any shape - pill, circle, rounded square - with no
    fixed geometry and no script. The grain does NOT move: plywood is the
    material, and material does not drift. */
-.d-finish,
+.d-finish::after,
 .single_add_to_cart_button::after{
 	content:"";
 	position:absolute;

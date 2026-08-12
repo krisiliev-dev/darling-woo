@@ -102,8 +102,94 @@ function rules(css, file) {
   }).filter((r) => r.sel);
 }
 
+/* *** IT COMPARED DECLARATION TEXT, AND THAT IS HOW A WHOLE COMPONENT HID. ***
+ * patterns/drawer.css held a COMPLETE second copy of .d-icon-btn - eleven
+ * declarations, all eleven the component's - and this gate never once reported
+ * it. Six of eleven matched as strings; ELEVEN OF ELEVEN matched as values:
+ *
+ *     2.75rem          vs  var(--tap)          the same 44px
+ *     var(--c-cocoa)   vs  var(--ink)          the same colour, through an alias
+ *     the transition list, written in the opposite property order
+ *
+ * 6/11 = 55% against a 60% cutoff. Every hand-typed literal in that copy was a
+ * point the similarity score LOST - so the more a duplicate was disguised, the
+ * safer it was from the tool built to find duplicates. That is backwards, and it
+ * is what the owner was reacting to when he asked whether the whole system
+ * should be thrown out for React and Tailwind.
+ *
+ * So a declaration is normalised to what it MEANS before it is compared:
+ *   1. var(--x) resolves through tokens.resolved.json, transitively
+ *   2. lengths fold to px at the 16px root, and colours to a canonical rgb()
+ *   3. a comma list whose order does not matter - transition, font-family,
+ *      will-change - is sorted
+ *
+ * The raw text is kept alongside, because a report that prints the resolved form
+ * is unreadable: you want to be told `var(--tap)` and `2.75rem` are the same
+ * 44px, not shown 44px twice.
+ */
+const RESOLVED = (() => {
+  const f = path.join(ROOT, 'theme', 'darling', 'tokens.resolved.json');
+  if (!fs.existsSync(f)) return {};
+  const j = JSON.parse(fs.readFileSync(f, 'utf8'));
+  const out = {};
+  for (const k of Object.keys(j)) {
+    if (!k.startsWith('--')) continue;
+    const v = j[k];
+    out[k] = (v && (v.computed || v.hex || v.raw)) || '';
+  }
+  return out;
+})();
+
+function resolveVars(val, depth) {
+  if (depth > 6 || val.indexOf('var(') === -1) return val;
+  const out = val.replace(/var\(\s*(--[a-z0-9-]+)\s*(?:,([^()]*(?:\([^()]*\)[^()]*)*))?\)/gi,
+    (m, name, fallback) => {
+      const hit = RESOLVED[name];
+      if (hit) return hit;
+      return fallback !== undefined ? fallback.trim() : m;
+    });
+  return out === val ? val : resolveVars(out, depth + 1);
+}
+
+/* 16px root, which is what tokens.resolved.json was generated against. em is
+ * deliberately NOT folded: it depends on the element's own font-size, so two
+ * em values are only equal by coincidence and calling them equal would invent
+ * duplicates rather than find them. */
+function foldLengths(val) {
+  return val.replace(/(-?[\d.]+)rem\b/g, (m, n) => (parseFloat(n) * 16) + 'px')
+            .replace(/(-?[\d.]+)(px)\b/g, (m, n) => (Math.round(parseFloat(n) * 1000) / 1000) + 'px')
+            .replace(/\b0(px|rem|%)\b/g, '0');
+}
+
+function foldColour(val) {
+  return val.replace(/#([0-9a-f]{3}|[0-9a-f]{6})\b/gi, (m, hex) => {
+    const h = hex.length === 3 ? hex.split('').map((c) => c + c).join('') : hex;
+    const n = parseInt(h, 16);
+    return 'rgb(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ')';
+  }).replace(/\brgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)/g,
+    (m, r, g, b) => 'rgb(' + Math.round(+r) + ',' + Math.round(+g) + ',' + Math.round(+b) + ')');
+}
+
+/* Only for properties where the browser does not care about order. `transition`
+ * and `box-shadow` are order-insensitive between comma clauses; `font-family` is
+ * NOT - it is a preference list - so it is excluded on purpose. */
+const ORDER_FREE = new Set(['transition', 'will-change', 'transition-property']);
+function foldOrder(prop, val) {
+  if (!ORDER_FREE.has(prop) || val.indexOf(',') === -1) return val;
+  return val.split(',').map((x) => x.trim()).sort().join(',');
+}
+
+function canon(prop, val) {
+  let v = resolveVars(val, 0);
+  v = foldLengths(v);
+  v = foldColour(v);
+  v = foldOrder(prop, v);
+  return prop + ':' + v.replace(/\s+/g, ' ').trim();
+}
+
 function decls(body) {
-  const set = new Set();
+  const set = new Set();      // canonical, for COMPARING
+  const raw = new Map();      // canonical -> the text a human wrote, for REPORTING
   let depth = 0, cur = '';
   for (const ch of body) {
     if (ch === '(') depth++;
@@ -118,8 +204,11 @@ function decls(body) {
     const val = d.slice(k + 1).trim().replace(/\s+/g, ' ');
     if (!prop || prop.startsWith('--')) return;   // a token DEFINITION is not a duplicate
     if (!val) return;
-    set.add(prop + ':' + val);
+    const c = canon(prop, val);
+    set.add(c);
+    if (!raw.has(c)) raw.set(c, prop + ':' + val);
   }
+  set.raw = raw;
   return set;
 }
 

@@ -86,9 +86,17 @@
    hand-typed literal in that copy is a point the similarity score lost. A
    ratchet that reads text cannot see a component; it can only see spelling.
    That is the whole argument for reviewing by purpose rather than by overlap. */
+/* *** AND TWO MORE, FOUND THE MOMENT THE GATE COULD SEE VALUES. ***
+   .d-carousel__btn and .d-drawer__line__rm were both complete copies of this
+   rule wearing literals - 2.75rem and 1.9rem where the component says var(--tap)
+   - and both scored under the 60% cutoff as TEXT. Resolving values first put
+   them at 73% and 64% and the gate reported them on its first run. Seven
+   members now, one definition. */
 .d-icon-btn,
 .d-heart,
 .d-drawer__close,
+.d-drawer__line__rm,
+.d-carousel__btn,
 .wc-block-cart-item__remove-link,
 .d-wipe__clear{
 	display:grid;
@@ -127,16 +135,22 @@
 .d-icon-btn:hover,
 .d-heart:hover,
 .d-drawer__close:hover,
+.d-drawer__line__rm:hover,
+.d-carousel__btn:hover,
 .d-wipe__clear:hover{
 	background:var(--tint-gold);
 }
 .d-icon-btn:hover,
 .d-drawer__close:hover,
+.d-drawer__line__rm:hover,
+.d-carousel__btn:hover,
 .d-wipe__clear:hover{
 	color:var(--c-cherry-deep);
 }
 .d-icon-btn:focus-visible,
 .d-heart:focus-visible,
+.d-drawer__line__rm:focus-visible,
+.d-carousel__btn:focus-visible,
 .d-wipe__clear:focus-visible{
 	outline:2px solid var(--focus-ring);
 	outline-offset:2px;

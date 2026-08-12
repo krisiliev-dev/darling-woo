@@ -35,19 +35,37 @@
    applied as the default scroller on all pages. Then only when it isn't
    available on a browser, it can fall back to the supported one."
 
-   That is what this block is, and the fallback is free rather than built. Both
-   halves below style the SAME bar in different dialects, and each engine reads
-   only its own:
+   *** THE FIRST VERSION OF THIS BLOCK SHIPPED BOTH DIALECTS AT ONCE, AND THAT
+   IS WHY THE OWNER STILL SAW A PLAIN SCROLLBAR IN CHROME. *** The comment here
+   used to say the two halves "style the SAME bar in different dialects, and
+   each engine reads only its own". That is false, and it is false in the one
+   engine that matters most to this shop.
 
-     scrollbar-width / scrollbar-color   the standard properties. Firefox has
-                                         had them for years, Chromium since 121.
-     ::-webkit-scrollbar                 the old WebKit pseudo-elements, which
-                                         Chromium and Safari read.
+   Chromium reads BOTH, and the standard properties WIN: set scrollbar-color or
+   scrollbar-width to anything other than auto and Chromium drops every
+   ::-webkit-scrollbar rule for that scroller. So our 10px bar with its
+   pill thumb and 2px track border was being thrown away by our own
+   scrollbar-width:thin, and Chrome drew its ordinary bar, merely recoloured.
 
-   An engine that supports neither - and Safari styles the PAGE bar through
-   neither, though it takes the pseudo-elements on elements - simply draws its
-   own scrollbar. There is no broken state to design for: an unsupported
-   scrollbar property is ignored, not misapplied. That is the whole fallback.
+   Measured rather than read - a page with ::-webkit-scrollbar{width:40px}, in
+   headed Chromium with overlay scrollbars off:
+
+       webkit rules alone                    40px   honoured
+       webkit rules + scrollbar-width/color  15px   IGNORED, standard bar
+       webkit rules + the @supports guard    40px   honoured
+
+   So the two dialects are not parallel and cannot both be declared. They are
+   ordered: the pseudo-elements are the design, and the standard properties are
+   the FALLBACK, which is exactly the shape the owner asked for - "then only
+   when it isn't available on a browser, it can fall back to the supported one."
+
+   @supports not selector(::-webkit-scrollbar) is that ordering, written down.
+   Firefox fails the test and takes the two-colour fallback. Chromium and Safari
+   pass it, skip the fallback, and paint the real thing. An engine with neither
+   draws its own bar, which is a fallback we do not have to build.
+
+   NOTE the custom properties stay OUTSIDE the guard: the webkit rules below
+   read them, so they have to reach every engine.
 
    *** THE TOKENS LIVE ON :root SO THEY INHERIT. *** scrollbar-color is an
    inherited property, so declaring it once here reaches every scrollable
@@ -58,8 +76,14 @@
 :root{
 	--sc-thumb: var(--c-grey-400);
 	--sc-track: var(--tint-grey);
-	scrollbar-width:thin;
-	scrollbar-color:var(--sc-thumb) var(--sc-track);
+}
+/* THE FALLBACK, AND ONLY WHERE IT IS THE FALLBACK. Declaring these two
+   unconditionally is what silently disabled the block below in Chrome. */
+@supports not selector(::-webkit-scrollbar){
+	:root{
+		scrollbar-width:thin;
+		scrollbar-color:var(--sc-thumb) var(--sc-track);
+	}
 }
 /* WebKit's dialect of the same bar. Deliberately unscoped, for the same reason
    the properties above are on :root - the DEFAULT is the point. Anything that

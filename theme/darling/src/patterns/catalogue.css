@@ -256,21 +256,24 @@ html.d-a11y .d-catbanner__title{ color:var(--c-white) !important }
 
 .d-carousel__row::-webkit-scrollbar{ display:none }
 
+/* *** AND THE CAROUSEL ARROW IS THE ICON BUTTON WITH A LID ON. ***
+   Eight declarations of .d-icon-btn restated here, disguised the same way the
+   drawer's two were: 2.75rem for var(--tap). The gate scored it 73% only after
+   it learned to resolve values - as TEXT it was under the cutoff and invisible.
+
+   It keeps four genuine deltas and they are all about being an arrow floating
+   over a scroller rather than a button in a row: it is positioned, it sits on
+   the media's optical centre rather than its true one, it carries a SURFACE -
+   an edge, a fill and a card shadow - because it floats over photographs and a
+   bare mark would vanish on a light one. Everything else comes from the
+   component. */
 .d-carousel__btn{
 	position:absolute;
 	top:calc(50% + .5rem);
 	transform:translateY(-50%);
 	z-index:3;
-	display:grid;
-	place-items:center;
-	width:2.75rem;
-	height:2.75rem;
-	padding:0;
 	border:1px solid var(--edge-field);
-	border-radius:var(--radius-circle);
 	background:var(--surface-raised);
-	color:var(--ink);
-	cursor:pointer;
 	box-shadow:var(--shadow-card);
 	transition:background var(--dur-ui) var(--ease-float),
 	           color var(--dur-ui) var(--ease-float),
