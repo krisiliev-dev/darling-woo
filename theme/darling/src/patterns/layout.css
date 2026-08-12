@@ -389,3 +389,29 @@
    The token itself lives in tokens/space.css as --control, because it is a
    measurement and this file is not allowed to hold one. Both controls read it;
    a third that ever appears reads it too. */
+
+/* -- the stack -------------------------------------------------------------------
+   *** THREE LISTS WERE WRITING THIS OUT, IN TWO FILES. ***
+   The blog index, the review list and the review list's nested replies each
+   declared display:grid, gap:var(--space-s), padding:0 and list-style:none.
+   dupes.js scored all three of them against each other. They are one object: a
+   column of entries with the page's own rhythm between them and none of the
+   browser's list furniture.
+
+   It is a selector list and not a new class because two of the three have no
+   class to give: ol.commentlist is WooCommerce's markup and ul.children is the
+   comment walker's. Anything that gains one later joins here.
+
+   This file is imported FIRST among the patterns, so all three keep their own
+   deltas - a reading measure, an indent, a margin under the list - simply by
+   coming after. None of those deltas touches a property declared here. */
+.d-postlist,
+.d-reviews__list,
+.woocommerce #reviews #comments ol.commentlist,
+.d-reviews__list ul.children,
+.woocommerce #reviews #comments ol.commentlist ul.children{
+	display:grid;
+	gap:var(--space-s);
+	padding:0;
+	list-style:none;
+}

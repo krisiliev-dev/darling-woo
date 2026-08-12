@@ -372,12 +372,7 @@
 	height:.85em;
 	flex:none;
 	background:var(--g-core);
-	-webkit-mask-image:var(--icon-check);
-	        mask-image:var(--icon-check);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	--icon:var(--icon-check);
 }
 .wc-block-product-filter-chips__item:focus-visible{
 	outline:2px solid var(--focus-ring);
@@ -389,12 +384,7 @@
 	height:1em;
 	border:0;
 	background:currentColor;
-	-webkit-mask-image:var(--icon-close);
-	        mask-image:var(--icon-close);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	--icon:var(--icon-close);
 	cursor:pointer;
 }
 

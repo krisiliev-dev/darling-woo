@@ -57,27 +57,19 @@
 	transform:rotate(180deg);
 }
 
-/* The loading button. Woo spins \e01c; we spin the ring. The ::after carries
-   the mark so the button's own label stays put rather than being replaced. */
+/* *** ONE TRAILING STATE MARK, TWO STATES. ***
+   The loading spinner and the added tick were written out twice - twelve
+   declarations against twelve at 86%, the worst pair inside any single file in
+   the report. They are one object: a 1em mark that FOLLOWS the button's label
+   rather than replacing it, so the button does not change width when it changes
+   state. Woo spins \e01c for the first; we spin the ring.
+
+   The masking is not here at all - both are on the shared plumbing rule in
+   patterns/icon.css with the other two dozen marks. What is left is the box,
+   and then one line each for which mark it is and whether it turns. */
 .woocommerce button.button.loading::after,
 .woocommerce input.button.loading::after,
-.woocommerce a.button.loading::after{
-	content:"";
-	display:inline-block;
-	width:1em;
-	height:1em;
-	margin-inline-start:.5em;
-	vertical-align:-.15em;
-	font-family:inherit;
-	background:currentColor;
-	mask-image:var(--icon-spinner);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-spinner);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	animation:d-icon-spin 900ms linear infinite;
-}
+.woocommerce a.button.loading::after,
 .woocommerce button.button.added::after,
 .woocommerce a.button.added::after{
 	content:"";
@@ -88,12 +80,16 @@
 	vertical-align:-.15em;
 	font-family:inherit;
 	background:currentColor;
-	mask-image:var(--icon-check);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-check);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+}
+.woocommerce button.button.loading::after,
+.woocommerce input.button.loading::after,
+.woocommerce a.button.loading::after{
+	--icon:var(--icon-spinner);
+	animation:d-icon-spin 900ms linear infinite;
+}
+.woocommerce button.button.added::after,
+.woocommerce a.button.added::after{
+	--icon:var(--icon-check);
 }
 
 /* =============================================================================

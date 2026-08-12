@@ -218,12 +218,7 @@
 	top:0;
 	left:0;
 	background:var(--g-core);
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+	--icon:var(--icon-star-4);
 	opacity:0;
 	pointer-events:none;
 	offset-rotate:0deg;

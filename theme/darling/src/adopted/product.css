@@ -379,13 +379,11 @@
 .woocommerce #reviews #comments ol.commentlist li .comment-text .description p:last-child{
 	margin-bottom:0;
 }
-.woocommerce #reviews #comments ol.commentlist ul.children{
-	display:grid;
-	gap:var(--space-s);
-	margin:var(--space-s) 0 0 var(--space-m);
-	padding:0;
-	list-style:none;
-}
+/* The nested reply list used to be written out here as well - a fourth copy of
+   the stack, for the Woo DOM. It is on the stack rule in patterns/layout.css now
+   and takes its indent from patterns/product.css alongside .d-reviews__list's.
+   Nothing in this layer needs to beat anything for it: no other sheet on the
+   page declares padding or list-style on this list. */
 .woocommerce #reviews #comments ol.commentlist ul.children .star-rating{ display:none }
 .woocommerce #reviews #comments ol.commentlist #respond{
 	margin:var(--space-s) 0 0 var(--space-m);

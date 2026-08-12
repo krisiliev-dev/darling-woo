@@ -79,7 +79,52 @@ html.d-a11y .d-notice__title::before,
 .woocommerce-message::before,
 .woocommerce-error::before,
 .woocommerce-info::before,
-.woocommerce .cart-collaterals .shipping-calculator-button::after{
+.woocommerce .cart-collaterals .shipping-calculator-button::after,
+/* *** NINETEEN MORE SELECTORS, AND THEY WERE NOT FOUND BY EYE. ***
+   dupes.js scored .d-drawer__nav's star quartet against .d-mega__link's at 14
+   shared declarations and 93% - the worst same-origin pair in the whole report
+   - and six more of these against each other below it. Every one was the same
+   six lines: an image, a size, a repeat, twice, for two dialects.
+
+   Three things had to be true before they could join, and each was a bug in
+   waiting:
+
+   1. *** --icon INHERITS. *** .d-icon--spinner sets --icon:none on itself,
+      .d-icon--cart sets the frame, --user the person, --search the lens. A
+      pseudo that joined this rule and said nothing would resolve
+      var(--icon, none) against its PARENT and draw the wrong mark, or none at
+      all. So every joiner below declares --icon on the pseudo itself.
+   2. *** mask-position:center IS IN THIS RULE AND WAS NOT IN THEIRS. ***
+      Harmless for a square mark in a square box, which is 32 of our 33 icon
+      tokens. NOT harmless for --icon-bow, whose viewBox is 0 0 24 12. See
+      .d-icon--user::after for what that cost and what was done about it.
+   3. *** THE TWO WOO STATE MARKS ARE IN THE ADOPTED LAYER, WHICH IS STRONGER
+      THAN THIS ONE. *** That is fine in this direction and only in this one:
+      nothing in adopted declares mask-size or mask-repeat any more, so these
+      win by being the only ones, and adopted still owns --icon. A patterns
+      rule trying to BEAT an adopted one is the trap the ledger has recorded
+      twice, and it is not what this is. */
+.d-trustbar b::before,
+.d-drawer__nav li::before,
+.d-drawer__nav li::after,
+.d-drawer__nav a::before,
+.d-drawer__nav a::after,
+.d-drawer__line::before,
+.d-mega__link::before,
+.d-mega__link::after,
+.d-icon--spinner::after,
+.d-icon--cart::after,
+.d-icon--user::after,
+.d-icon--search::after,
+.d-mappick__pin::before,
+.d-mappick__office::before,
+.woocommerce button.button.loading::after,
+.woocommerce input.button.loading::after,
+.woocommerce a.button.loading::after,
+.woocommerce button.button.added::after,
+.woocommerce a.button.added::after,
+.wc-block-product-filter-chips__item[aria-checked="true"]::before,
+.wc-block-product-filter-removable-chips__remove{
 	mask-image:var(--icon, none);
 	mask-size:contain;
 	mask-repeat:no-repeat;
@@ -361,12 +406,11 @@ html.d-a11y .d-notice__title::before,
 	height:44%;
 	margin-left:-22%;
 	background:var(--spin-trail);
-	mask-image:var(--icon-star-4);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+	/* *** WITHOUT THIS LINE THE HEAD DISAPPEARS. ***
+	   .d-icon--spinner sets --icon:none on itself, because its ring is drawn by
+	   a radial-gradient mask and not by an icon. Custom properties inherit, so
+	   a silent pseudo would resolve var(--icon, none) to none. */
+	--icon:var(--icon-star-4);
 	filter:drop-shadow(0 0 3px color-mix(in oklab, var(--spin-trail) 70%, transparent));
 }
 /* The sparks. Odd positions, odd sizes, and a period that does not divide the
@@ -461,12 +505,8 @@ html.d-a11y .d-notice__title::before,
 	width:20%;
 	height:20%;
 	background:currentColor;
-	mask-image:var(--icon-wheel);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-wheel);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+	/* The parent draws the frame; the wheel is this pseudo's own mark. */
+	--icon:var(--icon-wheel);
 }
 [data-added] .d-icon--cart::before{ animation:d-icon-wheelie 820ms var(--ease-float) }
 
@@ -555,17 +595,22 @@ html.d-a11y .d-notice__title::before,
 	top:-6%;
 	left:50%;
 	width:52%;
-	height:52%;
+	/* *** HALF THE HEIGHT, AND IT IS NOT A TYPO. ***
+	   --icon-bow's viewBox is 0 0 24 12. Contained in a SQUARE box it filled the
+	   width and half the height, and at the initial mask-position 0% 0% it sat
+	   against the top - so the box was twice the mark and the lower half was
+	   empty. The shared rule centres its masks, which would have dropped this bow
+	   by a quarter of its box: 2.6px here, measured. Making the box the shape of
+	   the mark puts it back exactly where it was, and has a second effect worth
+	   having - scale:.6 now grows the bow from its own centre instead of from a
+	   point on its lower edge. .d-footflair__bow has been written this way all
+	   along; these two were the copies that were not. */
+	height:26%;
 	translate:-50% 0;
 	scale:.6;
 	opacity:0;
 	background:var(--c-cherry);
-	mask-image:var(--icon-bow);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-bow);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+	--icon:var(--icon-bow);
 	transition:opacity 260ms var(--ease-float),
 	           scale   260ms var(--ease-float),
 	           filter  260ms var(--ease-float);
@@ -594,16 +639,11 @@ a:hover > .d-icon--user::after{
 	top:19%;
 	left:11%;
 	width:37%;
-	height:37%;
+	height:18.5%;   /* the 24x12 viewBox again - see .d-icon--user::after */
 	scale:0;
 	opacity:0;
 	background:var(--c-cherry);
-	mask-image:var(--icon-bow);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	-webkit-mask-image:var(--icon-bow);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
+	--icon:var(--icon-bow);
 	transition:scale 150ms var(--ease-float), opacity 120ms linear;   /* out: fast */
 }
 .d-icon-btn:hover .d-icon--search::after,

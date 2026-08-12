@@ -120,12 +120,7 @@
 	position:absolute;
 	inset:0;
 	background:currentColor;
-	-webkit-mask-image:var(--icon-pin);
-	        mask-image:var(--icon-pin);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	--icon:var(--icon-pin);
 }
 .d-mappick__pin:hover{ scale:1.12 }
 /* Selected is BIGGER and GOLD, and it is both on purpose: colour alone is the
@@ -174,12 +169,7 @@
 	height:.85rem;
 	margin-top:.2em;
 	background:var(--c-grey-400);
-	-webkit-mask-image:var(--icon-pin);
-	        mask-image:var(--icon-pin);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	--icon:var(--icon-pin);
 }
 .d-mappick__office[aria-current="true"]::before{ background:var(--g-core) }
 .d-mappick__name{ font-weight:var(--fw-medium) }

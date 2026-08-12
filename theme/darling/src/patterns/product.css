@@ -550,12 +550,9 @@
 }
 .d-reviews__list,
 .woocommerce #reviews #comments ol.commentlist{
+	/* The stack is in layout.css. These three are the delta: the space under the
+	   list, and two resets for what woocommerce.css used to put on commentlist. */
 	margin:0 0 var(--space-m);
-	padding:0;
-	list-style:none;
-	display:grid;
-	gap:var(--space-s);
-
 	width:100%;
 	background:none;
 }
@@ -628,12 +625,11 @@
 .d-review__text p:last-child{ margin-bottom:0 }
 /* A reply to a review sits under it, indented once, and loses its rating -
    a shop's answer has no stars. */
-.d-reviews__list ul.children{
+.d-reviews__list ul.children,
+.woocommerce #reviews #comments ol.commentlist ul.children{
+	/* A reply list is the same stack, indented. Both spellings, because the Woo
+	   DOM has no class of ours to hang it on. */
 	margin:var(--space-s) 0 0 var(--space-m);
-	padding:0;
-	list-style:none;
-	display:grid;
-	gap:var(--space-s);
 }
 .d-reviews__list ul.children .d-rating,
 .d-reviews__list ul.children .star-rating{ display:none }

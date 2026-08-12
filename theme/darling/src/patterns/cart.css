@@ -160,12 +160,7 @@
 	   the bullet now matches every other "this is a gold mark" in the system
 	   instead of borrowing the buy button's colour for decoration. */
 	background:var(--g-shadow);
-	-webkit-mask-image:var(--icon-star-4);
-	        mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	--icon:var(--icon-star-4);
 }
 /* One twinkle, on hover. d-twinkle-ONCE, not d-twinkle: the looping keyframe
    has the dim end of the cycle at BOTH 0% and 100%, so running it a single time

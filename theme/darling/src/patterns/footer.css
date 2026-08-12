@@ -589,12 +589,11 @@
 	height:calc(2.4rem * var(--s, 1));
 	margin:calc(-1.2rem * var(--s, 1)) 0 0 calc(-1.2rem * var(--s, 1));
 	background:var(--g-hi);
-	-webkit-mask-image:var(--icon-star-4);
-	        mask-image:var(--icon-star-4);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
+	/* *** THIS ONE IS THE PROOF THAT WIDENING ALONE MOVES NOTHING. ***
+	   .d-news__flow i has been on the shared plumbing rule since the mask sweep
+	   and still carried its own copy of all six lines, so the pair never left
+	   the report. Widen and delete in the same commit. */
+	--icon:var(--icon-star-4);
 	/* One speed, many start times - that is what makes it a current rather than
 	   sixteen animations. */
 	animation:d-news-converge 2.9s linear infinite;

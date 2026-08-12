@@ -1,6 +1,6 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 158,
+ "seeded": 131,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
@@ -16,11 +16,6 @@
    "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/card.css|.d-card__cta",
    "shared": 12,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/icon.css|.woocommerce button.button.added::after,\n.woocommerce a.button.added::after  ==  adopted/icon.css|.woocommerce button.button.loading::after,\n.woocommerce input.button.loading::after,\n.woocommerce a.button.loading::after",
-   "shared": 12,
-   "why": "SAME FILE"
   },
   {
    "pair": "adopted/product.css|.woocommerce div.product div.images .flex-control-thumbs li img  ==  patterns/product.css|.d-gallery__thumbs img,\n.d-gallery__thumb",
@@ -78,11 +73,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "patterns/icon.css|.d-icon--search::after  ==  patterns/icon.css|.d-icon--user::after",
-   "shared": 10,
-   "why": "SAME FILE"
-  },
-  {
    "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  adopted/filters.css|.wc-block-product-filters__open-overlay",
    "shared": 9,
    "why": "SAME ORIGIN"
@@ -128,16 +118,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "patterns/cart.css|.d-trustbar b::before  ==  patterns/drawer.css|.d-drawer__line::before",
-   "shared": 8,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/drawer.css|.d-drawer__line::before  ==  patterns/header.css|.d-mega__link::before,\n.d-mega__link::after",
-   "shared": 8,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/icon.css|.d-icon--cart::before,\n.woocommerce .woocommerce-customer-details--email::before,\n.woocommerce .woocommerce-customer-details--phone::before,\n.woocommerce-account ul.digital-downloads li::before,\n.woocommerce .widget_layered_nav_filters ul li a::before,\n.woocommerce .widget_rating_filter ul li.chosen a::before,\n.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,\n.woocommerce-message::before,\n.woocommerce-error::before,\n.woocommerce-info::before,\n.woocommerce .cart-collaterals .shipping-calculator-button::after  ==  patterns/mappick.css|.d-mappick__pin::before",
    "shared": 8,
    "why": "SAME ORIGIN"
@@ -178,16 +158,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filter-chips__item[aria-checked=\"true\"]::before  ==  adopted/icon.css|.woocommerce button.button.added::after,\n.woocommerce a.button.added::after",
-   "shared": 7,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "adopted/filters.css|.wc-block-product-filter-chips__item[aria-checked=\"true\"]::before  ==  patterns/drawer.css|.d-drawer__line::before",
-   "shared": 7,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))",
    "shared": 7,
    "why": "CROSS-ORIGIN"
@@ -201,31 +171,6 @@
    "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist li .woocommerce-review__verified  ==  patterns/product.css|.d-review__verified",
    "shared": 7,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "patterns/cart.css|.d-trustbar b::before  ==  patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after",
-   "shared": 7,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/cart.css|.d-trustbar b::before  ==  patterns/header.css|.d-mega__link::before,\n.d-mega__link::after",
-   "shared": 7,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/cart.css|.d-trustbar b::before  ==  patterns/icon.css|.d-icon--spinner::after",
-   "shared": 7,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/icon.css|.d-icon--cart::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 7,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/mappick.css|.d-mappick__office::before  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 7,
-   "why": "SAME FILE"
   },
   {
    "pair": "patterns/pagination.css|.d-pagination__item  ==  patterns/pagination.css|.d-pagination__step",
@@ -273,54 +218,14 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filter-removable-chips__remove  ==  patterns/header.css|.d-search input::-webkit-search-cancel-button",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/icon.css|.woocommerce button.button.loading::after,\n.woocommerce input.button.loading::after,\n.woocommerce a.button.loading::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/icon.css|.woocommerce button.button.added::after,\n.woocommerce a.button.added::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel .wc-block-components-panel__button  ==  patterns/panel.css|:is(.d-panel__summary, :where(.d-prose .wp-block-details > summary), :where(.entry-content details > summary))",
    "shared": 6,
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/header.css|.d-header__logo  ==  patterns/header.css|.d-mega__link",
    "shared": 6,
    "why": "SAME FILE"
-  },
-  {
-   "pair": "patterns/header.css|.d-mega__link::before,\n.d-mega__link::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/icon.css|.d-icon--spinner::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/icon.css|.d-icon--user::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/icon.css|.d-icon--search::after  ==  patterns/mappick.css|.d-mappick__pin::before",
-   "shared": 6,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "patterns/slider.css|.d-slider__input::-moz-range-thumb  ==  patterns/slider.css|.d-slider__input::-webkit-slider-thumb,\n.woocommerce .price_slider_wrapper .ui-slider .ui-slider-handle,\n.wc-block-price-filter .ui-slider .ui-slider-handle",
@@ -364,11 +269,6 @@
   },
   {
    "pair": "adopted/notice.css|.wc-block-components-notice-banner::before,\n.woocommerce-message::before,\n.woocommerce-error::before,\n.woocommerce-info::before  ==  patterns/notice.css|.d-notice::before,\n.d-notice::after,\n.d-notice__stars,\n.d-notice__stars::before,\n.d-notice__stars::after",
-   "shared": 5,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children  ==  patterns/product.css|.d-reviews__list ul.children",
    "shared": 5,
    "why": "CROSS-ORIGIN"
   },
@@ -543,16 +443,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children  ==  patterns/page.css|.d-postlist",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/product.css|.woocommerce #reviews #comments ol.commentlist ul.children  ==  patterns/product.css|.d-reviews__list,\n.woocommerce #reviews #comments ol.commentlist",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/product.css|.woocommerce #review_form_wrapper #review_form #respond,\n.woocommerce #reviews #review_form #respond  ==  patterns/page.css|.d-prose--card",
    "shared": 4,
    "why": "CROSS-ORIGIN"
@@ -604,11 +494,6 @@
   },
   {
    "pair": "patterns/card.css|.d-card__cta  ==  patterns/hero.css|.d-hero__visual",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/cart.css|.d-trustbar  ==  patterns/page.css|.d-postlist",
    "shared": 4,
    "why": "SAME ORIGIN"
   },
@@ -748,16 +633,6 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/page.css|.d-postlist  ==  patterns/product.css|.d-reviews__list,\n.woocommerce #reviews #comments ol.commentlist",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/page.css|.d-postlist  ==  patterns/product.css|.d-reviews__list ul.children",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/page.css|.d-consent  ==  patterns/page.css|.d-post",
    "shared": 4,
    "why": "SAME FILE"
@@ -773,24 +648,14 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/product.css|.d-reviews__list ul.children  ==  patterns/product.css|.d-reviews__list,\n.woocommerce #reviews #comments ol.commentlist",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
    "pair": "patterns/progress.css|.d-progress__native  ==  patterns/progress.css|.d-progress__track",
    "shared": 4,
    "why": "SAME FILE"
   },
   {
-   "pair": "adopted/icon.css|.woocommerce button.button.loading::after,\n.woocommerce input.button.loading::after,\n.woocommerce a.button.loading::after  ==  patterns/icon.css|.d-icon",
+   "pair": "adopted/icon.css|.woocommerce button.button.loading::after,\n.woocommerce input.button.loading::after,\n.woocommerce a.button.loading::after,\n.woocommerce button.button.added::after,\n.woocommerce a.button.added::after  ==  patterns/icon.css|.d-icon",
    "shared": 4,
-   "why": "CROSS-ORIGIN, AND UNREACHABLE FROM patterns. Splitting .d-icon into geometry and mask plumbing left the geometry half (display:inline-block, 1em square, currentColor) matching WooCommerce's own loading/added spinner marks at 67%. They cannot be merged: adopted is a LATER layer than patterns, so a patterns rule loses to them however it is spelt - the same trap the checkout picker recorded. They fold into .d-icon on the day those sheets are dequeued. Recorded rather than re-seeded, so the ledger still says which pairs were decided and why."
-  },
-  {
-   "pair": "adopted/icon.css|.woocommerce button.button.added::after,\n.woocommerce a.button.added::after  ==  patterns/icon.css|.d-icon",
-   "shared": 4,
-   "why": "CROSS-ORIGIN, AND UNREACHABLE FROM patterns. Splitting .d-icon into geometry and mask plumbing left the geometry half (display:inline-block, 1em square, currentColor) matching WooCommerce's own loading/added spinner marks at 67%. They cannot be merged: adopted is a LATER layer than patterns, so a patterns rule loses to them however it is spelt - the same trap the checkout picker recorded. They fold into .d-icon on the day those sheets are dequeued. Recorded rather than re-seeded, so the ledger still says which pairs were decided and why."
+   "why": "CROSS-ORIGIN, AND IT REPLACES TWO ENTRIES RATHER THAN ADDING ONE. The Woo loading spinner and added tick used to be two rules, each recorded against .d-icon's geometry half (display:inline-block, 1em square, currentColor, font-family:inherit). Merging them into one trailing-state-mark rule merged their two ledger entries into this one. It still cannot fold into .d-icon: adopted is a LATER layer than patterns, so a patterns rule loses to it however it is spelt - the same trap the checkout picker recorded. It folds in on the day those selectors no longer need an adopted-layer rule at all. Note the masking is ALREADY shared: this pair is the box, not the plumbing."
   }
  ]
 }

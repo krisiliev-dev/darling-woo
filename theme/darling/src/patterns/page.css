@@ -102,12 +102,11 @@ main .entry-content > .woocommerce{
    ========================================================================== */
 
 .d-postlist{
-	display:grid;
-	gap:var(--space-s);
+	/* The grid, the gap, the padding and the list-style are the stack, in
+	   layout.css. What is left is the only thing a post list adds to it: a
+	   reading measure, centred. */
 	max-width:46rem;
 	margin-inline:auto;
-	padding:0;
-	list-style:none;
 }
 .d-postlist > li{ margin:0; list-style:none }
 .d-post{
