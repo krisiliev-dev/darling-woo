@@ -114,7 +114,16 @@
    with margin-inline rather than negative margins keyed to a --d-margin
    variable that only existed while the old grid did. */
 .d-trustbar--bleed{
-	margin-inline:calc(50% - 50vw);
+	/* *** THE LAST 100vw BLEED IN THE SYSTEM, AND THE PAGE BAR IS WHY IT HAD TO
+	   GO. *** This said `calc(50% - 50vw)`. With our scrollbar reserving a 14px
+	   column, 100vw is 14px wider than the page, so the band overhung by 7px at
+	   each end and ran underneath the bar - which is precisely what the owner
+	   asked not to happen ("it doesn't cover the content it is beside").
+
+	   --w-page is the page's width rather than the window's, so this is the same
+	   bleed with the one wrong assumption removed. hero.css already carries the
+	   general warning; this was the file that had not caught up. */
+	margin-inline:calc(50% - var(--w-page) / 2);
 	/* it is 100vw wide now, so half of what the body column leaves over brings
 	   its content back onto the page rail. The old form divided a PERCENTAGE by
 	   two inside calc() and resolved against the wrong box. */

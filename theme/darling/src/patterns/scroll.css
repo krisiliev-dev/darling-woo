@@ -74,8 +74,28 @@
    below no longer repeats these four declarations - it was the same bar written
    twice, which is the thing this codebase has spent a week removing. */
 :root{
-	--sc-thumb: var(--c-grey-400);
-	--sc-track: var(--tint-grey);
+	/* The page bar's own width. A classic Windows scrollbar is 15-17px; 14 is
+	   ours and it is the one number the reserved column and the arrows share. */
+	--sc-w-page: 14px;
+	/* *** THE WIDTH OF THE PAGE, WHICH IS NO LONGER THE WIDTH OF THE VIEWPORT. ***
+	   Reserving a column for the bar breaks every 100vw full-bleed by half the
+	   bar on each side, because vw is the viewport and the page is now narrower
+	   than it. hero.css already records this hazard in the other direction - "100vw
+	   is wider than the document and the band pushes a horizontal scrollbar" - and
+	   the hero was rebuilt as a grid to avoid it. This is the same fact with the
+	   native bar hidden and ours reserved instead.
+
+	   Anything that needs to be as wide as the PAGE uses this rather than 100vw.
+	   It is 100vw until the page bar is actually on, so nothing changes for a
+	   browser that never gets one. */
+	--w-page: 100vw;
+	/* *** CHERRY, BY THE OWNER'S CHOICE, AND IN ONE PLACE FOR BOTH DIALECTS. ***
+	   "The native fallback bar should be our cherry version." These two feed the
+	   ::-webkit-* rules below AND the @supports fallback, so one edit moves both
+	   - which is the whole point of having stripped the six copies that used to
+	   set them independently. */
+	--sc-thumb: var(--tint-cherry-edge);
+	--sc-track: var(--tint-cherry-quiet);
 }
 /* THE FALLBACK, AND ONLY WHERE IT IS THE FALLBACK. Declaring these two
    unconditionally is what silently disabled the block below in Chrome. */
@@ -287,25 +307,100 @@
    affordance and a trail; it does not replace the page's real scrolling, so it
    says nothing to a screen reader. */
 .d-scrollframe--page{
+	/* *** IT IS A COLUMN, NOT AN OVERLAY, AND THE OWNER HAD TO SAY SO. ***
+	   "Our scrollbar shouldn't be on top of our page, it should be to the right
+	   of it. It should be the rightmost thing, like a native scrollbar. It
+	   doesn't cover the content it is beside."
+
+	   The first version floated over the page with pointer-events:none and a 5px
+	   inset, which is an OVERLAY scrollbar - the macOS/touch idiom - and not what
+	   a native desktop bar does. A native bar owns a column: the viewport is
+	   narrower by its width and nothing is ever underneath it.
+
+	   So the page reserves the column with padding on <body> (below), the frame
+	   is pinned into that reserved strip, and it paints its own track from the
+	   very top to the very bottom. No inset, no rounded ends, no gap - all three
+	   were things the owner listed. --sc-pad is zeroed here for exactly that
+	   reason: the shared rail rule reads it, and a padded rail is what left the
+	   5px of dead space at the top and bottom. */
+	--sc-pad: 0px;
+	--sc-w: var(--sc-w-page);
 	position:fixed;
 	inset-block:0;
 	inset-inline-end:0;
-	width:calc(var(--sc-w) + var(--sc-pad) * 2);
+	width:var(--sc-w-page);
+	/* The rectangle container. A native bar has a track behind the thumb for its
+	   whole length, and the arrows sit on that same surface. */
+	background:var(--sc-track);
+	display:flex;
+	flex-direction:column;
 	/* Above the sticky header and the filters overlay. NOT above a <dialog> -
 	   the drawer is in the top layer and outranks any z-index by construction,
 	   which is the correct order: a modal covers the page, bar and all. */
 	z-index:9999;
-	/* The frame is a hit-testing hole; only the rail itself takes the pointer,
-	   so a 14px strip down the side of every page does not eat clicks on
-	   anything sitting under it. */
-	pointer-events:none;
-	/* The base rule draws a framed, clipping box. The page is not a box. */
+	/* Nothing is under it any more, so it takes the pointer normally. */
+	pointer-events:auto;
 	border:0;
 	border-radius:0;
-	background:none;
-	overflow:visible;
+	overflow:hidden;
 }
-.d-scrollframe--page .d-scrollframe__rail{ pointer-events:auto }
+/* *** THE PAGE PAYS FOR THE COLUMN. *** padding rather than a margin or a
+   width: <body> is in normal flow, so every percentage width on the page -
+   --w-bleed 100%, --w-wide 95%, --w-body 80% - resolves against a content box
+   that is already short by the bar, and a full-bleed band stops exactly where
+   the track starts instead of running under it.
+
+   It is not scrollbar-gutter: that property reserves nothing once
+   scrollbar-width is none (measured, see the note above), and it would not help
+   anyway because the space we need is for OUR bar, not the browser's.
+
+   Always reserved, even on a page too short to scroll. That is what a classic
+   Windows scrollbar does, and a gutter that appears and disappears with content
+   height is a page that jumps sideways when you add a product to the cart. */
+html.d-pagebar-on{ --w-page: calc(100vw - var(--sc-w-page)) }
+html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
+
+/* The rail is now a flex child between the two arrows rather than an absolutely
+   positioned strip, so it takes exactly the height left over and there is no
+   dead space at either end. It keeps position:relative because the thumb and
+   the wake are still positioned inside it. */
+.d-scrollframe--page .d-scrollframe__rail{
+	position:relative;
+	flex:1 1 auto;
+	inset:auto;
+	width:auto;
+	border-radius:0;
+}
+.d-scrollframe--page .d-scrollframe__thumb,
+.d-scrollframe--page .d-scrollframe__wake{ border-radius:0 }
+
+/* The arrows. A button per end, square, on the track's own surface, drawing a
+   chevron through the shared mask rule in patterns/icon.css - there is no
+   --icon-chevron-up, so the up arrow is the down one turned over, which is one
+   token rather than two nearly identical SVGs. */
+.d-scrollframe__arrow{
+	flex:none;
+	display:block;
+	width:100%;
+	height:var(--sc-w-page);
+	padding:0;
+	border:0;
+	background:none;
+	color:var(--sc-thumb);
+	cursor:pointer;
+}
+.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-thumb) 70%, var(--c-cocoa)) }
+.d-scrollframe__arrow::before{
+	content:"";
+	display:block;
+	width:100%;
+	height:100%;
+	background:currentColor;
+	--icon: var(--icon-chevron-down);
+	mask-size:58%;
+	-webkit-mask-size:58%;
+}
+.d-scrollframe__arrow--up::before{ rotate:180deg }
 /* The one real difference: the base thumb rides --d-scroll, which is the
    timeline a .d-scroll child publishes. There is no child here - the scroller is
    the document - so it rides the document's own. */

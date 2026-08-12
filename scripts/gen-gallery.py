@@ -252,7 +252,7 @@ body{margin:0;background:var(--surface-page);color:var(--ink);font:var(--type-bo
      section showing what the actual widths are unconstrained." A demo of
      percentages inside a padded container measures percentages OF THE CONTAINER,
      which is not the number anybody wants to read. 100vw against the real page. */
-  width:100vw; margin-inline:calc(50% - 50vw) }
+  width:var(--w-page); margin-inline:calc(50% - var(--w-page) / 2) }
 /* two whole pages side by side, so the edge rule is visible rather than asserted */
 .edgepair{ display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:var(--space-m) }
 .edgepair .d-section-title{ font-size:var(--fs-h4,1rem) }

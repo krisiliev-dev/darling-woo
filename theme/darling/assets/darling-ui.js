@@ -109,6 +109,27 @@
 			if (thumb.hasPointerCapture && thumb.hasPointerCapture(e.pointerId))
 				thumb.releasePointerCapture(e.pointerId);
 		}
+		/* The arrows. One line-ish step per press, repeating while held, the way a
+		   real one does - press, a pause, then a run. scrollBy on the scroller
+		   itself, so the scroll timeline moves the thumb and there is still only
+		   one source of truth for the position. */
+		frame.querySelectorAll('.d-scrollframe__arrow').forEach(function (btn) {
+			var dir = btn.classList.contains('d-scrollframe__arrow--up') ? -1 : 1;
+			var hold = null, run = null;
+			function step() { sc.scrollBy({ top: dir * 48, behavior: 'instant' }); }
+			function stop() {
+				clearTimeout(hold); clearInterval(run); hold = null; run = null;
+			}
+			btn.addEventListener('pointerdown', function (e) {
+				e.preventDefault();
+				step();
+				hold = setTimeout(function () { run = setInterval(step, 40); }, 320);
+			});
+			btn.addEventListener('pointerup', stop);
+			btn.addEventListener('pointerleave', stop);
+			btn.addEventListener('pointercancel', stop);
+		});
+
 		thumb.addEventListener('pointerdown', down);
 		thumb.addEventListener('pointermove', move);
 		thumb.addEventListener('pointerup', up);
@@ -462,12 +483,21 @@
 		if (!window.matchMedia || !matchMedia('(pointer: fine)').matches) return;
 		if (!document.body) return;
 		var f = document.createElement('div');
-		f.className = 'd-scrollframe d-scrollframe--page';
+		/* --cherry is the owner's pick for this surface. It is a variant class
+		   rather than a set of overrides here, so the thumb, the track and the
+		   trail all move together and stay one definition. */
+		f.className = 'd-scrollframe d-scrollframe--cherry d-scrollframe--page';
 		/* Decorative. See the long note in patterns/scroll.css. */
 		f.setAttribute('aria-hidden', 'true');
-		f.innerHTML = '<div class="d-scrollframe__rail">' +
+		/* tabindex -1 on the arrows: the whole frame is aria-hidden and the page is
+		   already scrollable by keyboard, so these are mouse affordances and must
+		   not become two extra tab stops on every page. */
+		f.innerHTML =
+			'<button type="button" class="d-scrollframe__arrow d-scrollframe__arrow--up" tabindex="-1"></button>' +
+			'<div class="d-scrollframe__rail">' +
 			'<div class="d-scrollframe__wake"></div>' +
-			'<div class="d-scrollframe__thumb"></div></div>';
+			'<div class="d-scrollframe__thumb"></div></div>' +
+			'<button type="button" class="d-scrollframe__arrow d-scrollframe__arrow--down" tabindex="-1"></button>';
 		document.body.appendChild(f);
 		document.documentElement.classList.add('d-pagebar-on');
 		f.dataset.dInit = '1';

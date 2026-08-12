@@ -61,8 +61,25 @@
 .d-icon,
 .d-burst i,
 .d-footflair__s,
+.d-footflair__bow,
 .d-news__flow i,
-.d-hero__visual .d-hero__star{
+.d-hero__visual .d-hero__star,
+.d-heart::before,
+.d-scrollframe__arrow::before,
+html.d-a11y .d-notice__title::before,
+.d-gallery__zoom::before,
+.woocommerce div.product div.images .woocommerce-product-gallery__trigger::before,
+.d-icon--cart::before,
+.woocommerce .woocommerce-customer-details--email::before,
+.woocommerce .woocommerce-customer-details--phone::before,
+.woocommerce-account ul.digital-downloads li::before,
+.woocommerce .widget_layered_nav_filters ul li a::before,
+.woocommerce .widget_rating_filter ul li.chosen a::before,
+.woocommerce .woocommerce-widget-layered-nav-list .woocommerce-widget-layered-nav-list__item--chosen a::before,
+.woocommerce-message::before,
+.woocommerce-error::before,
+.woocommerce-info::before,
+.woocommerce .cart-collaterals .shipping-calculator-button::after{
 	mask-image:var(--icon, none);
 	mask-size:contain;
 	mask-repeat:no-repeat;
@@ -409,14 +426,8 @@
 	position:absolute;
 	inset:0;
 	background:currentColor;
-	mask-image:var(--icon-cart-frame);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	mask-position:center;
-	-webkit-mask-image:var(--icon-cart-frame);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	-webkit-mask-position:center;
+	/* Plumbing from the shared rule in patterns/icon.css. */
+	--icon: var(--icon-cart-frame);
 	/* the axle of the back wheel, so the tip pivots on the thing touching the
 	   ground rather than on the middle of the picture */
 	transform-origin:39.5% 83%;   /* the back axle, in the frame's own grid */
@@ -626,14 +637,8 @@ a:hover > .d-icon--user::after{
 	width:1.25rem;
 	height:1.25rem;
 	background:currentColor;
-	mask-image:var(--icon-heart);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	mask-position:center;
-	-webkit-mask-image:var(--icon-heart);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	-webkit-mask-position:center;
+	/* Plumbing from the shared rule in patterns/icon.css. */
+	--icon: var(--icon-heart);
 	transition:scale 200ms var(--ease-float);
 }
 .d-heart:checked{ color:var(--c-cherry) }

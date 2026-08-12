@@ -326,14 +326,8 @@
 	width:46px;
 	height:23px;                     /* the bow's viewBox is 24x12 */
 	background:var(--c-cherry);
-	-webkit-mask-image:var(--icon-bow);
-	        mask-image:var(--icon-bow);
-	-webkit-mask-size:contain;
-	        mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	        mask-repeat:no-repeat;
-	-webkit-mask-position:center;
-	        mask-position:center;
+	/* Plumbing from the shared rule in patterns/icon.css. */
+	--icon: var(--icon-bow);
 	filter:drop-shadow(0 2px 6px color-mix(in oklab, var(--c-cherry) 18%, transparent));
 	animation:d-bob 5.5s var(--ease-float) infinite;
 }

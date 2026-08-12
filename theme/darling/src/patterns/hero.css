@@ -147,7 +147,34 @@ html.d-a11y .d-hero--red .d-hero__title em{ color:var(--c-white) !important }
 	height:auto;
 	color:var(--c-cherry);
 	filter:drop-shadow(0 4px 10px color-mix(in oklab, var(--c-cherry) 22%, transparent));
-	animation:d-bob 5.5s var(--ease-float) infinite;
+	/* *** THE BOW IS THE ONE BIG HERO OBJECT, SO IT TAKES THE FLOAT. ***
+	   The owner, twice: "the bow on the hero banner has a movement, but I believe
+	   we already wrote in tokens and an animation for how exactly the bow should
+	   move", then "I still don't see the bow having our chosen animation and
+	   movement style." He was right both times, and the evidence was sitting in
+	   the build log: tokens/motion.css declares --float-cycle, --float-up and
+	   --float-travel with a comment recording that the owner settled the cycle
+	   over three rounds of review, and all three were reported UNUSED on every
+	   build. The bow was on d-bob - a generic 7px rise shared with the footer and
+	   empty-state bows - so the float existed as a decision and as a keyframe and
+	   was attached to nothing.
+
+	   d-bob stays for the small bows; motion.css already says so: "NOT the same
+	   as d-float, which travels 96px and belongs to the one big hero object."
+	   This is that object.
+
+	   MEASURED, so the number is visible rather than implied: --float-travel is
+	   96px from centre, so the bow travels 192px peak to peak, on a 150x75 bow in
+	   a hero whose visual is min-height 300px. That is a large, slow drift - an
+	   11s cycle - and it is what the token says. If it reads as too much it is
+	   one number in one place. */
+	animation:d-float var(--float-cycle) var(--ease-float) infinite;
+}
+/* Light and movement phase-locked: the bow rises toward the light, so the glow
+   brightens with it. Same duration, same curve, no delay - motion.css's own
+   note calls this out as the one place two animations SHOULD be in step. */
+.d-hero__visual .d-hero__glow{
+	animation:d-float-glow var(--float-cycle) var(--ease-float) infinite;
 }
 .d-hero--red .d-hero__bow{ color:var(--c-white) }
 /* The stars. Marks rather than dingbats, and each one carries its own delay so

@@ -168,14 +168,8 @@
 	width:1.15rem;
 	height:1.15rem;
 	background:currentColor;
-	mask-image:var(--icon-search);
-	mask-size:contain;
-	mask-repeat:no-repeat;
-	mask-position:center;
-	-webkit-mask-image:var(--icon-search);
-	-webkit-mask-size:contain;
-	-webkit-mask-repeat:no-repeat;
-	-webkit-mask-position:center;
+	/* Plumbing from the shared rule in patterns/icon.css. */
+	--icon: var(--icon-search);
 }
 .d-gallery__zoom:hover,
 .woocommerce div.product div.images .woocommerce-product-gallery__trigger:hover{ background:var(--tint-gold); color:var(--c-cherry-deep) }

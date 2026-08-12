@@ -73,10 +73,19 @@
    and movement are phase-locked when one causes the other. They are NOT locked
    across different objects - the metal's bloom and its specular drift keep
    deliberately incommensurable periods so nothing pulses in unison. */
+/* *** THE KEYFRAME READS THE TOKEN NOW; IT USED TO RESTATE IT. ***
+   --float-travel said 96px and this keyframe said 96px, twice, in the file that
+   declares the token. The build's token check listed --float-travel, --float-up
+   and --float-cycle as UNUSED on every single build - which was true, and was
+   the tell that the float had been designed and never wired to anything.
+
+   --float-up cannot follow: a keyframe SELECTOR may not be a variable, so the
+   42% below is the one number that has to be mirrored by hand. The token stays
+   as the written source of it and this note is the reason it looks unused. */
 @keyframes d-float{
-	0%   { transform:translateY(96px);  animation-timing-function:cubic-bezier(.4,0,.15,1) }
-	42%  { transform:translateY(-96px); animation-timing-function:cubic-bezier(.4,0,.15,1) }
-	100% { transform:translateY(96px) }
+	0%   { transform:translateY(var(--float-travel));            animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	42%  { transform:translateY(calc(-1 * var(--float-travel))); animation-timing-function:cubic-bezier(.4,0,.15,1) }
+	100% { transform:translateY(var(--float-travel)) }
 }
 @keyframes d-float-glow{
 	0%   { opacity:.40; animation-timing-function:cubic-bezier(.4,0,.15,1) }
