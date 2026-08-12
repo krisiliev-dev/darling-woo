@@ -89,8 +89,21 @@
 		n = Math.max( FLOOR, Math.min( CEIL, n ) );
 		if ( leanDevice() ) { n = Math.max( 2, Math.round( n / 2 ) ); }
 
-		// Fewer stars need a slower cadence, or the whole sky blinks together.
-		return { max: n, interval: Math.round( 1100 + ( CEIL - n ) * 90 ) };
+		// *** THE CADENCE DECIDES HOW MANY ARE ON SCREEN. max ONLY CAPS IT. ***
+		// A star lives for one animation and then removes itself, and tick() creates
+		// exactly one per interval - so the steady state is (average life / interval),
+		// and the budget above is a ceiling that was never being reached.
+		//
+		// This was `1100 + (CEIL - n) * 90`, written when CEIL was 14, and it made the
+		// first attempt at a denser sky do NOTHING: raising the budget from 10 to 29
+		// left the interval at ~2.1s against an 8.6s average life, so the live page
+		// still held five stars - the same five it held before. Measured on the live
+		// home page after deploying it, which is the only reason it was caught.
+		//
+		// Now the interval is derived FROM the target, so the sky reaches its budget
+		// and holds there: fewer stars still get a slower cadence, but as an
+		// arithmetic consequence rather than as a second guess at the same number.
+		return { max: n, interval: Math.max( 120, Math.round( avgLife() * 1000 / n ) ) };
 	}
 
 	// THE RANGE IS A TOKEN, NOT A NUMBER IN THIS FILE. tokens/motion.css declares
@@ -108,6 +121,15 @@
 		if ( ! layer ) { return fallback; }
 		var v = parseFloat( getComputedStyle( layer ).getPropertyValue( name ) );
 		return isNaN( v ) || v <= 0 ? fallback : v;
+	}
+	// The mean of that distribution, which measure() needs to turn a target count
+	// into a spawn interval. E[lo + (hi-lo) * r^0.35] = lo + (hi-lo)/1.35, because
+	// E[r^p] = 1/(p+1) for r uniform on [0,1]. With the shipped tokens that is
+	// 1.6 + 9.4/1.35 = 8.6s.
+	function avgLife() {
+		var lo = num( '--star-life-min', 1.6 );
+		var hi = num( '--star-life-max', 11 );
+		return lo + ( hi - lo ) / 1.35;
 	}
 	function starLife() {
 		var lo = num( '--star-life-min', 1.6 );
