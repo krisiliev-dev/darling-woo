@@ -483,10 +483,11 @@
 		if (!window.matchMedia || !matchMedia('(pointer: fine)').matches) return;
 		if (!document.body) return;
 		var f = document.createElement('div');
-		/* --cherry is the owner's pick for this surface. It is a variant class
-		   rather than a set of overrides here, so the thumb, the track and the
-		   trail all move together and stay one definition. */
-		f.className = 'd-scrollframe d-scrollframe--cherry d-scrollframe--page';
+		/* No variant class: the base .d-scrollframe pair IS the grey one, and the
+		   owner asked for grey back after a commit of cherry ("the cherry doesn't
+		   quite fit"). Adding --cherry here again is the only edit needed to change
+		   its mind, which is why the colour never got written into the page rules. */
+		f.className = 'd-scrollframe d-scrollframe--page';
 		/* Decorative. See the long note in patterns/scroll.css. */
 		f.setAttribute('aria-hidden', 'true');
 		/* tabindex -1 on the arrows: the whole frame is aria-hidden and the page is

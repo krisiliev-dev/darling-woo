@@ -4285,8 +4285,8 @@ body.woocommerce-order-received .d-slider__wake{ opacity:0 }
 
 	--w-page: 100vw;
 
-	--sc-thumb: var(--tint-cherry-edge);
-	--sc-track: var(--tint-cherry-quiet);
+	--sc-thumb: var(--c-grey-400);
+	--sc-track: var(--tint-grey-quiet);
 }
 
 @supports not selector(::-webkit-scrollbar){
@@ -4419,9 +4419,10 @@ body.woocommerce-order-received .d-slider__wake{ opacity:0 }
 	inset-inline-end:0;
 	width:var(--sc-w-page);
 
-	background:var(--sc-railing);
 
-	border-radius:var(--radius-pill);
+	background:var(--sc-bar);
+
+	border-radius:0;
 	display:flex;
 	flex-direction:column;
 
@@ -4441,7 +4442,9 @@ html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
 	flex:1 1 auto;
 	inset:auto;
 	width:auto;
-	border-radius:0;
+
+	background:var(--sc-railing);
+	border-radius:var(--radius-pill);
 }
 
 .d-scrollframe--page .d-scrollframe__thumb{
@@ -4468,12 +4471,14 @@ html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
 	height:var(--sc-w-page);
 	padding:0;
 	border:0;
-	background:none;
+	border-radius:0;
 
-	color:var(--sc-bar, var(--sc-thumb));
+	background:var(--sc-bar, var(--sc-track));
+	color:var(--sc-railing, var(--sc-thumb));
 	cursor:pointer;
 }
-.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-bar, var(--sc-thumb)) 70%, var(--c-white)) }
+
+.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-railing, var(--sc-thumb)) 70%, var(--c-cocoa)) }
 .d-scrollframe__arrow::before{
 	content:"";
 	display:block;

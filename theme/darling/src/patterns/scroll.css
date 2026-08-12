@@ -89,13 +89,18 @@
 	   It is 100vw until the page bar is actually on, so nothing changes for a
 	   browser that never gets one. */
 	--w-page: 100vw;
-	/* *** CHERRY, BY THE OWNER'S CHOICE, AND IN ONE PLACE FOR BOTH DIALECTS. ***
-	   "The native fallback bar should be our cherry version." These two feed the
-	   ::-webkit-* rules below AND the @supports fallback, so one edit moves both
-	   - which is the whole point of having stripped the six copies that used to
-	   set them independently. */
-	--sc-thumb: var(--tint-cherry-edge);
-	--sc-track: var(--tint-cherry-quiet);
+	/* *** GREY, AND THIS IS THE SECOND ANSWER TO THE SAME QUESTION. ***
+	   These were cherry for one commit, at the owner's request, and then: "lets
+	   change the colour back to our grey variant, the cherry doesn't quite fit."
+	   Both times it was one edit reaching both dialects and the drawn bar, which
+	   is the whole point of having stripped the six copies that used to set these
+	   independently - the first version of this decision would have needed seven.
+
+	   --c-grey-400 is the stronger of the two and --tint-grey-quiet the lighter;
+	   every variant declares its pair that way round. See the page variant for
+	   what the two roles are called once a railing needs them the other way up. */
+	--sc-thumb: var(--c-grey-400);
+	--sc-track: var(--tint-grey-quiet);
 }
 /* THE FALLBACK, AND ONLY WHERE IT IS THE FALLBACK. Declaring these two
    unconditionally is what silently disabled the block below in Chrome. */
@@ -349,11 +354,29 @@
 	width:var(--sc-w-page);
 	/* The rectangle container. A native bar has a track behind the thumb for its
 	   whole length, and the arrows sit on that same surface. */
-	background:var(--sc-railing);
-	/* Rounded, so it reads as a railing the bar sits in rather than a strip of
-	   colour bolted to the edge of the window. The ends are capped by the same
-	   pill the bar uses - one radius for the whole component. */
-	border-radius:var(--radius-pill);
+	/* *** THE COLUMN IS THE LIGHT MATERIAL AND THE TROUGH IS CUT INTO IT. ***
+	   First version had this backwards: the frame was dark and the rail inside it
+	   kept the base rule's light --sc-track, so the trough and the bar were the
+	   same colour and the owner could not see the bar at all - "the scroll bar is
+	   now the same colour as the railing below it so it doesn't show." Two rules
+	   both reaching for --sc-track, one of them by inheritance from the base.
+
+	   Now the whole strip is the bar's colour, the rail below the arrows is the
+	   darker one, and the bar rides in it. The arrows are the same light material
+	   as the strip, so what the eye reads at the top is a light block with a
+	   rounded dark trough starting under it - the owner: "like downwards horns on
+	   the arrow button."
+
+	   NO RADIUS ON THE FRAME. It had a pill for one commit and the owner was
+	   specific: "they need to go straight up to the top and bottom, no gaps." A
+	   scrollbar column runs the full height of the window; only the trough inside
+	   it is rounded. */
+	background:var(--sc-bar);
+	/* Square, EXPLICITLY. Removing the pill was not enough: the base .d-scrollframe
+	   rounds itself with --radius-m, so dropping the override just handed the frame
+	   14px corners instead of 999px ones. Measured frameRadius 14px when it should
+	   have been 0. The owner: straight up to the top and bottom, no gaps. */
+	border-radius:0;
 	display:flex;
 	flex-direction:column;
 	/* Above the sticky header and the filters overlay. NOT above a <dialog> -
@@ -395,7 +418,11 @@ html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
 	flex:1 1 auto;
 	inset:auto;
 	width:auto;
-	border-radius:0;
+	/* The trough. Darker than the column it is cut into, and pill-ended so the
+	   curve begins exactly where the arrow button stops - which is what makes the
+	   light material either side of it read as a pair of horns. */
+	background:var(--sc-railing);
+	border-radius:var(--radius-pill);
 }
 /* The bar. Pill corners - ours - and inset from the railing on both sides, or a
    full-width pill inside a pill of the same width has no corner to show and the
@@ -431,13 +458,21 @@ html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
 	height:var(--sc-w-page);
 	padding:0;
 	border:0;
-	background:none;
-	/* "Make the arrow buttons be the same colour as the bar itself." Not a
-	   near-match typed separately - the same token the bar is painted from. */
-	color:var(--sc-bar, var(--sc-thumb));
+	border-radius:0;
+	/* *** THE BUTTON'S SURFACE IS THE BAR'S COLOUR; THE CHEVRON IS THE TROUGH'S.
+	   *** The first version painted the chevron in --sc-bar and left the button
+	   transparent, which is not what was asked: "the arrow buttons need to be the
+	   same colour as the scroll bar is, not the arrows themselves, the button
+	   background colour." So the surface takes --sc-bar and the mark drawn on it
+	   takes --sc-railing, which is the only other colour in the component and
+	   therefore the only one guaranteed to read against it. */
+	background:var(--sc-bar, var(--sc-track));
+	color:var(--sc-railing, var(--sc-thumb));
 	cursor:pointer;
 }
-.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-bar, var(--sc-thumb)) 70%, var(--c-white)) }
+/* Darker mark on hover, not lighter: the button is the pale surface here, so
+   lifting the chevron means deepening it. */
+.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-railing, var(--sc-thumb)) 70%, var(--c-cocoa)) }
 .d-scrollframe__arrow::before{
 	content:"";
 	display:block;
