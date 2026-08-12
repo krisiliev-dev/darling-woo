@@ -1,16 +1,11 @@
 {
  "note": "DEBT, not approval. Each entry is a near-duplicate that exists today. Remove entries by fixing them. Never re-seed to silence a new one.",
- "seeded": 118,
+ "seeded": 112,
  "allow": [
   {
    "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
    "shared": 16,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "patterns/drawer.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after  ==  patterns/header.css|.d-mega__link::before,\n.d-mega__link::after",
-   "shared": 14,
-   "why": "SAME ORIGIN"
   },
   {
    "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/card.css|.d-card__cta",
@@ -78,11 +73,6 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-address-form__address_2-toggle  ==  adopted/filters.css|.wc-block-product-filter__show-more,\n.wc-block-product-filter__show-less",
-   "shared": 7,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "adopted/field.css|#review_form .comment-form input[type=\"text\"],\n#review_form .comment-form input[type=\"email\"],\n#review_form .comment-form input[type=\"url\"],\n#review_form .comment-form textarea,\n#respond.comment-respond .comment-form input[type=\"text\"],\n#respond.comment-respond .comment-form input[type=\"email\"],\n#respond.comment-respond .comment-form textarea  ==  adopted/field.css|:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"text\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"email\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"tel\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"number\"],\n:is(.wc-block-components-form, .wc-block-components-totals-coupon__form) .wc-block-components-text-input.wc-block-components-text-input input[type=\"password\"]",
    "shared": 7,
    "why": "SAME FILE"
@@ -136,11 +126,6 @@
    "pair": "adopted/checkout.css|.wc-block-components-sidebar-layout .wc-block-components-sidebar,\n.wc-block-components-sidebar,\n.wc-block-checkout__sidebar  ==  patterns/catalogue.css|.d-archive__side",
    "shared": 6,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/checkout.css|.wc-block-components-address-card__edit  ==  adopted/checkout.css|.wc-block-components-address-form__address_2-toggle",
-   "shared": 6,
-   "why": "SAME FILE"
   },
   {
    "pair": "adopted/field.css|.wc-block-components-validation-error::before  ==  patterns/field.css|.d-field__error:not(:empty)::before",
@@ -221,11 +206,6 @@
    "pair": "adopted/product.css|.woocommerce #review_form_wrapper #review_form #respond,\n.woocommerce #reviews #review_form #respond  ==  patterns/product.css|.d-reviews__form",
    "shared": 5,
    "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/table.css|.wc-block-cart-items.wc-block-cart-items th  ==  adopted/table.css|.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th",
-   "shared": 5,
-   "why": "SAME FILE"
   },
   {
    "pair": "patterns/catalogue.css|.d-carousel__tile  ==  patterns/hero.css|.d-collection",
@@ -388,27 +368,12 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/table.css|.wc-block-cart-items.wc-block-cart-items th  ==  patterns/table.css|.d-table th",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
    "pair": "adopted/table.css|.woocommerce table.shop_attributes  ==  adopted/table.css|.woocommerce table.shop_table,\n.woocommerce-orders-table,\n.woocommerce-table--order-details,\n.woocommerce-table--customer-details",
    "shared": 4,
    "why": "SAME FILE"
   },
   {
    "pair": "adopted/table.css|.woocommerce table.shop_table,\n.woocommerce-orders-table,\n.woocommerce-table--order-details,\n.woocommerce-table--customer-details  ==  patterns/table.css|.d-table,\n.wc-block-cart-items.wc-block-cart-items",
-   "shared": 4,
-   "why": "CROSS-ORIGIN"
-  },
-  {
-   "pair": "adopted/table.css|.woocommerce table.shop_attributes th  ==  adopted/table.css|.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th",
-   "shared": 4,
-   "why": "SAME FILE"
-  },
-  {
-   "pair": "adopted/table.css|.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th  ==  patterns/table.css|.d-table th",
    "shared": 4,
    "why": "CROSS-ORIGIN"
   },
@@ -523,27 +488,12 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "patterns/hero.css|.d-collection img  ==  patterns/layout.css|.d-frame > :is(img, video, iframe, svg, picture)",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/hero.css|.d-collection img  ==  patterns/product.css|.d-gallery__main img",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
    "pair": "patterns/icon.css|.d-heart  ==  patterns/slider.css|.d-slider__input",
    "shared": 4,
    "why": "SAME ORIGIN"
   },
   {
    "pair": "patterns/layout.css|.d-frame  ==  patterns/skeleton.css|.d-skeleton,\n.wc-block-components-skeleton__element,\n.wc-block-components-skeleton .wc-block-components-skeleton__element",
-   "shared": 4,
-   "why": "SAME ORIGIN"
-  },
-  {
-   "pair": "patterns/layout.css|.d-frame > :is(img, video, iframe, svg, picture)  ==  patterns/product.css|.d-gallery__main img",
    "shared": 4,
    "why": "SAME ORIGIN"
   },
@@ -591,6 +541,26 @@
    "pair": "adopted/checkout.css|a.wc-block-components-button  ==  patterns/grid.css|.wc-block-grid__product-add-to-cart.wp-block-button .wp-block-button__link",
    "shared": 4,
    "why": "CROSS-ORIGIN, AND IT IS A NET RATHER THAN A COPY. a.wc-block-components-button is the catch-all for any anchor WooCommerce calls a button on a surface we have not reached yet. It shares display:inline-flex, align-items, justify-content and text-decoration with .d-btn - and the same four minus one with patterns/grid.css's block-grid CTA - because that is simply what \"make this anchor behave like a button\" means. It must NOT join .d-btn, which would paint every unnamed anchor cherry, and it cannot be reduced: an element the net catches is by definition not on .d-btn, so it inherits nothing from it. Measured at ZERO matches on the gallery and on the live cart, checkout and account - and kept anyway, because the cart was empty and an empty cart renders no submit button, which is the very element the rule was written for. The honest fix is a named \"anchor that behaves like a button\" object in patterns/button.css holding this and the grid CTA together; that is a candidate for a later batch, not a silent widening now."
+  },
+  {
+   "pair": "adopted/panel.css|.wc-block-components-panel.wc-block-components-panel::before  ==  patterns/icon.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after,\n.d-mega__link::before,\n.d-mega__link::after",
+   "shared": 4,
+   "why": "COINCIDENCE, AND IT ONLY APPEARED BECAUSE THE SWOOP GOT SHORTER. A panel's edge wash and a flying star are both \"an absolutely positioned decorative pseudo that is not in the flow and starts invisible\" - content, position, top, left, pointer-events, opacity. That is a SHAPE, not an object. The overlap was always there; it crossed 60% only because folding the swoop into one rule took it from fourteen declarations to nine. Merging them would file a panel's wash under the star flourish and send the next change to one into the other."
+  },
+  {
+   "pair": "patterns/icon.css|.d-drawer__nav li::before,\n.d-drawer__nav li::after,\n.d-drawer__nav a::before,\n.d-drawer__nav a::after,\n.d-mega__link::before,\n.d-mega__link::after  ==  patterns/panel.css|:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::before",
+   "shared": 4,
+   "why": "COINCIDENCE, AND IT ONLY APPEARED BECAUSE THE SWOOP GOT SHORTER. A panel's edge wash and a flying star are both \"an absolutely positioned decorative pseudo that is not in the flow and starts invisible\" - content, position, top, left, pointer-events, opacity. That is a SHAPE, not an object. The overlap was always there; it crossed 60% only because folding the swoop into one rule took it from fourteen declarations to nine. Merging them would file a panel's wash under the star flourish and send the next change to one into the other."
+  },
+  {
+   "pair": "adopted/table.css|.wc-block-cart-items.wc-block-cart-items th,\n.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th  ==  adopted/table.css|.woocommerce table.shop_attributes th",
+   "shared": 4,
+   "why": "COINCIDENCE. .woocommerce table.shop_attributes th is a ROW LABEL, not a column header - the left column of a spec sheet. It shares text-align:left, the quiet ink, border:0 and the hairline under it with the real header cell, and differs on both of the things that decide what a cell IS: the type is fs-meta/lh-body against fs-fine/lh-title, and the padding is asymmetric because the label hangs off the left edge of the table. Same clothes, different job."
+  },
+  {
+   "pair": "adopted/table.css|.wc-block-cart-items.wc-block-cart-items th,\n.woocommerce table.shop_table th,\n.woocommerce-orders-table th,\n.woocommerce-table--order-details th  ==  patterns/table.css|.d-table th",
+   "shared": 4,
+   "why": "CROSS-ORIGIN, AND IT IS THE NEXT BATCH'S ITEM RATHER THAN AN EXCUSE. Now that the four Woo header cells are one rule, that rule scores against our own .d-table th - correctly: they are the same cell. They are not identical, though. .d-table th pads var(--space-3xs) var(--space-2xs), the Woo one pads 0 var(--space-2xs) var(--space-3xs) with no top padding, and .d-table th also carries letter-spacing and white-space:nowrap. Unifying them is a decision about whether a WooCommerce table header should be exactly our table header, which is worth making deliberately - it is the \"Woo table base\" item in batch 4 of the merge plan, not something to fold in silently at the end of batch 3."
   }
  ]
 }

@@ -346,7 +346,18 @@
 	border-radius:var(--radius-s);
 	background:var(--surface-quiet);
 }
-.d-frame > :is(img, video, iframe, svg, picture){
+/* *** AND TWO COMPONENTS FILL THEIR BOX WITHOUT BEING A .d-frame. ***
+   .d-collection img and .d-gallery__main img each wrote out the same four
+   declarations - block, full width, full height, cover - in hero.css and
+   product.css. It is one instruction: be the picture in this box.
+
+   They join the selector rather than gaining the .d-frame CLASS, which would be
+   the tidier markup and would also hand them .d-frame's ratio, radius and
+   clipping - three decisions neither component has asked for. The class is the
+   better end state and it is a template change, not a stylesheet one. */
+.d-frame > :is(img, video, iframe, svg, picture),
+.d-collection img,
+.d-gallery__main img{
 	display:block;
 	width:100%;
 	height:100%;

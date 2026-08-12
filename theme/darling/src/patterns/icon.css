@@ -783,3 +783,39 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	}
 	.d-icon--user::after, .d-icon--search::after{ transition:none }
 }
+/* -- the swoop: a star that flies a path once, on hover -------------------------
+   *** THE WORST SAME-ORIGIN PAIR IN THE REPORT, AND IT IS ONE OBJECT. ***
+   .d-drawer__nav's four stars and .d-mega__link's two were written out in
+   patterns/drawer.css and patterns/header.css - fourteen declarations against
+   fourteen at 93% before the mask plumbing left them, eight at 89% after. They
+   are the same flourish at two sizes: a star, out of the flow, invisible until
+   something is hovered, then carried once along an offset-path and gone.
+
+   *** IT LIVES HERE AND NOT IN EITHER OF THOSE FILES. *** The triage was blunt
+   about the alternative: a drawer selector living in the header file is exactly
+   the coupling this system is trying to avoid. icon.css already owns what these
+   six are - marks - and is imported before both, so each keeps its own colour
+   and its own flight path simply by coming after.
+
+   What is NOT here: the paths, the sizes, the colours and the animations. A
+   path is the shape of one component's label, and there are six of them.
+
+   offset-anchor:50% 50% is what puts the star's middle on the line. top/left 0
+   is the origin the path is measured from; without it a pseudo would start at
+   its static position and the whole path would be offset by wherever that is. */
+.d-drawer__nav li::before,
+.d-drawer__nav li::after,
+.d-drawer__nav a::before,
+.d-drawer__nav a::after,
+.d-mega__link::before,
+.d-mega__link::after{
+	content:"";
+	position:absolute;
+	top:0;
+	left:0;
+	--icon:var(--icon-star-4);
+	opacity:0;
+	pointer-events:none;
+	offset-rotate:0deg;
+	offset-anchor:50% 50%;
+}

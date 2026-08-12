@@ -245,17 +245,17 @@
    recognisably ours rather than unstyled. */
 .wc-block-product-filter--hidden{ display:none }
 
+/* Same control again. Two deltas, and the second one is a QUESTION rather than
+   a decision: the two checkout toggles are var(--action) and this one is
+   var(--c-cherry-deep), a darker red, and nothing records why. It is kept as
+   written rather than quietly unified, because a colour is the owner's call and
+   a refactor is not the place to make one. It now also picks up
+   text-underline-offset:.2em from the shared rule, which it never had - the
+   underline sits 3px lower and matches its two siblings. */
 .wc-block-product-filter__show-more,
 .wc-block-product-filter__show-less{
 	margin-top:var(--space-3xs);
-	padding:0;
-	border:0;
-	background:none;
 	color:var(--c-cherry-deep);
-	font:var(--type-ui);
-	font-size:var(--fs-meta);
-	text-decoration:underline;
-	cursor:pointer;
 }
 .wc-block-product-filter__show-more:hover,
 .wc-block-product-filter__show-less:hover{ text-decoration:none }

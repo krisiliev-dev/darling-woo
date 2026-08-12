@@ -535,17 +535,10 @@
 /* The "add an apartment, suite, etc" link. Woo renders it as a <button>; it is a
    link in meaning - it reveals a field, it does not submit anything - so it gets
    the link treatment and none of the button's weight. */
+/* The control is in patterns/button.css with the other two. This one sits in a
+   grid and has to start at the left of its column. */
 .wc-block-components-address-form__address_2-toggle{
 	justify-self:start;
-	padding:0;
-	border:0;
-	background:none;
-	color:var(--action);
-	font:var(--type-ui);
-	font-size:var(--fs-meta);
-	text-decoration:underline;
-	text-underline-offset:.2em;
-	cursor:pointer;
 }
 .wc-block-components-address-form__address_2-toggle:focus-visible{
 	outline:2px solid var(--focus-ring);
@@ -577,14 +570,9 @@
 }
 .wc-block-components-address-card__address-section{ display:block }
 .wc-block-components-address-card__address-section--secondary{ color:var(--ink-quiet) }
+/* Same control, in a flex row instead of a grid: it must not be squeezed. */
 .wc-block-components-address-card__edit{
 	flex:none;
-	color:var(--action);
-	font:var(--type-ui);
-	font-size:var(--fs-meta);
-	text-decoration:underline;
-	text-underline-offset:.2em;
-	cursor:pointer;
 }
 .wc-block-components-address-card__edit:focus-visible{
 	outline:2px solid var(--focus-ring);

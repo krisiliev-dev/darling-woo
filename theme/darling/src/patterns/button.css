@@ -207,3 +207,33 @@ li.wc-block-grid__product .wp-block-button__link:active,
 	color:var(--ink);
 	text-decoration:underline;
 }
+/* *** AND THREE OF WOO'S CONTROLS ARE THIS, WRITTEN OUT THREE TIMES. ***
+   The address-line-2 toggle and the address card's edit link in
+   adopted/checkout.css, and the filter list's show more / show less in
+   adopted/filters.css: nine or ten declarations each, seven of them shared, at
+   78% and 86%. All three are the same control - a button with no chrome that
+   reads as a link and does something to the page it is on.
+
+   *** THEY ARE NOT .d-btn--text AND THAT IS DELIBERATE. *** --text is a
+   MODIFIER: it is worn over .d-btn and its job is to take the pill back off
+   again. These three carry no class of ours, so joining that rule would mean
+   joining .d-btn first - the shape, the pill, the nowrap - and then undoing it.
+   One rule that states the control directly is shorter and says what it means.
+
+   Here rather than in either adopted file because there are two of those and
+   one of these, and because - since the dequeue - nothing unlayered is left for
+   an adopted-layer rule to beat. Each keeps its own delta by coming after. */
+.wc-block-components-address-form__address_2-toggle,
+.wc-block-components-address-card__edit,
+.wc-block-product-filter__show-more,
+.wc-block-product-filter__show-less{
+	padding:0;
+	border:0;
+	background:none;
+	color:var(--action);
+	font:var(--type-ui);
+	font-size:var(--fs-meta);
+	text-decoration:underline;
+	text-underline-offset:.2em;
+	cursor:pointer;
+}

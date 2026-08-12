@@ -211,18 +211,11 @@
    character sitting in front of the label - it could pulse, which is exactly
    what the owner saw, but it could not go anywhere without shoving the text.
    Absolute, and offset-path does the rest. */
+/* The swoop is in patterns/icon.css. A mega link's share of it is one line: the
+   core gold rather than the drawer's highlight. */
 .d-mega__link::before,
 .d-mega__link::after{
-	content:"";
-	position:absolute;
-	top:0;
-	left:0;
 	background:var(--g-core);
-	--icon:var(--icon-star-4);
-	opacity:0;
-	pointer-events:none;
-	offset-rotate:0deg;
-	offset-anchor:50% 50%;
 }
 .d-mega__link::before{
 	width:.85em;

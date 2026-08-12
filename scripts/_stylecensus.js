@@ -13,12 +13,18 @@ const http=require('http'),fs=require('fs'),path=require('path');
 const { chromium }=require('playwright');
 const THEME=path.join(path.dirname(__dirname),'theme','darling');
 const OUT=process.argv[2];
-const SEL=(process.argv[3]||'').split(',').map(s=>s.trim()).filter(Boolean);
+/* SEMICOLON-SEPARATED, not comma: a selector list is allowed to contain commas
+   and .d-frame > :is(img, video, iframe, svg, picture) does. The first version
+   split on commas and asked the page for ".d-frame > :is(img", which matches
+   nothing and reports nothing, which reads exactly like a clean result. */
+const SEL=(process.argv[3]||'').split(';').map(s=>s.trim()).filter(Boolean);
 const AG=process.argv.indexOf('--against')>-1?process.argv[process.argv.indexOf('--against')+1]:null;
 const PROPS=['display','position','width','height','padding','margin','border','borderRadius',
  'backgroundColor','backgroundImage','color','font','fontWeight','lineHeight','gap','alignItems',
  'justifyContent','textAlign','textDecorationLine','whiteSpace','boxShadow','cursor','opacity',
- 'transitionProperty','transitionDuration','overflow','flexDirection','gridArea','zIndex'];
+ 'transitionProperty','transitionDuration','overflow','flexDirection','gridArea','zIndex',
+ 'objectFit','offsetPath','offsetAnchor','offsetRotate','textUnderlineOffset','letterSpacing',
+ 'borderBottom','justifySelf','flex','pointerEvents','maskImage'];
 
 function serve(){const srv=http.createServer((q,r)=>{let p=decodeURIComponent(q.url.split('?')[0]);
  if(p==='/')p='/gallery.html';const f=path.join(THEME,p);
@@ -37,9 +43,13 @@ function serve(){const srv=http.createServer((q,r)=>{let p=decodeURIComponent(q.
  const rows=await pg.evaluate(([SEL,PROPS])=>{
   const out=[];const seen=new Map();
   for(const sel of SEL){
-   const els=document.querySelectorAll(sel);
+   /* a trailing ::before / ::after is a pseudo to read off the element, not part
+      of the query - querySelectorAll cannot see pseudo-elements at all. */
+   const m=sel.match(/^(.*?)(::(?:before|after))$/);
+   const q=m?m[1]:sel, pseudo=m?m[2]:null;
+   const els=document.querySelectorAll(q);
    for(let i=0;i<els.length;i++){
-    const e=els[i];const c=getComputedStyle(e);const r=e.getBoundingClientRect();
+    const e=els[i];const c=getComputedStyle(e,pseudo);const r=e.getBoundingClientRect();
     const n=(seen.get(sel)||0)+1;seen.set(sel,n);
     out.push({k:sel+'#'+n, box:Math.round(r.width*100)/100+'x'+Math.round(r.height*100)/100,
       v:PROPS.map(p=>p+'='+c[p]).join(' | ')});

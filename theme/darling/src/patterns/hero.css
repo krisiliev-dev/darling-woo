@@ -353,11 +353,9 @@ html.d-a11y .d-season__title{ color:var(--c-white) !important }
 	transition:box-shadow var(--dur-ui) var(--ease-float);
 }
 .d-collection:hover{ box-shadow:var(--shadow-card-hover) }
+/* Filling the box is in layout.css with the other framed media. The zoom is the
+   collection tile's own. */
 .d-collection img{
-	width:100%;
-	height:100%;
-	object-fit:cover;
-	display:block;
 	transition:scale 420ms var(--ease-float);
 }
 .d-collection:hover img{ scale:1.06 }

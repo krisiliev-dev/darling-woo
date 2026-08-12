@@ -275,23 +275,20 @@
    always has one arriving and one leaving.
    ========================================================================== */
 .d-drawer__nav li{ position:relative }
+/* The swoop itself is in patterns/icon.css - six selectors, one rule. What is
+   left here is the drawer's share of it: gold, and the nudge that centres a
+   star on its own origin.
+
+   *** THE width AND height THAT USED TO BE HERE WERE DEAD. *** All four pseudos
+   set their own below - .72, .62, .52 and .58rem - so the .5rem base was
+   unreachable, and had been since the four were given separate sizes to stagger
+   the flight. Deleted rather than moved. */
 .d-drawer__nav li::before,
 .d-drawer__nav li::after,
 .d-drawer__nav a::before,
 .d-drawer__nav a::after{
-	content:"";
-	position:absolute;
-	top:0;
-	left:0;
-	width:.5rem;
-	height:.5rem;
 	margin:-.25rem 0 0 -.25rem;
 	background:var(--g-hi);
-	--icon:var(--icon-star-4);
-	opacity:0;
-	pointer-events:none;
-	offset-rotate:0deg;
-	offset-anchor:50% 50%;
 }
 /* *** THE LOOP HAS TO BE OVER THE TEXT, NOT OVER THE MIDDLE OF THE BOX. ***
    The first paths circled x = 150-200, which is the centre of a 320px row - and

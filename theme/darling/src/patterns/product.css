@@ -111,11 +111,9 @@
 	background:var(--placeholder-product, var(--surface-quiet));
 	aspect-ratio:1 / 1;
 }
+/* Filling the box is in layout.css. The shadow reset is this one's own - a
+   product image arrives inside content that gives pictures a lift. */
 .d-gallery__main img{
-	display:block;
-	width:100%;
-	height:100%;
-	object-fit:cover;
 	box-shadow:none;
 }
 /* The zoom control. Woo ships a white disc with a hand-drawn magnifier made of
