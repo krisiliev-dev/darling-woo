@@ -1,5 +1,5 @@
 {
- "_built_sha256": "4f298b0e4080da15b6aaa03f9f68f9c8c59c3812d9fc2edf197a362ae0d517ca",
+ "_built_sha256": "49bed81e22f49ab7eb3d9f04d75e150c92f78d577f76367abc226cd389e4535e",
  "--action": {
   "raw": "#D42A3C",
   "type": "colour",
@@ -17,6 +17,12 @@
   "type": "colour",
   "computed": "rgb(255, 255, 255)",
   "hex": "#ffffff"
+ },
+ "--action-hover": {
+  "raw": "#B01F30",
+  "type": "colour",
+  "computed": "rgb(176, 31, 48)",
+  "hex": "#b01f30"
  },
  "--action-ink": {
   "raw": "#FFF6E9",
@@ -186,6 +192,11 @@
   "type": "colour",
   "computed": "rgb(194, 194, 205)",
   "hex": "#c2c2cd"
+ },
+ "--edge-min": {
+  "raw": "1rem",
+  "type": "length",
+  "computed": "16px"
  },
  "--float-cycle": {
   "raw": "11s",
@@ -586,9 +597,14 @@
   "computed": "660px"
  },
  "--measure-lede": {
-  "raw": "44ch",
+  "raw": "60%",
   "type": "length",
-  "computed": "379.5px"
+  "computed": "60%"
+ },
+ "--measure-page": {
+  "raw": "80%",
+  "type": "length",
+  "computed": "80%"
  },
  "--money-path": {
   "raw": "",
@@ -620,9 +636,9 @@
   "hex": "#9e4a05"
  },
  "--page-max": {
-  "raw": "1120px",
+  "raw": "95%",
   "type": "length",
-  "computed": "1120px"
+  "computed": "95%"
  },
  "--placeholder-category": {
   "raw": "linear-gradient(160deg, #CFC7C0, #A89A92)",
@@ -785,6 +801,16 @@
   "computed": "rgb(241, 241, 246)",
   "hex": "#f1f1f6"
  },
+ "--tap": {
+  "raw": "2.75rem",
+  "type": "length",
+  "computed": "44px"
+ },
+ "--tap-min": {
+  "raw": "1.75rem",
+  "type": "length",
+  "computed": "28px"
+ },
  "--tint-cherry": {
   "raw": "color-mix(in oklab, #D42A3C 15%, #F1F1F6)",
   "type": "colour",
@@ -900,8 +926,28 @@
   "computed": "600 15px/1 Inter, -apple-system, \"Segoe UI\", sans-serif"
  },
  "--type-wordmark": {
-  "raw": "700 30px/1 \"Playfair Display\", Georgia, serif",
+  "raw": "700 30px/1.12 \"Playfair Display\", Georgia, serif",
   "type": "other",
-  "computed": "700 30px/1 \"Playfair Display\", Georgia, serif"
+  "computed": "700 30px/1.12 \"Playfair Display\", Georgia, serif"
+ },
+ "--w-bleed": {
+  "raw": "100%",
+  "type": "length",
+  "computed": "100%"
+ },
+ "--w-body": {
+  "raw": "80%",
+  "type": "length",
+  "computed": "80%"
+ },
+ "--w-prose": {
+  "raw": "60%",
+  "type": "length",
+  "computed": "60%"
+ },
+ "--w-wide": {
+  "raw": "95%",
+  "type": "length",
+  "computed": "95%"
  }
 }
