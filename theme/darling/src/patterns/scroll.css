@@ -325,13 +325,35 @@
 	   5px of dead space at the top and bottom. */
 	--sc-pad: 0px;
 	--sc-w: var(--sc-w-page);
+	/* *** THE RAILING IS THE DARK ONE AND THE BAR INSIDE IT IS THE LIGHT ONE. ***
+	   The owner: "the actual bar inside is supposed to have our radius corners
+	   and be lighter than the container it is in, so they need to switch
+	   colours... The container it is in needs to also have the rounded corners so
+	   it looks like the scrollbar is in a railing."
+
+	   Every variant declares its pair the same way round: --sc-thumb is the
+	   stronger colour and --sc-track the quieter one. Cherry is 52% against 27%,
+	   gold and grey are the same shape. That is right for a thumb sliding on a
+	   pale track, and it is backwards for a railing, where the trough is the
+	   solid thing and the bar riding in it catches the light.
+
+	   So the page variant does not redefine the family - it names the two roles
+	   it needs and takes them the other way round. Still one pair of tokens, so
+	   changing the variant still moves everything; --cherry could be swapped for
+	   --gold tomorrow and the railing would follow. */
+	--sc-railing: var(--sc-thumb);   /* the stronger colour: the trough  */
+	--sc-bar:     var(--sc-track);   /* the quieter one: the bar and the chevrons */
 	position:fixed;
 	inset-block:0;
 	inset-inline-end:0;
 	width:var(--sc-w-page);
 	/* The rectangle container. A native bar has a track behind the thumb for its
 	   whole length, and the arrows sit on that same surface. */
-	background:var(--sc-track);
+	background:var(--sc-railing);
+	/* Rounded, so it reads as a railing the bar sits in rather than a strip of
+	   colour bolted to the edge of the window. The ends are capped by the same
+	   pill the bar uses - one radius for the whole component. */
+	border-radius:var(--radius-pill);
 	display:flex;
 	flex-direction:column;
 	/* Above the sticky header and the filters overlay. NOT above a <dialog> -
@@ -341,7 +363,11 @@
 	/* Nothing is under it any more, so it takes the pointer normally. */
 	pointer-events:auto;
 	border:0;
-	border-radius:0;
+	/* NOT border-radius:0. The base rule rounds the frame with --radius-m and the
+	   first version of this variant squared it off, which is correct for a strip
+	   bolted to the window edge and wrong for a railing. The pill is set above;
+	   this line used to sit AFTER it and win on source order, so the corners
+	   measured 0px while the declaration that asked for them was right there. */
 	overflow:hidden;
 }
 /* *** THE PAGE PAYS FOR THE COLUMN. *** padding rather than a margin or a
@@ -371,8 +397,28 @@ html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
 	width:auto;
 	border-radius:0;
 }
-.d-scrollframe--page .d-scrollframe__thumb,
-.d-scrollframe--page .d-scrollframe__wake{ border-radius:0 }
+/* The bar. Pill corners - ours - and inset from the railing on both sides, or a
+   full-width pill inside a pill of the same width has no corner to show and the
+   trough disappears behind it. 2px each side leaves 10px of bar in a 14px
+   railing, which is the proportion a real one has. */
+.d-scrollframe--page .d-scrollframe__thumb{
+	inset-inline:2px;
+	border-radius:var(--radius-pill);
+	background:var(--sc-bar);
+}
+.d-scrollframe--page .d-scrollframe__wake{
+	inset-inline:2px;
+	border-radius:var(--radius-pill);
+}
+/* Lighter still under the pointer. The shared hover darkens toward cocoa, which
+   is right for a dark thumb on a pale track and exactly wrong here - it would
+   sink the bar into the trough instead of lifting it. */
+.d-scrollframe--page .d-scrollframe__thumb:hover{
+	background:color-mix(in oklab, var(--sc-bar) 70%, var(--c-white));
+}
+.d-scrollframe--page[data-dragging] .d-scrollframe__thumb{
+	background:color-mix(in oklab, var(--sc-bar) 55%, var(--c-white));
+}
 
 /* The arrows. A button per end, square, on the track's own surface, drawing a
    chevron through the shared mask rule in patterns/icon.css - there is no
@@ -386,10 +432,12 @@ html.d-pagebar-on body{ padding-inline-end:var(--sc-w-page) }
 	padding:0;
 	border:0;
 	background:none;
-	color:var(--sc-thumb);
+	/* "Make the arrow buttons be the same colour as the bar itself." Not a
+	   near-match typed separately - the same token the bar is painted from. */
+	color:var(--sc-bar, var(--sc-thumb));
 	cursor:pointer;
 }
-.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-thumb) 70%, var(--c-cocoa)) }
+.d-scrollframe__arrow:hover{ color:color-mix(in oklab, var(--sc-bar, var(--sc-thumb)) 70%, var(--c-white)) }
 .d-scrollframe__arrow::before{
 	content:"";
 	display:block;
