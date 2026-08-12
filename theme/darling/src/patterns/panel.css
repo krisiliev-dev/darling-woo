@@ -160,7 +160,9 @@
 	outline-offset:-2px;
 }
 .d-panel__content{
-	padding:0 calc(var(--space-xs) + 1.4em) var(--space-xs) var(--space-xs);
+	/* vertical only - the inline inset is set once, below, for all three shapes
+	   of panel, at half the summary's. */
+	padding-block:0 var(--space-xs);
 	font-size:var(--fs-meta);
 	color:var(--ink);
 }
@@ -171,12 +173,36 @@
    for the body to "start in line with the title of the panel", so the padding is
    the summary's own, written from the same two values rather than a number that
    happens to match today. */
-.d-prose .wp-block-details > :not(summary){
+/* *** AND IT NAMED ONLY .wp-block-details, SO THE HELP PAGE GOT NOTHING. ***
+   The base rules above were widened long ago to
+   `:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))`
+   and this one was not. The help page authors its FAQ as bare
+   `<details><summary>..</summary><p>..</p></details>` with no block class, so
+   the surface applied and the body padding did not - eight panels whose text
+   started hard against the border. Fourth time in this repo that a list was
+   widened in one place and missed in another; it is why the state lists on the
+   field and the button both had holes.
+
+   *** AND THE BODY IS HALF THE TITLE'S INSET NOW, WHICH REVERSES AN EARLIER
+   CALL. *** The owner asked, once, for the body to "start in line with the title
+   of the panel", and it did. Looking at it filled in, he asked for the opposite:
+   "our panels need some padding on the body text that is in the part that
+   reveals. Not as much padding as the title, but maybe half on the right and
+   left." So the body is indented half of --space-xs from both edges instead of
+   sharing the summary's inset. Said out loud because the old comment argued for
+   the other thing and would otherwise read as still true. */
+:is(.d-panel__content,
+    :where(.d-prose .wp-block-details) > :not(summary),
+    :where(.entry-content details) > :not(summary)){
+	padding-inline:calc(var(--space-xs) / 2);
+}
+:is(:where(.d-prose .wp-block-details), :where(.entry-content details)) > :not(summary){
 	margin-block:0 var(--space-2xs);
-	padding-inline:var(--space-xs) calc(var(--space-xs) + 1.4em);
 	font-size:var(--fs-meta);
 }
-.d-prose .wp-block-details > :last-child{ margin-bottom:var(--space-xs) }
+:is(:where(.d-prose .wp-block-details), :where(.entry-content details)) > :last-child{
+	margin-bottom:var(--space-xs);
+}
 
 /* -- the pool ---------------------------------------------------------------
    ::details-content is Chrome 131+ / Safari 18.4+. Behind the @supports the

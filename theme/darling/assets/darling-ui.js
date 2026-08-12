@@ -804,19 +804,37 @@
 		}
 	}
 
-	/* -- the product page's add-to-cart is the FINISH button ---------------------
-	   The owner, comparing tranche 5's specimen with the product page section:
-	   "we should have it the way it looks on our product page, since there we are
-	   using our field and our golden button." The gallery's own product buy column
-	   is `.d-btn.d-finish` - gold - and WooCommerce prints
-	   `.single_add_to_cart_button` with no way for CSS to add a class. So the
-	   class is added here, for the same reason the card accent is: the finish is a
-	   real treatment with its own ::before and ::after, and reproducing it in a
-	   rule would be a copy that drifts. */
+	/* -- the product page's add-to-cart: the STARS, and no longer the gold --------
+	   *** THIS USED TO ADD .d-finish AND THAT CAUSED A VISIBLE FLASH. ***
+	   The owner: "the Добавяне в количката button flashes in our red button
+	   variant as the page is loading, then becomes our golden button." Of course
+	   it did - `.single_add_to_cart_button` is on .d-btn's base list, so the
+	   stylesheet painted it cherry and this function turned it gold a moment
+	   later. The old comment reasoned that WooCommerce gives CSS no way to add a
+	   class, which is true, and concluded that script must add one, which does not
+	   follow: the selector goes on the finish's own lists in src/finish.css
+	   instead. It is gold in the first paint now and this function no longer
+	   touches its colour.
+
+	   *** WHAT IS LEFT HERE IS THE PART CSS GENUINELY CANNOT DO. ***
+	   The owner, same message: "clicking it does not produce stars like we made it
+	   in our Gallery on the Product page section." Right, and nothing was ever
+	   going to: burstHost() requires a child `<span class="d-burst">` holding nine
+	   <i> elements, and the gallery's specimen has that markup written by hand
+	   while WooCommerce's button is empty. An element cannot be created by a
+	   stylesheet. So the host class and the span are injected here - which is the
+	   honest division: the LOOK is CSS, and only the extra DOM is script. */
 	function primaryButtons(root) {
 		var btns = (root || document).querySelectorAll('.single_add_to_cart_button');
 		for (var i = 0; i < btns.length; i++) {
-			if (!btns[i].classList.contains('d-finish')) { btns[i].classList.add('d-finish'); }
+			var b = btns[i];
+			if (b.querySelector('.d-burst')) { continue; }
+			var burst = document.createElement('span');
+			burst.className = 'd-burst';
+			burst.setAttribute('aria-hidden', 'true');
+			for (var s = 0; s < 9; s++) { burst.appendChild(document.createElement('i')); }
+			b.appendChild(burst);
+			b.classList.add('d-burst-host');
 		}
 	}
 

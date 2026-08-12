@@ -29,7 +29,7 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  patterns/button.css|.d-btn,\n.woocommerce .button,\n.woocommerce input.button,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
+   "pair": "adopted/filters.css|.wc-block-product-filters__apply  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 11,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened; same two rules, same debt"
@@ -47,13 +47,13 @@
    "rekeyed": "selector list widened; same two rules, same debt"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  patterns/button.css|.d-btn,\n.woocommerce .button,\n.woocommerce input.button,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
+   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-components-checkout-place-order-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 10,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened; same two rules, same debt"
   },
   {
-   "pair": "adopted/filters.css|.wc-block-product-filters__open-overlay  ==  patterns/button.css|.d-btn,\n.woocommerce .button,\n.woocommerce input.button,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
+   "pair": "adopted/filters.css|.wc-block-product-filters__open-overlay  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 10,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened; same two rules, same debt"
@@ -86,7 +86,7 @@
    "why": "SAME ORIGIN"
   },
   {
-   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/button.css|.d-btn,\n.woocommerce .button,\n.woocommerce input.button,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
+   "pair": "adopted/card.css|li.product .wc-block-components-product-button__button,\nli.product .wp-block-button__link,\nli.wc-block-grid__product .wc-block-components-product-button__button,\nli.wc-block-grid__product .wp-block-button__link  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 9,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened; same two rules, same debt"
@@ -562,7 +562,7 @@
    "why": "CROSS-ORIGIN"
   },
   {
-   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/button.css|.d-btn,\n.woocommerce .button,\n.woocommerce input.button,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
+   "pair": "adopted/checkout.css|.wc-block-components-button.wc-block-cart__submit-button,\na.wc-block-components-button  ==  patterns/button.css|.d-btn,\n.single_add_to_cart_button,\n.wc-block-cart__submit-button",
    "shared": 4,
    "why": "CROSS-ORIGIN",
    "rekeyed": "selector list widened; same two rules, same debt"

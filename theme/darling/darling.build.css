@@ -790,8 +790,6 @@ svg{ max-width:100% }
 	place-items:center;
 	width:var(--tap);
 	height:var(--tap);
-
-	min-width:0;
 	padding:0;
 	border:0;
 	border-radius:var(--radius-circle);
@@ -1781,6 +1779,9 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 .d-drawer__foot .d-progress{ margin-bottom:var(--space-3xs) }
 
 .d-drawer__trust{
+	display:flex;
+	align-items:center;
+	gap:.4em;
 	margin:0 0 var(--space-2xs);
 	font-size:var(--fs-fine);
 	line-height:var(--lh-title);
@@ -1788,10 +1789,9 @@ body.woocommerce-order-received .d-icon::after{ transition:none }
 	color:var(--ink-quiet);
 }
 .d-drawer__trust .d-icon{
+	flex:none;
 	width:.8em;
 	height:.8em;
-	vertical-align:-.05em;
-	margin-inline-end:.3em;
 	color:var(--g-core);
 }
 
@@ -2770,7 +2770,8 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 	z-index:2;
 	width:1.75rem;
 	height:1.75rem;
-
+	min-width:0;
+	padding:0;
 	flex:none;
 
 	color:var(--ink-quiet);
@@ -2833,8 +2834,6 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 @layer patterns{
 
 .d-btn,
-.woocommerce .button,
-.woocommerce input.button,
 .single_add_to_cart_button,
 .wc-block-cart__submit-button{
 	display:inline-flex;
@@ -2859,12 +2858,10 @@ body.tax-product_cat.term-za-kuhnyata .d-catbanner__img{ background-image:image-
 }
 
 .d-btn:active,
-.woocommerce .button:active,
 .single_add_to_cart_button:active,
 .wc-block-cart__submit-button:active{ transform:translateY(1px) }
 
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
-.woocommerce .button:not(.d-finish):hover,
 .single_add_to_cart_button:not(.d-finish):hover,
 
 .wc-block-cart__submit-button:not(.d-finish):hover,
@@ -3520,7 +3517,6 @@ select.orderby,
 }
 
 .d-field select,
-.woocommerce form .form-row select,
 :is(.d-select, select.orderby){
 	padding-right:2.4em;
 	background-image:
@@ -3535,10 +3531,8 @@ select.orderby,
 @supports (appearance: base-select){
 	.d-field select,
 	:is(.d-select, select.orderby),
-	.woocommerce form .form-row select,
 	.d-field select::picker(select),
 	:is(.d-select, select.orderby)::picker(select),
-	.woocommerce form .form-row select::picker(select),
 	.wc-block-components-form select::picker(select){
 		appearance:base-select;
 	}
@@ -3546,7 +3540,6 @@ select.orderby,
 
 	.d-field select,
 	:is(.d-select, select.orderby),
-	.woocommerce form .form-row select,
 	.wc-block-components-form select{
 		align-items:center;
 		justify-content:flex-start;
@@ -3559,7 +3552,6 @@ select.orderby,
 	}
 	.d-field select::picker(select),
 	:is(.d-select, select.orderby)::picker(select),
-	.woocommerce form .form-row select::picker(select),
 	.wc-block-components-form select::picker(select){
 		margin-top:.35em;
 		padding:var(--space-3xs);
@@ -3571,7 +3563,6 @@ select.orderby,
 
 	.d-field option,
 	:is(.d-select, select.orderby) option,
-	.woocommerce form .form-row option,
 	.wc-block-components-form option{
 		padding:.52em .7em;
 		border-radius:var(--radius-s);
@@ -3582,13 +3573,11 @@ select.orderby,
 
 	.d-field option:hover,
 	:is(.d-select, select.orderby) option:hover,
-	.woocommerce form .form-row option:hover,
 	.wc-block-components-form option:hover{
 		background:color-mix(in oklab, var(--c-cherry) 16%, var(--surface-raised));
 	}
 	.d-field option:checked,
 	:is(.d-select, select.orderby) option:checked,
-	.woocommerce form .form-row option:checked,
 	.wc-block-components-form option:checked{
 		background:color-mix(in oklab, var(--c-cherry) 26%, var(--surface-raised));
 		font-weight:var(--fw-medium);
@@ -3596,7 +3585,6 @@ select.orderby,
 
 	.d-field select::picker-icon,
 	:is(.d-select, select.orderby)::picker-icon,
-	.woocommerce form .form-row select::picker-icon,
 	.wc-block-components-form select::picker-icon{ display:none }
 	.d-field select::checkmark,
 	:is(.d-select, select.orderby)::checkmark,
@@ -4293,12 +4281,26 @@ body.woocommerce-order-received .d-slider__wake{ opacity:0 }
 
 @layer patterns{
 
-.d-scroll{
+:root{
 	--sc-thumb: var(--c-grey-400);
 	--sc-track: var(--tint-grey);
-	overflow:auto;
 	scrollbar-width:thin;
 	scrollbar-color:var(--sc-thumb) var(--sc-track);
+}
+
+::-webkit-scrollbar{ width:10px; height:10px }
+::-webkit-scrollbar-track{
+	background:var(--sc-track);
+	border-radius:var(--radius-pill);
+}
+::-webkit-scrollbar-thumb{
+	background:var(--sc-thumb);
+	border:2px solid var(--sc-track);
+	border-radius:var(--radius-pill);
+}
+
+.d-scroll{
+	overflow:auto;
 	overscroll-behavior:contain;
 }
 .d-scroll--cherry{
@@ -4310,11 +4312,6 @@ body.woocommerce-order-received .d-slider__wake{ opacity:0 }
 	--sc-track: var(--tint-gold);
 }
 
-.d-scroll::-webkit-scrollbar{ width:10px; height:10px }
-.d-scroll::-webkit-scrollbar-track{
-	background:var(--sc-track);
-	border-radius:var(--radius-pill);
-}
 .d-scroll::-webkit-scrollbar-thumb{
 	background:var(--sc-thumb);
 	border:2px solid var(--sc-track);
@@ -4526,17 +4523,24 @@ body.woocommerce-order-received .d-scrollframe__wake{ opacity:0 }
 	outline-offset:-2px;
 }
 .d-panel__content{
-	padding:0 calc(var(--space-xs) + 1.4em) var(--space-xs) var(--space-xs);
+
+	padding-block:0 var(--space-xs);
 	font-size:var(--fs-meta);
 	color:var(--ink);
 }
 
-.d-prose .wp-block-details > :not(summary){
+:is(.d-panel__content,
+    :where(.d-prose .wp-block-details) > :not(summary),
+    :where(.entry-content details) > :not(summary)){
+	padding-inline:calc(var(--space-xs) / 2);
+}
+:is(:where(.d-prose .wp-block-details), :where(.entry-content details)) > :not(summary){
 	margin-block:0 var(--space-2xs);
-	padding-inline:var(--space-xs) calc(var(--space-xs) + 1.4em);
 	font-size:var(--fs-meta);
 }
-.d-prose .wp-block-details > :last-child{ margin-bottom:var(--space-xs) }
+:is(:where(.d-prose .wp-block-details), :where(.entry-content details)) > :last-child{
+	margin-bottom:var(--space-xs);
+}
 
 @supports selector(::details-content){
 	:is(.d-panel, :where(.d-prose .wp-block-details), :where(.entry-content details))::details-content{
@@ -5365,7 +5369,8 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 	align-items:start;
 
 	padding-block:var(--space-m) var(--space-s);
-	padding-inline:calc((100% - var(--w-body)) / 2);
+
+	padding-inline:calc((100% - var(--w-wide)) / 2);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
@@ -5437,12 +5442,25 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 .d-footer__map a:focus-visible,
 .d-footer__legal a:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
 
+.d-footer__help{
+	display:grid;
+	grid-template-columns:auto auto;
+	justify-content:start;
+	gap:var(--space-2xs) var(--space-l);
+}
+.d-footer__help > .d-footer__head{ grid-column:1 / -1 }
+
+@media (max-width:880px){
+	.d-footer__help{ grid-template-columns:auto }
+}
+
 .d-footer__policies{
 	display:flex;
 	flex-direction:column;
-	margin-top:var(--space-2xs);
 	font-size:var(--fs-fine);
 }
+
+.d-footer > :last-child .d-footer__policies{ margin-top:var(--space-2xs) }
 .d-footer__map{ margin-top:var(--space-2xs); font-size:var(--fs-fine) }
 .d-footer__map a{ text-decoration:underline }
 
@@ -5561,6 +5579,7 @@ body.woocommerce-order-received :is(.d-panel, :where(.d-prose .wp-block-details)
 .d-footflair__social a:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
 
 .d-footflair__social svg{ width:1.25rem; height:1.25rem; fill:currentColor }
+.d-footflair__social svg[fill="none"]{ fill:none; stroke:currentColor }
 .d-footflair__social .d-icon{ width:1.25rem; height:1.25rem }
 
 @media (prefers-reduced-motion: reduce){
@@ -6575,7 +6594,8 @@ html.d-a11y .d-fab{ text-decoration:none }
 		linear-gradient(175deg, var(--g-light) 0%, var(--g-core) 58%, var(--g-shadow) 100%);
 }
 
-.d-finish{
+.d-finish,
+.single_add_to_cart_button{
 
 	--glow-base: 1;
 	--glow-k: calc(var(--glow-base) * var(--glow-breathe) * var(--glow-hover));
@@ -6646,7 +6666,8 @@ html.d-a11y .d-fab{ text-decoration:none }
 	transition: --glow-hover var(--dur-ui) var(--ease-float);
 }
 
-.d-finish::before{
+.d-finish,
+.single_add_to_cart_button::before{
 	content:"";
 	position:absolute;
 	inset: calc(-1 * var(--firefly-reach));
@@ -6693,7 +6714,8 @@ html.d-a11y .d-fab{ text-decoration:none }
 	animation-composition: add, add, replace, replace;
 }
 
-.d-finish::after{
+.d-finish,
+.single_add_to_cart_button::after{
 	content:"";
 	position:absolute;
 	inset:0;
@@ -6711,11 +6733,15 @@ html.d-a11y .d-fab{ text-decoration:none }
 }
 
 .d-finish:hover,
-.d-finish:focus-visible{
+.d-finish:focus-visible,
+.single_add_to_cart_button:hover,
+.single_add_to_cart_button:focus-visible{
 	--glow-hover: 1.34;
 }
 .d-finish:hover::before,
-.d-finish:focus-visible::before{
+.d-finish:focus-visible::before,
+.single_add_to_cart_button:hover::before,
+.single_add_to_cart_button:focus-visible::before{
 	animation-duration: calc(var(--speck-cycle, 15s) * .3), var(--breathe-cycle, 9s);
 }
 

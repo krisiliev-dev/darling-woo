@@ -30,13 +30,59 @@
                         same --lag shim as the slider's.
    ========================================================================== */
 
-/* -- level one: the native bar, branded ------------------------------------- */
-.d-scroll{
+/* -- level zero: EVERY scrollbar on the site, by default ---------------------
+   The owner: "we have our scroller designed right? I want the scroller to be
+   applied as the default scroller on all pages. Then only when it isn't
+   available on a browser, it can fall back to the supported one."
+
+   That is what this block is, and the fallback is free rather than built. Both
+   halves below style the SAME bar in different dialects, and each engine reads
+   only its own:
+
+     scrollbar-width / scrollbar-color   the standard properties. Firefox has
+                                         had them for years, Chromium since 121.
+     ::-webkit-scrollbar                 the old WebKit pseudo-elements, which
+                                         Chromium and Safari read.
+
+   An engine that supports neither - and Safari styles the PAGE bar through
+   neither, though it takes the pseudo-elements on elements - simply draws its
+   own scrollbar. There is no broken state to design for: an unsupported
+   scrollbar property is ignored, not misapplied. That is the whole fallback.
+
+   *** THE TOKENS LIVE ON :root SO THEY INHERIT. *** scrollbar-color is an
+   inherited property, so declaring it once here reaches every scrollable
+   element on every page, and any surface that wants a different pair sets the
+   two custom properties instead of restating the rule. That is also why .d-scroll
+   below no longer repeats these four declarations - it was the same bar written
+   twice, which is the thing this codebase has spent a week removing. */
+:root{
 	--sc-thumb: var(--c-grey-400);
 	--sc-track: var(--tint-grey);
-	overflow:auto;
 	scrollbar-width:thin;
 	scrollbar-color:var(--sc-thumb) var(--sc-track);
+}
+/* WebKit's dialect of the same bar. Deliberately unscoped, for the same reason
+   the properties above are on :root - the DEFAULT is the point. Anything that
+   wants no bar at all still says so and wins on specificity;
+   `.d-scrollframe > .d-scroll::-webkit-scrollbar{display:none}` below is exactly
+   that case and is unaffected. */
+::-webkit-scrollbar{ width:10px; height:10px }
+::-webkit-scrollbar-track{
+	background:var(--sc-track);
+	border-radius:var(--radius-pill);
+}
+::-webkit-scrollbar-thumb{
+	background:var(--sc-thumb);
+	border:2px solid var(--sc-track);
+	border-radius:var(--radius-pill);
+}
+
+/* -- level one: a scroll REGION, branded ------------------------------------
+   The bar itself now comes from :root above. What is left here is what makes an
+   element a scroll region rather than a page: it scrolls, and a flick inside it
+   does not drag the page behind it once it reaches its end. */
+.d-scroll{
+	overflow:auto;
 	overscroll-behavior:contain;
 }
 .d-scroll--cherry{
@@ -47,14 +93,10 @@
 	--sc-thumb: var(--tint-gold-edge);
 	--sc-track: var(--tint-gold);
 }
-/* WebKit ignores scrollbar-width:thin's metrics, so it gets an explicit size.
-   Both are declared: Firefox reads the standard properties, Chrome and Safari
-   read these, and neither sees the other's. */
-.d-scroll::-webkit-scrollbar{ width:10px; height:10px }
-.d-scroll::-webkit-scrollbar-track{
-	background:var(--sc-track);
-	border-radius:var(--radius-pill);
-}
+/* These three were `.d-scroll::-webkit-scrollbar*` and said exactly what the
+   global rules above say. Folded, because a component that restates the default
+   is the shape of duplicate this project keeps finding. What remains is the
+   hover, which the default does not carry. */
 .d-scroll::-webkit-scrollbar-thumb{
 	background:var(--sc-thumb);
 	border:2px solid var(--sc-track);

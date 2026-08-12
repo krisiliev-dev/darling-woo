@@ -100,7 +100,8 @@
    its var(--glow-k) resolves against :root and every element inherits a value
    with the number already baked in: four buttons at 0 / .5 / 1 / 1.6 measured
    byte-identical box-shadows, alpha .8 and .7 on all four. */
-.d-finish{
+.d-finish,
+.single_add_to_cart_button{
 	/* --glow-base is the knob a COMPONENT sets. The other two are the hero
 	   animation and the pointer, and they multiply in. Setting --glow-k
 	   directly from outside still wins over all three - that is the escape
@@ -216,7 +217,8 @@
    Every layer is positioned by background-position rather than by `at x y`
    inside the gradient, because a position inside a gradient function cannot be
    animated and a background-position list can. */
-.d-finish::before{
+.d-finish,
+.single_add_to_cart_button::before{
 	content:"";
 	position:absolute;
 	inset: calc(-1 * var(--firefly-reach));
@@ -279,7 +281,8 @@
    100% 100%, so it follows any shape - pill, circle, rounded square - with no
    fixed geometry and no script. The grain does NOT move: plywood is the
    material, and material does not drift. */
-.d-finish::after{
+.d-finish,
+.single_add_to_cart_button::after{
 	content:"";
 	position:absolute;
 	inset:0;
@@ -304,11 +307,15 @@
    ramps. That step is under the cursor and reads as the swarm waking up, so it
    is left as a step rather than papered over with a second animation. */
 .d-finish:hover,
-.d-finish:focus-visible{
+.d-finish:focus-visible,
+.single_add_to_cart_button:hover,
+.single_add_to_cart_button:focus-visible{
 	--glow-hover: 1.34;
 }
 .d-finish:hover::before,
-.d-finish:focus-visible::before{
+.d-finish:focus-visible::before,
+.single_add_to_cart_button:hover::before,
+.single_add_to_cart_button:focus-visible::before{
 	animation-duration: calc(var(--speck-cycle, 15s) * .3), var(--breathe-cycle, 9s);
 }
 

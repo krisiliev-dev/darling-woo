@@ -484,7 +484,22 @@
    the same three promises stack into three lines and push the first product
    below the fold. So this is one sentence with separators, in the drawer's own
    quiet voice, and the full band stays on the cart page where it fits. */
+/* *** THE MARK AND THE SENTENCE ARE A ROW, NOT A GLYPH FLOATING IN A LINE BOX.
+   *** The owner: the label "isn't aligned properly". It was an inline .d-icon
+   nudged with vertical-align:-.05em and spaced with its own margin-inline-end -
+   two hacks doing the job of one flex row. vertical-align on a masked span is a
+   guess about the font's baseline, so it lands differently at every text size,
+   and the sentence wraps to a second line UNDER the mark rather than under the
+   first word.
+
+   A row with align-items:center puts the mark on the text's optical centre by
+   construction, and the gap belongs to the row - THE PARENT OWNS THE GAP, which
+   is the rule this file has already been corrected on twice. The mark does not
+   shrink and the text wraps against itself, indented past the mark. */
 .d-drawer__trust{
+	display:flex;
+	align-items:center;
+	gap:.4em;
 	margin:0 0 var(--space-2xs);
 	font-size:var(--fs-fine);
 	line-height:var(--lh-title);
@@ -492,9 +507,8 @@
 	color:var(--ink-quiet);
 }
 .d-drawer__trust .d-icon{
+	flex:none;
 	width:.8em;
 	height:.8em;
-	vertical-align:-.05em;
-	margin-inline-end:.3em;
 	color:var(--g-core);
 }

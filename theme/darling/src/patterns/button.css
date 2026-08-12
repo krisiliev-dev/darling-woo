@@ -38,30 +38,7 @@
    it renders a <button> or an <a>, so naming it here catches both. It joins the
    list rather than getting its own rule for the same reason the ordering select
    and the cart's trash button did: one definition. */
-/* *** AND THE CLASSIC TEMPLATES' `.button` IS ON THIS LIST, BECAUSE IT IS THIS
-   BUTTON. *** The owner, on the address form: "the save button looks like a
-   duplicate declaration of a button, we don't have such a variant of a button.
-   It should be the cherry one." Exactly right, and it was not a variant of
-   anything - it was `<button class="button wp-element-button">` reaching
-   fallback.css, the net whose whole job is to stop an unclaimed control looking
-   like raw browser chrome. A control that reaches the net comes out CLOSE to the
-   component and not equal to it. Same diagnosis as the ordering select and the
-   quantity stepper; same cure.
-
-   Four live controls, all of them a primary action, all of them running on the
-   net until now:
-     Запази адреса                  button.button[name=save_address]
-     Запазване на промените         button.button.woocommerce-Button
-     Преглед на продукти            a.button.wc-forward  (empty orders)
-     Добавяне метод за разплащане   a.button             (empty payment methods)
-
-   `.d-finish` is not excluded here because it does not need to be: finish.css is
-   a LATER layer than patterns, so the gold add-to-cart keeps its plywood without
-   a :not(). The notice banners keep their own smaller button for the same
-   reason - adopted/checkout.css:602 is later still. */
 .d-btn,
-.woocommerce .button,
-.woocommerce input.button,
 .single_add_to_cart_button,
 .wc-block-cart__submit-button{
 	display:inline-flex;
@@ -92,7 +69,6 @@
    product page, and the cart's own checkout button did not move under a press
    while the button beside them did. */
 .d-btn:active,
-.woocommerce .button:active,
 .single_add_to_cart_button:active,
 .wc-block-cart__submit-button:active{ transform:translateY(1px) }
 /* *** THE HOVER BELONGS TO THE SOLID CHERRY BUTTON AND TO NOTHING ELSE. ***
@@ -104,7 +80,6 @@
    one, `.d-btn:hover` at (0,2,0) beats `.d-finish` at (0,1,0), and the finish
    already has its own pointer response through --glow-hover. */
 .d-btn:not(.d-finish):not(.d-btn--quiet):not(.d-btn--text):hover,
-.woocommerce .button:not(.d-finish):hover,
 .single_add_to_cart_button:not(.d-finish):hover,
 /* *** AND THE CART'S CHECKOUT BUTTON HAD NO HOVER AT ALL. ***
    Measured in the gallery, #wcart: rest rgb(212,42,60), forced hover

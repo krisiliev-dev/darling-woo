@@ -95,17 +95,6 @@
 	place-items:center;
 	width:var(--tap);
 	height:var(--tap);
-	/* *** min-width:auto IS min-content, AND IT BEATS AN EXPLICIT WIDTH. ***
-	   A flex item's min-width defaults to auto, which resolves to min-content,
-	   and min-width can only ever ENLARGE - so a 28px button whose contents want
-	   39.6px comes out 39.6x28 and `border-radius:50%` draws an ELLIPSE. That is
-	   exactly what happened to the search clear button, and the owner has now
-	   reported the same ellipse on the cart row's remove button. Second time, so
-	   it goes on the component rather than on the one that was caught: any of
-	   these five can end up in a flex row, and none of them should ever be
-	   wider than the size it asks for. wipe.css carried this as its own delta
-	   and no longer needs to. */
-	min-width:0;
 	padding:0;
 	border:0;
 	border-radius:var(--radius-circle);

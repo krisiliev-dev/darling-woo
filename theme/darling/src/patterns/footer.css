@@ -73,7 +73,12 @@
 	   looked to him like the changes had not landed. They had; I had changed the
 	   wrong number. --space-m/--space-s is the halving he asked for. */
 	padding-block:var(--space-m) var(--space-s);
-	padding-inline:calc((100% - var(--w-body)) / 2);
+	/* *** THE WIDE RAIL, NOT THE PAGE RAIL. *** The owner: "the footer can make
+	   use of the wider margins, it can use the alignwide 95% margin." A footer is
+	   chrome rather than content - the same argument that already puts the header
+	   bar on --w-wide - and the extra 15% is what makes room for the policies to
+	   sit beside the help links instead of under the address. */
+	padding-inline:calc((100% - var(--w-wide)) / 2);
 	background:var(--surface-quiet);
 	color:var(--ink);
 }
@@ -213,12 +218,36 @@
 .d-footer__map a:focus-visible,
 .d-footer__legal a:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
 
+/* *** THE HELP COLUMN IS TWO COLUMNS NOW. ***
+   The policies moved out of the address column and in beside the help links -
+   see parts/footer.html. Two lists of links side by side, which is what the
+   extra 15% of rail was for.
+
+   The head spans both, so it names the pair rather than only the left one; and
+   THE PARENT OWNS THE GAP, so the lists carry no margin of their own. Below
+   the breakpoint the whole footer is already one column per section, and two
+   columns of four links inside one of them is unreadable on a phone, so they
+   stack. */
+.d-footer__help{
+	display:grid;
+	grid-template-columns:auto auto;
+	justify-content:start;
+	gap:var(--space-2xs) var(--space-l);
+}
+.d-footer__help > .d-footer__head{ grid-column:1 / -1 }
+
+@media (max-width:880px){
+	.d-footer__help{ grid-template-columns:auto }
+}
+
 .d-footer__policies{
 	display:flex;
 	flex-direction:column;
-	margin-top:var(--space-2xs);
 	font-size:var(--fs-fine);
 }
+/* Only the copy that still sits in the LAST column keeps the top margin it had
+   as a fourth block under the map; inside .d-footer__help the grid gap does it. */
+.d-footer > :last-child .d-footer__policies{ margin-top:var(--space-2xs) }
 .d-footer__map{ margin-top:var(--space-2xs); font-size:var(--fs-fine) }
 .d-footer__map a{ text-decoration:underline }
 /* The pledge is the one piece of prose in the footer, so it gets a measure and
@@ -396,7 +425,18 @@
    social glyphs are third-party logos with their own geometry and we do not
    want them in the icon set where somebody might recolour them. currentColor
    still carries the hover. */
+/* *** fill:currentColor TURNED THE INSTAGRAM MARK INTO A SOLID ROUNDED SQUARE.
+   *** A presentation attribute on the element loses to ANY css rule, so
+   `<svg fill="none" stroke="currentColor">` - which is how the Instagram glyph
+   is drawn, as an outlined rect with two circles - had its fill forced back on
+   and painted as a filled 16x16 rect with rx 4.5. The circles filled too, inside
+   it, invisibly. The owner: "the second one which I believe is supposed to be
+   instagram, isn't displaying properly, it is just a rounded square."
+   Facebook and TikTok are solid paths and want the fill; Instagram is a stroked
+   outline and must keep fill:none. So the mark declares its own technique and
+   the stylesheet stops overruling it. */
 .d-footflair__social svg{ width:1.25rem; height:1.25rem; fill:currentColor }
+.d-footflair__social svg[fill="none"]{ fill:none; stroke:currentColor }
 .d-footflair__social .d-icon{ width:1.25rem; height:1.25rem }
 
 @media (prefers-reduced-motion: reduce){

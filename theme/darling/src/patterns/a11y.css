@@ -322,16 +322,15 @@ html.d-a11y .d-fab{ text-decoration:none }
    already lives. */
 /* *** BY THE CLASS THE MARKUP ACTUALLY CARRIES, NOT BY ITS SHAPE. ***
    These were `.darling-contact-form__row > label` and
-   `.darling-contact-form > p > label`, and the first one matched NOTHING: the
-   label is inside a <p> inside the row, so the row is its GRANDparent. Measured
-   on the live page - Име came out 31x17 and Имейл адрес 109x17, visible, while
+   `.darling-contact-form > p > label`, and the first matched NOTHING: the label
+   sits inside a <p> inside the row, so the row is its GRANDparent. Measured on
+   the live page - Име came out 31x17 and Имейл адрес 109x17, visible, while
    Телефон and Коментар measured 1x1 because the second selector did reach them.
    Two labels showing out of four, which is exactly what the owner reported.
 
-   And the shape was never the right thing to key off. The form emits
-   `class="visually-hidden"` on every one of them - a name nothing in this
-   stylesheet claimed. Naming the class fixes all four and cannot come apart
-   again when somebody adds a wrapper. */
+   The form emits `class="visually-hidden"` on all four - a name nothing in this
+   stylesheet claimed. Naming the class fixes all four and cannot come apart when
+   somebody adds a wrapper. */
 .visually-hidden,
 /* A radio or checkbox that is drawn by its own label - .d-choice paints the box,
    so the real control must be unseeable and still focusable, checkable and

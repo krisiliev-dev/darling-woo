@@ -4,7 +4,21 @@
      structure is unchanged, because the structure was never the problem. -->
 <footer class="d-footer">
 
-	<nav aria-label="Помощ и информация">
+	<!-- *** TWO COLUMNS OF LINKS, NOT ONE COLUMN AND A STRAY IN THE ADDRESS. ***
+	     The owner: "the footer can make use of the wider margins, it can use the
+	     alignwide 95% margin. That will allow us to put the Общи условия,
+	     Политика за връщане, Доставка, Поверителност list under the Помощ и
+	     информация section as a second column."
+
+	     The policies were the fourth block of the LAST column, under the pledge
+	     and the map - four navigation targets filed under the address, which is
+	     not where anybody looks for terms. They are links like the five beside
+	     them and they belong in the same place.
+
+	     A list of links is not a paragraph: this was a <p> with <br> once, which
+	     made four targets 17px tall and un-paddable without wrecking the line
+	     box. The contract is the CLASS, not the tag. -->
+	<nav class="d-footer__help" aria-label="Помощ и информация">
 		<h2 class="d-footer__head">Помощ и информация</h2>
 		<div class="d-footer__links">
 			<a href="/shop/">Продукти</a>
@@ -12,6 +26,12 @@
 			<a href="/za-nas/">За нас</a>
 			<a href="/pomosht/">Помощ и въпроси</a>
 			<a href="/kontakti/">Контакти</a>
+		</div>
+		<div class="d-footer__policies">
+			<a href="/obshti-usloviya/">Общи условия</a>
+			<a href="/vrashtane/">Политика за връщане</a>
+			<a href="/dostavka/">Доставка</a>
+			<a href="/poveritelnost/">Поверителност</a>
 		</div>
 	</nav>
 
@@ -59,15 +79,6 @@
 			<a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%94%D0%B0%D1%80%D0%BB%D0%B8%D0%BD%D0%B3%207%20%D0%A1%D0%B2%D0%B8%D1%89%D0%BE%D0%B2%20%D1%83%D0%BB.%20%D0%A5%D0%B0%D0%BD%20%D0%90%D1%81%D0%BF%D0%B0%D1%80%D1%83%D1%85%201"
 			   target="_blank" rel="noopener">Виж ни в Google Maps</a>
 		</p>
-		<!-- A list of links is not a paragraph. It was a <p> with <br>, which made
-		     four navigation targets 17px tall and un-paddable without wrecking the
-		     line box. The contract is the CLASS, not the tag. -->
-		<nav class="d-footer__policies" aria-label="Условия и политики">
-			<a href="/obshti-usloviya/">Общи условия</a>
-			<a href="/vrashtane/">Политика за връщане</a>
-			<a href="/dostavka/">Доставка</a>
-			<a href="/poveritelnost/">Поверителност</a>
-		</nav>
 	</div>
 </footer>
 
